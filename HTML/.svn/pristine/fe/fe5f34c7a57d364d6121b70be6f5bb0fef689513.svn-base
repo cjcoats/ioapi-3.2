@@ -1,0 +1,105 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> SECSDIFF() and secsdiffc() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    SECSDIFF() and secsdiffc() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION  SECSDIFF( ADATE, ATIME, ZDATE, ZTIME )
+        INTEGER, INTENT(IN   ) :: ADATE, ATIME	!  starting date&amp;time
+        INTEGER, INTENT(IN   ) :: ZDATE, ZTIME	!  ending   date&amp;time
+</PRE><P> 
+
+<H2> C version:   </H2>
+<PRE>
+    int secsdiffc( int  adate , int  atime ,
+                   int  zdate , int  ztime )
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+        SECSDIFF() returns the number of seconds in the time interval
+        starting at ADATE:ATIME and ending at ZDATE:ZTIME (which will 
+        be positive if and only if ZDATE:ZTIME is <EM>after</EM> 
+        ADATE:ATIME.
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    See also <A HREF = "SEC2TIME.html"> SEC2TIME() </A>
+    and <A HREF = "TIME2SEC.html"> TIME2SEC() </A>
+
+
+<H2> Preconditions:   </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> for C.
+    <P> 
+
+    <CODE>ADATE, ATIME, ZDATE, ZTIME</CODE> expressed according to Models-3
+    <A HREF = "DATETIME.html"> date and time conventions </A>.
+    <P> 
+
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    INTEGER   SECS
+    ...
+    SECS = SECSDIFF( 1988001, 1, 1989365, 235959 )
+    !!   Now SECS is the number of seconds from one second after
+    !!   midnight on New Year's Day, 1988 until one second before
+    !!   midnight on New Year's EVE, 1989.  Will be 63,071,998.
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;                          
+    ...
+    int  secs ;
+    ...
+    secs = secsdiffc( 1989365, 235959, 1988001, 1 ) ;
+            /*  Now secs == -63,071,998  is negative, since this 
+                interval goes _backwards_ in time   */
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "SEC2TIME.html" >
+Previous:  <STRONG>SEC2TIME</STRONG>
+</A><P> 
+
+<A HREF = "TIME2SEC.html" >
+Next:  <STRONG>TIME2SEC</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,63 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: CHKBUF3.html 114 2015-01-19 13:35:23Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> CHKBUF3() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    CHKBUF3() </H1>
+        
+<H2> Fortran version: </H2>
+<PRE>
+    LOGICAL FUNCTION CHKBUF3( FDUM ) 
+        INTEGER, INTENT( OUT ) :: FDUM
+</PRE><P> 
+
+<H2> Summary: </H2>
+    I/O&nbsp;API Version&nbsp;3.1 only.
+    <P> 
+    Checks to see whether the library supports the latest version of
+    <CODE>BUFFERED</CODE> file support (you get link-failure, otherwise,
+    indicating that you need to update your I/O&nbsp;API library.).
+    Used for upcoming (Summer, 2011) version of CMAQ.
+    <P> 
+
+<H2> Preconditions: </H2>
+    <A HREF = "M3UTILIO.html"> <CODE>USE M3UTILIO</CODE></A>
+    <P>
+
+    I/O API must already be initialized by a call to 
+    <A HREF = "INIT3.html"> INIT3() </A>.
+    <P> 
+
+
+<HR>
+
+<A HREF = "WRATT3.html" >
+Previous:  <STRONG>WRATT3()</STRONG>
+</A><P> 
+
+<A HREF = "FILCHK3.html" >
+Next:  <STRONG>FILCHK3</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#ioapi"> 
+Up: <STRONG>I/O API:  Public Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+
+
+

@@ -1,0 +1,109 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE> INDEX1() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+<H1>    INDEX1() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION INDEX1( NAME, N, NLIST )
+        CHARACTER*(*), INTENT(IN   ) :: NAME        !  Character string being searched for
+        INTEGER      , INTENT(IN   ) :: N           !  Length of array to be searched
+        CHARACTER*(*), INTENT(IN   ) :: NLIST( N )  !  array to be searched
+
+    INTEGER FUNCTION INDEXINT1( IKEY, N, NLIST )
+        INTEGER, INTENT(IN   ) :: IKEY        !  integer being searched for
+        INTEGER, INTENT(IN   ) :: N           !  Length of array to be searched
+        INTEGER, INTENT(IN   ) :: NLIST(*)    !  array to be searched
+</PRE><P>
+
+<H2> NO C version: </H2>
+<P>
+
+<H2> Summary: </H2>
+
+    Searches for character-string key <CODE>NAME</CODE> or
+    <CODE>INTEGER&nbsp;IKEY</CODE> in unsorted
+    list <CODE>NLIST</CODE> and  returns the subscript
+    <CODE>(1...N)</CODE> at which it is found, or returns 0  when
+    <CODE>NAME</CODE> (<CODE>IKEY</CODE>) not found in <CODE>NLIST</CODE>
+    <P>
+
+    <STRONG>See also</STRONG>:
+    <BLOCKQUOTE>
+        <A HREF = "FINDS.html">FINDC(), <BR>
+        FIND1(),  FIND2(),  FIND3(),  FIND4(), <BR>
+        FINDR1(), FINDR2(), FINDR3(), FINDR4()</A> for use finding keys
+        in sorted lists.
+        <P>
+        <A HREF = "LOCATS.html">LOCATC(), <BR>
+        LOCAT1(),  LOCAT2(),  LOCAT3(),  LOCAT4(), <BR>
+        LOCATR1(), LOCATR2(), LOCATR3(), LOCATR4()</A> for use inserting
+        items into sorted
+        lists.
+    </BLOCKQUOTE>
+
+<H2> Preconditions: </H2>
+
+    String-lengths match:  LEN( NAME ) = LEN( NLIST( I ) )
+<P>
+
+
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    <PRE>
+    ...
+    USE M3UTILIO
+    ...
+    CHARACTER*4 :: NLIST( 4 ) = (/ 'aaaa', 'bbbb', 'cccc', 'dddd' /)
+    INTEGER        ILIST( 5 ) = (/ 2, 3, 5, 7, 11 /)
+    INTEGER        L
+    ...
+    L = INDEX1( 'cccc', 4, NLIST)    !  L = 3
+    ...
+    L = INDEX1( 'ffff', 4, NLIST)    !  L = 0
+    ...
+    L = INDEXINT1(   7, 5, ILIST)    !  L = 4
+    ...
+    </PRE><P>
+
+<H2> C Usage: </H2>  don't
+<P>
+
+
+<HR>
+
+<A HREF = "GRIDOPS.html" >
+Previous:  <STRONG>GRIDOPS</STRONG>
+</A><P>
+
+<A HREF = "JUNIT.html" >
+Next:  <STRONG>JUNIT</STRONG>
+</A><P>
+
+<A HREF = "AA.html#utility">
+Up: <STRONG>Utility Routines</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
+</A><P>
+
+</BODY>
+</HTML>
+

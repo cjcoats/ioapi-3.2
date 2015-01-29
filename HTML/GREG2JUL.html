@@ -1,0 +1,168 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: GREG2JUL.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program GREG2JUL </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program GREG2JUL </H1>
+
+<H2> Usage </H2>
+<PRE>
+    greg2jul &lt;Gregorian date&gt;
+</PRE>
+or, alternately,
+<PRE>
+    greg2jul [ yesterday | today | tomorrow ]
+</PRE>
+or
+<PRE>
+    greg2jul --help
+</PRE>
+ 
+<H2> Summary </H2>
+
+    Convert Gregorian-style date or <CODE>yesterday</CODE>,
+    <CODE>today</CODE>, or <CODE>tomorrow</CODE> command line argument
+    to Julian style <CODE>YYYYDDD</CODE> and echo the result to standard
+    output as a single 7-digit integer formatted <CODE>YYYYDDD</CODE>.
+    <P>
+    Options for the Gregorian-style (calendar) date are:
+    <BLOCKQUOTE>
+    <DL>
+        <DT><CODE>&lt;Mon&gt; &lt;DD&gt; &lt;YYYY&gt;</CODE> [3-letter month-abbreviation), e.g., Feb 12 2010
+        <DT><CODE>&lt;MM&gt;  &lt;DD&gt; &lt;YYYY&gt;</CODE>, e.g., 02 12 2010
+        <DT><CODE>&lt;YYYYMMDD&gt;</CODE>, e.g., 20100212
+        <DT><CODE>YESTERDAY</CODE>
+        <DT><CODE>TODAY</CODE>
+        <DT><CODE>TOMORROW</CODE>
+    </DL>
+    </BLOCKQUOTE>
+    <P>
+    If <CODE>--help</CODE> is the argument, writes the USAGE screen
+    and exits.
+    <P>
+    Not case sensitive.
+
+
+<H2> Examples </H2>
+
+Some sample executions of this program are as indicated below (where,
+for purposes of illustration, &quot;today&quot;, as I write, is
+January&nbsp;29, 2014).
+<P>
+(Note that in shell-scripting, the back-quote character means &quot;the
+result of evaluating the enclosed command&quot; so that the fourth
+example below sets shell variable <CODE>foo</CODE> to the result of
+executing the indicated <CODE>greg2jul</CODE> command.)
+<PRE>
+     % greg2jul 20140129
+     2014029
+
+     % greg2jul YESTERDAY
+     2014028
+
+     % greg2jul tomorrow
+     2014030
+
+     % set foo = `greg2jul 19970503`
+     % echo ${foo}
+     1997123
+
+     % greg2jul FEB 2 2014
+     2014033
+
+     % greg2jul 02 28 2014
+     2014059
+
+     % greg2jul --help
+         %  greg2jul &lt;calendar date&gt;
+         or
+         %  set gdate = ``greg2jul 20140201` 
+
+         Options for &lt;calendar date&gt;
+              &lt;MON&gt; &lt;DD&gt; &lt;YYYY&gt;, e.g., Feb 12 2010
+              &lt;MM&gt;  &lt;DD&gt; &lt;YYYY&gt;, e.g., 02 12 2010
+              &lt;YYYYMMDD&gt;       , e.g., 20100212
+              TODAY
+              YESTERDAY
+              TOMORROW
+              --HELP
+         Case is NOT significant.
+         Use 3-letter month-names (&quot;JAN&quot;, &quot;FEB&quot;, etc.)
+         Output format is 7-digit integer YYYYDDD
+</PRE>
+
+
+
+<H2> See Also </H2>
+
+<BLOCKQUOTE>
+<A HREF = "AA.html#datestuff"> 
+EDSS/ Models-3 date-time manipulation routines </a>
+<BR> 
+
+<A HREF = "DATSHIFT.html" >
+<STRONG>datshift</STRONG></A>
+<BR>
+
+<A HREF = "GREGDATE.html" >
+<STRONG>gregdate</STRONG></A>
+<BR>
+
+<A HREF = "JUL2GREG.html" >
+<STRONG>jul2greg</STRONG></A>
+<BR>
+
+<A HREF = "JULDATE.html" >
+<STRONG>juldate</STRONG></A>
+<BR>
+
+<A HREF = "JUL2GREG.html" >
+<STRONG>jul2greg</STRONG></A>
+<BR>
+
+<A HREF = "JULDIFF.html" >
+<STRONG>juldiff</STRONG></A>
+<BR>
+
+<A HREF = "JULSHIFT.html" >
+<STRONG>julshift</STRONG></A>
+<BR>
+
+<A HREF = "TIMESHIFT.html" >
+<STRONG>timeshift</STRONG></A>
+<BR>
+</BLOCKQUOTE>
+
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "GREGDATE.html" >
+Previous:  <STRONG>gregdate</STRONG>
+</A><P> 
+
+<A HREF = "JUL2GREG.html" >
+Next:  <STRONG>jul2greg</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

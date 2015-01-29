@@ -1,0 +1,173 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> CURRSTEP() and currstepc() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    CURRSTEP() and currstepc() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    LOGICAL FUNCTION CURRSTEP( JDATE, JTIME,
+ &amp;                                SDATE, STIME, TSTEP, 
+ &amp;                                CDATE, CTIME )
+    INTEGER FUNCTION CURREC ( JDATE, JTIME, 
+ &amp;                            SDATE, STIME, TSTEP, 
+ &amp;                            CDATE, CTIME )
+
+        INTEGER, INTENT(IN   ) :: JDATE     !  date (encoded DDDYY)
+        INTEGER, INTENT(IN   ) :: JTIME     !  time (encoded HHMMSS)
+        INTEGER, INTENT(IN   ) :: SDATE, STIME    !  starting d&amp;t for the sequence
+        INTEGER, INTENT(IN   ) :: TSTEP           !  time step for the sequence
+        INTEGER, INTENT(  OUT) :: CDATE, CTIME    !  d&amp;t for timestep of
+</PRE><P> 
+
+<H2> C version: </H2>
+<PRE>
+    int currstepc( int  jdate ,  int  jtime ,
+                   int  sdate ,  int  stime , int  tstep,
+                   int *cdate ,  int *ctime ) 
+</PRE><P> 
+
+<H2> Idea: </H2>
+
+    <BLOCKQUOTE>
+    Useful with <A HREF = "READ3.html"> READ3() </A> and 
+    <A HREF = "XTRACT3.html"> XTRACT3() </A> -- if a file has 
+    <A HREF = "DATETIME.html"> time step </A> sequence with 
+    <CODE>SDATE, STIME, TSTEP</CODE> and you want 
+    to read the data relevant to <CODE>JDATE:JTIME</CODE>, then you 
+    want to use CURRSTEP() to find the <CODE>CDATE:CTIME</CODE> 
+    to use as the arguments to READ3()  for the last time step 
+    before or at <CODE>JDATE:JTIME</CODE> (and possibly read the 
+    next time step from that file as well, if you're doing interpolation).  
+    Returns TRUE if and only if this is possible (and it succeeded in
+    computing <CODE>CDATE:CTIME</CODE>..
+    </BLOCKQUOTE>
+    <P> 
+
+<H2> Summary: </H2>
+
+    <BLOCKQUOTE>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    <STRONG><CODE>CURRSTEP</CODE></STRONG> computes the date&amp;time
+    <CODE>CDATE:CTIME</CODE> and <STRONG><CODE>CURREC</CODE></STRONG>
+    computes the record-number <VAR>1, 2, 3, ...</VAR> for the time 
+    step enclosing <CODE>JDATE:JTIME</CODE> in the time step 
+    sequence starting at <CODE>SDATE:STIME</CODE> and having 
+    time step <CODE>| TSTEP |</CODE>  (absolute values, in order to 
+    deal with restart files easily).  In particular, 
+    <CODE>CDATE:CTIME </CODE> is date&amp;time of the largest 
+    timestep in the sequence having the property:
+<PRE>
+        CDATE:CTIME &lt;= JDATE:JTIME
+</PRE>
+
+    <STRONG><CODE>CURRSTEP</CODE></STRONG> returns <CODE>.TRUE.</CODE>,
+    <STRONG><CODE>CURRREC</CODE></STRONG> returns positive result,
+    and <STRONG><CODE>currstepc</CODE></STRONG> returns 1 iff 
+    <CODE>JDATE:JTIME</CODE> is within  a time step starting at
+    <CODE>SDATE:STIME</CODE> (i.e., if  <CODE>TSTEP</CODE> is
+    nonzero this means that  <CODE>JDATE:JTIME</CODE> is later than
+    <CODE>SDATE:STIME</CODE>.)   Otherwise, these return
+    <CODE>.FALSE., -1</CODE>,  or <CODE>0</CODE> respectively.
+    <P>
+
+    <STRONG>See also</STRONG> subroutine
+    <A HREF = "JSTEP3.html">JSTEP3()</A> that computes (Fortran
+    style 1,2,...) record numbers for <CODE>JDATE:JTIME</CODE>
+    within the time step sequence <CODE>SDATE:STIME:TSTEP</CODE>.
+    </BLOCKQUOTE>
+        <P>
+
+<H2> Preconditions: </H2>
+
+    <BLOCKQUOTE>
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    dates and times represented according to Models-3 conventions:
+    </BLOCKQUOTE>
+    <PRE>
+        DATEs are   YYYYDDD = YEAR*1000  +  DAY
+        TIMEs are   HHMMSS  = HOUR*10000 +  MINS*100  +  SECS
+    </PRE>
+    <P> 
+
+<H2> Fortran Usage: </H2>
+    
+    <PRE>
+    ...
+    USE M3UTILIO
+    ...
+    INTEGER    CDATE, CTIME, IREC
+    ...
+    IREC = CURRSTEP( 1988101, 123000, 
+ &amp;                 1988100,      0, 10000, 
+ &amp;                 CDATE, CTIME )
+C	    ==&gt; CDATE:CTIME is 1988101:120000 since this is the start
+C           ==&gt; of the (1-hour) time step which encloses 12:30:00.
+    ...
+    IF ( IREC .LT. 0 ) THEN
+        ...<EM>error:  request before start of time step sequence</EM>
+    END IF
+    </PRE><P> 
+
+<H2> C Usage: </H2>
+
+    <PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    int  jdate, jtime, sdate, stime, tstep, cdate, ctime ;
+    ...
+    /*  get jdate, jtime;
+        get sdate, stime, tstep relevant to file &quot;foo&quot; */
+    if ( currstepc( jdate,  jtime, 
+                    sdate,  stime, tstep, 
+                   &cdate, &ctime ) )
+        {
+        /*  CAN read3c() the data for cdate:ctime  from &quot;foo&quot;  */
+        if read3c( &quot;foo&quot;, &quot;bar&quot;, ALLAYS3, cdate, ctime, buffer ) ) { ... }
+        else{ ... }
+        }
+    else
+        {
+        /* CANNOT read3c( &quot;foo&quot;, ... ) --
+           there is no legal date&amp;time for &quot;foo&quot; just before jdate:jtime */
+        }
+    ...
+    </PRE><P>         
+
+
+<HR>
+
+<A HREF = "DAYMON.html" >
+Next:  <STRONG>DAYMON</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

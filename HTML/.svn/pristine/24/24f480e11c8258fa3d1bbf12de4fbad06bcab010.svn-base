@@ -1,0 +1,452 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> MODULES AND PUBLIC INCLUDE FILES </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1> MODULES AND PUBLIC INCLUDE FILES </H1>
+        
+
+    <A NAME = "contents">There</A> are three Fortran <VAR>MODULE</VAR>s,
+    and three public Fortran and C matching pairs of include files in the
+    I/O&nbsp;API, with  the following sorts of content:
+
+    <BLOCKQUOTE>
+    <UL> 
+        <LI> <A HREF = "M3UTILIO.html"><VAR>MODULE M3UTILIO</VAR></A>:
+                                  dimensions, constants, declarations,
+                                  interface blocks.  Includes all the
+                                  public Fortran include-files (below),
+                                  and <STRONG>is the preferred way of
+                                  accessing them from Fortran program
+                                  code.</STRONG>
+        <LI> <A HREF = "M3ATTS.html"><VAR>MODULE M3ATTS</VAR></A>:
+                                  parameters and routines for saving
+                                  metadata for CF complance, geospatial
+                                  transforms, and CMAQ and SMOKE runs.
+        <LI> <A HREF = "MODGCTP.html"><VAR>MODULE MODGCTP</VAR></A>:
+                                  <CODE>PARAMETER</CODE>s and routines
+                                  for geospatial transforms and
+                                  interpolation.
+                                  <P>
+        <LI> <A HREF = "#parms">  <VAR>PARMS3.EXT</VAR> and <VAR>parms3.h</VAR>:</A> 
+                                  dimensions and constants
+        <LI> <A HREF = "#fdesc">  <VAR>FDESC3.EXT</VAR> and <VAR>fdesc3.h</VAR>:</A> 
+                                  file description data structures
+        <LI> <A HREF = "#iodecl"> <VAR>IODECL3.EXT</VAR> and <VAR>iodecl3.h</VAR>:</A> 
+                                  function declarations
+        <LI> <A HREF = "#atdsc "> <VAR>ATDSC3.EXT</VAR> and <VAR>atdsc3.h</VAR>:</A> 
+                                  Extra attributes for <CODE>TSERIES3</CODE> files
+    </UL>
+    <P>
+
+    Each of the include files has extensive in-line documentation as to 
+    the meaning of the structures it defines.
+    <P>
+
+    Each of the Fortran include files is structured so that it conforms
+    both to the &quot;fixed&quot; and &quot;free&quot;  Fortran source
+    formats, using the method recommended by the ISO Fortran-Standards
+    committee.  Note, however, that <STRONG><VAR>CMAQ</VAR> and 
+    <VAR>SMOKE</VAR> use a non-Standard &quot;fixed-132&quot; source
+    format</STRONG> that is not compatible with either of these Standard
+    formats; for this reason, there is a script,
+    <VAR>ioapi/fix_src.csh</VAR> that can convert these INCLUDE files
+    into the format required of  <VAR>CMAQ</VAR> and  <VAR>SMOKE</VAR>. 
+    The <VAR>make fixed_src</VAR> command creates a directory
+    <VAR>ioapi/fixed_src/</VAR> and uses this script to put the
+    converted INCLUDE-files into it.
+    <P>
+
+    As of Novenber,&nbsp;2004, new <A HREF = "M3UTILIO.html">
+    Fortran-9x <CODE>MODULE M3UTILIO</CODE></A> is the recommended way to
+    provide an (alternate) interface to these <CODE>INCLUDE</CODE>
+    files, as well as explicit interfaces to a large number of
+    additional I/O&nbsp;API public routines, in a way that gets around
+    difficulties caused by the interaction of Fortran-9x
+    <CODE>USE&nbsp;&lt;module&gt;</CODE> and Fortran (77/90/95)
+    <CODE>INCLUDE</CODE> statements.  It also provides a way of ensuring the
+    consistency of user compiled code with library compiled code for
+    &quot;exotic&quot; I/O&nbsp;API versions with modified
+    data-structure-dimensioning parameters.
+    <P>
+        
+    <HR> <!----------------------------------------------------------------->
+
+    <STRONG><EM>NOTICE: </EM> The EDSS/Models-3 I/O&nbsp;API depends in an
+    essential manner upon the I/O&nbsp;API source code.  ANY CHANGES to 
+    <CODE>INCLUDE</CODE> files are likely to result in very obscure,
+    difficult-to-diagnose bugs caused by an inconsistency between standard 
+    <VAR>libioapi.a</VAR> object-libraries and whatever code is compiled
+    with the resulting modified <CODE>INCLUDE</CODE>-file(s).
+    <P>
+
+    By making any changes to any of these <CODE>INCLUDE</CODE> files,
+    the user explicitly agrees that in the case any assistance is
+    required of MCNC, BAMS, UNC, or of the I/O&nbsp;API author,
+    Carlie J. Coats, Jr., as a result of such changes, <EM>The user and/or his
+    project or contract agrees to reimburse UNC, MCNC, BAMS and/or the
+    I/O&nbsp;API author, Carlie J. Coats,&nbsp;Jr., at a rate triple the
+    normal contract rate for the services required.</EM>
+    </STRONG>
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    </BLOCKQUOTE>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H3>  <A NAME = "parms"> PARMS3.EXT </A> <BR> parms3.h </H3>
+
+    <BLOCKQUOTE>
+    contain dimensioning parameters (e.g., maximum number of files open
+    at a time) and standard file-type, grid-type, (etc.)  &quot;magic
+    number parameter&quot; values for the Models-3 I/O&nbsp;API. There
+    are also the standard values for <CODE>AMISS3</CODE>,
+    <CODE>BADVAL3</CODE>, <CODE>IMISS3</CODE>, and <CODE>CMISS3</CODE>
+    for bad or &quot;missing&quot; reals, integers, and character
+    strings.  All of these parameter values are thoroughly described by
+    comments in the <VAR>PARMS3.EXT</VAR> source code.
+    <P>
+    <EM><STRONG>Note:</STRONG></EM>  Note that preserving the integrity of
+    these dimensioning parameters is crucial to the integrity of
+    executables built using the I/O&nbsp;API library, and therefore
+    the license has a provision that when these values have been
+    modified (as some parties are wont to do), and when as a result,
+    the party involved requests support for problems caused by the
+    changes to these parameters, <STRONG>the party who modified these
+    values agrees to pay triple-time rates for that support.</STRONG>
+    In this environment, where parties may have changed these
+    parameters unbeknownst to the modeler, checking for the integrity
+    of such model-builds is very important.
+    <P>
+    The public I/O&nbsp;API routine
+    <A HREF="IOPARMS3.html"><CODE>IOPARMS3</CODE></A> is provided as a
+    means for user/model-level code to check the integrity of these
+    dimensioning parameters.
+    <P>
+    The <A NAME = "dims"> dimensioning constants </A> are:
+    <BLOCKQUOTE>
+    <DL>
+        <DT> <STRONG>MXDLEN3</STRONG>  description line length
+        <DT> <STRONG>NAMLEN3</STRONG>  name length (file and variable 
+                                       names, etc.)
+        <DT> <STRONG>MXFILE3</STRONG>  maximum number of open files
+        <DT> <STRONG>MXVARS3</STRONG>  maximum number of variables per file
+        <DT> <STRONG>MXDESC3</STRONG>  maximum number of lines per 
+                                       file description
+        <DT> <STRONG>MXLAYS3</STRONG>  maximum number of layers in a 
+                                       vertical grid
+    </DL>
+    </BLOCKQUOTE>
+    
+    The <A NAME = "magic"> &quot;magic number parameters&quot; </A> are:
+    <BLOCKQUOTE>
+    <DL>
+        <DT> <STRONG>CUSTOM3</STRONG>  <A HREF = "DATATYPES.html">
+                                       file type</A>:  
+                                       <A HREF =
+                                       "DATATYPES.html#custom">
+                                       user-structured custom</A>
+        <DT> <STRONG>GRDDED3</STRONG>  <A HREF =
+                                       "DATATYPES.html#grdded">
+                                       ...gridded data</A>
+        <DT> <STRONG>BNDARY3</STRONG>  <A HREF =
+                                       "DATATYPES.html#bndary">
+                                       ...boundary-condition data</A>
+        <DT> <STRONG>IDDATA3</STRONG>  <A HREF =
+                                       "DATATYPES.html#iddata">
+                                       ...ID-referenced (e.g., 
+                                       observational) data</A>
+        <DT> <STRONG>PROFIL3</STRONG>  <A HREF =
+                                       "DATATYPES.html#profil">
+                                       ...rawinsonde vertical profile</A>
+        <DT> <STRONG>GRNEST3</STRONG>  <A HREF =
+                                       "DATATYPES.html#grnes">
+                                       ...nested-grid or  multi-grid data</A>
+        <DT> <STRONG>SMATRX3</STRONG>  <A HREF =
+                                       "DATATYPES.html#smatrx">
+                                       ...sparse matrix</A>
+        <DT> <STRONG>DCTNRY3</STRONG>  <A HREF =
+                                       "DATATYPES.html#dctnry">
+                                       ...file-structure-template 
+                                       dictionary</A>
+        <DT> <STRONG>M3INT</STRONG>    <A HREF = "DATATYPES.html#basic"> 
+                                       basic data type </A> integer
+        <DT> <STRONG>M3REAL</STRONG>   ... real
+        <DT> <STRONG>M3DBLE</STRONG>   ... double precision
+        <DT> <STRONG>FSREAD3</STRONG>  open file as old read-only
+        <DT> <STRONG>FSRDWR3</STRONG>  ...old read-write
+        <DT> <STRONG>FSNEW3</STRONG>   ...new (read-write)
+        <DT> <STRONG>FSUNKN3</STRONG>  ...unknown 
+                                       (read_write)
+        <DT> <STRONG>FSCREA3</STRONG>  ...create/truncate 
+                                       (read_write)
+        <DT> <STRONG>LATGRD3</STRONG>  <A HREF = "GRIDS.html#horiz">
+                                       horizontal</A> coordinate system 
+                                       type:  lat-lon coordinates
+        <DT> <STRONG>LAMGRD3</STRONG>  ...Lambert Conformal Conic coordinates
+        <DT> <STRONG>MERGRD3</STRONG>  ...Mercator coordinates
+        <DT> <STRONG>STEGRD3</STRONG>  ...(general tangent) Stereographic coordinates
+        <DT> <STRONG>UTMGRD3</STRONG>  ...UTM (Universal Transverse Mercator)
+                                       coordinates
+        <DT> <STRONG>POLGRD3</STRONG>  ...(secant) Polar Stereographic 
+                                       coordinates
+        <DT> <STRONG>TRMGRD3</STRONG>  ...general Transverse Mercator
+                                       coordinates
+        <DT> <STRONG>EQMGRD3</STRONG>  ...general Equatorial Mercator
+                                       coordinates
+        <DT> <STRONG>ALBGRD3</STRONG>  ...Albers Equal-Area Conic coordinates
+        <DT> <STRONG>LEQGRD3</STRONG>  ...Lambert Equal-Area coordinates
+        <DT> <STRONG>VGSGPH3</STRONG>  <A HREF = "GRIDS.html#vert">
+                                       Vertical</A> coordinate type:  
+                                       hydrostatic sigma-P
+        <DT> <STRONG>VGSGPN3</STRONG>  ...nonhydrostatic sigma-P
+        <DT> <STRONG>VGSIGZ3</STRONG>  ...sigma-Z
+        <DT> <STRONG>VGPRES3</STRONG>  ...pressure (mb)
+        <DT> <STRONG>VGZVAL3</STRONG>  ...Z (m above terrain)
+        <DT> <STRONG>VGHVAL3</STRONG>  ...H (m above sea level)
+        <DT> <STRONG>VGWRFEM</STRONG>  ...WRF EM dry sigma-P
+        <DT> <STRONG>VGWRFNM</STRONG>  ...WRF NMM vertical coordinate
+        <DT> <STRONG>ALLAYS3</STRONG>  read or write &quot;all layers&quot;
+        <DT> <STRONG>ALLVAR3</STRONG>  &quot;...all variables&quot;
+        <DT> <STRONG>BADVAL3</STRONG>  &quot;bad&quot; or &quot;missing&quot;
+                                       REAL value
+        <DT> <STRONG>AMISS3</STRONG>   test value:  
+                                       &quot;bad&quot; iff &lt; AMISS3
+        <DT> <STRONG>IMISS3</STRONG>   &quot;bad&quot; or &quot;missing&quot;
+                                       INTEGER value
+        <DT> <STRONG>CMISS3</STRONG>   &quot;bad&quot; or &quot;missing&quot;
+                                       CHARACTER STRING value
+    </DL>
+    </BLOCKQUOTE>
+    <P>
+    
+    <A HREF = "PARMS3.txt"> Source for PARMS3.EXT </A>
+    <P>
+    <A HREF = "parms3.txt"> Source for parms3.h </A>
+    <P> 
+    
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    </BLOCKQUOTE>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H3>  <A NAME = "fdesc"> FDESC3.EXT </A> <BR> fdesc3.h </H3>
+
+    <BLOCKQUOTE>
+    contain Fortran data structures (COMMONs) and C typedefs for a
+    Models-3 file description.  These files have extensive documentation
+    describing the function of each part of a file description.
+    The data structures they contain are used to pass data between 
+    <A HREF = "OPEN3.html"> OPEN3() </A> (when in a mode that may 
+    involve file-creation), <A HREF = "DESC3.html"> DESC3() </A>, and 
+    (for dictionary files only) <A HREF = "READ3.html"> READ3() </A> 
+    and <A HREF = "WRITE3.html"> WRITE3() </A>.
+    BDESC3 is used to store the non-character-string data, and CDESC3
+    is used to store the character-string data (recall that the 
+    Fortran 77 standard prohibits character and non-character data 
+    in the same common).  In particular, these data structures store
+    the following file-attributes:
+    <UL>
+    <LI>  <A HREF = "DATATYPES.html">   data type </A>
+        <UL>
+            <LI> <STRONG>FTYPE3D</STRONG>  data structure type for the 
+                                           variables in this file
+        </UL>
+    <LI>  <A HREF = "VBLE.html">        variables, their units and 
+                                          descriptions </A>
+        <UL>
+            <LI> <STRONG>NVARS3D</STRONG>           number of variables
+            <LI> <STRONG>VNAME3D(MXVARS3)</STRONG>  array of names for variables
+            <LI> <STRONG>UNITS3D(MXVARS3)</STRONG>  array of units for variables
+            <LI> <STRONG>VDESC3D(MXVARS3)</STRONG>  array of text-descriptions for 
+                                                    variables
+            <LI> <STRONG>VTYPE3D(MXVARS3)</STRONG>  array of 
+            <A HREF = "DATATYPES.html#basic"> basic data types </A> 
+                                              for variables
+        </UL>
+    <LI>  <A HREF = "GRIDS.html">       coordinate and grid description </A>
+        <UL>
+            <LI> <STRONG>GDNAM3D</STRONG>  grid name
+            <LI> <STRONG>GDTYP3D</STRONG>  horizontal coordinate system
+                                           type, using token values
+                                           LATGRD3, etc.,  defined in
+                                           PARMS3.EXT, above
+            <LI> <STRONG>P_ALP3D</STRONG>  first map projection descriptive
+                                           parameter
+            <LI> <STRONG>P_BET3D</STRONG>  second map projection descriptive
+                                           parameter
+            <LI> <STRONG>P_GAM3D</STRONG>  third map projection descriptive
+                                           parameter
+            <LI> <STRONG>XCENT3D</STRONG>  longitude for coordinate system
+                                           origin (where X = 0)
+            <LI> <STRONG>YCENT3D</STRONG>  latitude for coordinate system
+                                           origin (where Y = 0)
+            <LI> <STRONG>XORIG3D</STRONG>  X-coordinate for lower-left
+                                           (southwest) corner of the
+                                           grid
+            <LI> <STRONG>YORIG3D</STRONG>  Y-coordinate for lower-left corner of
+                                           the grid
+            <LI> <STRONG>XCELL3D</STRONG>  X-coordinate grid cell size
+            <LI> <STRONG>YCELL3D</STRONG>  Y-coordinate grid cell size
+            <LI> <STRONG>NCOLS3D</STRONG>  number of horizontal grid columns
+            <LI> <STRONG>NROWS3D</STRONG>  number of horizontal grid rows
+            <LI> <STRONG>NLAYS3D</STRONG>  number of vertical grid layers
+            <LI> <STRONG>NTHIK3D</STRONG>  boundary perimeter thickness (cells)
+            <LI> <STRONG>VGTYP3D</STRONG>  vertical coordinate type
+            <LI> <STRONG>VGTOP3D</STRONG>  model-top, for sigma coord types
+            <LI> <STRONG>VGLVS3D(MXLAYS3)</STRONG>  array of vertical coordinate 
+                                           grid level values
+        </UL>
+    <LI>  <A HREF = "DATETIME.html">    time step structure </A>
+        <UL>
+            <LI> <STRONG>SDATE3D</STRONG>  file start date YYYYDDD
+            <LI> <STRONG>STIME3D</STRONG>  file start time  HHMMSS
+            <LI> <STRONG>TSTEP3D</STRONG>  file time step   HHMMSS
+            <LI> <STRONG>MXREC3D</STRONG>  maximum time step record number
+                                           (1,2,...)
+        </UL>
+    <LI>                                  file description and history
+        <UL>
+            <LI> <STRONG>FDESC3D(MXDESC3)</STRONG>  (text) file description
+            <LI> <STRONG>CDATE3D</STRONG>  file-creation date
+            <LI> <STRONG>CTIME3D</STRONG>  file-creation time
+            <LI> <STRONG>WDATE3D</STRONG>  last-update date
+            <LI> <STRONG>WTIME3D</STRONG>  last-update time
+            <LI> <STRONG>UPNAM3D</STRONG>  name of last program writing to 
+                                           this file
+            <LI> <STRONG>EXECN3D</STRONG>  value of environment variable 
+                                           EXECUTION_ID
+            <LI> <STRONG>UPDSC3D</STRONG>  (text) update description
+        </UL>
+    </UL>
+    <P>
+    
+    <A HREF = "FDESC3.txt"> Source for FDESC3.EXT </A>
+    <P>
+    <A HREF = "fdesc3.txt"> Source for fdesc3.h </A>
+    <P> 
+    
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    </BLOCKQUOTE>
+
+   
+<HR> <!----------------------------------------------------------------->
+
+<H3>  <A NAME = "iodecl"> IODECL3.EXT </A> <BR> iodecl3.h </H3>
+
+    <BLOCKQUOTE>
+    contain declarations, <CODE>INTERFACE</CODE>s, function prototypes)
+    and usage comments  for the <A HREF = "FORTRAN.html"> Fortran </A>
+    and <A HREF = "C.html"> C </A> bindings respectively, for the 
+    Models-3 I/O&nbsp;API.  <VAR>iodecl3.h</VAR> also contains 
+    function prototypes for those associated utility and
+    date-and-time-manipulation functions which are callable from C.
+    Actually, <VAR>IODECL3.EXT</VAR> could probably be considered a short
+    tutorial on usage of the I/O&nbsp;API in its own right.
+    <P>
+    
+    <A HREF = "IODECL3.txt"> Source for IODECL3.EXT </A>
+    <P>
+    <A HREF = "iodecl3.txt"> Source for iodecl3.h </A>
+<P> 
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    </BLOCKQUOTE>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H3>  <A NAME = "atdsc"> ATDSC3.EXT and atdsc3.h</A> </H3>
+
+    <BLOCKQUOTE>
+    contains Fortran data structures and C typedefs for augmented file 
+    descriptions used by  I/O&nbsp;API file type 
+    <A HREF = "DATATYPES.html#tsries">TSRIES3</A> 
+    (timeseries), which have multiple named REAL attributes per variable.
+    (Each variable represents a stream-network link).  
+    Based upon <A HREF = "#parms">FDESC33.EXT</A>.  
+    Requires <A HREF = "#parms">PARMS3.EXT</A> for dimensioning.  Used
+    to pass data between <A HREF = "OPEN3.html">OPEN3()</A> (when in
+    a mode which may involve file-creation), 
+    <A HREF = "OPEN3.html">DESC3()</A>, and their callers, and provides
+    name-based syntax for that purpose.
+    <P>
+    
+    <STRONG>Should only be used as a name based argument passing 
+    mechanism</STRONG>; the user should have local variables to/from 
+    which this data structure is copied immediately prior to or 
+    immediately after calls which set or use these COMMONs, since 
+    their values are subject to change at ny time by the I/O&nbsp;API.
+    Contains
+    <UL>
+        <LI>  <STRONG>NATTS3D( MXVARS3 )</STRONG>:  
+              number of attributes for the indicated variable
+        <LI>  <STRONG>ATNAM3D( MXATTS3, MXVARS3 )</STRONG>:  
+              attribute-names for the indicated attribute of the
+              indicated variable
+        <LI>  <STRONG></STRONG>:  
+              values of the indicated attribute of the
+              indicated variable
+    </UL>
+
+    <P>
+    
+    <A HREF = "ATDSC3.txt"> Source for ATDSC3.EXT </A>
+    <P>
+    <A HREF = "atdsc3.txt"> Source for atdsc3.h </A>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    </BLOCKQUOTE>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "#parms">  
+<STRONG>PARMS3.EXT and parms3.h</STRONG>
+</A> <P> 
+
+<A HREF = "#fdesc">  
+<STRONG>FDESC3.EXT and fdesc3.h</STRONG> 
+</A> <P> 
+
+<A HREF = "#iodecl"> 
+<STRONG>IODECL3.EXT and iodecl3.h</STRONG> 
+</A> <P> 
+
+<A HREF = "#atdsc"> 
+<STRONG>ATDSC3.EXT and atdsc3.h</STRONG> 
+</A> <P> 
+
+<A HREF = "DATATYPES.html" >
+Previous:  <STRONG>Data Types Supported</STRONG>
+</A><P> 
+
+<A HREF = "CHECK3.html" >
+Next:  <STRONG>Public I/O routine CHECK3</STRONG>
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O&nbsp;API:   The Help Pages</STRONG> 
+</A><P>
+
+
+</BODY>
+</HTML>
+

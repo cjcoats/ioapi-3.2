@@ -1,0 +1,87 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: JUNIT.html 120 2015-01-20 22:24:03Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> JUNIT() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    JUNIT() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION JUNIT()
+</PRE><P>    
+
+<H2> NO C version: </H2>
+<P> 
+
+<H2> Summary: </H2>
+
+    Returns a POSIX-approved "safe" unit number not currently in use 
+    (providing that you always get Fortran unit numbers via JUNIT();
+    algorithm is to count down from 99 ).
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    <STRONG>See also</STRONG>:
+    <BLOCKQUOTE>
+        <A HREF = "GETDFILE.html"><CODE>GETDFILE()</CODE></A> <BR>
+        <A HREF = "GETEFILE.html"><CODE>GETEFILE()</CODE></A> <BR>
+        <A HREF = "PROMPTDFILE.html"><CODE>PROMPTDFILE()</CODE></A> <BR>
+        <A HREF = "PROMPTFFILE.html"><CODE>PROMPTFFILE()</CODE></A> <BR>
+        <A HREF = "PROMPTMFILE.html"><CODE>PROMPTMFILE()</CODE></A> <BR>
+    </BLOCKQUOTE>
+  
+        
+<H2> Preconditions: </H2> 
+
+    Always get Fortran unit numbers via JUNIT().
+<P> 
+
+    
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    INTEGER        JDEV
+    INTEGER        JUNIT
+    ...
+    JDEV = JUNIT() )
+    OPEN( FILE = 'foo', UNIT = JDEV, ...)
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  don't
+<P>         
+
+
+<HR>
+
+<A HREF = "INDEX1.html" >
+Previous:  <STRONG>INDEX1</STRONG>
+</A><P> 
+
+<A HREF = "LBLANK.html" >
+Next:  <STRONG>LBLANK</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

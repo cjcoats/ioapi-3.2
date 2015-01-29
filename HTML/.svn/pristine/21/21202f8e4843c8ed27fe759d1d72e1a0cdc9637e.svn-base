@@ -1,0 +1,581 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE>MODULE M3ATTS</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<!--#include virtual="/INCLUDES/header.html" -->
+
+<H1>    Fortran-90 <CODE>MODULE M3ATTS</CODE> </H1>
+
+<EM>New for I/O&nbsp;API-3.2!!</EM>  Developed from (and extends) I/O&nbsp;API-3.1
+<CODE>MODULE MATXATTS</CODE>.
+
+<H2>Summary</H2>
+
+    <BLOCKQUOTE>
+    Fortran-90 style <CODE>MODULE M3ATTS</CODE> uses the I/O&nbsp;API
+    &quot;extra-attributes&quot; interface to provide CF-compliant
+    <A HREF="http://cfconventions.org/">CF-convention</A> geospatial
+    metadata, and CMAQ-standard, and SMOKE-standard metadata for newly-created
+    I/O&nbsp;API files and input-grid and output-grid metadata for
+    I/O&nbsp;API matrix-files, in terms of <A HREF="GRIDS.html#horiz">
+    Models-3 I/O&nbsp;API map projection and grid description
+    conventions.</A>
+    </BLOCKQUOTE> 
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="contents">
+Contents of <CODE>MODULE M3ATTS</CODE>
+</A></H3>
+
+    <BLOCKQUOTE>
+    <DL>
+        <DT> <CODE>INTEGER, PARAMETER :: INGRD3</CODE>
+        <DD> Token to use in matrix-attribute calls to indicate that the
+             grid whose metadata is being accessed is an input or output
+             grid for the matrix, respectively.
+             <P>
+        <DT> <CODE>INTEGER, PARAMETER :: OUTGRD3</CODE>
+        <DD> Token to use in matrix-attribute calls to indicate that the
+             grid whose metadata is being accessed is an output grid for the
+             matrix.
+             <P>
+        <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: CFMETA</CODE>
+        <DD> <CODE>TRUE</CODE> if and only if CF-metadata is
+             turned on, and available in the module
+             <P>
+        <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: CMAQMETA</CODE>
+        <DD> <CODE>TRUE</CODE> if and only if CMAQ-metadata is
+             turned on, and available in the module
+             <P>
+        <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: SMOKEMETA</CODE>
+        <DD> <CODE>TRUE</CODE> if and only if SMOKE-metadata is
+             turned on, and available in the module
+             <P>
+        <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: MATXMETA</CODE>
+        <DD> <CODE>TRUE</CODE> if and only if matrix-metadata is
+             turned on, and available in the module
+             <P>
+        <DT> <CODE><A HREF="#getmtxatt">GETMTXATT()</A></CODE>
+        <DD> get input or output grid description attributes for
+             matrix-files and return as arguments:<BR>
+             <EM>Generic with forms for matrix-input-only, matrix-output-only,
+             matrix-input-and-output metadata</EM>
+             <P>
+        <DT> <CODE><A HREF="#initmtxatt">INITMTXATT()</A></CODE>
+        <DD> set state-variables for input and output grid description
+             attributes for matrix-file:<BR>
+             <EM>Generic with forms for matrix-input-only, matrix-output-only,
+             matrix-input-and-output metadata</EM>
+             <P>
+        <DT> <CODE><A HREF="#setmtxatt">SETMTXATT()</A></CODE>
+        <DD> set or check input and output grid description attributes
+             from arguments for matrix-files:  if file is NEW, set the
+             attributes; else check them.  Retains these attributes
+             in <CODE>PRIVATE</CODE> state-variables in the module.:<BR>
+             <EM>Generic with forms for matrix-input-only, matrix-output-only,
+             matrix-input-and-output metadata</EM>
+             <P>
+        <DT> <CODE><A HREF="#chkmtxatt">CHKMTXATT()</A></CODE>
+        <DD> check input or output grid description attributes for
+             matrix-files against attributes from  the argument list.
+             Return <CODE>.TRUE.</CODE> if they match, 
+             <CODE>.FALSE.</CODE> otherwise.:<BR>
+             <EM>Generic with forms for matrix-input-only, matrix-output-only,
+             matrix-input-and-output metadata</EM>
+             <P>
+        <DT> <CODE><A HREF="#endmtxatt">ENDMTXATT()</A></CODE>
+        <DD> turn off input and output grid description attributes
+        from <CODE>INITMTXATT()</CODE> or <CODE>SETMTXATT()</CODE>
+             <P>
+        <DT> <CODE><A HREF="#initcf">INITCF()</A></CODE>
+        <DD> turns on CF-metadata for all new files created
+             <P>
+        <DT> <CODE><A HREF="#setcf">SETCF()</A></CODE>
+        <DD> writes CF-metadata for a specific file.
+             <P>
+        <DT> <CODE><A HREF="#endcf">ENDCF()</A></CODE>
+        <DD> turns off writing CF metadata for new files created
+             subsequently.
+        <DT> <CODE><A HREF="#initcmaq">INITCMAQ()</A></CODE>
+        <DD> turns on CMAQ-metadata for all new files created
+             <P>
+        <DT> <CODE><A HREF="#getcmaq">GETCMAQ()</A></CODE>
+        <DD> reads CMAQ-metadata from a specific file.
+             <P>
+        <DT> <CODE><A HREF="#setcmaq">SETCMAQ()</A></CODE>
+        <DD> writes CMAQ-metadata for a specific file.
+             <P>
+        <DT> <CODE><A HREF="#endcmaq">ENDCMAQ()</A></CODE>
+        <DD> turns off writing CMAQ metadata for new files created
+             subsequently.
+             <P>
+        <DT> <CODE><A HREF="#initsmoke">INITSMOKE()</A></CODE>
+        <DD> turns on SMOKE-metadata for all new files created
+             <P>
+        <DT> <CODE><A HREF="#getsmoke">GETSMOKE()</A></CODE>
+        <DD> reads SMOKE-metadata from a specific file.
+             <P>
+        <DT> <CODE><A HREF="#setsmoke">SETSMOKE()</A></CODE>
+        <DD> writes SMOKE-metadata for a specific file.
+             <P>
+        <DT> <CODE><A HREF="#endsmoke">ENDSMOKE()</A></CODE>
+        <DD> turns off writing SMOKE metadata for new files created
+             subsequently.
+             <P>
+        <P>
+    </DL>
+
+    </BLOCKQUOTE>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="initmtxatt"> INITMTXATT</A></H3>
+
+    <PRE>
+    SUBROUTINE  INITMTXATT(                                             &
+            GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
+                    XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,     &
+            GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &
+                    XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT( IN ) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT( IN ) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT( IN ) :: P_BET1, P_BET2
+        REAL*8            , INTENT( IN ) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT( IN ) :: XCENT1, XCENT2
+        REAL*8            , INTENT( IN ) :: YCENT1, YCENT2
+        REAL*8            , INTENT( IN ) :: XORIG1, XORIG2
+        REAL*8            , INTENT( IN ) :: YORIG1, YORIG2
+        REAL*8            , INTENT( IN ) :: XCELL1, XCELL2
+        REAL*8            , INTENT( IN ) :: YCELL1, YCELL2
+        INTEGER           , INTENT( IN ) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT( IN ) :: NROWS1, NROWS2
+    </PRE>
+    
+    <CODE>GDNAM1</CODE> ... <CODE>NROWS1</CODE> are for the matrix-input
+    grid;  <CODE>GDNAM2</CODE> ... <CODE>NROWS2</CODE> for the
+    matrix-output grid.
+    <P>
+    
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="getmtxatt"> GETMTXATT</A></H3>
+
+    <PRE>
+    GENERIC INTERFACE:
+    LOGICAL FUNCTION  GETMTXATT( FNAME, IMODE, GDNAM,                       &
+                                 GDTYP, P_ALP, P_BET, P_GAM, XCENT, YCENT,  &
+                                 XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS )
+
+        CHARACTER( LEN=* ), INTENT(  IN ):: FNAME  !! logical file name
+        INTEGER           , INTENT(  IN ):: IMODE  !! INGRD3 or OUTGRD3
+        CHARACTER( LEN=* ), INTENT( OUT ):: GDNAM  !! grid name
+        INTEGER           , INTENT( OUT ):: GDTYP  !! map projection type
+        REAL*8            , INTENT( OUT ):: P_ALP  !! map projection parameters...
+        REAL*8            , INTENT( OUT ):: P_BET  !!  "
+        REAL*8            , INTENT( OUT ):: P_GAM  !!  "
+        REAL*8            , INTENT( OUT ):: XCENT  !!  "
+        REAL*8            , INTENT( OUT ):: YCENT  !!  "
+        REAL*8            , INTENT( OUT ):: XORIG  !! Grid origin
+        REAL*8            , INTENT( OUT ):: YORIG  !!  "
+        REAL*8            , INTENT( OUT ):: XCELL  !! Grid cell-size
+        REAL*8            , INTENT( OUT ):: YCELL  !!  "
+        INTEGER           , INTENT( OUT ):: NCOLS  !! Grid dimension
+        INTEGER           , INTENT( OUT ):: NROWS  !!  "
+
+    LOGICAL FUNCTION  GETMTXATT( FNAME,                                 &
+            GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
+                    XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,     &
+            GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &
+                    XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+        CHARACTER( LEN=* ), INTENT(  OUT) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT(  OUT) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT(  OUT) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT(  OUT) :: P_BET1, P_BET2
+        REAL*8            , INTENT(  OUT) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT(  OUT) :: XCENT1, XCENT2
+        REAL*8            , INTENT(  OUT) :: YCENT1, YCENT2
+        REAL*8            , INTENT(  OUT) :: XORIG1, XORIG2
+        REAL*8            , INTENT(  OUT) :: YORIG1, YORIG2
+        REAL*8            , INTENT(  OUT) :: XCELL1, XCELL2
+        REAL*8            , INTENT(  OUT) :: YCELL1, YCELL2
+        INTEGER           , INTENT(  OUT) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT(  OUT) :: NROWS1, NROWS2
+    </PRE>
+    
+    <CODE>GDNAM1</CODE> ... <CODE>NROWS1</CODE> are for the matrix-input
+    grid;  <CODE>GDNAM2</CODE> ... <CODE>NROWS2</CODE> for the
+    matrix-output grid.
+    <P>
+    
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="setmtxatt">SETMTXATT</A></H3>
+
+    <PRE>
+    GENERIC INTERFACE:
+    LOGICAL FUNCTION  SETMTXATT( FNAME, IMODE, GDNAM,                       &
+                                 GDTYP, P_ALP, P_BET, P_GAM, XCENT, YCENT,  &
+                                 XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS )
+
+        CHARACTER( LEN=* ), INTENT( IN ):: FNAME  !! logical file name
+        INTEGER           , INTENT( IN ):: IMODE  !! INGRD3 or OUTGRD3
+        CHARACTER( LEN=* ), INTENT( IN ):: GDNAM  !! grid name
+        INTEGER           , INTENT( IN ):: GDTYP  !! map projection type
+        REAL*8            , INTENT( IN ):: P_ALP  !! map projection parameters...
+        REAL*8            , INTENT( IN ):: P_BET  !!  "
+        REAL*8            , INTENT( IN ):: P_GAM  !!  "
+        REAL*8            , INTENT( IN ):: XCENT  !!  "
+        REAL*8            , INTENT( IN ):: YCENT  !!  "
+        REAL*8            , INTENT( IN ):: XORIG  !! Grid origin
+        REAL*8            , INTENT( IN ):: YORIG  !!  "
+        REAL*8            , INTENT( IN ):: XCELL  !! Grid cell-size
+        REAL*8            , INTENT( IN ):: YCELL  !!  "
+        INTEGER           , INTENT( IN ):: NCOLS  !! Grid dimension
+        INTEGER           , INTENT( IN ):: NROWS  !!  "
+
+    LOGICAL FUNCTION  SETMTXATT2( FNAME,                                &
+            GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
+                    XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,     &
+            GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &
+                    XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+                    
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+        CHARACTER( LEN=* ), INTENT( IN ) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT( IN ) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT( IN ) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT( IN ) :: P_BET1, P_BET2
+        REAL*8            , INTENT( IN ) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT( IN ) :: XCENT1, XCENT2
+        REAL*8            , INTENT( IN ) :: YCENT1, YCENT2
+        REAL*8            , INTENT( IN ) :: XORIG1, XORIG2
+        REAL*8            , INTENT( IN ) :: YORIG1, YORIG2
+        REAL*8            , INTENT( IN ) :: XCELL1, XCELL2
+        REAL*8            , INTENT( IN ) :: YCELL1, YCELL2
+        INTEGER           , INTENT( IN ) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT( IN ) :: NROWS1, NROWS2
+
+    LOGICAL FUNCTION  SETMTXATT3( FNAME )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+    </PRE>
+    
+    <CODE>GDNAM1</CODE> ... <CODE>NROWS1</CODE> are for the matrix-input
+    grid;  <CODE>GDNAM2</CODE> ... <CODE>NROWS2</CODE> for the
+    matrix-output grid.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="chkmtxatt">CHKMTXATT</A></H3>
+
+    <PRE>
+    GENERIC INTERFACE:
+    LOGICAL FUNCTION  CHKMTXATT( FNAME, IMODE, GDNAM,                          &
+                                 GDTYP, P_ALP, P_BET, P_GAM, XCENT, YCENT,     &
+                                 XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS )
+
+        CHARACTER( LEN=* ), INTENT( IN ):: FNAME  !! logical file name
+        INTEGER           , INTENT( IN ):: IMODE  !! INGRD3 or OUTGRD3
+        CHARACTER( LEN=* ), INTENT( IN ):: GDNAM  !! grid name
+        INTEGER           , INTENT( IN ):: GDTYP  !! map projection type
+        REAL*8            , INTENT( IN ):: P_ALP  !! map projection parameters...
+        REAL*8            , INTENT( IN ):: P_BET  !!  "
+        REAL*8            , INTENT( IN ):: P_GAM  !!  "
+        REAL*8            , INTENT( IN ):: XCENT  !!  "
+        REAL*8            , INTENT( IN ):: YCENT  !!  "
+        REAL*8            , INTENT( IN ):: XORIG  !! Grid origin
+        REAL*8            , INTENT( IN ):: YORIG  !!  "
+        REAL*8            , INTENT( IN ):: XCELL  !! Grid cell-size
+        REAL*8            , INTENT( IN ):: YCELL  !!  "
+        INTEGER           , INTENT( IN ):: NCOLS  !! Grid dimension
+        INTEGER           , INTENT( IN ):: NROWS  !!  "
+
+    LOGICAL FUNCTION  CHKMTXATT( FNAME,                             &
+           GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,  &
+                   XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,  &
+           GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,  &
+                   XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+        CHARACTER( LEN=* ), INTENT(IN   ) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT(IN   ) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT(IN   ) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT(IN   ) :: P_BET1, P_BET2
+        REAL*8            , INTENT(IN   ) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT(IN   ) :: XCENT1, XCENT2
+        REAL*8            , INTENT(IN   ) :: YCENT1, YCENT2
+        REAL*8            , INTENT(IN   ) :: XORIG1, XORIG2
+        REAL*8            , INTENT(IN   ) :: YORIG1, YORIG2
+        REAL*8            , INTENT(IN   ) :: XCELL1, XCELL2
+        REAL*8            , INTENT(IN   ) :: YCELL1, YCELL2
+        INTEGER           , INTENT(IN   ) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT(IN   ) :: NROWS1, NROWS2
+
+    LOGICAL FUNCTION  CHKMTXATT3( FNAME )
+
+        CHARACTER( LEN=* ), INTENT( IN ):: FNAME
+
+    </PRE>
+    
+    <CODE>GDNAM1</CODE> ... <CODE>NROWS1</CODE> are for the matrix-input
+    grid;  <CODE>GDNAM2</CODE> ... <CODE>NROWS2</CODE> for the
+    matrix-output grid.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="endmtxatt">ENDMTXATT</A></H3>
+
+    <PRE>
+    LOGICAL FUNCTION  ENDMTXATT( )
+    </PRE>
+
+    Turns off input and output grid description attributes
+    from <CODE>INITMTXATT()</CODE> or <CODE>SETMTXATT()</CODE>:
+    sets <CODE>MATXMETA&nbsp;=&nbsp;.FALSE.</CODE>.
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="initcf">INITCF</A></H3>
+
+    <PRE>
+    SUBROUTINE  INITCF()
+    </PRE>
+    
+    Turns on writing CF-compliant metadata for all new I/O&nbsp;API 
+    files subsequently created by the calling program.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="setcf">SETCF</A></H3>
+
+    <PRE>
+    SUBROUTINE  SETCFC( FNAME )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+    </PRE>
+    
+    <CODE>FNAME</CODE> must be the logical name of an I/O&nbsp;API
+    file currently open for output.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="endcf">ENDCF</A></H3>
+
+    <PRE>
+    SUBROUTINE  ENDCF()
+    </PRE>
+    
+    Turns off writing CF-compliant metadata for new I/O&nbsp;API 
+    files subsequently opened by the calling program:
+    sets <CODE>CFMETA&nbsp;=&nbsp;.FALSE.</CODE>.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H3> <A NAME="initcmaq">INITCMAQ</A></H3>
+
+    <PRE>
+    SUBROUTINE  INITCMAQ( [TBD] )
+    </PRE>
+    
+    Initializes internal state variables holding CMAQ-standard metadata.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="getcmaq">GETCMAQ</A></H3>
+
+    <PRE>
+    SUBROUTINE  GETCMAQ( FNAME, [TBD] )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+    </PRE>
+    
+    <CODE>FNAME</CODE> must be the logical name of an I/O&nbsp;API
+    file currently open for input.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="setcmaq">SETCMAQ</A></H3>
+
+    <PRE>
+    SUBROUTINE  SETCMAQC( FNAME, [TBD] )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+    </PRE>
+    
+    Writes current CMAQ metadata to <CODE>FNAME</CODE>. 
+    <P>
+    PRECONDITION:   <CODE>FNAME</CODE> must be the logical name of an
+    I/O&nbsp;API file currently open for output.  
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="endcmaq">ENDCMAQ</A></H3>
+
+    <PRE>
+    SUBROUTINE  ENDCMAQ()
+    </PRE>
+    
+    Turns off CMAQ-standard metadata:
+    sets <CODE>CMAQMETA&nbsp;=&nbsp;.FALSE.</CODE>.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H3> <A NAME="initsmoke">INITSMOKE</A></H3>
+
+    <PRE>
+    SUBROUTINE  INITSMOKE( [TBD] )
+    </PRE>
+    
+    Initializes internal state variables holding SMOKE-standard metadata.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="getsmoke">GETSMOKE</A></H3>
+
+    <PRE>
+    SUBROUTINE  GETSMOKE( FNAME, [TBD] )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+    </PRE>
+    
+    <CODE>FNAME</CODE> must be the logical name of an I/O&nbsp;API
+    file currently open for input.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="setsmoke">SETSMOKE</A></H3>
+
+    <PRE>
+    SUBROUTINE  SETSMOKEC( FNAME, [TBD] )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+    </PRE>
+    
+    Writes current SMOKE metadata to <CODE>FNAME</CODE>. 
+    <P>
+    PRECONDITION:   <CODE>FNAME</CODE> must be the logical name of an
+    I/O&nbsp;API file currently open for output.  
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="endsmoke">ENDSMOKE</A></H3>
+
+    <PRE>
+    SUBROUTINE  ENDSMOKE()
+    </PRE>
+    
+    Turns off SMOKE-standard metadata:
+    sets <CODE>SMOKEMETA&nbsp;=&nbsp;.FALSE.</CODE>.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+  
+Send comments to 
+<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS> 
+          Carlie J. Coats, Jr. <br> 
+          cjcoats@email.unc.edu  </ADDRESS> </A><P> 
+
+<!--#include virtual="/INCLUDES/footer.html" -->
+
+      
+</BODY>
+</HTML>
+

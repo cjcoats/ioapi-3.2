@@ -1,0 +1,490 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: GCTP.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GCTP() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GCTP() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    SUBROUTINE GTPZ0( CRDIN, INSYS, INZONE, TPARIN, INUNIT, 
+   &amp;                INSPH, IPR, JPR, LEMSG, LPARM, CRDIO, 
+   &amp;                IOSYS, IOZONE, TPARIO, IOUNIT, 
+   &amp;                LN27, LN83, FN27, FN83, LENGTH, IFLG )
+      REAL*8         CRDIN( 2 )
+      INTEGER        INSYS
+      INTEGER        INZONE
+      REAL*8         TPARIN( 15 )
+      INTEGER        INUNIT
+      INTEGER        INSPH
+      INTEGER        IPR
+      INTEGER        JPR
+      INTEGER        LEMSG
+      INTEGER        LPARM
+      REAL*8         CRDIO( 2 )
+      INTEGER        IOSYS
+      INTEGER        IOZONE
+      REAL*8         TPARIO( 15 )
+      INTEGER        IOUNIT
+      INTEGER        LN27
+      INTEGER        LN83
+      CHARACTER*128  FN27
+      CHARACTER*128  FN83
+      INTEGER        LENGTH
+      INTEGER        IFLG
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    <VAR>GTPZ0()</VAR> is the primary access routine to the US Geological
+    Survey National Mapping Division's General Cartographic
+    Transformation Package (GCTP), a system of computer subroutines written
+    in FORTRAN, designed to permit the transformation of coordinate
+    pairs from one map projection to another.  The GCTP is the
+    standard computer software used by the National Mapping Division for
+    map projection computations.  The mathematical algorithms used in
+    GCTP meet the accuracy specifications of USGS Circular 878-B, 
+    &quot;Representation of Geographic Point Locations for Information
+    Interchange&quot; which has been proposed as Federal Information
+    Processing Standards Publication 70-1.
+    <P>
+    <A HREF="GCTP.pdf">Here is the PDF USGS document for GCTP.</A>
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+
+<H2> Preconditions: </H2>  none
+
+
+<H2> Fortran Usage </H2>
+
+    <PRE>
+      CALL GTPZ0( CRDIN, INSYS, INZONE, TPARIN, INUNIT, INSPH,
+    &amp;             IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE, 
+    &amp;             TPARIO, IOUNIT, LN27, LN83, FN27, FN83, LENGTH, 
+    &amp;             IFLG )
+    </PRE>
+    where
+    <DL>
+        <DT>  <A NAME = "crdin">CRDIN( 2 )</A>
+        <DD>  REAL*8 array of two input coordinates (X-Y,
+              longitude-latitude, etc.).  The nature of the coordinates
+              is defined by INSYS, INZONE, and INUNIT.  The east-west
+              dimension (X, longitude, easting) is first, followed by
+              the north-south (Y, latitude, northing)
+              <P> 
+              Sign conventions: Latitude--North is plus, south is
+              minus; Longitude--East is plus, west is minus
+
+        <DT>  <A NAME = "insys">INSYS</A>
+        <DD>  INTEGER*4 input projection system code:
+              <UL>
+                  <LI>  0 for Geographic (default)
+                  <LI>  1 for Universal Transverse Mercator
+                  <LI>  2 for State Plane Coordinates
+                  <LI>  3 for Albers Conical Equal-Area
+                  <LI>  4 for Lambert Conformal Conic
+                  <LI>  5 for Mercator
+                  <LI>  6 for Polar Stereographic
+                  <LI>  7 for Polyconic
+                  <LI>  8 for Equidistant Conic
+                  <LI>  9 for Transverse Mercator
+                  <LI>  10 for Stereographic
+                  <LI>  11 for Lambert Azimuthal Equal-Area
+                  <LI>  12 for Azimuthal Equidistant
+                  <LI>  13 for Gnomonic
+                  <LI>  14 for Orthographic
+                  <LI>  15 for General Vertical Near-Side Perspective
+                  <LI>  16 for Sinusoidal
+                  <LI>  17 for Equirectangular
+                  <LI>  18 for Miller Cylindrical
+                  <LI>  19 for Van der Grinten
+                  <LI>  20 for Oblique Mercator
+                  <LI>  21 for Robinson
+                  <LI>  22 for Space Oblique Mercator
+                  <LI>  23 for Modified Stereographic Conformal (Alaska)
+              </UL>
+
+        <DT>  <A NAME = "inzone">INZONE</A>
+        <DD>  INTEGER*4 input zone code number for the Universal
+              Transverse Mercator (UTM) when INSYS=1, and for the
+              State Plane Coordinates System when INSYS=2.  For the
+              UTM in the SouthernHemisphere, INZONE must be
+              negative.  When INSYS=0, INZONE is not relevant for
+              Geographic coordinates.  When INSYS is greater than
+              2, the use of a non-zero INZONE associates that
+              number with the set of parameters that is input.  If
+              the INZONE value remains unchanged with subsequent
+              calls, the parameters are reused (the same zone
+              definition is used) without reinitialization of the
+              projection.
+
+        <DT>  <A NAME = "tparin">TPARIN( 15 )</A>
+        <DD>  REAL*8 array of 15 input projection parameters.  If INSYS
+              is greater than 2, this array must be provided by the
+              calling program. Note that all longitudes and
+              latitudes in the parameter array are assumed to be in
+              the standard packed DMS format (+DDDMMMSSS.SSS).
+              Interpretations of TPARIN entries for standard
+              EDSS/Models-3 projections are given below:
+              <P> 
+              <UL>
+                  <LI>  Lat-Lon (INSYS = 0):  TPARIN unused
+
+                  <LI>  Albers Conical Equal-Area (INSYS = 3),<BR>
+                        Lambert Conformal Conic (INSYS = 4):                        
+                        TPARIN( 1:8 ) used:<BR>
+                  <OL>
+                      <LI>  Semimajor axis of ellipsoid.  If 0, meters
+                            used.
+                      <LI>  Eccentricity squared of ellipsoid.  If 0,
+                            assume sphere.  If &gt; 1, interpreted as
+                            semiminor axis of ellipsoid
+                      <LI>  Latitude of 1st standard parallel
+                      <LI>  Latitude of 2nd standard parallel
+                      <LI>  Longitude of the central meridian 
+                      <LI>  Latitude of the origin of projection
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+
+                  <LI>  Equatorial Mercator (INSYS = 5):  TPARIN( 1 ) and
+                        TPARIN( 5:8 ) used.
+                  <OL>
+                      <LI>  Radius of sphere of reference
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  Longitude of the central meridian
+                      <LI>  Latitude of the true scale
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+
+                  <LI>  Polar Stereographic (INSYS = 6):  TPARIN( 1 ) and
+                        TPARIN( 5:8 ) used.
+                  <OL>
+                      <LI>  Radius of sphere of reference
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  Longitude of the central meridian
+                      <LI>  Latitude of the origin
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+
+                  <LI>  Transverse Mercator (INSYS = 9):  TPARIN( 1 ) and
+                        TPARIN( 5:8 ) used.
+                  <OL>
+                      <LI>  Radius of sphere of reference
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  Longitude of the central meridian
+                      <LI>  Latitude of the true scale
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+
+                  <LI>  (Oblique) Mercator (INSYS = 20):  TPARIN( 1:8 )
+                        used:
+                  <OL>
+                      <LI>  Semimajor axis of ellipsoid (default Clarke
+                            1866)
+                      <LI>  Eccentricity squared (0  for sphere). &gt;1
+                            for semiminor axis
+                      <LI>  Scale factor at center of the projection
+                      <LI>  Azimuthal angle E of N of center line
+                      <LI>  Longitude point on line where azimuth is
+                            measured
+                      <LI>  Latitude of the origin of the projection
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+
+                  <LI>  Polar Stereographic (INSYS = 6):  TPARIN( 1 ) and
+                        TPARIN( 5:8 ) used.
+                  <OL>
+                      <LI>  Radius of sphere of reference
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  Longitude of the central meridian
+                      <LI>  Latitude of the true scale
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+
+                  <LI>  General Stereographic (INSYS = 10):  TPARIN( 1 ) and
+                        TPARIN( 5:8 ) used.
+                  <OL>
+                      <LI>  Radius of sphere of reference
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  Longitude of the center of the projection
+                      <LI>  Latitude of the center of the projection
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+
+                  <LI>   Lambert Azimuthal Equal Area (INSYS = 11):  TPARIN( 1 ) and
+                        TPARIN( 5:8 ) used.
+                  <OL>
+                      <LI>  Radius of sphere of reference
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  <VAR>(unused)</VAR>
+                      <LI>  Longitude of the center of the projection
+                      <LI>  Latitude of the center of the projection
+                      <LI>  False easting in the same units as the
+                            semimajor axis
+                      <LI>  False northing in the same units as the
+                            semimajor axis 
+                      <LI>  <VAR>(unused)...</VAR>
+                  </OL>
+              </UL>
+
+        <DT>  <A NAME = "inunit">INUNIT</A>
+        <DD>  INTEGER*4 input units code for the values in array CRDIN:
+              <UL>
+                  <LI>  0 for radians
+                  <LI>  1 for U.S. feet
+                  <LI>  2 for meters
+                  <LI>  3 for seconds of arc
+                  <LI>  4 for degrees of arc
+                  <LI>  5 for International ft.
+                  <LI>  6 for table supplying the unit code, which is
+                        legislated for theState zone selected
+              </UL>
+
+        <DT>  INSPH
+        <DD>  INTEGER*4 input-output spheroid code from the following
+              list:
+              <UL>
+                  <LI>   0 for Clarke 1866
+                  <LI>   1 for Clarke 1880
+                  <LI>   2 for Bessel
+                  <LI>   3 for New International 1967
+                  <LI>   4 for International 1909
+                  <LI>   5 for WGS 72
+                  <LI>   6 for Everest
+                  <LI>   7 for WGS 66
+                  <LI>   8 for GRS 1980
+                  <LI>   9 for Airy
+                  <LI>  10 for Modified Everest
+                  <LI>  11 for Modified Airy
+                  <LI>  12 for WGS 84
+                  <LI>  13 for Southeast Asia
+                  <LI>  14 for Australian National
+                  <LI>  15 for Krassovsky
+                  <LI>  16 for Hough
+                  <LI>  17 for Mercury 1960
+                  <LI>  18 for Modified Mercury 1968
+                  <LI>  19 for Normal Sphere
+              </UL>
+              If the user wishes to supply constants for a spheroid
+              other than those above, a negative INSPH value must be
+              used, and the semimajor axis and semiminor axis or
+              eccentricity squared must be supplied in TPARIN and
+              TPARIO.
+
+        <DT>  IPR
+        <DD>  INTEGER*4 printout flag for printing error messages.  If
+              IPR is zero, error messages will be printed on logical
+              unit LEMSG.  If IPR is not zero, error messages will not
+              be printed
+
+        <DT>  JPR
+        <DD>  INTEGER*4 printout flag for printing projection parameters.  If
+              JPR is zero, projection parameters will be printed on logical
+              unit LPARM.  If JPR is not zero, projection parameters will not
+              be printed
+
+        <DT>  LEMSG
+        <DD>  logical unit number where error messages will be printed.
+
+        <DT>  LPARM
+        <DD>  INTEGER*4 logical unit number where projection parameters
+              will be printed.
+
+        <DT>  CRDIO( 2 )
+        <DD>  REAL*8 output array of the transformed coordinates.  
+              <A HREF = "#crdin">See CRDIN for explanation.</A>
+
+        <DT>  IOSYS
+        <DD>  INTEGER*4 output projection system code.
+              <A HREF = "#insys">See INSYS for explanation.</A>
+
+        <DT>  IOZONE
+        <DD>  INTEGER*4 output zone number.
+              <A HREF = "#inzone">See INZONE for explanation</A>
+
+        <DT>  TPARIO
+        <DD>  REAL*8 array of 15 parameters for the output projection.
+              <A HREF = "#tparin">See TPARIN for explanation.</A>
+
+        <DT>  IOUNIT
+        <DD>  INTEGER*4 output units code.
+              <A HREF = "#inunit">See INUNIT for explanation.</A>
+
+        <DT>  LN27
+        <DD>  INTEGER*4 logical unit number of the direct access file
+              where the NAD 1927 State Plane zone parameters are
+              located.  Used only when INSYS=2; must be opened by
+              caller.
+
+        <DT>  LN83
+        <DD>  INTEGER*4 logical unit number of the direct access file
+              where the NAD 1983 State Plane zone parameters are
+              located.  Used only when INSYS=2; must be opened by
+              caller.
+
+        <DT>  FN27
+        <DD>  CHARACTER*128 file name of the direct access file
+              containing the NAD 1927 State Plane zone parameters.
+
+        <DT>  FN83
+        <DD>  CHARACTER*128 file name of the direct access file
+              containing the NAD 1983 State Plane zone parameters.
+
+        <DT>  LENGTH
+        <DD>  INTEGER*4 record length of direct access files FN27 and
+              FN83.  For the Amdahl, Con current, and Gould computers,
+              LENGTH is 108  bytes.  For VAX computers, LENGTH is 27
+              words.  See your Fortran-77 manual for interpretation of
+              direct access Fortran UNFOMATTED file record lengths.
+
+        <DT>  IFLG
+        <DD>  INTEGER*4 error flag after the transformation:
+              <UL>
+                  <LI>  0 for:  No errors 
+                  <LI>  1 for:  INSYS is illegal
+                  <LI>  2 for:  IOSYS is illegal
+                  <LI>  3 for:  INUNIT is illegal
+                  <LI>  4 for:  IOUNIT is illegal
+                  <LI>  5 for:  INSYS and INUNIT inconsistent
+                  <LI>  6 for:  IOSYS and IOUNIT inconsistent 
+                  <LI>  7 for:  INZONE is illegal
+                  <LI>  8 for:  IOZONE is illegal
+                  <LI>  11 for:  INUNIT or IOUNIT is illegal 
+                  <LI>  12 for:  INUNIT and IOUNIT are inconsistent
+                  <LI>  <STRONG>other:</STRONG> the error flag has been
+                  set by one of the projection subroutines.
+              </UL>
+
+    </DL>
+<P> 
+
+
+<H2> C Usage</H2>
+
+    On most systems it is safe to assume that the Fortran GTPZ0 routine
+    can be called either as &quot;gtpz0_()&quot; (for most Unix
+    systems), &quot;gtpz0() &quot; (for IBM AIX and HP HP-UX systems),
+    or &quot;GTPZ0() &quot; (for Cray systems).  Arguments should be
+    passed by reference:
+<PRE>
+/*  FUNCTION PROTOTYPE:  */
+
+#if  __hpux || _AIX
+#define GTPZ0      gtpz0
+#elif  _CRAY
+/*  don't need to do anything */
+#else
+#define GTPZ0      gtpz0_
+#endif
+
+void GTPZ0( double CRDIN[ 2 ], 
+            int   *INSYS, /*  DO NOT USE 2 (STATE PLANE) */
+            int   *INZONE, 
+            double TPARIN[ 15 ], 
+            int   *INUNIT,
+            int   *INSPH, 
+            int   *IPR, 
+            int   *JPR, 
+            int   *LEMSG, 
+            int   *LPARM, 
+            double CRDIO[ 2 ],
+            int   *IOSYS, /*  DO NOT USE 2 (STATE PLANE) */
+            int   *IOZONE, 
+            double TPARIO[ 15 ], 
+            int   *IOUNIT, 
+            int   *LN27, 
+            int   *LN83, 
+            char   FN27[ 128 ], 
+            char   FN83[ 128 ], 
+            int   *LENGTH, 
+            int   *IFLG )
+...
+</PRE>     
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "GCD.html" >
+Previous:  <STRONG>GCD</STRONG>
+</A><P> 
+
+<A HREF = "DSCGRID.html" >
+Previous:  <STRONG>DSCGRID</STRONG>
+</A><P> 
+
+<A HREF = "LAMBERT.html" >
+Next:  <STRONG>LAMBERT</STRONG>
+</A><P> 
+
+<A HREF = "GETDATE.html" >
+Next:  <STRONG>GETDATE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#coordstuff"> 
+Up: <STRONG>Coordinate and Grid Related Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,78 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program NCDUMP </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program NCDUMP </H1>
+
+The <CODE>ncdump</CODE> program generates an ASCII representation of 
+a netCDF file, either with or without an ASCII representation of the
+variable data in the file.  The ASCII representation uses the CDL
+notation developed by NCAR for netCDF files.
+<P> 
+
+UNIX syntax for invoking <CODE>ncdump</CODE> is the following
+(where <EM>note</EM> that except with <CODE>&quot;ncdump -h&quot;</CODE>
+you almost always want to do 
+<CODE>&quot;ncdump &lt;file&gt; | more&quot;</CODE> )
+<PRE>
+    ncdump [-h] [-c] [-n name] [-v variablename] inputfile
+</PRE>
+where 
+<DL>
+    <DT>  -h
+    <DD>  produce only the &quot;header&quot; information in the output
+    file; i.e., the declarations of dimensions, variables, and
+    attribute--but no data values for the variables
+    
+    <DT>  -c
+    <DD>  produce the &quot;header&quot; information in the output file
+    and the data values for coordinate variables (variables that are
+    also dimensions).
+    
+    <DT>  -n name
+    <DD>  Specify a different name for the CDL description than the
+    default.
+    
+    <DT>  -v variablename
+    <DD>  produce  the &quot;header&quot; information and the contents
+    of the specified variable.
+</DL><P> 
+
+<CODE>ncdump</CODE> was produced by the 
+<A HREF = "http://ucarwww.ucar.edu:8080/"> 
+University Corporation for Atmospheric Research (UCAR)</A> 
+(the originators of 
+<A HREF = "http://www.unidata.ucar.edu/packages/netcdf/index.html"> 
+netCDF</A>), and is distributed by <A HREF = "http://www.unidata.ucar.edu/"> 
+Unidata</A>,  the technology-distribution arm of UCAR.
+<P> 
+
+
+<HR>
+
+<A HREF = "M3DIFF.html" >
+Next:  <STRONG>M3DIFF</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+    
+</BODY>
+</HTML>
+

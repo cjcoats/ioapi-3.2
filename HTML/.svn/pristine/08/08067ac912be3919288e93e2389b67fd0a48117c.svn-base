@@ -1,0 +1,92 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GCD() and LCM()</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GCD() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION  GCD( P, Q )
+        INTEGER, INTENT( IN ) :: P, Q
+    INTEGER FUNCTION  LCM( P, Q )
+        INTEGER, INTENT( IN ) :: P, Q
+</PRE><P> 
+
+<H2> C version:   </H2>
+<PRE>
+    int GCD( const int *p, const int *q ) ;
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    <VAR>GCD()</VAR> returns the greatest common divisor, and 
+    <VAR>LCM()</VAR> returns the least common multiple of integers
+    <CODE>P,Q</CODE>.
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+<P> 
+
+
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    ...
+    INTEGER   GCD
+    INTEGER   P, Q, D
+    ...
+    D = GCD( P, Q )   !  Now D is the gcd of P,Q
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;                          
+    ...
+    int  p, q, d ;
+    ...
+    d = GCD( &amp;p, &amp;q ) ; /*  Now d is GCD of p,q */
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "FINDS.html" >
+Previous:  <STRONG>FIND1, FIND2, FIND3, FIND4</STRONG>
+</A><P> 
+
+<A HREF = "GET_ENDIAN.html" >
+Next:  <STRONG>GCTP</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

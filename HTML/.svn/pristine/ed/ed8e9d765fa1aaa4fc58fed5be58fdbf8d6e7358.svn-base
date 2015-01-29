@@ -1,0 +1,242 @@
+%!PS-Adobe-2.0
+%%Title: /tmp/xfig-fig002164
+%%Creator: fig2dev
+%%CreationDate: Thu Aug 15 08:30:40 1996
+%%For: xcc@hilbert (Carlie Coats,MCNC,(919)248-9241,)
+%%Orientation: Landscape
+%%BoundingBox: 85 100 526 692
+%%Pages: 1
+%%EndComments
+/$F2psDict 200 dict def 
+$F2psDict begin
+$F2psDict /mtrx matrix put
+/l {lineto} bind def
+/m {moveto} bind def
+/s {stroke} bind def
+/n {newpath} bind def
+/gs {gsave} bind def
+/gr {grestore} bind def
+/clp {closepath} bind def
+/graycol {dup dup currentrgbcolor 4 -2 roll mul 4 -2 roll mul
+4 -2 roll mul setrgbcolor} bind def
+/col-1 {} def
+/col0 {0 0 0 setrgbcolor} bind def
+/col1 {0 0 1 setrgbcolor} bind def
+/col2 {0 1 0 setrgbcolor} bind def
+/col3 {0 1 1 setrgbcolor} bind def
+/col4 {1 0 0 setrgbcolor} bind def
+/col5 {1 0 1 setrgbcolor} bind def
+/col6 {1 1 0 setrgbcolor} bind def
+/col7 {1 1 1 setrgbcolor} bind def
+	end
+/$F2psBegin {$F2psDict begin /$F2psEnteredState save def} def
+/$F2psEnd {$F2psEnteredState restore end} def
+%%EndProlog
+
+$F2psBegin
+0 setlinecap 0 setlinejoin
+79.5 75.0 translate 90 rotate 0.630 -0.630 scale
+2.000 setlinewidth
+% Polyline
+n 159 79 m 319 239 l  719 239 l gs col-1 s gr
+0.500 setlinewidth
+% Polyline
+n 159 159 m 319 319 l  719 319 l gs col-1 s gr
+% Polyline
+n 159 239 m 319 399 l  719 399 l gs col-1 s gr
+% Polyline
+n 159 299 m 319 459 l  719 459 l gs col-1 s gr
+% Polyline
+n 159 359 m 319 519 l  719 519 l gs col-1 s gr
+% Polyline
+n 159 399 m 319 559 l  719 559 l gs col-1 s gr
+2.000 setlinewidth
+% Polyline
+n 159 439 m 319 599 l  719 599 l gs col-1 s gr
+% Polyline
+n 719 599 m 719 239 l  559 79 l gs col-1 s gr
+0.500 setlinewidth
+% Polyline
+n 639 599 m 639 239 l  479 79 l gs col-1 s gr
+% Polyline
+n 559 599 m 559 239 l  399 79 l gs col-1 s gr
+% Polyline
+n 479 599 m 479 239 l  319 79 l gs col-1 s gr
+% Polyline
+n 399 599 m 399 239 l  239 79 l gs col-1 s gr
+2.000 setlinewidth
+% Polyline
+n 159 439 m 159 79 l  559 79 l gs col-1 s gr
+0.500 setlinewidth
+% Polyline
+n 239 519 m 239 159 l  639 159 l gs col-1 s gr
+% Polyline
+n 279 559 m 279 199 l  679 199 l gs col-1 s gr
+% Polyline
+n 199 479 m 199 119 l  599 119 l gs col-1 s gr
+2.000 setlinewidth
+% Polyline
+n 319 239 m 319 599 l gs col-1 s gr
+0.500 setlinewidth
+% Polyline
+n 729 599 m 819 599 l gs col-1 s gr
+% Polyline
+n 729 559 m 819 559 l gs col-1 s gr
+% Polyline
+n 729 519 m 819 519 l gs col-1 s gr
+% Polyline
+n 729 459 m 819 459 l gs col-1 s gr
+% Polyline
+n 729 399 m 819 399 l gs col-1 s gr
+% Polyline
+n 729 319 m 819 319 l gs col-1 s gr
+% Polyline
+n 729 239 m 819 239 l gs col-1 s gr
+% Polyline
+n 319 609 m 319 659 l gs col-1 s gr
+% Polyline
+n 399 609 m 399 659 l gs col-1 s gr
+% Polyline
+n 189 489 m 139 539 l gs col-1 s gr
+% Polyline
+n 149 449 m 99 499 l gs col-1 s gr
+2.000 setlinewidth
+n 419 219 m 419 219 l gs col-1 s gr
+n 499 219 m 499 219 l gs col-1 s gr
+n 579 219 m 579 219 l gs col-1 s gr
+n 659 219 m 659 219 l gs col-1 s gr
+n 619 179 m 619 179 l gs col-1 s gr
+n 539 179 m 539 179 l gs col-1 s gr
+n 459 179 m 459 179 l gs col-1 s gr
+n 379 179 m 379 179 l gs col-1 s gr
+n 299 179 m 299 179 l gs col-1 s gr
+n 259 139 m 259 139 l gs col-1 s gr
+n 339 139 m 339 139 l gs col-1 s gr
+n 419 139 m 419 139 l gs col-1 s gr
+n 499 139 m 499 139 l gs col-1 s gr
+n 579 139 m 579 139 l gs col-1 s gr
+n 539 99 m 539 99 l gs col-1 s gr
+n 459 99 m 459 99 l gs col-1 s gr
+n 379 99 m 379 99 l gs col-1 s gr
+n 299 99 m 299 99 l gs col-1 s gr
+n 219 99 m 219 99 l gs col-1 s gr
+n 339 219 m 339 219 l gs col-1 s gr
+0.500 setlinewidth
+n 979 709 m 979 709 l gs col-1 s gr
+n 39 9 m 39 9 l gs col-1 s gr
+n 290.890 607.468 m 309.000 604.000 l 294.063 614.812 l gs 2 setlinejoin col-1 s gr
+	[8.000000] 0 setdash
+% Interpolated spline
+n 309 604 m
+	284.430 614.617 274.430 620.867 269 629 curveto
+	264.332 635.992 262.515 651.181 264 659 curveto
+	265.423 666.495 272.289 679.431 279 684 curveto
+	284.251 687.575 291.751 688.825 309 689 curveto
+gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Interpolated spline
+n 154 54 m
+	174.476 58.103 183.226 60.603 189 64 curveto
+	194.608 67.300 200.858 73.550 214 89 curveto
+gs col-1 s gr
+	[] 0 setdash
+n 205.384 72.698 m 214.000 89.000 l 199.291 77.881 l gs 2 setlinejoin col-1 s gr
+	[4.000000] 0 setdash
+% Interpolated spline
+n 154 54 m
+	200.335 57.095 220.335 59.595 234 64 curveto
+	244.619 67.423 258.369 74.923 289 94 curveto
+gs col-1 s gr
+	[] 0 setdash
+n 275.836 81.089 m 289.000 94.000 l 271.606 87.880 l gs 2 setlinejoin col-1 s gr
+	[4.000000] 0 setdash
+% Interpolated spline
+n 154 54 m
+	182.673 80.361 195.173 91.611 204 99 curveto
+	211.481 105.262 222.731 114.012 249 134 curveto
+gs col-1 s gr
+	[] 0 setdash
+n 237.097 119.917 m 249.000 134.000 l 232.253 126.284 l gs 2 setlinejoin col-1 s gr
+	[4.000000] 0 setdash
+% Interpolated spline
+n 154 54 m
+	231.735 52.075 265.485 53.325 289 59 curveto
+	303.406 62.477 322.156 71.227 364 94 curveto
+gs col-1 s gr
+	[] 0 setdash
+n 350.102 81.882 m 364.000 94.000 l 346.278 88.909 l gs 2 setlinejoin col-1 s gr
+/Helvetica findfont 18.00 scalefont setfont
+329 644 m 
+gs 1 -1 scale (XCELL) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+109 504 m 
+gs 1 -1 scale (YCELL) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+739 589 m 
+gs 1 -1 scale (Layer 1) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+739 369 m 
+gs 1 -1 scale (Layer 5) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+739 284 m 
+gs 1 -1 scale (Layer 6) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+739 434 m 
+gs 1 -1 scale (Layer 4) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+739 494 m 
+gs 1 -1 scale (Layer 3) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+739 544 m 
+gs 1 -1 scale (Layer 2) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+829 609 m 
+gs 1 -1 scale (VGLVS\(0\)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+829 569 m 
+gs 1 -1 scale (VGLVS\(1\)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+829 529 m 
+gs 1 -1 scale (VGLVS\(2\)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+829 469 m 
+gs 1 -1 scale (VGLVS\(3\)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+829 409 m 
+gs 1 -1 scale (VGLVS\(4\)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+829 329 m 
+gs 1 -1 scale (VGLVS\(5\)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+829 249 m 
+gs 1 -1 scale (VGLVS\(6\)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+319 699 m 
+gs 1 -1 scale (\( X=XORIG, Y=YORIG \)) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+119 579 m 
+gs 1 -1 scale (NROWS=4) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+479 639 m 
+gs 1 -1 scale (NCOLS=5) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+49 279 m 
+gs 1 -1 scale (NLAYS=6) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+679 159 m 
+gs 1 -1 scale (NROWS=4) col-1 show gr
+/Helvetica findfont 18.00 scalefont setfont
+299 59 m 
+gs 1 -1 scale (NCOLS=5) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+529 699 m 
+gs 1 -1 scale (--description is cell-based, rather than center-based) col-1 show gr
+/Helvetica-Oblique findfont 18.00 scalefont setfont
+49 59 m 
+gs 1 -1 scale (Cell Centers) col-1 show gr
+/Helvetica-Bold findfont 24.00 scalefont setfont
+589 39 m 
+gs 1 -1 scale (Grid with 5 cols, 4 rows, 6 layers) col-1 show gr
+showpage
+$F2psEnd

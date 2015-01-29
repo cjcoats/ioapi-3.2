@@ -1,0 +1,70 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: CAMXTOM3.html 117 2015-01-19 16:50:41Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE> Program camxtom3 </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+<H1>    Program camxtom3 </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  GRIDDESC    &lt;path name&gt;
+    setenv  GRID_NAME   &lt;GRIDDESC-name for the model-grid&gt;
+    setenv  INFILE      &lt;path name&gt;
+    setenv  OUTFILE     &lt;path name&gt;
+
+    camxtom3 <EM>&lt;and respond to the prompts&gt;</EM>
+</PRE>
+The program will prompt you for the starting date (YYYYDDD), starting
+time (HHMMSS), and time step (HHMMSS).
+<P>
+
+<H2> Summary </H2>
+
+    Convert GRIDDED CAMx and other UAM-format binary files into
+    I/O&nbsp;API files.
+    <P>
+    Note that a <VAR>GRIDDESC</VAR> file containing the description of
+    the modeling grid is required, since the CAMx/UAM format does not
+    adequately characterize map projections nor does it provide adequate
+    precision for the grid description paramters it does provide.  Even
+    so, the vertical grid will be set to
+    &quot;<CODE>MISSING</CODE>&quot; because the vertical grid is not
+    described in the UAM-format file headers.
+    <P>
+
+<H2> Acknowledgement </H2>
+
+    This program was partially developed under funding for a project
+    sponsored by the California Air Resources Board.
+    <P>
+
+<HR>  <!--------------------------------------------------------------->
+
+<A HREF = "DAYAGG.html" >
+Previous:  <STRONG>DAYAGG</STRONG>
+</A><P>
+
+<A HREF = "M3CPLE.html" >
+Next:  <STRONG>M3CPLE</STRONG>
+</A><P>
+
+<A HREF = "AA.html#tools">
+Up: <STRONG>Related Programs</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
+</A><P>
+
+
+</BODY>
+</HTML>

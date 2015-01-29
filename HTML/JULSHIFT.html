@@ -1,0 +1,150 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: JULSHIFT.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program JULSHIFT</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program JULSHIFT</H1>
+
+<H2> Usage </H2>
+<PRE>
+    julshift &lt;Julian date&gt; &lt; number of days&gt;
+</PRE>
+or, alternately,
+<PRE>
+    julshift [ yesterday | today | tomorrow ] &lt; number of days&gt;
+</PRE>
+or
+<PRE>
+    julshift --help
+</PRE>
+ 
+<H2> Summary </H2>
+
+    Increment indicated Julian date by specified number of days and echo
+    the result to standard output (e.g., for use in scripting).
+    <P>
+    If <CODE>--help</CODE> is the first argument, writes the
+    &quot;USAGE&quot; screen  and exits.
+    <P>
+    Date should be one of the following:
+    <BLOCKQUOTE>
+    <DL>
+        <DT>7-digit integer coded <CODE>YYYYDDD</CODE>, e.g., 2010123 for year 2010 day 123
+        <DT><CODE>YESTERDAY</CODE>
+        <DT><CODE>TODAY</CODE>
+        <DT><CODE>TOMORROW</CODE>
+    </DL>
+    </BLOCKQUOTE>
+
+
+<H2> Examples </H2>
+
+Some sample executions of this program are as indicated below.
+<P>
+Note that in shell-scripting, the back-quote character means &quot;the
+result of evaluating the enclosed command&quot; so that the fourth
+example below sets shell variable <CODE>foo</CODE> to the result of
+executing the indicated <CODE>julshift</CODE> command.
+<PRE>
+     % julshift 2014029 3
+     2014032
+
+     % julshift 2014029 -365
+     2013029
+
+     % julshift today 2
+     2013031
+
+     % set ndays = `julshift 2014029 300`
+     % echo $foo
+     2014329
+
+     % julshift --help
+         %  juldiff  &lt;Julian date 1&gt;  &lt;Julian date 2&gt;
+         or
+         %  set ndays = `JULDIFF &lt;juldate1&gt;  &lt;juldate2&gt;`
+
+         Options for Julian dates:
+              &lt;YYYYDDD&gt;,  e.g., 2010123
+              TODAY
+              YESTERDAY
+              TOMORROW
+              --HELP
+
+         Output format is integer number of days.
+</PRE>
+<P>
+
+<H2> See Also </H2>
+
+<BLOCKQUOTE>
+<A HREF = "AA.html#datestuff"> 
+EDSS/ Models-3 date-time manipulation routines </a>
+<BR> 
+
+<A HREF = "DATSHIFT.html" >
+<STRONG>datshift</STRONG></A>
+<BR>
+
+<A HREF = "GREGDATE.html" >
+<STRONG>gregdate</STRONG></A>
+<BR>
+
+<A HREF = "GREG2JUL.html" >
+<STRONG>greg2jul</STRONG></A>
+<BR>
+
+<A HREF = "JULDATE.html" >
+<STRONG>juldate</STRONG></A>
+<BR>
+
+<A HREF = "JUL2GREG.html" >
+<STRONG>jul2greg</STRONG></A>
+<BR>
+
+<A HREF = "JULDIFF.html" >
+<STRONG>juldiff</STRONG></A>
+<BR>
+
+<A HREF = "JULSHIFT.html" >
+<STRONG>julshift</STRONG></A>
+<BR>
+
+<A HREF = "TIMESHIFT.html" >
+<STRONG>timeshift</STRONG></A>
+<BR>
+</BLOCKQUOTE>
+
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "GREGDATE.html" >
+Previous:  <STRONG>GREGDATE</STRONG>
+</A><P> 
+
+<A HREF = "UTMTOOL.html" >
+Next:  <STRONG>UTMTOOL</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

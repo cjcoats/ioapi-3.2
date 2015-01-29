@@ -1,0 +1,116 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> SEC2TIME() and sec2timec() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    SEC2TIME() and sec2timec() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION  SEC2TIME( SECS )
+        INTEGER, INTENT(IN   ) :: SECS
+</PRE><P> 
+
+C version:  
+<PRE>
+    int sec2timec( int  secs )
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    Returns the <A HREF = "DATETIME.html"> 
+    Models-3-convention time </A> -- integer coded as 
+
+<PRE>
+    H*MMSS = 10000 * hours + 100 * minutes + seconds ) 
+</PRE>
+
+    corresponding to the number of seconds <CODE>SECS</CODE>.  Note that
+    according to Models-3 conventions, all three of &quot;hours&quot;, 
+    &quot;minutes&quot;, and &quot;seconds&quot; have the same sign --
+    either  all positive (or zero), if SECS &gt;= 0), or all negative
+    (or zero) when SECS &lt; 0.<BR>
+    <EM>Note that <CODE>H*MMSS</CODE>-encoding <STRONG>suffers
+    <CODE>INTEGER</CODE>-overflow</STRONG> for time periods exceeding
+    approximately 24.5 years.</EM>
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    See also <A HREF = "TIME2SEC.html"> TIME2SEC() </A>
+    and <A HREF = "SECSDIFF.html"> SECSDIFF() </A>
+<P> 
+
+
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> for C.
+    <P> 
+
+
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    USE M3UTILIO    !! or:  INTEGER, EXTERNAL :: SEC2TIME
+    ...
+    INTEGER   TIME
+    ...
+    TIME = SEC2TIME( 12345 )
+    !!   Now TIME is the Models-3 time for 12,345 seconds 
+    !!   (32545, i.e., 3 hours, 25 minutes, and 45 seconds)
+    ...
+    TIME = SEC2TIME( -123456 )
+    !!   Now TIME is -341736 since (+)123,456 seconds is
+    !!   34 hours, 17 minutes, and 36 seconds
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;                          
+    ...
+    int  time ;
+    ...
+    time = sec2timec( -123456 ) ;                               
+            /*  Now time == -341736 since (+)123,456 seconds 
+                is 34 hours, 17 minutes, and 36 seconds    */
+    ...
+</PRE><P> 
+
+
+
+<HR>
+
+<A HREF = "NEXTIME.html" >
+Previous:  <STRONG>NEXTIME</STRONG>
+</A><P> 
+
+<A HREF = "SECSDIFF.html" >
+Next:  <STRONG>SECSDIFF</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

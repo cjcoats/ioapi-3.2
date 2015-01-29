@@ -1,0 +1,78 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> YR2DAY() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    YR2DAY() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    REAL FUNCTION  YR2DAY( YYYY )
+        INTEGER, INTENT(IN   ) :: YYYY
+</PRE><P> 
+
+<H2> C version: </H2>
+
+    None.  But can probably be called as:
+<PRE>
+#if __hpux || _AIX
+#define   YR2DAY yr2day_
+#elif  __sgi || __sun || __osf__ || __mips__
+#define   YR2DAY yr2day_
+#endif
+
+    float YR2DAY( const int *yy )
+
+</PRE>
+
+<H2> Summary: </H2>
+
+    YR2DAY() returns the year-to-days conversion factor for the given year.
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+<P> 
+
+
+<H2> Fortran Usage: </H2>
+
+<PRE>
+    ...
+    ...
+    INTEGER   YR2DAY
+    ...
+    WRITE (*,* ) YR2DAY( 1980 )	!  is 1.0 / 366.0
+    WRITE (*,* ) YR2DAY( 1981 )	!  is 1.0 / 365.0
+    ...
+</PRE><P> 
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "YEAR4.html" >
+Previous:  <STRONG>YEAR4</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines </STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

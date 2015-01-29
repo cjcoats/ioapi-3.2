@@ -1,0 +1,119 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program SELMRG2D </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program SELMRG2D </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  &lt;infile1&gt;    &lt;path name&gt;
+    ...
+    setenv  &lt;infileN&gt;    &lt;path name&gt;
+    setenv  &lt;outfile&gt;    &lt;path name&gt;
+    selmrg2d <VAR>(and answer the prompts)</VAR>
+</PRE>
+where <VAR>infile1</VAR>, ...,<VAR>infileN</VAR>, and
+<VAR>outfile</VAR> are the <A HREF = "LOGICALS.html">logical  names
+</A> of the input and output files. 
+<P> 
+
+<H2> Summary </H2>
+
+
+The <CODE>SELMRG2D</CODE> program extracts multiple user-selected 2D 
+<A HREF = "VBLE.html">variable</A>/layer combinations for a specified
+time step sequence  from multiple gridded I/O&nbsp;API files,
+<VAR>infile1</VAR>, ..., <VAR>infileN</VAR> and writes them to a
+different single-layer gridded I/O&nbsp;API file, <VAR>outfile</VAR>.
+The input files <VAR>infile1</VAR>, ..., <VAR>infileN</VAR> must all
+have the same horizontal grid structure, althought they are not required 
+to have the same vertical grid structure (or be single-layered, having
+no vertical structure at all).
+<P>
+ 
+The normal use of <CODE>SELMRG2D</CODE> is to script the production of
+files for input to 2-D graphics/visualization programs, e.g., for the
+automated graphical web-page-delivered analyses needed in various
+real-time meteorology/air quality forecasting projects such as 
+<A HREF = "http://www.baronams.com:/projects/NAQP/">NCSC's Numerical Air Quality Prediction
+Project</A>.
+<P>
+
+Requires Fortran-90 for compilation.
+<P>
+
+<STRONG>Before you run the program,</STRONG> 
+you need to assign <A HREF = "LOGICALS.html"> logical names </A>  to
+the physical file names of the input and output files according to
+Models-3 conventions, using the operation 
+<PRE>
+    &quot;setenv <VAR>&lt;lname&gt; &lt;pname&gt;</VAR>&quot;
+</PRE>
+<STRONG>The program will prompt you</STRONG> for 
+<UL>
+    <LI>  the logical names you have chosen for the input files, 
+    <LI>  for each input file, repeatedly for
+          <UL> 
+              <LI>  the variable to select,
+              <LI>  if the input file has multiple layers, the 
+                    layer to select, and
+              <LI>  the output name to use for this variable/layer
+          </UL> 
+    <LI>  the logical name for the output file, and 
+    <LI>  the time step sequence to process:
+          <UL> 
+              <LI>  starting date, format YYYYDDD,
+              <LI>  starting date, format HHMMSS, and
+              <LI>  the run duration, format HHMMSS.
+          </UL> 
+</UL>
+The prompts have default responses indicated  in square brackets
+<CODE>[LIKE THIS]</CODE>, which can be accepted  by hitting
+&lt;RETURN&gt;.  The specification of starting date and time, target
+date and time, and number of time step records for the run follow 
+Models-3 <A HREF = "DATETIME.html"> date and time conventions. </A>
+<P> 
+
+If you want to run this program in <STRONG>batch mode</STRONG> 
+(from a script), the recommended way to develop the script is to 
+run the program once interactively noting the pattern of responses 
+to prompts which generate the particular analysis you want.  The 
+pattern of responses then becomes either a command-input file which 
+you may redirect into the program in the script, or may become a 
+&quot;here-document&quot; fed into the execution by the script.  
+<P> 
+
+
+<HR>
+
+<A HREF = "PRESTERP.html" >
+Previous:  <STRONG>PRESTERP</STRONG>
+</A><P> 
+
+<A HREF = "VERTOT.html" >
+Next:  <STRONG>VERTOT</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

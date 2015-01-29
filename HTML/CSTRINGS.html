@@ -1,0 +1,132 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: CSTRINGS.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE>C String Routines</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Fortran/C String Conversion Routines<BR>
+        fstr2cstr(), name2cstr(), cstr2fstr() 
+</H1>
+<H2> C version (non-Cray):   </H2>
+<PRE>
+void  name2cstr( const char * source, 
+                 char       * target,
+                 FSTR_L       slen,
+                 FSTR_L       tlen ) ;
+
+void  fstr2cstr( const char * source, 
+                 char       * target, 
+                 FSTR_L       slen, 
+                 FSTR_L       tlen ) ;
+
+void  cstr2fstr( const char * source, 
+                 char *       target,
+                 FSTR_L       tlen ) ;
+</PRE><P>
+For Cray version, see include-file <VAR>iodecl3.h</VAR>&mdash;Cray
+data structures for Fortran strings are <EM>very</EM> different!.
+<P> 
+
+<H2> Summary: </H2>
+
+    <STRONG><CODE>fstr2cstr()</CODE>: </STRONG>  Construct a C string
+    for a general Fortran string (i.e., one with embedded blanks, like
+    description-lines <A HREF="FDESC3.txt">in a file description</A>.
+    Truncates if the target-length argument is too short.
+    <P>
+
+    <STRONG><CODE>name2cstr()</CODE>: </STRONG>Construct a C string
+    for a Fortran &quot;name&quot; string (i.e., one without embedded
+    blanks, like variable-names or file-names.
+    Truncates if the target-length argument is too short.
+    <P>
+
+    <STRONG><CODE>cstr2fstr()</CODE>: </STRONG> Construct a (blank
+    padded) Fortran string for a (null terminated) C string.
+    Truncates if the target-length argument is too short, pads with
+    blanks on the right if the target-length argument is too long.
+    <P>
+
+    These are most useful for C programmers needing to interact with
+    the Fortran strings for variable names, units, and variable
+    descriptions in file description data structures, since these
+    latter are defined to use blank-padded, fixed-length Fortran-style
+    strings instead of null terminated C strings.  Note that generally
+    the C bindings of the I/O&nbsp;API already use these routines
+    internally to convert their arguments from C strings to the Fortran
+    strings needed of their callees.
+    <P>
+
+
+<H2> Preconditions:   </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> for C.
+    <P> 
+    
+<P> 
+
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot; 
+    ... 
+    char    varname[ NAMLEN3+1 ] ;
+    char    varunit[ NAMLEN3+1 ] ;
+    char    vardesc[ MXDLEN3+1 ] ;
+    IOAPI_Bdesc3 bdesc;
+    IOAPI_Cdesc3 cdesc;
+    ... 
+    if ( ! desc3c( "INFILE", &bdesc, &cdesc) )  /*   Get information from file header   */
+        {
+        m3exitc( "TESTREAD", 0,0, "Error getting file description", 1 );
+        }
+    name2cstr( cdesc.vname[0], varname, (FSTR_L)NAMLEN3, (FSTR_L)(NAMLEN3+1) ) ;
+    name2cstr( cdesc.units[0], varunit, (FSTR_L)NAMLEN3, (FSTR_L)(NAMLEN3+1) ) ;
+    fstr2cstr( cdesc.vdesc[0], vardesc, (FSTR_L)MXDLEN3, (FSTR_L)(MXDLEN3+1) ) ;
+    printf( "First variable \"%s\" (%s): %s", varname, varunit, vardesc ) ;
+    ...
+    cstr2fstr( "TA", cdesc.vname[0], (FSTR_L)(NAMLEN3) ) ;
+    cstr2fstr( "K",  cdesc.units[0], (FSTR_L)(NAMLEN3) ) ;
+    cstr2fstr( "air temperature", cdesc.vdesc[0], (FSTR_L)(MXDLEN3) ) ;
+    ...
+    if ( !open3c( "OUTFILE", &amp; bdesc, &amp; cdesc, FSUNKN3, "MY_PROGRAM" ) )
+    ...
+
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "C.html" >
+See Also:  <STRONG>Calling the I/O&nbsp;API from C</STRONG>
+</A><P> 
+
+<A HREF = "BMATVEC.html" >
+Previous:  <STRONG>BILIN and BMATVEC</STRONG>
+</A><P> 
+
+<A HREF = "CBARNES.html" >
+Next:  <STRONG>CBARNES1 and CBARNESN</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+
+

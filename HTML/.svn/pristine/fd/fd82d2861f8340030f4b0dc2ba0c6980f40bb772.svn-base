@@ -1,0 +1,139 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> M3EXIT() and m3exitc </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    M3EXIT() and m3exitc </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    SUBROUTINE M3EXIT( CALLER, JDATE, JTIME, EXITTXT, EXITSTAT )
+        CHARACTER*(*), INTENT(IN   ) :: CALLER  !  name of caller
+        INTEGER      , INTENT(IN   ) :: JDATE   !  date YYYYDDD associated with error
+        INTEGER      , INTENT(IN   ) :: JTIME   !  time HHMMSS  associated with error
+        CHARACTER*(*), INTENT(IN   ) :: EXITTXT !  caller-supplied error message
+        INTEGER      , INTENT(IN   ) :: EXITSTAT!  termination status
+</PRE><P> 
+
+<H2> C version:   </H2>
+<BLOCKQUOTE>
+        m3exitc() is a C wrapper calling the Fortran M3EXIT()
+</BLOCKQUOTE><P> 
+
+<PRE>
+    void m3exitc( const char * caller   , 
+                  int           jdate   ,
+                  int           jtime   ,
+                  const char  * exittxt ,
+                  int           exitstat ) ;
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    Generates a completion or error message to the program log
+    indicating the caller, simulation <A HREF = "DATETIME.html"> 
+    date and time </A> if appropriate (the date and time are omitted
+    from the message if they are zero),  and the user-supplied 
+    exit text, shuts down the I/O API using
+    <A HREF = "SHUT3.html"> SHUT3() </A> to flush files to disk, 
+    etc. and kills the program by a CALL EXIT( ERRSTAT )
+    <P> 
+
+    Use <CODE>EXITSTAT=0</CODE> to indicate normal successful completion;
+    nonzero to indicate program failure, in accord with normal
+    UNIX conventions: see  <VAR>/usr/include/stdlib.h</VAR>
+    By convention, 
+    <UL>
+        <LI>  0  means normal successful completion;
+        <LI>  1  means I/O related error;
+        <LI>  2   means general program-related error; and
+        <LI>  N &gt; 2 allows you to classify errors for your program in
+              detail.
+    </UL><P> 
+    
+    <STRONG>Models-3 standard:</STRONG>  construct error messages 
+    and caller names so that it is possible to  <EM>determine uniquely 
+    from the text</EM> of the error message the line at which the error 
+    occurred, and (to the extent possible) the nature of the error.
+    <P> 
+
+    See also <A HREF = "M3ERR.html"> M3ERR() and m3errc()</A>,
+    <A HREF = "M3MESG.html"> M3MESG() and m3mesgc()</A>, and
+    <A HREF = "M3WARN.html"> M3WARN() and m3warnc() </A>.
+    <P> 
+
+
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    JDATE:JTIME represented YYYYDDD:HHMMSS, or are 0.
+<P> 
+
+
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+ 
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A> or
+    <A HREF = "PRESZ.txt">PRESZ</A>
+    for additional usage examples.)
+
+<PRE>    
+    ...
+    USE M3UTILIO
+    ...
+    CALL M3EXIT( 'myprog:mysub', JDATE, JTIME, 
+ &amp;               'Corrupted variable BAR', 2 )
+C              generates error message with JDATE:JTIME to log,
+C              calls SHUT3() and terminates program via EXIT( 2 )        
+        ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    m3exitc( &quot;ME&quot;, jdate, jtime, &quot;Bad vble 'foo'&quot;, 37 ) ;
+        /*  error message followed by SHUT3(); exit( 37 ) */
+    ... 
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "M3ERR.html" >
+Previous:  <STRONG>M3ERR</STRONG>
+</A><P> 
+
+<A HREF = "M3MESG.html" >
+Next:  <STRONG>M3MESG</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

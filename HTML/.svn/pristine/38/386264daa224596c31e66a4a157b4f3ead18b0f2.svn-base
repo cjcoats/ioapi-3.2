@@ -1,0 +1,122 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program PRESTERP </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program PRESTERP </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  &lt;infile&gt;      &lt;path name&gt;
+    setenv  &lt;presfile&gt;    &lt;path name&gt;
+    setenv  &lt;outfile&gt;     &lt;path name&gt;
+    presterp [&lt;infile&gt; &lt;presfile&gt; &lt;outfile&gt; [&lt;interp-mode&gt;]]
+</PRE>
+where <VAR>infile</VAR>, <VAR>presfile</VAR>, and <VAR>outfile</VAR> 
+are the <A HREF = "LOGICALS.html">logical names</A> of the input data
+file, the input presssure-coefficient file, and output data files, 
+respectively, and <VAR>interp-mode</VAR> is one of the following:
+<DL>
+    <DT> <STRONG>LIN</STRONG>:
+    <DD> do <VAR>linear-in-pressure</VAR> interpolation from sigma 
+         vertical coordinate inputs to pressure vertical coordinate 
+         outputs
+    <DT> <STRONG>LOG</STRONG>:
+    <DD> do <VAR>log(pressure)</VAR> interpolation from sigma vertical
+         coordinate inputs to pressure vertical coordinate outputs
+    <DT> <STRONG>POW</STRONG>:
+    <DD> do  <VAR>pressure<SUP>alpha</SUP></VAR> interpolation from 
+         sigma vertical coordinate inputs to pressure vertical 
+         coordinate outputs
+</DL>
+
+If these command-line arguments are not present, the program will 
+prompt the user for them.  If the <VAR>interp-mode</VAR> is not present, 
+the program will prompt the user for it on a varaible-by-variable basis.
+<P> 
+
+<H2> Summary </H2>
+
+The <CODE>PRESTERP</CODE> program uses the interpolation indices and
+interpolation coefficients from the 
+<A HREF = "mcpl.files.html#pc3">PRES_CRO_3D</A> or 
+<A HREF = "mcpl.files.html#pd3">PRES_DOT_3D</A> files
+produced by the <STRONG><A HREF = "http://www.baronams.com:/projects/ppar/mcpl.html">mcpl</A></STRONG> 
+output module for MM5 to interpolate the variables in its input data
+file from sigma coordinates to pressure coordinates, and then write
+the result to its output data file, for every time step in the input
+data file.  The input data file and the pressure-coefficient file 
+must have the same horizontal coordinate system and grid, and the 
+pressure-coefficient file must cover the time period covered by the
+input-data file.  
+<P> 
+
+<STRONG>Versions of the program</STRONG> are available for each 
+<A HREF = "LIBS.html"> supported architecture </A>
+(at MCNC, workstation versions are currently in the directories 
+<VAR>/env/proj/(SunOS5 | IRIX5 )/bin</VAR>.
+<P> 
+
+If you want to run this program in <STRONG>batch mode</STRONG> 
+(from a script) with variable-by-variable choice of interpolation
+mode, the recommended way to develop the script is to 
+run the program once interactively noting the pattern of responses 
+to prompts which generate the particular windowing you want.  The 
+pattern of responses then becomes either a command-input file which 
+is redirected into the program in the script, or becomes a 
+&quot;here-document&quot; fed into the execution.  The simplest
+form (where all variables use the linear-in-pressure mode of 
+interpolation) looks like the following:
+<PRE>
+#!/bin/csh
+setenv  &lt;infile&gt;      &lt;path name&gt;
+setenv  &lt;presfile&gt;    &lt;path name&gt;
+setenv  &lt;outfile&gt;     &lt;path name&gt;
+presterp [[&lt;infile&gt; &lt;presfile&gt; &lt;outfile&gt;] LIN] &lt;&lt; EOF
+Yes, continue with the program
+EOF
+</PRE>
+The first three command line arguments, if supplied, must be the names
+of the input, pressure, and output files, respectively; the fourth, if
+supplied, must be one of the following, to indicate method of
+interpolation:  <CODE>LIN</CODE>, <CODE>LOG</CODE>, or <CODE>POW</CODE>.
+If the fourth command line argument is supplied, then below-terrain
+pressure-grid locations will be filled with <CODE>BADVAL3</CODE> from
+<CODE><A HREF="INCLUDE.html#parms"></A>PARMS3.EXT</CODE>.  Otherwise,
+you will be prompted on a variable-by-variable basis for the value to be
+used for that purpose.
+<P> 
+
+
+<HR>
+
+<A HREF = "MTXCPLE.html" >
+Previous:  <STRONG>MTXCPLE</STRONG>
+</A><P> 
+
+<A HREF = "SELMRG2D.html" >
+Next:  <STRONG>SELMRG2D</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

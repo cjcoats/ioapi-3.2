@@ -1,0 +1,107 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> TIME2SEC() and time2secc() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    TIME2SEC() and time2secc() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION  TIME2SEC( DTIME )
+        INTEGER, INTENT(IN   ) :: DTIME    	!  time interval H*MMSS
+</PRE><P> 
+
+<H2> C version:   </H2>
+<PRE>
+    int time2secc( int  dtime ) ;
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    Returns the number of seconds in the <A HREF = "DATETIME.html"> 
+    time interval</A> <CODE>DTIME</CODE>.   <CODE>DTIME</CODE> may be
+    positive or negative (in which latter case,  its hour, minutes, and
+    seconds fields are assumed to be all negative or zero).  <EM>Note
+    that the <CODE>DTIME</CODE> <CODE>H*MMSS</CODE>-encoding suffers
+    <CODE>INTEGER</CODE>-overflow for time periods exceeding
+    approximately 24.5 years.</EM>
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    See also <A HREF = "SEC2TIME.html"> SEC2TIME() </A>
+    and <A HREF = "SECSDIFF.html"> SECSDIFF() </A>
+<P> 
+
+
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> for C.
+    <P> 
+
+    <CODE>DTIME</CODE> represented <CODE>
+    H*MMSS&nbsp;=&nbsp;100&nbsp;*&nbsp;(&nbsp;100&nbsp;*&nbsp;HOURS&nbsp;+&nbsp;MINS&nbsp;)&nbsp;+&nbsp;SECS</CODE> <BR>
+    Either HOURS, MINS, SECS &gt;= 0, or HOURS, MINS, SECS &lt;= 0.
+<P> 
+
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    INTEGER   SECS
+    ...
+    SECS = TIME2SEC( 12345 )
+C	    Now SECS is the number of seconds in the time interval
+C           1 hour, 23 minutes and 45 seconds
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;                          
+    ...
+    int  secs ;
+    ...
+    secs = time2secc( 123456 ) ;
+            /*  Now secs is the number of seconds in the time
+                interval  12 hours 34 minutes and 56 seconds  */
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "SECSDIFF.html" >
+Previous:  <STRONG>SECSDIFF</STRONG>
+</A><P> 
+
+<A HREF = "WKDAY.html" >
+Next:  <STRONG>WKDAY</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

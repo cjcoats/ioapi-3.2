@@ -1,0 +1,587 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+
+<HTML> 
+<HEAD>
+<!-- "$Id: binio.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> 
+    IOAPI Binary-Mode
+</TITLE>
+</HEAD>
+   
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<!--#include virtual="/INCLUDES/header.html" -->
+
+<H1>
+    I/O&nbsp;API Binary-Mode Design and Implementation
+</H1>
+
+    <!-- There are no tyops in this web page. -->
+    <!--text of body for article  -->
+
+<H2>
+<A NAME = "contents">
+    Contents
+</A>
+</H2>
+
+   <UL>
+       <LI>  <A HREF="#intro" >Introduction</A>
+       <LI>  <A HREF="#impl"  >Implementation Considerations</A>
+       <LI>  <A HREF="#format">Metadata Formats</A>
+       <LI>  <A HREF="#design">File Data Structure Design</A>
+       <LI>  <A HREF="#atts"  >New Pseudo-Attributes</A>
+   </UL>
+
+<P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG><P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+<A NAME = "intro">
+    Introduction
+</A>
+</H2>
+
+    <BLOCKQUOTE>
+    This page describes the structure of the files for a new underlying
+    <STRONG>(&quot;<CODE>BINFIL3</CODE>&quot;) binary mode</STRONG> for
+    the <A HREF= "index.html">EDSS/Models-3 I/O&nbsp;API</A>, to
+    supplement the existing (and default) <STRONG>netCDF-file
+    mode</STRONG>, the in-memory <STRONG>BUFFERED</STRONG> mode, and
+    the PVM-based <STRONG>virtual mode</STRONG>.
+    <P> 
+    Since this mode uses native machine binary representation for its
+    data as its underlying data representation layer, it should offer
+    somewhat greater performance than the machine independent lower
+    layers (<CODE>netCDF</CODE>, <CODE>PVM</CODE>) do, for applications
+    where I/O performance is critical.  On the other hand, it is very
+    desirable to keep the header metadata in a portable format, so that
+    user-level programs can still read the data on binary-incompatible
+    platforms and perform the appropriate data conversion themselves. 
+    For this reason, header metadata is stored in the portable formats,
+    as described below.
+    <P>
+
+    The sequence of data structures in these files is modeled somewhat
+    after the structure of netCDF files, although the implementation
+    mechanisms to store some of the metadata in a machine independent
+    fashion are to some extent borrowed from ideas found in other
+    formats, e.g., GRIB.
+    <P>
+
+    </BLOCKQUOTE>
+    <P>
+
+<P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG><P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+<A NAME = "limit">
+    Implementation Considerations
+</A>
+</H2>
+
+    <BLOCKQUOTE>
+    <H3> Restrictions and Limitations </H3>
+
+    <UL>
+        <LI>  Initially, the <STRONG>supported platforms</STRONG> are
+              ones with UNIXoid Fortrans (as listed below), but not
+              Win32 nor Cray.  Of these latter, Cray is the more
+              difficult (made more difficult by the fact that I don't
+              have access to one of their systems any more...)
+              <UL>
+                  <LI> OSF/Alpha from DEC^H^H^HCompaq^H^H^H^H^H^H HP
+                  <LI> HP/UX
+                  <LI> IBM AIX
+                  <LI> Sun
+                  <LI> SGI
+                  <LI> Linux
+                       <UL>
+                            <LI> x86 with <VAR>gcc/g77</VAR>,
+                                 <VAR>gcc/lf95</VAR>,
+                                 <VAR>pgcc/pgf90</VAR>,
+                                 <VAR>gcc/pgf90</VAR>, or
+                                 <VAR>icc/ifc</VAR>;
+                            <LI> Alpha with <VAR>gcc/g77</VAR> or
+                                 <VAR>cc/fort</VAR>;
+                            <LI> ia64 with <VAR>gcc/g77</VAR> or
+                                  <VAR>ecc/efc</VAR>;
+                            <LI> [PPC970 with either <VAR>gcc/g77</VAR>,
+                                 <VAR>gcc</VAR> andAbsoft
+                                 <VAR>f90</VAR>, or IBM
+                                 <VAR>xlc/xlf</VAR> should not be
+                                 difficult but hasn't been done yet]
+                       </UL>
+                  <LI> [Mac OS-X with either <VAR>gcc/g77</VAR> or
+                       <VAR>xlc/xlf</VAR> should not be difficult but
+                       hasn't been done yet either, AFAIK]
+              </UL>
+              <P>
+
+        <LI>  Initially, the <STRONG>supported data types</STRONG> are
+              those needed for current air quality modeling (and excluding
+              the grid-nest and stream-hydrology data types):
+              <UL>
+                  <LI> <STRONG><CODE>CUSTOM3</CODE></STRONG>
+                  <LI> <STRONG><CODE>GRDDED3</CODE></STRONG>
+                  <LI> <STRONG><CODE>BNDARY3</CODE></STRONG>
+                  <LI> <STRONG><CODE>IDDATA3</CODE></STRONG>
+                  <LI> <STRONG><CODE>PROFIL3</CODE></STRONG>
+                  <LI> <STRONG><CODE>SMATRX3</CODE></STRONG>
+              </UL>
+              <P>
+
+         <LI> Initially, the following (as far as I know, unused)
+              two I/O routines are <STRONG>not&nbsp;supported</STRONG>:
+              <UL>
+                  <LI> <STRONG><CODE>READ4D</CODE></STRONG>
+                  <LI> <STRONG><CODE>WRITE4D</CODE></STRONG>
+              </UL>
+              <P>
+
+   </UL>
+
+   <H3> Remarks on Implementation Strategy</H2>
+
+    <UL>
+       <LI>  Implementation is in C, interfacing to Fortran in the same
+             manner as the rest of the I/O&nbsp;API C code.
+             <P>
+       <LI>  Uses C <CODE><STRONG>stdio</STRONG></CODE>, and particularly
+             uses <CODE><STRONG>fseeko()</STRONG></CODE> for seeks 
+             (instead of <CODE><STRONG>fseek()</STRONG></CODE>), in
+             order to interoperate with large file systems (implies
+             Linux <CODE>glibc</CODE> version &gt; 2.0).
+             <P>
+       <LI>  Implementation is in file
+             <CODE><STRONG>iobin3.c</STRONG></CODE>.
+             <P>
+       <LI>  <CODE><STRONG>INIT3</STRONG></CODE> calls
+             <CODE><STRONG>INITBIN3</STRONG></CODE>
+             <P>
+       <LI>  <CODE><STRONG>FLUSH3</STRONG></CODE> calls and other
+             required disk synchronizations use new routine
+             <CODE><STRONG>SYNCFID</STRONG></CODE> that unifies calls
+             to <CODE><STRONG>FLUSHBIN3</STRONG></CODE> and
+             <CODE><STRONG>NF_SYNC</STRONG></CODE>
+             <P>
+       <LI>  For <CODE><STRONG>BINFIL3</STRONG></CODE> files,
+             <UL>
+                 <LI> <CODE><STRONG>CRTFIL3</STRONG></CODE> calls
+                      <CODE><STRONG>CRTBIN3</STRONG></CODE>
+                 <LI> <CODE><STRONG>OPNFIL3</STRONG></CODE> calls
+                      <CODE><STRONG>OPNBIN3</STRONG></CODE>
+                 <LI> <CODE><STRONG>RDTFLAG</STRONG></CODE> calls
+                      <CODE><STRONG>RDBFLAG</STRONG></CODE>
+                 <LI> <CODE><STRONG>WRTFLAG</STRONG></CODE> calls
+                      <CODE><STRONG>WRBFLAG</STRONG></CODE>
+                 <LI> <CODE><STRONG>RDVARS</STRONG></CODE> calls
+                      <CODE><STRONG>RDBVARS</STRONG></CODE>
+                 <LI> <CODE><STRONG>WRVARS</STRONG></CODE> calls
+                      <CODE><STRONG>WRBVARS</STRONG></CODE>
+                 <LI> <CODE><STRONG>XTRACT3</STRONG></CODE> calls
+                      <CODE><STRONG>XTRBIN3</STRONG></CODE>
+                 <LI> <CODE><STRONG>CLOSE3</STRONG></CODE> calls
+                      <CODE><STRONG>CLOSEBIN3</STRONG></CODE>
+             </UL>
+             <P>
+       <LI>  <CODE><STRONG>OPNLOG3</STRONG></CODE> (called from
+             <CODE><STRONG>OPEN3</STRONG></CODE>) now logs the
+             implementation-layer used
+             <P>
+       <LI>  <CODE><STRONG>SHUT3</STRONG></CODE> does a sequence of
+             <CODE><STRONG>CLOSEBIN3</STRONG></CODE> calls
+             <P>
+    </UL>
+
+   </BLOCKQUOTE>
+
+<P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG><P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+<A NAME = "format">
+    Metadata Formats
+</A>
+</H2>
+
+    <BLOCKQUOTE>
+    The following representations of primitive data types of
+    significance to the I/O&nbsp;API are used to store metadata in a
+    portable fashion (so that the metadata can be interpreted on
+    platforms other than the originating platform) in I/O&nbsp;API
+    <STRONG><CODE>BINFIL3</CODE></STRONG> files.  In principle, this
+    lets the application programmer use the
+    <STRONG><CODE>BINFIL3</CODE></STRONG> layer of the I/O&nbsp;API to
+    read the data on any platform, determine the transformations
+    necessary to interpret it on his platform, and then perform the
+    transformations on the data and use it.
+    <P>
+    <BLOCKQUOTE>
+    <DL>
+        <DT> <STRONG><CODE>INT4</CODE></STRONG>
+        <DD> represented by a 4-byte string, in little-Endian order:
+             <BLOCKQUOTE>
+                 <STRONG><CODE>BYTE_0(X)</CODE></STRONG> contains
+                 <CODE>(unsigned&nbsp;char)(X&&255)</CODE>,
+                 i.e.,  the least significant byte of X<BR>
+                 <STRONG><CODE>BYTE_1(X)</CODE></STRONG> contains
+                 <CODE>(unsigned&nbsp;char)((X/256)&&255)</CODE><BR>
+                 <STRONG><CODE>BYTE_2(X)</CODE></STRONG> contains
+                 <CODE>(unsigned&nbsp;char)((X/65536)&&255)</CODE><BR>
+                 <STRONG><CODE>BYTE_3(X)</CODE></STRONG> contains
+                 <CODE>(unsigned&nbsp;char)((X/16777216)&&255)</CODE><BR>
+             </BLOCKQUOTE>
+        <DT> <STRONG><CODE>REAL</CODE></STRONG>
+        <DD> represented by a character string formatted with format
+             equivalent to the Fortran 
+             <CODE>FORMAT&nbsp;<STRONG>1PE15.9</STRONG></CODE>,
+             followed by a trailing ASCII NULL
+             <P>
+        <DT> <STRONG><CODE>DOUBLE</CODE></STRONG>
+        <DD> represented by a character string formatted as
+             <STRONG><CODE>1PD27.19</CODE></STRONG>, followed by a
+             trailing ASCII NULL
+             <P>
+        <DT> <STRONG><CODE>NAME</CODE></STRONG>
+        <DD> Equivalent to a Fortran <STRONG><CODE>CHARACTER*16</CODE></STRONG> type
+             (fixed-length 16-byte string, padded on the right by
+             blanks; <EM>not nul-terminated as a C string would be.</EM>)
+             <P>
+        <DT> <STRONG><CODE>LINE</CODE></STRONG>
+        <DD> Equivalent to a Fortran <STRONG><CODE>CHARACTER*80</CODE></STRONG> type
+             (fixed-length 80-byte string, padded on the right by
+             blanks)
+             <P>
+        <DT> <STRONG><CODE>STRING</CODE></STRONG>
+        <DD> Equivalent to the Mac Fortran internal representation of
+             a Fortran <STRONG><CODE>CHARACTER*(*)</CODE></STRONG>
+             variable (with blank-padding on the right), i.e., as
+             a C &quot;struct hack&quot;
+                 <TT><BLOCKQUOTE>
+                 struct{<BR>
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INT4&nbsp;length;<BR>
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;contents[&nbsp;length&nbsp;];<BR>
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;;<BR>
+                 </BLOCKQUOTE></TT>
+        <DD>
+    </DL>
+    </BLOCKQUOTE>
+    </BLOCKQUOTE>
+
+    <P>
+
+<P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG><P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+<A NAME = "design">
+    File Data Structure Design
+</A>
+</H2>
+
+    The structure of a <CODE>BINFIL3</CODE> file is as follows:
+    <P>
+    <TT>
+    <BLOCKQUOTE>
+    <U><STRONG>Header Section</STRONG></U>
+    <BLOCKQUOTE>
+        INT4 <STRONG>IOAPI_VRSN</STRONG>:  I/O&nbsp;API Version
+        <P>
+        <U><STRONG>Machine/Compiler Architecture Metadata</STRONG></U>
+        <BLOCKQUOTE>
+             INT4 <STRONG>BYTE_ORDER</STRONG>: Byte order, i.e., the C
+             subscripts at which BYTE_0, BYTE_1, BYTE_2, BYTE_3 would
+             occur if we think of an integer as a C union:
+             <BLOCKQUOTE><STRONG>
+             union{ int idata; char cdata[4] } ;
+             </STRONG></BLOCKQUOTE>
+             <P>
+             INT4 <STRONG>INTSIZE</STRONG>: size of Fortran
+             &quot;INTEGER&quot;
+             <P>
+             INT4 <STRONG>REALSIZE</STRONG>: size of Fortran
+             &quot;REAL&quot;
+             <P>
+             INT4 <STRONG>DBLESIZE</STRONG>: size of Fortran
+             &quot;DOUBLE&nbsp;PRECISION&quot;
+             <P>
+        </BLOCKQUOTE>
+        <P>
+        <U><STRONG>Per-File Metadata</STRONG></U>
+        <BLOCKQUOTE>
+             NAME <STRONG>GRIDNAME</STRONG>: grid name
+             <P>
+             NAME <STRONG>UPDATE_NAME</STRONG>: name of the last program
+             writing to file
+             <P>
+             LINE <STRONG>EXECUTION</STRONG>: value of environment
+             variable EXECUTION_ID
+             <P>
+             LINE <STRONG>FILE_DESC[ MXDESC3=60 ]</STRONG>: array
+             containing file
+             description (set by programmer during OPEN3())
+             <P>
+             LINE <STRONG>UPDATE_DESC[ MXDESC3=60 ]</STRONG>: array
+             containing run description, from file with logical name
+             SCENFILE
+             <P>
+        </BLOCKQUOTE>
+        <P>
+        <U><STRONG>Dimension/Type Metadata</STRONG></U>
+        <BLOCKQUOTE>
+             INT4 <STRONG>FTYPE</STRONG>: File data type
+             <BLOCKQUOTE>
+                 CUSTOM3, GRDDED3, BNDARY3, IDDATA3, PROFIL3, 
+                 or SMATRX3
+             </BLOCKQUOTE>
+             <P>
+             INT4 <STRONG>GDTYP</STRONG>:  map projection type
+             <BLOCKQUOTE>
+                  LATGRD3=1 (Lat-Lon),
+                  <BR>
+                  LAMGRD3=2 (Lambert conformal
+                  conic),
+                  <BR>
+                  MERGRD3=3 (general tangent Mercator),
+                  <BR>
+                  STEGRD3=4 (general tangent stereographic),
+                  <BR>
+                  UTMGRD3=5 (UTM, a special case of Mercator),
+                  <BR>
+                  POLGRD3=6 (polar secant stereographic),
+                  <BR>
+                  EQMGRD3=7 (equatorial secant Mercator), or
+                  <BR>
+                  TRMGRD3=8 (transverse secant Mercator)
+                  <BR>
+             </BLOCKQUOTE>
+             <P>
+             INT4 <STRONG>VGTYP</STRONG>:  vertical coordinate type
+             <BLOCKQUOTE>
+                  VGSGPH3=1 (hydrostatic sigma-P),
+                  <BR>
+                  VGSGPN3=2 (nonhydrostatic sigma-P),
+                  <BR>
+                  VGSIGZ3=3 (sigma-Z),
+                  <BR>
+                  VGPRES3=4 (pressure (mb)),
+                  <BR>
+                  VGZVAL3=5 (Z (m above sea lvl), or
+                  <BR>
+                  VGHVAL3=6 (H (m above ground))
+             </BLOCKQUOTE>
+             INT4 <STRONG>NCOLS</STRONG>: number of grid columns
+             <P>
+             INT4 <STRONG>NROWS</STRONG>: number of grid rows
+             <P>
+             INT4 <STRONG>NLAYS</STRONG>: number of layers
+             <P>
+             INT4 <STRONG>NTHIK</STRONG>:
+             <BLOCKQUOTE>
+                 for BNDARY3 files, perimeter thickness
+                 (cells), or for SMATRX3 files, number of matrix-columns
+                 (unused for other file types)
+             </BLOCKQUOTE>
+        </BLOCKQUOTE>
+        <P>
+        <U><STRONG>Temporal Metadata</STRONG></U>
+        <BLOCKQUOTE>
+             INT4 <STRONG>SDATE</STRONG>:  starting date, coded YYYYDDD
+             according to Models-3 conventions
+             <P>
+             INT4 <STRONG>STIME</STRONG>:  starting time, coded HHMMSS
+             according to Models-3 conventions
+             <P>
+             INT4 <STRONG>TSTEP</STRONG>:  time step, coded HHMMSS
+             according to Models-3 conventions
+             <P>
+             INT4 <STRONG>NRECS</STRONG>: current number of time step
+             records in the file (1-based Fortran-style counting)
+             <P>
+        </BLOCKQUOTE>
+        <P>
+        <U><STRONG>Spatial Metadata</STRONG></U>
+        <BLOCKQUOTE>
+             DOUBLE <STRONG>P_ALPHA</STRONG>:  first map projection
+             descriptive parameter
+             <P>
+             DOUBLE <STRONG>P_BETA</STRONG>:  second map projection
+             descriptive parameter
+             <P>
+             DOUBLE <STRONG>P_GAMMA</STRONG>:  third map projection
+             descriptive parameter
+             <P>
+             DOUBLE <STRONG>X_CENTER</STRONG>:  Longitude of the
+             Cartesian map projection coordinate-origin (location
+             where X=Y=0)
+             <P>
+             DOUBLE <STRONG>Y_CENTER</STRONG>:  Latitude of the
+             Cartesian map projection coordinate origin (map units)
+             <P>
+             DOUBLE <STRONG>X_ORIGIN</STRONG>: Cartesian X-coordinate of
+             the lower left corner of the (1,1) grid cell (map units)
+             <P>
+             DOUBLE <STRONG>Y_ORIGIN</STRONG>: Cartesian Y-coordinate of
+             the lower left corner of the (1,1) grid cell (map units)
+             <P>
+             DOUBLE <STRONG>X_CELLSIZE</STRONG>: X-coordinate cell
+             dimension (map units)
+             <P>
+             DOUBLE <STRONG>Y_CELLSIZE</STRONG>: Y-coordinate cell
+             dimension (map units)
+             <P>
+             REAL <STRONG>VGTOP</STRONG>: model-top, for sigma
+             vertical-coordinate types
+             <P>
+             REAL <STRONG>VGLEVELS[0:NLAYS+1]</STRONG>: array of
+             vertical coordinate level values; level 1 of the grid goes
+             from vertical coordinate VGLEVELS[0] to VGLEVELS[1], etc.
+             <P>
+        </BLOCKQUOTE>
+        <P>
+        <U><STRONG>Per-Variable Metadata</STRONG></U>
+        <BLOCKQUOTE>
+             NAME <STRONG>VNAME[ NVARS ]</STRONG>: array of  variable names
+             <P>
+             NAME <STRONG>UNITS[ NVARS ]</STRONG>: array of units or 'none'
+             <P>
+             LINE <STRONG>VDESC[ NVARS ]</STRONG>: array of  array of variable descriptions
+             <P>
+             INT4 <STRONG>VTYPE[ NVARS ]</STRONG>: array of variable types:
+             <BLOCKQUOTE>
+                 M3BYTE = 1
+                 <BR>
+                 M3INT  = 4
+                 <BR>
+                 M3REAL = 5
+                 <BR>
+                 M3DBLE = 6
+             </BLOCKQUOTE>
+        </BLOCKQUOTE>
+        <P>
+        <U><STRONG>Additional attributes</STRONG></U>
+        <BLOCKQUOTE>
+            <U>Not implemented at this time.</U>
+            <P>
+            Eventually:  TBD, as necessary for the WRF extensions
+            placed in I/O&nbsp;API Version&nbsp;2.2.  At this point,
+            we anticipate that the implementation will be in terms of a
+            sequence of &lt;name-type-value&gt; triplets
+        </BLOCKQUOTE>
+    </BLOCKQUOTE>
+    <P>
+    <U><STRONG>Data Section</STRONG></U>
+    <BLOCKQUOTE>
+        <U><STRONG>sequence of time step records</STRONG></U>
+        <P>
+        <BLOCKQUOTE>
+            <STRONG><U>Time Step Header</U></STRONG>
+            <P>
+            <BLOCKQUOTE>
+                INT4 <STRONG>FLAGS[2,NVARS]</STRONG>: array of
+                data-availability flags (with Fortran-style left-major,
+                1-based subscripting):
+                <BLOCKQUOTE>
+                    FLAGS[1,V] are the <U>dates</U> for the data
+                    record, encoded YYYYDDD
+                    <P>
+                    FLAGS[2,V] are the <U>times</U> for the data
+                    record, encoded HHMMSS
+                    <P>
+                    FLAGS[1,V] and FLAGS[2,V] are in consecutive
+                    memory/disk locations.
+                    <P>
+                    (NOTE:  This amount of data is not functionally
+                    necessary; however, it is included for the
+                    historical reasonsa involving the convenience of
+                    visualization-system programmers.)<P>
+                </BLOCKQUOTE>
+            </BLOCKQUOTE>
+            <P>
+            <STRONG><U>Time step Contents</U></STRONG>:
+            <BLOCKQUOTE>
+               <STRONG><U>array of data records</U></STRONG>,
+               subscripted by variable 1,&nbsp;...,&nbsp;NVARS:
+               <P>
+               <BLOCKQUOTE>
+                   <STRONG>&lt;type&gt; array of data</STRONG> for this
+                   variable and time step.  Data is in native machine
+                   binary format.
+               </BLOCKQUOTE>
+            </BLOCKQUOTE>
+        </BLOCKQUOTE>
+    </BLOCKQUOTE>
+    </BLOCKQUOTE>
+    </TT>
+
+
+<P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG><P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+<A NAME = "atts">
+    New Pseudo-Attributes in I/O&nbsp;API Version&nbsp;3
+</A>
+</H2>
+
+    <BLOCKQUOTE>
+    
+    <DL>
+        <DT><CODE>INTEGER <STRONG>IOAPI_VERSION</STRONG></CODE>
+        <DD>
+        <P>
+
+        <DT><CODE>INTEGER <STRONG>IMPL_LAYER</STRONG></CODE>
+        <DD>
+        <P>
+
+        <DT><CODE>INTEGER <STRONG>BYTE_ORDER</STRONG></CODE>
+        <DD>
+        <P>
+
+        <DT><CODE>INTEGER <STRONG>INTEGER_SIZE</STRONG></CODE>
+        <DD>
+        <P>
+
+        <DT><CODE>INTEGER <STRONG>REAL_SIZE</STRONG></CODE>
+        <DD>
+        <P>
+
+        <DT><CODE>INTEGER <STRONG>DBLE_SIZE</STRONG></CODE>
+        <DD>
+        <P>
+
+        <DT><CODE><STRONG></STRONG></CODE>
+        <DD>
+        <P>
+
+    </DL>
+    </BLOCKQUOTE>
+
+
+<P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG><P>
+
+<HR> <!----------------------------------------------------------------->
+
+
+Send comments to 
+<A HREF = "mailto:carlie.coats@baronams.com"> <ADDRESS> 
+          Carlie J. Coats, Jr. <br> 
+          carlie.coats@baronams.com  </ADDRESS> </A><P> 
+
+<!--#include virtual="/INCLUDES/footer.html" -->
+</BODY>      <!--end body  -->
+</HTML>      <!--end html  -->
+

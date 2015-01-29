@@ -1,0 +1,101 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GETYN() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GETYN() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    LOGICAL FUNCTION GETYN( PROMPT , DEFAULT )
+        CHARACTER*(*), INTENT(IN   ) :: PROMPT  ! Prompt for user
+        LOGICAL      , INTENT(IN   ) :: DEFAULT ! Default return value
+</PRE><P>    
+
+<H2> NO C version: </H2>
+<P> 
+
+<H2> Summary: </H2>
+
+    Display the  PROMPT  to standard output for YES or NO,  get the 
+    user's response and check that its first character, after 
+    upcasing, is 'Y' or 'N'.  If 'Y', returns TRUE; if 'N', FALSE.
+    Return DEFAULT if the user hits &lt;RET&gt;.  Reprompts on error
+    for up to 5 attempts; exits in case of more than 5 entry errors.
+    If <A HREF = "ENVIRONMENT.html">environment variable
+    PROMPTFLAG</A> is set to &quot;N&quot;, returns DEFAULT without
+    prompting the user.  Logs the value returned, for tracking and
+    validation purposes.
+    <P>
+
+    The default is displayed in square brackets like this:  [Y].
+    <P> 
+
+    See also <A HREF = "GETNUM.html"> GETNUM() </A>,
+    <A HREF = "GETMENU.html"> GETMENU() </A>,
+    <A HREF = "GETREAL.html"> GETREAL() </A>, and
+    <A HREF = "GETDBLE.html"> GETDBLE() </A>,
+<P> 
+
+        
+<H2> Preconditions: </H2>  none
+<P> 
+
+    
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+ 
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A> or
+    <A HREF = "PRESZ.txt">PRESZ</A>
+    for additional usage examples.)
+
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    LOGICAL L
+    ...
+    L = GETYN( 'Give me a YES or NO', .TRUE )
+    IF ( .NOT. GETYN( 'Continue?', L ) ) CALL M3EXIT( 0 )
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  don't
+<P>         
+
+
+<HR>
+
+<A HREF = "GETSTR.html" >
+Previous:  <STRONG>GETSTR</STRONG>
+</A><P> 
+
+<A HREF = "GRIDOPS.html" >
+Next:  <STRONG>GRIDOPS</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

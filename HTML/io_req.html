@@ -1,0 +1,236 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML> 
+<HEAD>
+<!-- "$Id: io_req.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Comments on Todd's Proposal</TITLE>
+</HEAD>
+   
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<!--#include virtual="/INCLUDES/header.html" -->
+
+<H1><CENTER>
+    Comments on Todd's Proposal
+    <P>
+    <EM>/products/ioapi/io_req.html</EM>
+</CENTER></H1>
+<H2>
+<CENTER>
+    Carlie J. Coats, Jr., Ph.D.<BR>
+    MCNC Environmental Programs<BR>
+    <VAR><A HREF = "mailto:cjcoats@email.unc.edu">cjcoats@email.unc.edu</A></VAR>
+</CENTER>
+</H2>
+
+<CENTER><STRONG><I>
+!! This document is under construction !!
+</I></STRONG></CENTER><P>
+
+    <!-- There are no tyops in this web page. -->
+
+<H2>
+    <A NAME="contents">Contents</A>
+</H2>
+    <UL>
+         <LI>  <A HREF="#FR" >Major Functional Requirements</A>
+         <LI>  <A HREF="#CON">Major Constraints</A>
+         <LI>  <A HREF="#ADD">Additional Potential Requirements</A>
+    </UL>
+
+<HR> <!----------------------------------------------------------------->
+<H2>
+    <A NAME="FR">Major Functional Requirements</A>
+</H2>
+
+    <UL>
+         <LI>  <EM>3.1.1:  Robust,, convenient, efficient, 
+               portable native file format design.</EM><P>
+               is <STRONG>self-contradictory</STRONG>
+               (&quot;portable&quot; vs. &quot;native&quot;)<P>
+               Is unnecessarily &quot;re-inventing the wheel&quot;.
+               <P>
+         <LI>  <EM>3.3.:  Don't assume data is coming from or going to
+               files.  Eventually, support for data streamed via pipes
+               or the internet is desired.</EM><P>
+               We've just spent <STRONG>a <EM>lot</EM> of effort</STRONG>
+               getting rid of the problems caused by stream-based data
+               access assumptions&nbsp;!!!  NO! NO!! NO!!!
+               <P>
+         <LI>  <EM>3.4.5:  Time-varying data...</EM><P>
+               <STRONG>Deterministic clock is <EM>essential</EM></STRONG> to
+               any coupled-model system.
+               <P>
+         <LI>  <EM>3.4.5.1: Arbitrary clock ticks </EM><P>
+               NOT needed for any realistic application.<P>
+               <P>
+         <LI>  <EM>3.4.5.3: Sampling resolution at least from
+               <STRONG>millisecond</STRONG></EM><P>
+               I don't really believe this.  Neither did ORD when
+               queried about it during the Models-3 Requirements phase!
+               <P>
+         <LI>  <EM>3.4.7:  Variety of 1D, 2D and 3D grid cell types:
+               points, lines, triangles, quadrillaterals, polygons,
+               tetrahedra, hexahedra, etc.</EM><P>
+               <UL>
+                   <LI> This is grossly inadequate to handle geospatial
+                        polygon data such as comes from GIS coverages.
+                   <LI> This will lead to referential integrity problems
+                        and enormously increased storage/communications
+                        costs when one is forced to arbitrarily
+                        triangulate entities that are properly more
+                        complex networks/polygons/polyhedra.
+                   <LI> The distinction between <EM>topology</EM>
+                        and <EM>geometry</EM> is ignored.
+                   <LI> What about cases with <EM>time dependent
+                        geometry</EM>??
+               </UL>
+               <P>
+         <LI>  <EM>3.4.11.1 Quantity, units, <STRONG>range,
+               accuracy</STRONG>, etc.</EM><P>
+               We've been through this one in detail before: 
+               non-structural metadata is <STRONG>properly the subject 
+               of post-processing</STRONG> and not of the I/O interface.
+               This represents a major failure to separate concerns (or
+               a major violation of modularity) in the analysis.
+               <P>
+         <LI>  <EM>3.5.1 Main memory and processor-time efficient
+               buffered/paged/cached data subset access.</EM><P>
+               ...is <STRONG>definitely required</STRONG>  We are
+               already at the point where data volumes are on the
+               order of 1&nbsp;GB/variable/day, and where vis systems
+               (such as <VAR>Vis5d</VAR> that assume
+               &quot;Everything--including seek pointers and
+               address-offsets--is an <VAR>int</VAR> are grossly
+               inappropriate.
+               <P>
+         <LI>  <EM>3.5.2:  Spatial interpolation and
+               aggregation.</EM><P>
+               should be under the modeler's control, and should
+               probably be done via time-independent transform matrices,
+               not by an API that wastes time redundantly computing the
+               necessary transforms.  <EM>That's why SMOKE is so much
+               faster and more efficient than EPS!</EM>
+               <P>
+         <LI>  <EM>3.5</EM><P>
+               <STRONG>Need geometry-related <EM>utilities</EM></STRONG>
+               (see <EM><A
+               HREF="/products/ioapi/gefile.html">
+               /products/ioapi/gefile.html</A></EM>)
+               <P>
+    </UL>
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="CON">Major Constraints</A>
+</H2>
+
+    <UL>
+         <LI>  <EM>4.3.2 Data access should be buffered to allow
+               access of datasets too large to fit into main memory.</EM>
+               <P>
+               <STRONG>Definitely required:  </STRONG> the dataset for
+               the 2000 AMS presentation was 38&nbsp;GB--because we
+               extracted/cut down just the subset we needed.  The
+               original was 300 GB.<P>
+               Projected in-memory requirement for large TOPLATS
+               visualizations is on the order of <STRONG>5 PB</STRONG>.
+               <P>
+         <LI>  <EM>4.3.4 Visualization frame rates for interactive
+               applications should be greater than three frames per
+               second.</EM>
+               <P>
+               How large an app?  This is not achievable in general,
+               even with dedicated access to an ASCI-class machine.
+               <P>
+         <LI>  <EM>4.5.1 MCNC M3IO Library (Carlie Coats).</EM>
+         <P>
+               &lt;PLEADING&gt;It's not &quot;M3IO&quot;, damn
+               it!&lt;/PLEADING&gt;
+               <P>
+    </UL>
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="ADD">Additional Potential Requirements</A>
+</H2>
+
+    <UL>
+         <LI>  <EM>Support for some GIS-like computational capabilities
+               (area, distance, intersection)</EM>
+               <P>
+               And many more:  see <EM><A
+               HREF="/products/ioapi/gefile.html">
+               /products/ioapi/gefile.html</A></EM>
+               for just a start.
+               <P>
+         <LI>  <EM>Support for non-spherical earth</EM>
+               <P>
+               This can also be handled on the application level
+               (e.g., proposed WRF standard to pass all georegistration
+               questions through &quot;WRF standard-sphere-Lat/Lon&quot;
+               and &quot;GRS80-Lat/Lon&quot;)
+               <P>
+         <LI>  <EM>Support for heterogenous data types in a collection 
+               of data</EM>
+               What does this mean?
+               <P>
+         <LI>  <EM>While fast access is important I don't think
+               purely random access is essential</EM>
+               <P>
+               <STRONG>No! NO! NO!</STRONG> -- our current models
+               <EM>and model couplings</EM> are based on getting
+               <STRONG>away</STRONG> from the sequential dependencies
+               that caused such problems in the 1980's!  
+               <P>
+         <LI>  <EM>No support for F77 is required</EM>
+               <P>
+               What if we deal with MM5?  Note that the full strength
+               of F90 is as complex and as fraught with surprises as 
+               the worst of C++ ever has been.  And at that, <EM>neither
+               language</EM> has a powerful-enough polymorphism paradigm
+               for what we need to do with I/O!
+               <P>
+         <LI>  <EM>It would be desirable to define data objects 
+               that encapsulate transformation on one or more data
+               sets</EM>
+               <P>
+               And rather more than that... which is why there are
+               <A
+               HREF="/products/ioapi/M3CPLE.html">
+               M3CPLE</A> and 
+               <A
+               HREF="/products/ioapi/M3CPLE.html">
+               MTXCPLE</A>.
+               <P>
+         <LI>  For mixed media applications, <STRONG>there <EM>must</EM>
+               be I/O&nbsp;API coupling mode</STRONG> or its equivalent.
+               <P>
+    </UL>
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+Send comments to 
+<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS> 
+          Carlie J. Coats, Jr. <br> 
+          cjcoats@email.unc.edu  </ADDRESS> </A><P> 
+
+<!--#include virtual="/INCLUDES/footer.html" -->
+</BODY>      <!--end body  -->
+</HTML>      <!--end html  -->
+
+

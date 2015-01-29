@@ -1,0 +1,97 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: HHMMSS.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> HHMMSS()  and  hhmmssc() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    HHMMSS()  and  hhmmssc() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    CHARACTER*10 HHMMSS( JTIME )
+        INTEGER, INTENT(IN   ) :: JTIME   ! time, HHMMSS = 100*(100*hour + min) + secs
+</PRE><P>    
+
+<H2> C version: </H2>
+<PRE>
+    void hhmmssc( int  jtime , 
+                  char buffer[ 11 ] )
+</PRE><P> 
+
+<H2> Summary: </H2>
+    Format and return the <A HREF = "DATETIME.html"> Models-3-convention 
+    time </A> JTIME as a character string &quot;HH:MM:SS&quot;
+
+<H2> Preconditions: </H2>
+
+<BLOCKQUOTE>
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    0 &lt;= JTIME &lt;= 990000, represents a time interval according to 
+    <A HREF = "DATETIME.html"> Models-3 conventions </A>.
+</BLOCKQUOTE>
+
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    <PRE>
+    ...
+    CHARACTER*10  HHMMSS
+    ...
+    CHARACTER*10  BUFFER
+    ...
+    BUFFER = HHMMSS( 123456 )
+C	    ==&gt; BUFFER now holds &quot;12:34:56&quot;
+    ...
+    WRITE( *,* ) 'Time Step ', HHMMSS( 10000 )
+C	    ==&gt; writes &quot;Time Step 1:00:00&quot;	! note left-shift !
+    ...
+    </PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    char  buffer[ 11 ] ;
+    ...
+    hhmmssc( 123456, buffer ) ;
+    /*  buffer now holds &quot;12:34:56&quot;
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "GETDTTIME.html" >
+Previous:  <STRONG>GETDTTIME</STRONG>
+</A><P> 
+
+<A HREF = "ISDSTIME.html" >
+Next:  <STRONG>ISDSTIME</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

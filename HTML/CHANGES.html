@@ -1,0 +1,1032 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: CHANGES.html 114 2015-01-19 13:35:23Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Changes from the Previous I/O API Version </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Changes from Previous I/O API Versions </H1>
+
+<UL>
+    <LI> <A HREF = "gefile.html">Proposed &quot;geospatial cell
+         complex&quot; data type</A>
+         <P>
+    <LI> <A HREF = "NEWSTUFF.htmlver32">Changes from Versions 3.1 to 3.2</A>
+         <P>
+    <LI> <A HREF = "NEWSTUFF.htmlver31">Changes from Versions 3.0 to 3.1</A>
+         <P>
+    <LI> <A HREF = "NEWSTUFF.htmlver31">Changes from Versions 2.1 to 3.0</A>
+         <P>
+    <LI> <A HREF = "NEWSTUFF.html#ver21">Changes from Versions 2.0 to 2.1</A>
+         <P>
+    <LI> Changes from Versions 1.x to 2.0 (1999 and later)
+         <UL>
+             <LI> <A HREF = "#taskp">OpenMP Task-Parallel Extensions</A> 
+             <LI> <A HREF = "#coupl">Extensions for Coupling
+                                     Concurrent Models</A> 
+             <LI> <A HREF = "#times">Time Series READ/WRITE</A>
+             <LI> <A HREF = "#ports">Portability Enhancements</A>
+         </UL>
+         <P>
+    <LI> Changes from Versions 0.x to 1.x (1997 and earlier)
+         <UL>
+             <LI> <A HREF = "#kfstuff"> KF Event Files</A>
+             <LI> <A HREF = "#convents"> Modeling Conventions, 
+                                         September 1996 </A>
+             <LI> <A HREF = "#concepts"> New Concepts, September 1995 </A>
+             <LI> <A HREF = "#constants"> Dimensioning and Constants </A>
+             <LI> <A HREF = "#declaratons"> Declaration of routines </A>
+             <LI> <A HREF = "#descriptions"> Grid and File Descriptions </A>
+             <LI> <A HREF = "#open"> OPEN3()/CREATE3() </A>
+             <LI> <A HREF = "#write"> WRITE3() </A>
+             <LI> <A HREF = "#close"> CLOSE3() </A>
+             <LI> <A HREF = "#check"> CHECK3() </A>
+             <LI> <A HREF = "#ddt"> New Function DDTVAR3() </A>
+             <LI> <A HREF = "#utility"> Utility Routines </A>
+             <LI> <A HREF = "M4FILTER.html"> File Conversion, 0.x to 1.x</A>
+         </UL>
+</UL>
+
+<HR> <!----------------------------------------------------------------->
+ 
+<H2>                 
+<A NAME = "taskp">OpenMP Task-Parallel Extensions</A>
+</H2>
+
+    For Version&nbsp;2, the I/O&nbsp;API was substantially re-written
+    to support thread-safe task-parallel use in modeling.  In general,
+    data access operations may be called at the same time, provided that
+    they do not access the same variable from the same file.  In
+    particular, because <CODE><A HREF = "INTERP3.html" >INTERP3()</A></CODE> 
+    and <CODE><A HREF = "DDTVAR3.html">DDTVAR3()</A></CODE> 
+    always do substantial linear-algebra computations (linear
+    interpolation and re-scaled differencing, respectively), while
+    they only occasionally do actual I/O (because the manage
+    behind-the-scenes double-buffering for the interpolation buffers),
+    substantial gains in parallel efficiency may be obtained by using
+    the OpenMP <CODE>PARALLEL SECTIONS</CODE> facility to perform
+    multiple <CODE>INTERP3()</CODE>'s in task-parallel. Additionally,
+    the (relatively fine-grained) KF-file access functions <CODE>
+    <A HREF = "KFOPEN.html" >KFOPEN()</A>, 
+    <A HREF = "KFINDX.html" >KFINDX()</A>
+    <A HREF = "KFREAD.html" >KFREAD()</A>
+    <A HREF = "KFWRITE.html" >KFWRITE()</A> </CODE> may be called 
+    in parallel even acting on the same variable(s) of the same file(s).
+    <P>
+
+<H2>                 
+<A NAME = "coupl">Extensions for Coupling Concurrent Models</A>
+</H2>
+
+    As part of the MCNC
+    <A HREF = "http://www.baronams.com:/projects/ppar/index.html">Practical
+    Parallel Project</A>, MCNC has developed an extended
+    <STRONG><A HREF = "BUFFERED.html">Model-Coupling Mode</A></STRONG> 
+    for the I/O&nbsp;API.  This mode, implemented using 
+    <A HREF = "http://www.epm.ornl.gov:80/pvm/">PVM&nbsp;3.4</A> 
+    mailboxes, allows the user to specify in
+    the run-script whether &quot;file&quot; means a physical file on
+    disk or a PVM mailbox-based communications channel (a
+    <STRONG>virtual file</STRONG>), on the basis of the value of the 
+    file's <A HREF = "ENVIRONMENT.html">logical name</A>.  For models 
+    exchanging data via virtual files of the I/O&nbsp;API's coupling mode, 
+    the I/O&nbsp;API schedules the various processes on the basis of data 
+    availability:
+    <UL>
+        <LI>  <CODE>OPEN3()</CODE> calls for read-access to virtual
+              files that haven't yet been opened for write access by
+              some other process put the caller to sleep until the 
+              file is opened; and
+              <P>
+         <LI>  <CODE>READ3()</CODE>, <CODE>INTERP3()</CODE>, or
+              <CODE>DDTVAR3()</CODE> calls for virtual-file data which 
+              has not yet been written put the reading process to sleep 
+              until the data arrives, at which point the reader is 
+              awakened and given the data it requested.  
+    </UL>
+    There are two requirements on the modeler: 
+    <UL>
+        <LI>  structuring reads and writes so as to avoid deadlocks 
+              (two or more models, each asleep while waiting for input 
+              from the other); and 
+        <LI>  providing enough feedbacks to prevent one process from
+              &quot;racing ahead&quot; of the others.  In a one-way
+              coupled system, this may mean the introduction of
+              artificial <VAR>synchronization files</VAR> which exist
+              solely to provide these feedbacks.
+    </UL>
+    <P>
+    This has several advantages from the model-engineering point of
+    view:
+    <UL>  
+        <LI>  The same programs work unchanged both in standalone mode
+              (reading input from files and writing output to files)
+              and in coupled-model mode (reading and writing selected
+              inputs or outputs to/from PVM mailboxes).
+               
+        <LI>  Readers and writers do not need to know about each other
+              in detail.  In particular, any reader only needs to know 
+              that <EM>some</EM> writer will put the variables it needs
+              into the mailbox.  Writers don't care whether readers
+              even exist or not.
+              
+        <LI>  One writer can supply multiple readers without special
+              programming (and without needing to know who they are).
+              For example, in a coupled system with the MM5/MCIP
+              meteorology model, the SMOKE emissions model, and the 
+              MAQSIP air quality model, MM5 produces 5 time-stepped
+              output &quot;virtual files&quot;, some variables of two
+              of which are read by SMOKE and all of which are read by
+              MAQSIP; and SMOKE produces one output &quot;virtual
+              files&quot; read by MAQSIP.  MAQSIP produces a 
+              &quot;synchronization file&quot; read by MM5/MCIP and
+              used to keep MM5/MCIP from running ahead and exhausting
+              available mailbox-buffer space.
+              
+        <LI>  Since data is tagged by variable-name, simulation date, 
+              and time, the system is not subject to data scrambling
+              because of implicit programming assumptions about the
+              data ordering in the way that stream-like communications
+              channels are.
+
+    </UL>
+    <P>
+
+<H2>                 
+<A NAME = "times">Time Series READ/WRITE</A>
+</H2>
+        
+    In order to support the needs of surface-water, lake and estuary,
+    and bay modeling, at the request of EPA-AREAL we have added two
+    routines to the I/O&nbsp;API which will access an entire time
+    step sequence of data in a single operation (&quot;read or write
+    <VAR>N</VAR> time steps of data starting at date and time 
+    <VAR>D:T</VAR> with step <VAR>DT</VAR> for variable <VAR>V</VAR> 
+    to/from file <VAR>F</VAR>&quot;).  The new routines are
+    <CODE><A HREF = "READ4D.html">READ4D()</A></CODE> and 
+    <CODE><A HREF = "WRITE4D.html">WRITE4D()</A></CODE>, and 
+    very much resemble <CODE>READ3()</CODE> and
+    <CODE>WRITE3()</CODE>, except for the specification of an
+    entire time step sequence as arguments, the restriction to
+    single-variable operations (<CODE>ALLVAR3</CODE> is
+    <STRONG>not</STRONG> supported for these) and file types
+    <CODE><A HREF = "DATATYPES.html#custom">CUSTOM3</A></CODE>,
+    <CODE><A HREF = "DATATYPES.html#grdded">GRDDED3</A></CODE>,
+    <CODE><A HREF = "DATATYPES.html#bndary">BNDARY3</A></CODE>, and
+    <CODE><A HREF = "DATATYPES.html#tsries">TSRIES3</A></CODE>.
+    <P> 
+    
+<H2>                 
+<A NAME = "ports">Portability Enhancements</A>
+</H2>
+
+    For I/O&nbsp;API version&nbsp;2, conditional compilation directives 
+    were modified to make it easier to port the I/O&nbsp;API 
+    to other platforms.  Four issues are prominent:
+    <UL>  
+        <LI>  Name mangling (trailing underscores) conventions
+        <LI>  CHARACTER string-passing conventions;
+        <LI>  Native length for REAL, INTEGER, and DOUBLE;
+        <LI>  Dynamic memory allocation mechanism, whether via 
+              Cray-pointers and <VAR>MALLOC</VAR> or by automatic
+              arrays (as in <VAR>g77</VAR> and F-90).
+    </UL>
+    Preprocessor definitions and conditional compilation directives
+    recognizing many of these have been provided in the code, as 
+    follows:
+    <UL>  
+        <LI>  FLDMN=1 specifies Feldmann-style name mangling (trailing 
+              underscore) and  CHARACTER string-passing (Pass strings
+              as C <VAR>char *</VAR> arguments, and add extra 
+              &quot;hidden&quot; <VAR>int</VAR> value arguments for
+              string-length at the end of arg-lists, in the same order
+              as the string-arguments) conventions;
+        <LI>  REAL8=1 specifies that Fortran REAL has the same type
+              as C <VAR>double</VAR>, whereas REAL8=4 specifies the
+              correspondence with C <VAR>float</VAR>.
+        <LI>  AUTO_ARRAYS=1 specifies availability of off-the-stack
+              allocation for local arrays.
+    </UL>
+    This provides support for at least the following additional platforms 
+    and compilers:
+    <UL>  
+        <LI>  gcc/g77 (FLDMN=1, REAL8=0, and AUTO_ARRAYS=1) on a wide
+              variety of platforms (including gcc/g77 on Win32 via the
+              Cygnus port).
+        <LI>  Win32 (Windows&nbsp;3.1/win32s, Windows&nbsp;95, and 
+              Windows&nbsp;NT/x86) using either the Digital or the
+              Absoft Fortran-90 compilers and the Microsoft C compiler
+              (for Absoft and DVF5, this requires that the Fortran 
+              pre-processing be done in advance on a UNIX system;  
+              FLDMN=1, REAL8=0, and AUTO_ARRAYS=1 work for many of these
+              combinations if you specify <VAR>UNIX</VAR> calling
+              conventions; hard-coded support has also been added for
+              DVF6 using the so-called Microsoft <VAR>STDCALL</VAR>
+              calling conventions.);
+        <LI>  Windows&nbsp;NT/Alpha using the Digital compilers (also
+              requires Fortran pre-processing n advance; FLDMN=1,
+              REAL8=0, and AUTO_ARRAYS=1);
+        <LI>  &lt;suggestions? <A HREF = "mailto:cjcoats@email.unc.edu">
+              Do you want to donate us a machine (or machine-time)
+              for it?&gt;</A>
+    </UL>
+    <P> 
+
+
+<HR> <!----------------------------------------------------------------->
+ 
+<H2>                 
+<A NAME = "kfstuff"> File Extensions for KF Event Data </A>
+</H2>
+
+    The Kain-Fritsch prameterization for convective clouds (as found
+    in the MM5 and Eta meteorological models, and as adapted for air
+    quality models by McHenry) generates data which does not fit the
+    basic I/O&nbsp;API model of data which always occurs on a regular
+    time step sequence
+    [&lt;date&gt;:&lt;time&gt;:&lt;time-step&gt;:&lt;record-count&gt;]
+    for all the cells in an entire array.  Instead, convective cloud 
+    events happen on a cell-by-cell basis, each event having its own
+    starting location [&lt;column&gt;,&lt;row&gt;] on a grid, as well
+    as its own
+    [&lt;starting-date&gt;:&lt;starting-time&gt;:&lt;duration&gt;]
+    which define its lifetime.  We have constructed an additional
+    file type <CODE><A HREF="DATATYPES.html#kfevnt">KFEVNT3</A></CODE> 
+    with data structures appropriate for this data, together with 
+    additional operations
+    <CODE><A HREF="KFOPEN.html">KFOPEN()</A></CODE>,
+    <CODE><A HREF="KFINDX.html">KFINDX()</A></CODE>,
+    <CODE><A HREF="KFREAD.html">KFREAD()</A></CODE>, and
+    <CODE><A HREF="KFWRITE.html">KFWRITE()</A></CODE>
+    in the I/O&nbsp;API to store, index, and retrieve this kind of data.
+    <P>
+
+<H2>                 
+<A NAME = "convents"> Modeling Conventions, September 1996 </A>
+</H2>
+        
+    A number of changes are being made in modeling conventions for the
+    September 1996 freeze/release of the I/O API and related models and
+    analysis/visualization software.  Most of these have to do with
+    strict adherence to usage of MKS (SI) units.
+    
+    <H3> <A HREF = "GRIDS.html#vert">Vertical Coordinates</A> </H3>
+ 
+    <UL>
+        <LI>  File header attribute <STRONG>VGLVS3D(0:MXLAYS3)</STRONG>
+              in <A HREF = "INCLUDE.html#fdesc"> FDESC3.EXT </A> now
+              uses 0-based subscripting rather than 1-based. 
+              <P>
+              This change does <EM>not</EM> affect the files
+              themselves (since the size of the VGLVS3D array does
+              not change, but only affects FDESC3.EXT and the
+              interpretation of subscripts to the array VGLVS3D
+              contained in it.
+              <P>
+        <LI>  <STRONG>Layer 1</STRONG> is the bottom layer of the model.
+             <P>
+        <LI>  For sigma-P coordinates (both hydrostatic and
+              nonhydrostatic), file header attribute <STRONG>VGTOP3D</STRONG>
+              in <A HREF = "INCLUDE.html#fdesc"> FDESC3.EXT </A>
+              should be specified in Pascals rather than millibars.
+              <P>
+        <LI>  For pressure coordinates (VGTYP3D=VGPRES3),
+              pressure levels <STRONG>VGLVS3D(0:MXLAYS3)</STRONG> should
+              be specified in Pascals rather than millibars.
+              <P>
+        <LI>  For sigma-Z (VGTYP3D=VGSIGZ3), the formula gives zero on
+              the &quot;model bottom&quot; and 1 on the &quot;model
+              top&quot;:<P>
+              <EM>sigma = (z - h) H / ( H - h )</EM> <P>
+              where <EM>h = h(x,y)</EM> is the terrain height and
+              <EM>H</EM> is the height of the model top.
+    </UL>
+    Diagrams showing the relationship of the grid and its layers to the
+    header attributes VGLVS3D, etc., are available in 
+    <A HREF = "3D.ps">Postscript</A>, 
+    <A HREF = "3D.xbm">X bitmap</A>,
+    <A HREF = "3D.jpg">JPEG</A>, and
+    <A HREF = "3D.gif">GIF</A> image formats.
+ 
+
+    <H3> <A HREF = "GRIDS.html#horiz"> Horizontal Coordinates</A> </H3>
+    
+    <UL>
+        <LI>  (A reiteration, not a change:)  Horizontal grid 
+              descriptions are <STRONG>cell</STRONG>-based, rather 
+              than point-based.  In particular, (XORIG,YORIG) are the 
+              coordinates of the <EM>lower-left corner</EM> of the
+              (1,1)-cell.
+              <P>
+        <LI>  (The model is an MKS model:) Except in Lat-Lon coordinate
+              systems, grid-descriptive parameters XORIG, YORIG, XCELL,
+              and YCELL are <STRONG>specified in meters</STRONG>.
+    </UL>
+
+    <H3> <A HREF = "DATETIME.html"> Temporal Coordinates</A> </H3>
+ 
+    (A reiteration, not a change:)  Dates and times in I/O API files 
+    are assumed to be in <STRONG>Greenwich mean time.</STRONG>
+ 
+ 
+     <H3> <A HREF = "ENVIRONMENT.html"> Standard Environment 
+                                          Variables </A></H3>
+ 
+    Environment variable &quot;IOAPI_LOG_WRITE&quot; controls whether
+    each successful call to <A HREF = "WRITE3.html">WRITE3()</A> 
+    generates a log message or not.  The default value of this
+    environment variable is &quot;Y&quot;, indicating that log
+    messages will be written (compatible with the previous behavior).
+ 
+ 
+    <H3> <A HREF = "SAMPLE.html"> Sample programs  </A></H3>
+ 
+    A set of sample programs are now available, demonstrating some
+    useful ways to use the I/O API, how the modeling conventions work,
+    and how the two fit together.  The programs were designed not only
+    to be demonstrative, but also to do some useful work:
+    <UL>
+        <LI>  <A HREF = "LATLON.txt"><STRONG>Program LATLON</STRONG></A>
+              computes single-layer time-independent gridded and/or 
+              boundary files containing variables &quot;LAT&quot; and
+              &quot;LON&quot;, atitudes and longitudes at cell centers
+              for the specified grid and/or its boundary. 
+        <LI>  <A HREF = "PRESZ.txt"><STRONG>Program PRESZ</STRONG></A>
+              optionally reads in a file containing gridded terrain
+              heights, prompts the user for a (hydrostatic) vertical 
+              grid, then constructs a time-independent layered gridded
+              file with variables &quot;ZH&quot;, &quot;ZF&quot;,
+              &quot;PRESH&quot;, and &quot;PRESF&quot;.
+        <LI>  <A HREF = "SFCMET.txt"><STRONG>Program SFCMET</STRONG></A>
+             reads in an ASCII hourly surface meteorology observation
+              file and puts out its data in an ID-referenced-type
+              hourly time-stepped I/O API file.
+    </UL>
+    
+  
+ 
+<HR>
+
+<H2>                 
+<A NAME = "concepts"> New Concepts </A>
+</H2>
+
+    You <STRONG>must</STRONG> use the new INCLUDE files rather than
+    keeping the old versions.  Source code can presently be found in
+    the directories:
+    <BLOCKQUOTE>
+        <VAR>/pub/storage/env/proj/ioapi</VAR>  on the EPA workstation 
+        cluster; and <BR>
+        <VAR>/home/xcc/m3io</VAR> on <VAR>sequoia.</VAR>
+    </BLOCKQUOTE>
+    <P> 
+    
+    <A HREF = "C.html"> <STRONG>C bindings:</STRONG> </A>  There are now
+    C include-files and C wrappers around the public I/O API routines and 
+    almost all of the utility routines .
+    <P> 
+    
+    The public routines have been changed to permit 
+    <STRONG>name arguments</STRONG> to  be <STRONG>CHARACTER*(*)</STRONG> 
+    with actual length at most 16, for files and variables (internally, 
+    the I/O API copies the actual name arguments to its own
+    CHARACTER*16 buffers).  This makes the API more robust 
+    (you no longer need to pad to exactly length-16), as well
+    as friendlier (you can use immediate-mode strings -- e.g. 
+    use 'SO4' as a variable-name).
+<P>    
+
+    For metadata tracking (suggested by Becky Bagdasarian):  the I/O API 
+    will look for <A HREF = "ENVIRONMENT.html"> 
+    <STRONG>environment variable &quot;EXECUTION_ID&quot;</STRONG> </A>, 
+    to be stored in file headers to identify the exact program execution 
+    which produced the file.  For files opened for writing, it will
+    record the execution-ID (as a CHARACTER*80 string in the file header,
+    and will report it appropriately.  It can be retrieved by getting
+    the <A HREF = "INCLUDE.html#fdesc"> file description </A> using
+    routine <A HREF = "DESC3.html"> <VAR>DESC3()</VAR> </A> and then
+    examining <VAR>EXECN3D</VAR>.
+<P>        
+
+    We introduce a new <STRONG>timestep-structure 
+    <A HREF = "DATATYPES.html#timestruct"> 
+    &quot;circular-buffer&quot; </A> </STRONG> (or &quot;restart&quot;)
+    for files.  The circular-buffer time step structure allows you
+    to minimize the disk space consumed while at the same time 
+    ensuring that enough data is stored to disk to allow you to
+    restart a computation.  It is defined as follows:
+    <UL>
+        <LI>  For circular-buffer files, the 
+              <A HREF = "INCLUDE.html#fdesc"> header-timestep 
+              attribute <STRONG>TSTEP3D</STRONG> </A>  is negative, and 
+              is the  additive inverse of the actual time-step.
+        <LI>  The files keep two active time steps -- the &quot;even&quot;
+              and the &quot;odd&quot; time step.
+    </UL>
+    
+<P>        
+
+    We introduce <A HREF = "BUFFERED.html"> 
+    <STRONG>&quot;BUFFERED&quot;</STRONG>  </A> virtual files to provide
+    a mechanism that is safer and more robust than COMMON blocks for 
+    sharing data among modules within the same program.  These 
+    &quot;files&quot; are actually an <EM>in-memory</EM> mechanism for 
+    sharing data between modules in the same program; they are created 
+    and read from and written to just as ordinary files are.  Only two 
+    active time steps are kept in memory (as two active disk records
+    are kept for circular-buffer files, above); memory allocation,
+    etc., is handled behind the scenes by the I/O API when these 
+    virtual files are created.
+<P>        
+
+    You cause a file with say<A HREF = "LOGICALS.html"> logical name </A> 
+    FOO to be BUFFERED by the way you assign the logical name:  
+    <VAR>setenv FOO BUFFERED</VAR> instead of 
+    <VAR>setenv FOO <VAR>&lt;file path name&gt;</VAR> </VAR>.  Since
+    <A HREF = "READ3.html"> READ3() </A> and 
+    <A HREF = "INTERP3.html"> INTERP3() </A> check the date and time
+    associated with the data they retrieve, the I/O API will catch and
+    report instances when you attempt to use data in one module before
+    it has been generated in another (unlike COMMON blocks, which will
+    blithely let you attempt to use variables that haven't been set yet).
+    Since the decision as to whether a file is BUFFERED or is a real
+    disk-file is made at program-launch, on the basis of <VAR>setenv</VAR>s
+    in the script, the calling program doesn't know (nor need to know) 
+    whether a file is BUFFERED or not.  This provides the opportunity to
+    save -- at will -- a program's intermediate values to disk for 
+    further analysis.
+<P>        
+
+    New <A HREF = "DATATYPES.html#basic"><STRONG>basic data type
+    </STRONG> </A> options and descriptions are now available:
+    individual variables may now be arrays of integers, reals, or
+    double-precision, instead of real only.  The basic data type of
+    each variable is indicated by the <STRONG>VTYPE3D</STRONG> array in 
+    <A HREF = "INCLUDE.html#fdesc"> file description </A> data structures
+    in the FDESC3.EXT INCLUDE-file; &quot;magic-number&quot; values
+    <STRONG>M3INT</STRONG>, <STRONG>M3REAL</STRONG>, and
+    <STRONG>M3DBLE</STRONG>, respectively (defined in 
+    <A HREF = "INCLUDE.html#parms">PARMS.EXT</A>), indicate variables
+    of types INTEGER, REAL, and DOUBLE PRECISION, respectively.
+
+<P>        
+
+    <A HREF = "DATATYPES.html#smatrx"> <STRONG>New data structure-type 
+    SMATRX3</STRONG> </A> for sparse matrices used in new 
+    emissions modeling.  The sparse matrices are stored in the so-called
+    &quot;skyline-transpose&quot; representation.  For these matrices, the 
+    interpretation of dimensioning attributes, memory layout, and 
+    multiplication with vectors V is as follows:
+<PRE>
+    NROWS3 = number of matrix rows
+    NCOLS3 = max number of nonzero columns in a row
+    NLAYS3 = 1
+    NVARS3 = 1 (or do we want to allow for the possibility
+               of multiple matrices using the same indexing
+               scheme?  -- i.e., one INDX but multiple COEF's
+               in the memory layout below.)
+    SINDX3 maps into variable-index for NMAX below
+    LINDX3 maps into variable-index for INDX below.
+    
+    INTEGER  NMAX( NROWS3D )
+    INTEGER  INDX( NCOLS3D, NROWS3D )
+    REAL     COEF( NCOLS3D, NROWS3D )
+    COMMON / ASPARSE /  NMAX, INDX, COEF        !  memory layout
+    
+    P( j ) = \sum_{i=1}^{NMAX(j)} COEF(i,j) V( INDX( i,j ) )
+</PRE>
+
+    (<STRONG>Internal change</STRONG> at the request of Kathy Pearson):  
+    internal implementation-flag array 
+    &quot;TFLAG&quot; |~~&gt;  &quot;TIMESTAMP&quot; has values which are 
+    2-vectors containing components for the date and time for the corresponding
+    record (using <A HREF = "DATETIME.html"> Models-3 date and conventions </A> 
+    -- TIMESTAMP( var, rec) = (YYYYDDD,HHMMSS).
+<P>        
+
+
+<H2> 
+<A HREF = "INCLUDE.html#parms"> PARMS3.EXT: </A> 
+<A NAME = "constants"> Dimensioning and Constants </A> 
+</H2>
+
+    New or changed <A HREF = "INCLUDE.html#dims"> dimensioning parameters </A>
+    <UL>
+        <LI>   <STRONG>MXVARS3</STRONG> maximum number of variables per file
+                                        changes from  60  to  120
+        <LI>   <STRONG>MXDESC3</STRONG> maximum number of description lines
+                                        changes from 20 to 60
+        <LI>   <STRONG>MXLAYS3</STRONG> new maximum number of layers parameter
+                                        is 100; it is used to dimension the
+                                        <A HREF = "GRIDS.html#vert"> 
+                                        vertical grid description </A> 
+                                        in <A HREF = "INCLUDE.html#fdesc"> 
+                                        FDESC3.EXT </A>
+    </UL>
+    <P> 
+
+    New <STRONG>missing-value parameters</STRONG> in PARMS3.EXT:
+    <UL>
+        <LI>  <STRONG>BADVAL3</STRONG> = -9.999E36, 
+        <LI>  <STRONG>AMISS3</STRONG> = -9.0E36, 
+        <LI>  <STRONG>IMISS3</STRONG>  = -9999, and 
+        <LI>  <STRONG>CMISS3</STRONG> = '????????????????' = 16*'?'
+    </UL>
+    the intent is to use BADVAL3, IMISS, and CMISS as the standard
+    REAL, INTEGER, and CHARACTER-string "missing" values and always 
+    to test for BADVAL as  <STRONG>X &lt; AMISS3</STRONG>.  
+    Note that BADVAL3 and AMISS3 are generally-unused values, safely 
+    in range of floating-point arithmetic for all M3/EDSS machines, 
+    and BADVAL3 &lt; AMISS3 on all such machines (i.e., the test is 
+    roundoff-safe on any reasonable hardware). 
+    <P>
+    
+    New <A HREF = "INCLUDE.html#magic"> &quot;magic-number&quot; parameters </A> 
+    <UL> 
+        <LI>  <STRONG>SMATRX3</STRONG>  sparse matrix data type
+        <LI>  <STRONG>FSREAD3</STRONG>  file opening mode:  read-only
+        <LI>  <STRONG>FSRDWR3</STRONG>  file opening mode: old, read-write
+        <LI>  <STRONG>FSNEW3</STRONG>   file opening mode: new, read-write
+        <LI>  <STRONG>FSUNKN3</STRONG>  file opening mode: unknown, read-write
+        <LI>  <STRONG>FSCREA3</STRONG>  file opening mode:
+                                        truncate/create new file for 
+                                        read-write (remove file if it 
+                                        already exists)
+        <LI>  <STRONG>VGSGPH3</STRONG>  vertical coordinate type:  
+                                        hydrostatic sigma-P
+        <LI>  <STRONG>VGSGPN3</STRONG>  vertical coordinate type:
+                                        nonhydrostatic sigma-P
+        <LI>  <STRONG>VGSIGZ3</STRONG>  vertical coordinate type: sigma-Z
+        <LI>  <STRONG>VGPRES3</STRONG>  vertical coordinate type:  
+                                        pressure (mb)
+        <LI>  <STRONG>VGZVAL3</STRONG>  vertical coordinate type:
+                                        Z (m above terraim)
+        <LI>  <STRONG>VGHVAL3</STRONG>  vertical coordinate type:
+                                        H (m above sea level)
+        <LI>  <STRONG>UTMGRD3</STRONG>  horizontal coordinate type:  
+                                        universal transverse mercator (UTM)
+        <LI> <STRONG>M3INT</STRONG>    <A HREF = "DATATYPES.html#basic"> 
+                                       basic data type </A> for variables:
+                                       integer
+        <LI> <STRONG>M3REAL</STRONG>   basic data type:  real
+        <LI> <STRONG>M3DBLE</STRONG>   basic data type:  double precision
+    </UL>
+    <P> 
+
+
+<H2> 
+<A HREF = "INCLUDE.html#iodecl"> IODECL3.EXT:</A>  
+<A NAME = "declarations"> Declaration of routines</A>
+</H2>
+
+    IODECL3.EXT now declares routines INTERP3() and DDTVAR3(); 
+    it no longer declares the obsolete routine CREATE3().
+    <P> 
+    
+
+<H2> 
+<A HREF = "INCLUDE.html#fdesc"> FDESC3.EXT: </A>  
+<A NAME = "descriptions"> Grid and File Descriptions </A>
+</H2>
+
+    <A HREF = "GRIDS.html"><STRONG>Grid description</STRONG> definitions</A> 
+    were changed extensively.  For horizontal grids and coordinates, 
+    two new description parameters, <STRONG>(XCENT3D,YCENT3D)</STRONG> 
+    were added to FDESC3.EXT.  These describe the  (Lat-Lon) or 
+    standard-UTM (for offset-UTM) coordinates for the  center of 
+    the Cartesian coordinate system (i.e., Cartesian  (0,0) has these 
+    as its Lat-Lon or UTM coordinates.  The complete 
+    <A HREF = "GRIDS.html#vert"> <STRONG>vertical grid  
+    description</STRONG>  </A> (previously not specified in file descriptions) 
+    was also added.  Vertical grid descriptions provide the following 
+    information:
+    <UL>
+        <LI>  vertical coordinate type <STRONG>VGTYP3D</STRONG> 
+              which takes as values the following 
+              <A HREF = "INCLUDE.html#magic">  
+              &quot;magic numbers&quot;</A>
+              defined in <A HREF = "INCLUDE.html#parms"> PARMS3.EXT </A>
+              <UL>
+                  <LI>  <STRONG>VGSGPH3 = 1</STRONG> hydrostatic sigma-P
+                  <LI>  <STRONG>VGSGPN3 = 2</STRONG> nonhydrostatic sigma-P
+                  <LI>  <STRONG>VGSIGZ3 = 3</STRONG> sigma-Z
+                  <LI>  <STRONG>VGPRES3 = 4</STRONG> pressure (mb)
+                  <LI>  <STRONG>VGZVAL3 = 5</STRONG> Z (m above sea level)
+                  <LI>  <STRONG>VGHVAL3 = 6</STRONG> H (m above ground)
+                  <LI>  <STRONG>AMISS3 = -9999</STRONG> &quot;other&quot;
+                        or &quot;not applicable&quot;
+              </UL>
+        <LI>  the number of levels <STRONG>NLAYS3D</STRONG> (which had been
+              already present); 
+        <LI>  the full-level boundary values 
+              <STRONG>VGLVS3D( 0:NLAYS3D )</STRONG>; and
+        <LI>  (relevant for sigma-coordinates only) the model top <STRONG>VGTOP3D</STRONG> .
+    </UL>
+    <P>        
+
+    A new <STRONG>maximum time step number</STRONG> attribute MXREC3D 
+    for files was added to <A HREF = "INCLUDE.html#fdesc"> FDESC3.EXT </A>.  
+    It allows, for example, an analysis program to determine easily not only
+    the beginning (as it could do earlier, in terms of SDATE3D:STIME3D) but 
+    also the end of the time period for which a file contains data.
+    <P> 
+              
+    Individual variables may now be arrays of <A HREF =
+    "DATATYPES.html#basic"><STRONG>basic data type</STRONG></A>
+    INTEGER, REAL, or DOUBLE-PRECISION, instead of real only.  
+    Which such type each variable has is indicated by the 
+    <VAR>VTYPE3D</VAR> array in file description data structures in the
+    <A HREF = "INCLUDE.html#fdesc">FDESC3.EXT </A> 
+    INCLUDE-file; it takes the &quot;magic-number&quot; values
+    (defined in <A HREF = "INCLUDE.html#parms">PARMS.EXT</A>):
+    <UL>
+        <LI>  <STRONG>M3INT  = 4</STRONG> for INTEGER variables
+        <LI>  <STRONG>M3REAL = 5</STRONG> for REAL variables, and
+        <LI>  <STRONG>M3DBLE = 6</STRONG> for DOUBLE PRECISION
+              variables
+    </UL>
+
+<H2>
+<A NAME = "open"> OPEN3()/CREATE3() </A> 
+</H2>
+
+    The OPEN3()/CREATE3() changes semantics are as follows:  
+    <P>
+    CREATE3() goes away.  
+    <P> 
+    
+    <A HREF = "OPEN3.html"> OPEN3( FNAME, FMODE, PGNAME ) </A> 
+    takes a new argument, FMODE, (replacing the READ-ONLY/READ-WRITE flag) 
+    which takes the following 
+    <A HREF = "INCLUDE.html#magic"> magic numbers </A>defined in 
+    <A HREF = "INCLUDE.html#parms"> PARMS3.EXT </A> as its values:
+    <DL>
+        <DT> <STRONG>FSREAD3 = 1</STRONG> for &quot;old read-only&quot;
+        <DT> <STRONG>FSRDWR3 = 2</STRONG> for 
+             &quot;old, read-write (update)&quot;
+        <DT> <STRONG>FSNEW3 = 3</STRONG> for &quot;new, read-write&quot;
+        <DT> <STRONG>FSUNKN3 = 4</STRONG> for &quot;unknown read-write&quot;
+             (create if necessary; otherwise perform consistency-check
+             with the supplied definition).
+        <DT> <STRONG>FSCREA3 = 5</STRONG> for &quot;create/truncate 
+             read-write&quot; (remove any existing file and create new 
+             file  with the supplied definition).
+    </DL>
+    <P>             
+    
+    For files opened "old", the file must already exist, or else
+    OPEN3() will return FALSE (which matches the previous behavior
+    of OPEN3()).
+    <P>             
+
+    For files opened &quot;new&quot;, the behavior matches the previous
+    CREATE3():  the file must NOT exist; the caller must have
+    supplied a <A HREF = "INCLUDE.html#fdesc"> file description 
+    in the FDESC3.EXT </A> commons. for use by OPEN3(), which then
+    constructs the new file according to the caller-supplied description.
+    <P>             
+
+    For files opened "unknown", the file may or may not exist; the
+    caller must have supplied a <A HREF = "INCLUDE.html#fdesc"> 
+    file description in the FDESC3.EXT </A> commons; and the behavior 
+    depends upon whether the file exists or not:  if it does, the file 
+    is opened and the description from the file's header is checked 
+    for consistency with the description supplied by the caller.  If 
+    these are consistent, OPEN3() returns TRUE; if not, it closes the 
+    file again and returns FALSE.  If the file does not exist, OPEN3()
+    will create a new file according to the caller-supplied description
+    (just as it would if the mode had been &quot;new&quot;.
+    <P>
+    
+    For files opened "create/truncate", the caller must have supplied a
+    file description in the <A HREF = "INCLUDE.html#fdesc">FDESC3.EXT</A>
+    commons.  OPEN3() first checks validity of this description
+    (returning FALSE if <A HREF = "ENVIRONMENT.html">
+    IOAPI_CHECK_HEADERS </A> is set and the file description is not
+    consistent), then closes the file if it is already open.  If the
+    file exists, it deletes it, and then creates a new file according
+    to the supplied file description.  <STRONG>NOTE:  Joan Novak (EPA) 
+    and Ed Bilicki (MCNC) have declared as a software standard that 
+    modeling programs may not use FSCREA3 as the mode for opening
+    files.  FSCREA3 is reserved for analysis/data extraction programs
+    only.</STRONG>
+    <P>
+
+    OPEN3() now writes significant portions of a file's description 
+    to the <A HREF = "ENVIRONMENT.html"> program log </A> upon 
+    success at opening a file.
+    <P> 
+    
+
+<H2>
+<A NAME = "write"> WRITE3() </A> 
+</H2>
+
+    The granularity of <A HREF = "WRITE3.html">WRITE3() </A> has been 
+    changed to permit write-granularity
+    at the level of <STRONG>time steps of individual variables</STRONG> 
+    for <A HREF = "DATATYPES.html#grdded"> GRIDDED </A>, 
+    <A HREF = "DATATYPES.html#bndfary"> BOUNDARY </A>, and 
+    <A HREF = "DATATYPES.html#custom"> CUSTOM  </A> files.  
+    The argument list now looks like:        
+    <PRE>
+    WRITE3( &lt;filename&gt;, &lt;variable-name&gt;, &lt;date&gt;, &lt;time&gt;, &lt;buffer &gt; ) 
+    </PRE>
+            
+    If the file type is GRIDDED, BOUNDARY, or CUSTOM, then the
+    variable-name argument may be either a valid variable name 
+    (in which case it will write exactly that variable from the
+    buffer to the file), or ALLVAR3 (defined to be 'ALL' in 
+    <A HREF = "INCLUDE.html#parms"> PARMS3.EXT </A> (in which case 
+    the behavior of WRITE3() is as defined in the previous version, 
+    i.e., to write an entire time step ofdata from the buffer,
+    interpreted as an array of all the variables, to the file).  
+    If the file is of any other type, the variable-name argument 
+    <STRONG>must</STRONG> be 'ALL' (and the behavior is as defined earlier).
+   
+        
+<H2>
+<A NAME = "check"> CHECK3()
+</A> </H2>
+
+    The change to WRITE3() changes the semantics of 
+    <A HREF = "CHECK3.html"> CHECK3() </A>, so that 
+    it must have argument-list
+    <PRE>
+    CHECK3( &lt;filename&gt;, &lt;variable-name&gt;, &lt;date&gt;, &lt;time&gt; )
+    </PRE>
+    and the semantics is that .TRUE. is returned iff the indicated
+    time step is available for the indicated variable.  Note that 
+    'ALL' is accepted as a variable-name; in that case, CHECK3() returns
+    TRUE iff <EM>all</EM> variables are present for the indicated date and
+    time.  This means it still returns FALSE even if some variables are
+    available for that date and time, but others are not.
+<P>    
+
+
+<H2>
+<A NAME = "close"> New I/O API Function CLOSE3()
+</A> </H2>
+
+    A new I/O API function  <A HREF = "CLOSE3.html"> CLOSE3() </A>, 
+    has been requested, so that open/close operations are more symmetric.
+    It has argument-list
+    <PRE>
+    CLOSE3( &lt;filename&gt; )
+    </PRE>
+    and the semantics is that .TRUE. is returned iff the file was
+    successfully flushed to disk and closed.
+<P>    
+
+
+<H2>
+<A NAME = "ddt"> New I/O API Function DDTVAR3()
+</A> </H2>
+
+    For GRIDDED, BOUNDARY, or CUSTOM files, 
+    <A HREF = "DDTVAR3.html"> DDTVAR3()  </A> returns the mean 
+    time derivative (per second) for the indicated variable for the time
+    step containing the indicated date and time.  Note that for time
+    independent files this derivative is of course zero.
+   
+
+<H2> 
+<A NAME = "utility"> New Utility Routines and Support Structures </A>
+</H2>
+          
+    In order to keep track of <A HREF = "GRIDS.html#horiz">
+    horizontal grids and coordinate systems </A>, and to make their 
+    definitions easily available to programs without the necessity 
+    to recompile them every time a new grid is defined, we introduce 
+    a <A HREF = "GRIDDESC.html"> "grid-and-coordinate-description" 
+    file GRIDDESC </A>, and a family of utility routines as follows:
+<BLOCKQUOTE>        
+        <STRONG>GRIDDESC</STRONG> is the <A HREF = "LOGICALS.html"> 
+        logical name </A> for a text file with two segments.  Each 
+        segment has a 1-line header (which by convention provides
+        titles for the columns in the data records), a sequence 
+        of data records, and a terminal record with name field blank
+        ( i.e.  <CODE>'   '</CODE>).  The first segment is the 
+        <STRONG>coordinate system description segment</STRONG> 
+        and consists  of text records giving coordinate-system name and 
+        descriptive parameters P_ALP, P_BET, P_GAM, XCENT, and YCENT.  
+        The second segment is the <STRONG>grid-description segment</STRONG>, and 
+        consists of text records giving grid name, related 
+        coordinate-system name and descriptive parameters 
+        XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS, and NTHIK.  
+        Each data record is list-formatted (i.e., items are separated 
+        by either blanks or commas, where names are quoted strings, and 
+        consists of three lines, as appropriate:
+</BLOCKQUOTE>
+<PRE>    
+    COORD-NAME
+    P_ALP, P_BET, P_GAM
+    XCENT, YCENT
+    
+        or
+    
+    GRID-NAME
+    COORD-NAME, XORIG, YORIG, XCELL, YCELL
+    NCOLS, NROWS, NTHIK
+</PRE>
+    There are at most 32 coordinate systems and 256 grids listed in 
+    one of these files.  These files are small enough to be archived
+    easily with a study, and have a sufficiently simple format that new
+    ones can easily be constructed &quot;by hand.&quot;
+<P>         
+
+    Logical function <A HREF = "DSCGRID.html"> <STRONG>DSCGRID()
+    </STRONG> </A> manages access to GRIDDESC (in fact, serves as an
+    operational definition of the GRIDDESC file format), and gets grid 
+    and  coordinate system descriptive parameters  COORDNAME, COORDTYPE, 
+    P_ALP, P_BET,  P_GAM, XCENT, YCENT, XORIG, YORIG, XCELL, YCELL, 
+    NCOLS, NROWS, and NTHIK for the specified grid name.  Returns 
+    TRUE iff the requested grid is found in the GRIDDESC file.   
+    LOGICAL ENTRY <STRONG>DSCOORD()</STRONG> of DSCGRID() gets 
+    coordinate-system descriptive  parameters P_ALP, P_BET, P_GAM, 
+    XCENT, and YCENT for the specified coordinate system name 
+    (also returning TRUE iff the coordinate system is found in 
+    the GRIDDESC file).
+<P>         
+
+    <STRONG>New date-and-time functions</STRONG>
+    <DL>
+        <DT> <A HREF = "DAYMON.html" >
+             <STRONG>DAYMON</STRONG>:
+             </A>
+             find month and day-of-month for <VAR>&lt;jdate&gt;</VAR>
+        <DT> <A HREF = "DT2STR.html" >
+             <STRONG>DT2STR</STRONG>:
+             </A>
+             Construct string &quot;HH:MM:SS Month DD, YYYY&quot; for 
+             <VAR>&lt;jdate-&amp;-time&gt;</VAR>
+        <DT> <A HREF = "GETDTTIME.html" >
+             <STRONG>GETDTTIME</STRONG>:
+             </A>
+             get current wall-clock date and time
+        <DT> <A HREF = "HHMMSS.html" >
+             <STRONG>HHMMSS</STRONG>:
+             </A>
+             construct string &quot;HH:MM:SS&quot; for <VAR>&lt;time&gt;</VAR>
+        <DT> <A HREF = "JULIAN.html">
+             <STRONG>JULIAN</STRONG>:
+             </A>
+             find Julian day number for 
+             <VAR>&lt;month&gt; &lt;day&gt; &lt;year&gt;</VAR>
+        <DT> <A HREF = "MMDDYY.html" >
+             <STRONG>MMDDYY</STRONG>:
+             </A>
+             construct string &quot;Month DD, YYYY&quot; for 
+             <VAR>&lt;jdate&gt;</VAR>
+        <DT> <A HREF = "WKDAY.html" >
+             <STRONG>WKDAY</STRONG>:
+             </A>
+             get day-of-week (1...7) for <VAR>&lt;jdate&gt;</VAR>
+    </DL>
+    <STRONG>New utility functions</STRONG>
+    <DL>
+
+        <DT> <A HREF = "DSCGRID.html" >
+             <STRONG>DSCOORD</STRONG>:
+             </A>
+             get description of <VAR>named coordinate system</VAR>
+        <DT> <A HREF = "DSCGRID.html" >
+             <STRONG>DSCGRID</STRONG>:
+             </A>
+             get description of <VAR>named grid</VAR>
+        <DT> <A HREF = "ENVINT.html" >
+             <STRONG>ENVINT</STRONG>:
+             </A>
+             get INTEGER <VAR>value of logical name</VAR> from the environment
+        <DT> <A HREF = "ENVREAL.html" >
+             <STRONG>ENVREAL</STRONG>:
+             </A>
+             get REAL <VAR>value of logical name</VAR> from the environment
+        <DT> <A HREF = "ENVSTR.html" >
+             <STRONG>ENVSTR</STRONG>:
+             </A>
+             get CHARACTER-STRING <VAR>value of logical name</VAR> 
+             from the environment
+        <DT> <A HREF = "ENVYN.html" >
+             <STRONG>ENVYN</STRONG>:
+             </A>
+             get LOGICAL <VAR>value of logical name</VAR> from the environment
+        <DT> <A HREF = "FINDS.html" >
+             <STRONG>FIND1, FIND2, FIND3, FIND4</STRONG>:
+             </A>
+             find integer <VAR>key-tuple</VAR> in sorted <VAR>keytuple-table</VAR>
+        <DT> <A HREF = "GCD.html" >
+             <STRONG>GCD</STRONG>:
+             </A>
+             greatest common divisor function
+        <DT> <A HREF = "GETDFILE.html" >
+             <STRONG>GETDFILE</STRONG>:
+             </A>
+             open and return unit number for direct access Fortran file 
+             with specified <VAR>logical name</VAR>
+        <DT> <A HREF = "GETEFILE.html" >
+             <STRONG>GETEFILE</STRONG>:
+             </A>
+             open and return unit number sequential Fortran file with 
+             specified  <VAR>logical name</VAR>
+        <DT> <A HREF = "GETDBLE.html" >
+             <STRONG>GETDBLE</STRONG>:
+             </A>
+             prompt user for DOUBLE and get response, with default and
+             range checking
+        <DT> <A HREF = "GETMENU.html" >
+             <STRONG>GETMENU</STRONG>:
+             </A>
+             prompt user for <VAR>menu choice</VAR>, etc.
+        <DT> <A HREF = "GETNUM.html" >
+             <STRONG>GETNUM</STRONG>:
+             </A>
+             prompt user for INTEGER, etc.
+        <DT> <A HREF = "GETREAL.html" >
+             <STRONG>GETREAL</STRONG>:
+             </A>
+             prompt user for REAL, etc.
+        <DT> <A HREF = "GETYN.html" >
+             <STRONG>GETYN</STRONG>:
+             </A>
+             prompt user for &quot;Yes-No&quot; answer, etc.
+        <DT> <A HREF = "GRIDOPS.html" >
+             <STRONG>GRIDOPS</STRONG>:
+             </A>
+             select and compute various comparison operations
+        <DT> <A HREF = "INDEX1.html" >
+             <STRONG>INDEX1</STRONG>:
+             </A>
+             <VAR>unsorted-name-table</VAR> lookup for 
+             <VAR>character-string key</VAR>
+        <DT> <A HREF = "JUNIT.html" >
+             <STRONG>JUNIT</STRONG>:
+             </A>
+             return a &quot;safe&quot; Fortran unit number
+        <DT> <A HREF = "LEN2.html" >
+             <STRONG>LEN2</STRONG>:
+             </A>
+             number of leading blanks in <VAR>string</VAR>
+        <DT> <A HREF = "M3ERR.html" >
+             <STRONG>M3ERR</STRONG>:
+             </A>
+             warning <VAR>message</VAR>; or error <VAR>message</VAR> 
+             with SHUT3() and CALL EXIT( 2 )
+        <DT> <A HREF = "M3EXIT.html" >
+             <STRONG>M3EXIT</STRONG>:
+             </A>
+             exit <VAR>message</VAR> with SHUT3() and
+             CALL EXIT( <VAR>&lt;status&gt;</VAR> )
+        <DT> <A HREF = "NAMEVAL.html" >
+             <STRONG>NAMEVAL</STRONG>:
+             </A>
+             get value of <VAR>environment variable</VAR> (for Fortran)
+        <DT> <A HREF = "POLY.html" >
+             <STRONG>POLY</STRONG>:
+             </A>
+             <VAR>degree-d</VAR> polynomial interpolation function
+        <DT> <A HREF = "TRIMLEN.html" >
+             <STRONG>TRIMLEN</STRONG>:
+             </A>
+             <VAR>string</VAR> length, not counting trailing blanks
+        <DT> <A HREF = "UPCASE.html" >
+             <STRONG>UPCASE</STRONG>:
+             </A>                    
+              make <VAR>string</VAR> into ALL CAPS
+    </DL>
+<P> 
+
+
+<HR> <!----------------------------------------------------------------->
+
+See also <A HREF = "NEWSTUFF.html">&quot;What's New&quot;</A>
+and file conversion utility <A HREF = "M4FILTER.html">M4FILTER</A>
+<P>
+
+<A HREF = "TUTORIAL.html" >
+Previous:  <STRONG>Tutorial</STRONG>
+</A><P> 
+ 
+<A HREF = "LOGICALS.html" >
+Next:  <STRONG>Conventions:   Logical Names</STRONG>
+</A><P> 
+ 
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+ 
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+ 
+
+</BODY>
+</HTML>
+

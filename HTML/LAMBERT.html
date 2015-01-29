@@ -1,0 +1,293 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: LAMBERT.html 137 2015-01-27 21:43:37Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> LAMBERT()</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>  Single-Precision Coordinate Transform Routines</H1>
+
+<H2> Fortran version: </H2>
+
+    FOR:  I/O&nbsp;API version 3.2, these are all module routines within
+    <CODE>MODULE&nbsp;MODGCTP</CODE>.  Note that <CODE>SETPROJ()</CODE> 
+    is generic, taking either single-precision or double-precision arguments.
+    <P>
+    <EM>NOTES for prior I/O&nbsp;API versions:</EM>
+    <BLOCKQUOTE>
+    <CODE>LAMBERT()</CODE> is the main function-body, and the rest 
+    except <CODE>LL2UTM())</CODE> and <CODE>UTM2LL()</CODE> are all
+    <CODE>LOGICAL ENTRY</CODE> into this function, rather than
+    stand-alone subroutines.  
+    <P>
+    For I/O&nbsp;API Version 3.1, explicit <CODE>INTERFACE</CODE>s are
+    given in <CODE>MODULE&nbsp;M3UTILIO</CODE>, and
+    <CODE>LL2ALB()</CODE> and <CODE>ALB2LL()</CODE> are the only
+    Albers-projection functions available.
+    <P>    
+    For I/O&nbsp;API versions prior to 3.1, they need explicit
+    <CODE>EXTERNAL</CODE> declarations, and the Albers-projection
+    functions are not available.
+    <BLOCKQUOTE>
+<PRE>
+    LOGICAL FUNCTION LAMBERT( CNAME, A, B, C, XC, YC )
+    LOGICAL FUNCTION POLSTE( CNAME, A, B, C, X, Y )
+    LOGICAL FUNCTION TRMERC( CNAME, A, B, C, X, Y )
+    LOGICAL FUNCTION EQMERC( CNAME, A, B, C, X, Y )
+    LOGICAL FUNCTION ALBERS( CNAME, A, B, C, X, Y )
+
+    LOGICAL FUNCTION INITPROJ( CNAME )
+    LOGICAL FUNCTION INITPROJ( CNAME, CTYPE, AA, BB, CC, XX, YY )
+    LOGICAL FUNCTION INITPROJ( CNAME, CTYPE, DA, DB, DC, DX, DY )
+
+    LOGICAL FUNCTION SETPROJ( CNAME, CTYPE, A, B, C, XC, YC )
+    LOGICAL FUNCTION SETPROJ( CNAME, CTYPE, D, E, F, XD, YD )
+    LOGICAL FUNCTION SETLAM( A, B, C, X, Y )
+    LOGICAL FUNCTION SETPOL( A, B, C, X, Y )
+    LOGICAL FUNCTION SETTRM( A, B, C, X, Y )
+    LOGICAL FUNCTION SETEQM( A, B, C, X, Y )
+    LOGICAL FUNCTION SETALB( A, B, C, X, Y )
+
+    LOGICAL FUNCTION LL2LAM ( X, Y, U, V )
+    LOGICAL FUNCTION LL2UTM ( X, Y, Z, U, V )
+    LOGICAL FUNCTION LL2POL ( X, Y, U, V )
+    LOGICAL FUNCTION LL2TRM ( X, Y, U, V )
+    LOGICAL FUNCTION LL2EQM ( X, Y, U, V )
+    LOGICAL FUNCTION LL2ALB ( X, Y, U, V )
+    LOGICAL FUNCTION LAM2LL ( X, Y, U, V )
+    LOGICAL FUNCTION LAM2UTM( X, Y, Z, U, V )
+    LOGICAL FUNCTION LAM2POL( X, Y, U, V )
+    LOGICAL FUNCTION LAM2TRM( X, Y, U, V )
+    LOGICAL FUNCTION LAM2EQM( X, Y, U, V )
+    LOGICAL FUNCTION LAM2ALB( X, Y, U, V )
+    LOGICAL FUNCTION UTM2LL ( X, Y, Z, U, V )
+    LOGICAL FUNCTION UTM2LAM( X, Y, Z, U, V )
+    LOGICAL FUNCTION UTM2POL( X, Y, Z, U, V )
+    LOGICAL FUNCTION UTM2TRM( X, Y, Z, U, V )
+    LOGICAL FUNCTION UTM2EQM( X, Y, Z, U, V )
+    LOGICAL FUNCTION UTM2ALB( X, Y, Z, U, V )
+    LOGICAL FUNCTION POL2LL ( X, Y, U, V )
+    LOGICAL FUNCTION POL2LAM( X, Y, U, V )
+    LOGICAL FUNCTION POL2UTM( X, Y, Z, U, V )
+    LOGICAL FUNCTION POL2TRM( X, Y, U, V )
+    LOGICAL FUNCTION POL2EQM( X, Y, U, V )
+    LOGICAL FUNCTION POL2ALB( X, Y, U, V )
+    LOGICAL FUNCTION TRM2LL ( X, Y, U, V )
+    LOGICAL FUNCTION TRM2LAM( X, Y, U, V )
+    LOGICAL FUNCTION TRM2UTM( X, Y, Z, U, V )
+    LOGICAL FUNCTION TRM2POL( X, Y, U, V )
+    LOGICAL FUNCTION TRM2EQM( X, Y, U, V )
+    LOGICAL FUNCTION TRM2ALB( X, Y, U, V )
+    LOGICAL FUNCTION EQM2LL ( X, Y, U, V )
+    LOGICAL FUNCTION EQM2LAM( X, Y, U, V )
+    LOGICAL FUNCTION EQM2UTM( X, Y, Z, U, V )
+    LOGICAL FUNCTION EQM2POL( X, Y, U, V )
+    LOGICAL FUNCTION EQM2TRM( X, Y, U, V )
+    LOGICAL FUNCTION EQM2ALB( X, Y, U, V )
+    LOGICAL FUNCTION ALB2LL ( X, Y, U, V )
+    LOGICAL FUNCTION ALB2LAM( X, Y, U, V )
+    LOGICAL FUNCTION ALB2UTM( X, Y, Z, U, V )
+    LOGICAL FUNCTION ALB2POL( X, Y, U, V )
+    LOGICAL FUNCTION ALB2TRM( X, Y, U, V )
+    LOGICAL FUNCTION ALB2EQM( X, Y, U, V )
+
+    REAL   , INTENT(IN   ) :: A        !  first secant latitude, or P_ALPHA
+    REAL   , INTENT(IN   ) :: B        !  second secant latitude  B &gt; A, or P_BETA
+    REAL   , INTENT(IN   ) :: C        !  central meridian, or P_GAMMA
+    REAL   , INTENT(IN   ) :: XC       !  Longitude of Cartesian origin
+    REAL   , INTENT(IN   ) :: YC       !  Latitude  of Cartesian origin
+    REAL   , INTENT(IN   ) :: X        !  (Input)  Cartesian easting  in meters or decimal degrees
+    REAL   , INTENT(IN   ) :: Y        !  (Input)  Cartesian northing "
+    REAL   , INTENT(IN   ) :: U        !  (Output) Cartesian easting  "
+    REAL   , INTENT(IN   ) :: V        !  (Output) Cartesian northing "
+    REAL*8 , INTENT(IN   ) :: D        !  first secant latitude, or P_ALPHA
+    REAL*8 , INTENT(IN   ) :: E        !  second secant latitude  B &gt; A, or P_BETA
+    REAL*8 , INTENT(IN   ) :: F        !  central meridian, or P_GAMMA
+    REAL*8 , INTENT(IN   ) :: XD       !  Longitude of Cartesian origin
+    REAL*8 , INTENT(IN   ) :: YD       !  Latitude  of Cartesian origin
+    INTEGER, INTENT(IN   ) :: Z        !  UTM zone (1...36)
+
+    REAL   , INTENT(  OUT) :: AA       !  first secant latitude, or P_ALPHA
+    REAL   , INTENT(  OUT) :: BB       !  second secant latitude  B &gt; A, or P_BETA
+    REAL   , INTENT(  OUT) :: CC       !  central meridian, or P_GAMMA
+    REAL   , INTENT(  OUT) :: XX       !  Longitude of Cartesian origin
+    REAL   , INTENT(  OUT) :: YY       !  Latitude  of Cartesian origin
+    REAL   , INTENT(  OUT) :: DA       !  first secant latitude, or P_ALPHA
+    REAL   , INTENT(  OUT) :: DB       !  second secant latitude  B &gt; A, or P_BETA
+    REAL   , INTENT(  OUT) :: DC       !  central meridian, or P_GAMMA
+    REAL*8 , INTENT(  OUT) :: DX       !  Longitude of Cartesian origin
+    REAL*8 , INTENT(  OUT) :: DY       !  Latitude  of Cartesian origin
+
+</PRE><P>
+
+
+<H2> Summary: </H2>
+    
+    Note that inputs are 4-byte <CODE>REAL</CODE> single precision
+    (unlike the double precision used internally by <CODE>GCTP</CODE>). 
+    Calculations for which precision is important should use
+    <CODE>GCTP</CODE> or <CODE>MODULE M3GCTP</CODE> routine
+    <CODE>XY2XY()</CODE> directly; further note that by default,
+    <CODE>LAMBERT()</CODE> etc., use the GRS&nbsp;1980 spheroid to
+    represent the surface of the Earth (which may be important to know
+    for high-precision calculations).  For use in SMOKE and legacy
+    applications, or where precision is not important.  Otherwise use
+    <CODE>MODULE M3GCTP</CODE> routine <CODE>XY2XY()</CODE>
+    <P> 
+
+    <CODE>INITPROJ()</CODE>,  <CODE>LAMBERT()</CODE>,  <CODE>POLSTE()</CODE>,
+    <CODE>TRMERC()</CODE>, <CODE>EQMERC()</CODE>, and  
+    <CODE>ALBERS()</CODE> set up USGS National Mapping Division General
+    Cartographic Transformation Package, routine
+    <A HREF = "GCTP.html"><CODE>GTPZ0()</CODE></A> by
+    <EM>map-projection name</EM> for particular  <STRONG>named</STRONG>
+    Lambert Conformal Conic, Polar Stereographic, Transverse Mercator,
+    Equatorial Mercator, or Albers Equal-Area Conic projections,
+    respectively.  If <CODE>CNAME</CODE> is the <EM>grid name</EM>, the
+    subroutine returns the corresponding <EM>coordinate system
+    name</EM>, and coordinate definition parameters
+    <CODE>A,B,C,X,Y.</CODE> (or equivalent <CODE>REAL*8</CODE>
+    projection parameters.  The resulting projection will be used
+    by subsequent calls of that type -- e.g., if the projection is
+    Lambert, by <CODE>LAM2LL(), LL2LAM(),</CODE>, etc.
+    <P>
+
+    <CODE>SETPROJ()</CODE>,  <CODE>SETLAM()</CODE>,
+    <CODE>SETPOL()</CODE>, <CODE>SETTRM()</CODE>, <CODE>SETEQM()</CODE>,
+    and  <CODE>SETALB()</CODE> set up  <CODE>GTPZ0()</CODE>
+    <EM>according to map-projection <EM>parameters</EM> supplied as
+    arguments</EM>, for anonymous Lambert Conformal Conic, Polar
+    Stereographic, Transverse Mercator, Equatorial Mercator, or Albers
+    Equal-Area Conic projections, respectively.  The resulting
+    projection will be used by subsequent calls of that type -- e.g., if
+    the projection is Lambert, by <CODE>LAM2LL(), LL2LAM(),</CODE>, etc.
+    <P>
+
+    <STRONG>See also</STRONG>:
+    <BLOCKQUOTE>
+        <A HREF = "GRIDS.html#horiz">the usage-manual section on horizontal
+    coordinates and grids</A> for more about I/O&nbsp;API grid and
+    coordinate system conventions.<P>
+        <A HREF = "LL2UTM">routines <CODE>LL2UTM</CODE> and
+        <CODE>UTM2LL</CODE></A>.<BR>
+        <A HREF = "GCTP.html">USGS package GCTP</A><BR>
+        <A HREF = "MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>
+        and its routines
+        <A HREF = "GRID2XY().html"><CODE>GRID2XY()</CODE></A>
+        and <A HREF = "XY2XY.html"><CODE>XY2XY()</CODE></A><BR>
+    </BLOCKQUOTE>
+    <P>
+
+
+<H2> Preconditions </H2>
+
+    For <CODE>LAMBERT(), POLSTE(), TRMERC(), EQMERC()</CODE>, or 
+    <CODE>ALBERS()</CODE>, <CODE>CNAME</CODE> must be the name either
+    of a coordinate system or  a grid found in file
+    <CODE>GRIDDESC</CODE>; furthermore, the projection-type of that
+    coordinate system must be respectively <CODE>LAMGRD3</CODE> (i.e.,
+    Lambert Conformal Conic), <CODE>POLGRD3</CODE> (Polar Stereographic),
+    <CODE>TRMGRD3</CODE> (Transverse Mercator), <CODE>EQMGRD3</CODE>
+    (Equatorial Mercator), or <CODE>ALBGRD3</CODE> (Albers Equal-Area
+    Conic) respectively.
+    <P> 
+
+    You must call <CODE>LAMBERT()</CODE> or <CODE>SETLAM()</CODE>
+    before calling conversion functions with Lambert input or output
+    coordinates; likewise <CODE>POLSTE()</CODE> or
+    <CODE>SETPOL()</CODE>, <CODE>TRMERC()</CODE> or
+    <CODE>SETTRM()</CODE>, <CODE>EQMERC() or SETEQM()</CODE>, or
+    <CODE>ALBERS() or SETALB()</CODE>before calling
+    coordinate-transform functions for respectively Polar
+    Stereographic, Transverse Mercator, Equatorial Mercator, or Albers
+    Equal-Area Conic.
+    <P> 
+
+    CNAME has length at most 16.
+    <P> 
+
+    If named map projections are specified by <CODE>LAMBERT(), POLSTE(),
+    TRMERC(), EQMERC(),</CODE> or <CODE>ALBERS()</CODE>, then a file
+    with logical name
+    <A HREF = "GRIDDESC.html">GRIDDESC</A> exists and contains
+    correctly formatted coordinate system descriptions and grid
+    descriptions.
+    <P> 
+
+
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking for I/O&nbsp;API
+    Version 1 or later:    
+    <PRE>
+    <A HREF = "MODGCTP.html">USE MODGCTP</A>
+    </PRE>
+    For version 3.1:
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE>
+    For version 3.0 or earlier. declare explicitly:
+    <PRE>
+    LOGICAL, EXTERNAL :: LAMBERT, LL2LAM, LAM2LL
+    [etc...]
+    </PRE>
+    then:
+    <PRE>
+    ...
+    LOGICAL LAMSET, POLSET
+    REAL    A, B, C, X, Y
+    REAL    XX, YY, UU, VV
+    CHARACTER*16    LAMNAME
+    ...
+    LAMSET = LAMBERT( LAMNAME, A, B, C, X, Y )
+    ...
+    Y = GETREAL( -90.0, 90.0, Y, 'Enter origin  latitude YCENT' )
+    POLSET = SETPOL( A, B, C, X, Y )
+    ...
+    YY = GETREAL( -9.0E12, 9.0E12, Y, 'Enter input Y coordinate' )
+    IF ( LAM2POL( XX, YY, UU, VV ) ) THEN
+        WRITE( *, 2( 5X, A, 1PE14.6, A, 1PE14.6, A, / )' )
+  &      'Lambert X=', XX, ' :  Y=', YY,  ' (meters)',
+  &      'POL     X=', UU, ' :  Y=', VV,  ' (meters)'
+       ...
+    END IF
+    ...
+    </PRE>
+    <P>
+ 
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A>, 
+    <A HREF = "PRESZ.txt">PRESZ</A>, or 
+    <A HREF = "UTMTOOL.txt">UTMTOOL</A>, 
+    for usage examples.)
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "GCTP.html" >
+Previous:  <STRONG>GCTP</STRONG>
+</A><P> 
+
+<A HREF = "LL2UTM.html" >
+Next:  <STRONG>LL2UTM and UTM2LL</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#coordstuff"> 
+Up: <STRONG>Coordinate and Grid Related Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

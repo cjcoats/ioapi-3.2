@@ -1,0 +1,186 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: MTXCALC.html 120 2015-01-20 22:24:03Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program MTXCALC </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program MTXCALC </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  COL_REFINEMENT  &lt;column-sampling factor (default 100)&gt;
+    setenv  ROW_REFINEMENT  &lt;row-sampling factor (default 100)&gt;
+    setenv  GRIDDESC     &lt;path name&gt;
+    setenv  MATRIX       &lt;path name&gt;
+    setenv  MATTXT       &lt;path name&gt;, or &quot;NONE&quot;
+    
+    MTXCALC [INGRID OUTGRID] &lt;and respond to the prompts&gt;
+</PRE>
+where <CODE>INGRID</CODE> and <CODE>OUTGRID</CODE> are the 
+<CODE>GRIDDESC</CODE> names of the input and output grids for the
+transformation.
+<P> 
+
+<H2> Summary </H2>
+
+The <CODE>MTXCALC</CODE> program calculates an approximate sparse
+grid-to-grid transform matrix for specified input and output grids,
+and writes the result to an I/O&nbsp;API 
+<A HREF = "DATATYPES.html#smatrx">sparse-matrix</A> output  file for
+file-to-file/grid-to-grid conversions in programs
+<VAR><A HREF = "MTXCPLE.html">MTXCPLE</A></VAR> and
+<VAR><A HREF = "MTXBLENDhtml">MTXBLEND</A></VAR>, and optionally to 
+output an ASCII &quot;fractions&quot; file such as is used by program
+<VAR><A HREF = "MTXBUILD.html">MTXBUILD</A></VAR> and for quality
+assurance.  The approximation algorithm used is to sub-sample each
+input cell using a subsampled grid of user-selected refinement ratios
+<CODE>COL_REFINEMENT</CODE> by <CODE>ROW_REFINEMENT</CODE> (which
+default to 100&nbsp;&times;&nbsp;100).
+<P>
+
+Requires Fortran-90 for compilation.  The following input and output
+<A HREF = "GRIDS.html#horiz">coordinate systems</A> are supported:
+<UL>
+    <LI>  Latitude-Longitude
+    <LI>  Lambert Conformal Conic
+    <LI>  General Mercator
+    <LI>  General Stereographic
+    <LI>  UTM
+    <LI>  Albers Equal-Area
+    <LI>  Polar Stereographic
+    <LI>  Transverse Mercator
+    <LI>  Equatorial Mercator
+</UL>
+<P>
+
+<STRONG>Before you run the program,</STRONG> 
+you need to assign  the physical file names of the <CODE>MATRIX</CODE>
+and  <CODE>MATTXT</CODE> output files and to the 
+<A HREF = "GRIDDESC.html"><CODE>GRIDDESC</CODE> file</A> to
+the appropriate <A HREF = "LOGICALS.html">logical names</A> , 
+according to Models-3 conventions, using the operation 
+<PRE>
+    &quot;setenv <VAR>&lt;lname&gt; &lt;pname&gt;</VAR>&quot;
+</PRE>
+<STRONG>The program will prompt you</STRONG>, if needed, for the
+GRIDDESC names of the input and output grids if these are not found on
+the command line.
+<P> 
+
+If you want to run this program in <STRONG>batch mode</STRONG> 
+(from a script), the recommended way to develop the script is to 
+run the program once interactively noting the pattern of responses 
+to prompts which generate the particular execution you want.  The 
+pattern of responses then becomes either a command-input file which 
+you may redirect into the program in the script, or may become a 
+&quot;here-document&quot; fed into the execution by the script.  
+One such script, to build a sparse transform matrix to be used by
+<A HREF = "MTXCPLE.html">program MTXCPLE</A> to interpolate from grid
+<CODE>RT45</CODE> to grid <CODE>NC12</CODE>:  
+<P> 
+<BLOCKQUOTE>
+<PRE>
+#!/bin/csh
+#
+#  Script to run /env/proj/ppar/smoke/Run.MTXCALC for the 
+#  INNOGY UK108_25X28 test case
+#
+limit stacksize unlimited
+limit memoryuse unlimited
+#
+#	Directory for executables:
+#
+setenv BIN   /env/proj/ppar/IRIX6n32f90
+#
+setenv DATA  /env/data/coats/shared
+#
+setenv  GRIDDESC     ${DATA}/GRIDDESC.realtime
+setenv  MATRIX       ${DATA}/RT45_to_NC12.matrix.ncf
+setenv  MATTXT       ${DATA}/RT45_to_NC12.matrix.txt
+#
+unsetenv LOGFILE
+set UI=/tmp/MTXCALC.$$
+echo "Yes, continue with program"  &gt; ${UI}
+echo "RT45"                  &gt;&gt; ${UI}
+echo "NC12"                  &gt;&gt; ${UI}
+echo " "                     &gt;&gt; ${UI}
+echo '------------------------------------------------------------------'
+env
+echo '------------------------------------------------------------------'
+echo "UI command-line input:"
+cat ${UI}
+echo '------------------------------------------------------------------'
+
+${BIN}/mtxcalc &lt; ${UI}
+set errornum=${status}
+
+echo '------------------------------------------------------------------'
+rm ${UI}
+if ( ${errornum} != 0 )  echo "ERROR ${errornum} on program "
+
+exit ( ${errornum} )
+</PRE>
+</BLOCKQUOTE>
+<P> 
+
+
+<STRONG>See Also:</STRONG>
+<UL>
+    <LI>  <A HREF = "M3CPLE.html">Program <VAR>M3CPLE</VAR></A>for
+          bilinear file-to-file/grid-to-grid interpolation of GRIDDED
+          files
+          <P>
+    <LI>  <A HREF = "MTXCPLE.html">Program <VAR>MTXCPLE</VAR></A> 
+          using sparse matrices such as those generated by
+          <VAR>MTXBUILD</VAR> and <VAR>MTXCALC</VAR> for general
+          purpose linear-operator-transform file-to-file/grid-to-grid
+          conversions
+          <P>
+    <LI>  <A HREF = "MTXBLEND.html">Program <VAR>MTXBLEND</VAR></A> 
+          using sparse matrices such as those generated by
+          <VAR>MTXCALC</VAR> for general purpose linear-operator-transform
+          file-to-file/grid-to-grid conversions and
+          substitution/replacement into a &quot;base&quot; file.
+          <P>
+    <LI>  <A HREF = "MTXBUILD.html">Program <VAR>MTXBUILD</VAR></A> 
+          to build I/O API sparse matrices for 
+          file-to-file/grid-to-grid conversions from ASCII
+          &quot;fractions&quot; input files.
+          <P>
+    <LI>  <A HREF = "GRIDS.html#horiz"><STRONG>GRID and COORDINATE
+          Conventions</STRONG> for Models-3: </A> Horizontal
+          Coordinates and Grids 
+</UL>
+<P>
+
+<HR>
+
+<A HREF = "MTXBUILD.html" >
+Previous:  <STRONG>MTXBUILD</STRONG>
+</A><P> 
+
+<A HREF = "MTXCPLE.html" >
+Next:  <STRONG>MTXCPLE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

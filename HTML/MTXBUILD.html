@@ -1,0 +1,194 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: MTXBUILD.html 120 2015-01-20 22:24:03Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program MTXBUILD </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program MTXBUILD </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  &lt;coefffile&gt;  &lt;path name&gt; or &quot;NONE&quot;
+    setenv  &lt;outfile&gt;    &lt;path name&gt;
+    setenv  GRIDDESC     &lt;path name&gt;
+    
+    mtxbuild &lt;and respond to the prompts&gt;
+</PRE>
+where <VAR>coefffile</VAR> and <VAR>outfile</VAR> are the
+<A HREF = "LOGICALS.html">logical names </A> of the input 
+ASCII transform-coefficient file and the output
+<A HREF = "DATATYPES.html#smatrx">sparse-matrix</A> transform
+file.
+<P> 
+
+<H2> Summary </H2>
+
+
+The <CODE>MTXBUILD</CODE> program reads in an ASCII list-formatted
+file specifying the transform coefficients for the grid transformation
+being constructed, and then builds an I/O&nbsp;API 
+<A HREF = "DATATYPES.html#smatrx">sparse-matrix</A> output file
+for the transform matrix, as might be used by program
+<A HREF = "MTXCPLE.html">MTXCPLE</A> or by the 
+<A HREF = "/products/smoke/">SMOKE</A>
+emissions modeling system.
+<P>
+ 
+The ASCII transform coefficients file should optionally have a header
+consisting of lines beginning with the character
+&quot;<CODE>#</CODE>&quot; and including fields 
+<PRE>
+#INGRID  <EM>input grid name</EM>
+#OUTGRID <EM>output grid name</EM>
+</PRE>
+specifying the  names of the input and output groid, as these are found
+in the  <A HREF = "GRIDDESC.html">GRIDDESC file</A>,  The transform
+coefficients file should  also contain data lines with the following
+fields, formatted according to Fortran list-formatting conventions
+(fields delimited by whitespace or commas):
+<OL>
+    <LI>  output grid row numbe
+    <LI>  output grid column number
+    <LI>  input grid row number
+    <LI>  input grid column number
+    <LI>  transform-coefficient
+</OL>
+These lines should  be sorted into lexicographic order relative to the
+first two fields (i.e., output rows should be in increasing order, and
+for each output row, the output columns should likewise bein increasing
+order).
+<P>
+
+Requires Fortran-90 for compilation.
+<P>
+
+<STRONG>Before you run the program,</STRONG> 
+you need to assign <A HREF = "LOGICALS.html"> logical names </A> 
+to the physical file names of both files and to the 
+<A HREF = "GRIDDESC.html">GRIDDESC file</A>, 
+according to Models-3 conventions, using the operation 
+<PRE>
+    &quot;setenv <VAR>&lt;lname&gt; &lt;pname&gt;</VAR>&quot;
+</PRE>
+<STRONG>The program will prompt you</STRONG> for the logical names you
+have chosen for the input and output files, and for the GRIDDESC names of
+the input and output grid if these are not found in the input file
+header
+<P> 
+
+If you want to run this program in <STRONG>batch mode</STRONG> 
+(from a script), the recommended way to develop the script is to 
+run the program once interactively noting the pattern of responses 
+to prompts which generate the particular execution you want.  The 
+pattern of responses then becomes either a command-input file which 
+you may redirect into the program in the script, or may become a 
+&quot;here-document&quot; fed into the execution by the script.  
+One such script, to build a sparse transform matrix to be used by
+<A HREF = "MTXCPLE.html">program MTXCPLE</A> to interpolate from grid
+<CODE>EU50_131X110</CODE> to grid <CODE>UK108_25X28</CODE>, using 
+coefficient file <CODE>FRACTIONS</CODE> computed by an off-line GIS
+computation, is given below:  
+<P> 
+<BLOCKQUOTE>
+<PRE>
+#!/bin/csh
+#
+#  Script to run /env/proj/ppar/smoke/Run.mtxbuild for the 
+#  INNOGY UK108_25X28 test case
+#
+limit stacksize unlimited
+limit memoryuse unlimited
+#
+#	Directory for executables:
+#
+setenv BIN   /env/proj/ppar/IRIX6n32f90
+#
+setenv DATA  /env/data/coats/EU
+#
+setenv  GRIDDESC     ${DATA}/GRIDDESC.EU
+setenv  FRACTIONS    ${DATA}/EU_coeffs.UK108_25X28
+setenv  MATRIX_FILE  ${DATA}/EU_to_UK108_25X28.matrix.ncf
+#
+unsetenv LOGFILE
+set UI=/tmp/mtxbuild.$$
+echo "Yes, continue with program"  &gt; ${UI}
+echo "FRACTIONS"                  &gt;&gt; ${UI}
+echo "EU50_131X110"               &gt;&gt; ${UI}
+echo "UK108_25X28"                &gt;&gt; ${UI}
+echo " "                          &gt;&gt; ${UI}
+echo '------------------------------------------------------------------'
+env
+echo '------------------------------------------------------------------'
+echo "UI command-line input:"
+cat ${UI}
+echo '------------------------------------------------------------------'
+
+${BIN}/mtxbuild &lt; ${UI}
+set errornum=${status}
+
+echo '------------------------------------------------------------------'
+rm ${UI}
+if ( ${errornum} != 0 )  echo "ERROR ${errornum} on program "
+
+exit ( ${errornum} )
+</PRE>
+</BLOCKQUOTE>
+<P> 
+
+
+<STRONG>See Also:</STRONG>
+<UL>
+    <LI>  <A HREF = "M3CPLE.html">Program <VAR>M3CPLE</VAR></A>for
+          bilinear file-to-file/grid-to-grid interpolation of GRIDDED
+          files.
+          <P>
+    <LI>  <A HREF = "MTXCPLE.html">Program <VAR>MTXCPLE</VAR></A> 
+          using sparse matrices such as those generated by
+          <VAR>MTXBUILD</VAR> for general purpose linear-operator-transform
+          file-to-file/grid-to-grid conversions.
+          <P>
+    <LI>  <A HREF = "MTXBLEND.html">Program <VAR>MTXBLEND</VAR></A> 
+          using sparse matrices such as those generated by
+          <VAR>MTXBUILD</VAR> for general purpose linear-operator-transform
+          file-to-file/grid-to-grid conversions and
+          substitution/replacement into a &quot;base&quot; file.
+          <P>
+    <LI>  <A HREF = "MTXCALC.html">Program <VAR>MTXBUILD</VAR></A> 
+          to build approximate I/O API sparse matrices and ASCII
+          &quot;fractions&quot; files for  file-to-file/grid-to-grid
+          conversions in programs <VAR>MTXCPLE</VAR> and
+          <VAR>MTXBLEND</VAR>.
+</UL>
+<P>
+
+<HR>
+
+<A HREF = "M4FILTER.html" >
+Previous:  <STRONG>M4FILTER</STRONG>
+</A><P> 
+
+<A HREF = "MTXCALC.html" >
+Next:  <STRONG>MTXCALC</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

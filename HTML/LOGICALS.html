@@ -1,0 +1,98 @@
+        
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: LOGICALS.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> FILES, LOGICAL NAMES AND PHYSICAL NAMES  </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    FILES, LOGICAL NAMES AND PHYSICAL NAMES  </H1>
+        
+In dealing with the files, programs using the I/O API refer to
+files by <STRONG>logical names</STRONG>, instead of forcing the 
+programmer and program-user to deal with hard-coded file names or
+hard-coded unit numbers.  One of the consequences of this is that 
+multiple copies of a program executing at the same time do not 
+interfere with each other, since each execution has its own 
+separate &quot;space&quot; for environment variables.  As a 
+modeler, you can define your own logical names as properties 
+of a program (or even prompt the user for his own preferred 
+logical names at run time) and then at run-time connect up the 
+logical names to any &quot;real&quot; file name you want to, 
+using the UNIX <VAR>csh setenv</VAR> command.  For programming 
+purposes, the significant facts are that names should not contain 
+blanks (except at the end:  <VAR>'BAR  '</VAR> is OK; 
+<VAR>'B  AR'</VAR> is not), and are at most 16 characters long.
+Logical names (environment variables) may also be used to control 
+program options and flags; in that case, the routines 
+<A HREF = "ENVDBLE.html">ENVDBLE</A> , 
+<A HREF = "ENVINT.html">ENVINT</A> , 
+<A HREF = "ENVREAL.html">ENVREAL</A> , 
+<A HREF = "ENVSTR.html">ENVSTR</A> ,
+<A HREF = "ENVYN.html">ENVYN</A> , and 
+<A HREF = "NAMEVAL.html"> NAMEVAL() </A> may be used to get the 
+value associated with the an environment variable.  
+<P>
+
+The I/O API also uses a <A HREF = "ENVIRONMENT.html"> standard set 
+of logical names  </A> <STRONG>LOGFILE, SCENDESC,</STRONG> and 
+<STRONG>EXECUTION_ID</STRONG> for the program's log, the 
+scenario/run description file, and the run's execution ID.  
+Routine <A HREF = "DSCGRID.html"> DSCGRID() </A>
+uses a grid and coordinate description file with logical name 
+<A HREF = "GRIDDESC.html"> <STRONG>GRIDDESC</STRONG> </A>.
+<P> 
+
+When you run a program that uses the I/O API, you begin with a 
+sequence of <VAR>setenv</VAR> commands that set the values for the
+program's logical names, much as you begin a (normal) Cray
+Fortran program with a sequence of <CODE>ASSIGN</CODE> commands for its
+files.  For example, if <VAR>myprogram</VAR> has logical names 
+<VAR>FOO</VAR> and <VAR>BAR</VAR> that I want to connect up to files 
+<VAR>somedata.mymodel</VAR> and <VAR>otherdata.whatever</VAR> from 
+directory <VAR>/tmp/mydir</VAR>, the script for the program would look 
+something like:
+<PRE>
+    ...
+    setenv  FOO  /tmp/mydir/somedata.mymodel
+    setenv  BAR  /tmp/mydir/otherdata.whatever
+    /user/mydir/myprogram
+    ...
+</PRE><P>
+
+Note that you can declare a file
+<A HREF = "BUFFERED.html#vol">&quot;volatile&quot;</A> by adding
+a trailing (and quoted, so that <VAR>setenv</VAR> works correctly)
+<CODE>&nbsp;-v</CODE> to the value of the logical name, as indicated
+below; this has the effect of telling the I/O&nbsp;API to do a
+disk-synch before or after every input or output operation on that
+file.
+<PRE>
+    ...
+    setenv  QUX  &quot;/tmp/mydir/volatiledata.mymodel -v&quot;
+</PRE><P>
+
+
+<HR>
+
+<A HREF = "ENVIRONMENT.html" >
+Next Section:  <STRONG>Standard environment variables</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#conventions"> 
+Up: <STRONG>Conventions</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

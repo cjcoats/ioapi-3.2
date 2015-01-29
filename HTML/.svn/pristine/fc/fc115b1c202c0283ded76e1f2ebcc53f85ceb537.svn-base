@@ -1,0 +1,172 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> XY2XY </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1> XY2XY </H1>
+
+<H2> Fortran version: </H2>
+
+&quot;Generic&quot; Fortran-90 routine to do map-projection transforms
+on arrays of points, with optional <CODE>SPHER1</CODE>,
+<CODE>SPHER2</CODE> spheroid arguments and optional rank for the arrays
+of points being converted.
+<PRE>
+    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,         &amp;
+                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,         &amp;
+                      XLOC2, YLOC2, XLOC1, YLOC1 )
+
+    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1, &amp;
+                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2, &amp;
+                      XLOC2, YLOC2, XLOC1, YLOC1 )
+
+    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,         &amp;
+                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,         &amp;
+                      NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+
+    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1, &amp;
+                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2, &amp;
+                      NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+
+    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,         &amp;
+                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,         &amp;
+                      NCOLS, NROWS, XGRD2, YGRD2, XGRD1, YGRD1 )
+
+    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1, &amp;
+                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2, &amp;
+                      NCOLS, NROWS, XGRD2, YGRD2, XGRD1, YGRD1 )
+
+        INTEGER, INTENT(IN   ) :: GDTYP1, GDTYP2
+        REAL*8 , INTENT(IN   ) :: P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1
+        REAL*8 , INTENT(IN   ) :: P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2
+        REAL*8 , INTENT(IN   ) :: SPHER1, SPHER2
+        REAL*8 , INTENT(IN   ) :: XLOC2
+        REAL*8 , INTENT(IN   ) :: YLOC2
+        REAL*8 , INTENT(  OUT) :: XLOC1
+        REAL*8 , INTENT(  OUT) :: YLOC1
+        REAL*8 , INTENT(IN   ) :: XPTS2( NPTS )
+        REAL*8 , INTENT(IN   ) :: YPTS2( NPTS )
+        REAL*8 , INTENT(  OUT) :: XPTS1( NPTS )
+        REAL*8 , INTENT(  OUT) :: YPTS1( NPTS )
+        REAL*8 , INTENT(IN   ) :: XGRD2( NCOLS,NROWS )
+        REAL*8 , INTENT(IN   ) :: YGRD2( NCOLS,NROWS )
+        REAL*8 , INTENT(  OUT) :: XGRD1( NCOLS,NROWS )
+        REAL*8 , INTENT(  OUT) :: YGRD1( NCOLS,NROWS )
+</PRE><P>    
+
+
+<H2> Summary: </H2>
+    For I/O&nbsp;API Version 3.2 or later, only:  module-routine
+    contained in <CODE>MODULE MODGCTP</CODE>..
+    <P>
+    Transform point-locations with GRID2 coordinates into GRID1
+    coordinates, using USGS GCTP-package routine  
+    <A HREF="GCTP.html"><CODE>GTPZ0()</CODE></A>.
+
+
+<H2> Preconditions </H2>
+
+    <CODE>USE MODGCTGP</CODE>
+    <P>
+
+
+<H2> Fortran Usage: </H2>
+ 
+    <PRE>
+    ...
+    INTEGER     GDTYP1      !!  parameters for output coordinate system
+    REAL*8      P_ALP1
+    REAL*8      P_BET1
+    REAL*8      P_GAM1
+    REAL*8      XCENT1
+    REAL*8      YCENT1
+    INTEGER     NCOLS1
+    INTEGER     NROWS1
+    INTEGER     GDTYP2      !!  parameters for input grid and coord system
+    INTEGER     NCOLS2
+    INTEGER     NROWS2
+    INTEGER     NTHIK2
+    REAL*8      P_ALP2
+    REAL*8      P_BET2
+    REAL*8      P_GAM2
+    REAL*8      XCENT2
+    REAL*8      YCENT2
+    ...
+    REAL*8  XLOC2           !!  input point
+    REAL*8  YLO2C
+    REAL*8  XLOC1           !!  output point
+    REAL*8  YLOC1
+    ...
+    INTEGER NPTS
+    REAL*8  XPTS2( NPTS )   !!  input points
+    REAL*8  YPTS2( NPTS )
+    REAL*8  XPTS1( NPTS )   !!  output points
+    REAL*8  YPTS1( NPTS )
+    ...
+    REAL*8  XGRD2( NCOLS2,NROWS2 )   !!  input points
+    REAL*8  YGRD2( NCOLS2,NROWS2 )
+    REAL*8  XGRD1( NCOLS1,NROWS1 )   !!  output points
+    REAL*8  YGRD1( NCOLS1,NROWS1 )
+    ...
+    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
+                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
+               XLOC2, YLOC2, XLOC1, YLOC1 )
+    ...
+    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
+                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
+                NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+    ...
+    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
+                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
+                NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+    ...
+    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
+                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
+                NCOLS2, NROWS2, XGRD2, YGRD2, XGRD1, YGRD1 )
+    ...
+</PRE><P>
+
+
+    <STRONG>See also</STRONG>:
+    <BLOCKQUOTE>
+        <A HREF = "GCTP.html"     >GCTP</A> coordinate transformation routine from USGS
+        <P>
+        <A HREF = "MODGCTP.html"  ><CODE>MODULE MODGCTP</CODE></A>
+        <P>
+        <A HREF = "GRID2INDX.html"> <CODE>GRID2INDX()/PNTS2INDX()/INDXMULT()</CODE></A>:  
+             Bilinear-interpolation packagee in <CODE>MODULE MODGCTP</CODE>
+             <P>
+        <A HREF = "GRID2XY.html"  ><CODE>GRID2XY()</CODE></A>:  Grid-cell-center 
+        coordinate transformation routinee in <CODE>MODULE MODGCTP</CODE>
+        <P>
+    </BLOCKQUOTE>
+
+
+
+<HR> <!----------------------------------------------------------------->
+</A><P> 
+
+<A HREF = "MODGCTP.html" >
+Up:  <STRONG>MODULE MODGCTP</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#coordstuff"> 
+Up: <STRONG>Coordinate and Grid Related Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

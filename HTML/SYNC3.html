@@ -1,0 +1,96 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: SYNC3.html 130 2015-01-26 14:01:23Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> DESC3() and desc3c() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    SYNC3() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    LOGICAL FUNCTION SYNC3( FNAME )
+        CHARACTER*(*), INTENT(IN   ) :: FNAME           !  logical file name
+</PRE><P> 
+
+<H2> C version: </H2>
+
+<PRE>
+   int sync3c( const char * fname )
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    Synchronizes <CODE>FNAME</CODE> with disk using the netCDF
+    <VAR>ncsync()</VAR> call.  Note that if FNAME was 
+    <A HREF="BUFFERED.html#vol">declared volatile</A>, then 
+    the I/O&nbsp;API will perform <VAR>ncsync()</VAR> calls
+    for every I/O operation on the file (effectively, performing
+    <CODE>SYNCH3&amp;READ3()</CODE> and <CODE>WRITE3()&amp;SYNCH3()</CODE>
+    automatically for that file)
+
+<H2> Preconditions: </H2>
+
+    <A HREF = "INCLUDE.html#iodecl"><CODE>USE M3UTILIO</CODE></A> or
+    <CODE>INCLUDE&nbsp;'IODECL3.EXT'</CODE> for Fortran, or 
+    <CODE>#include&nbsp;&quot;iodecl3.h&quot;</CODE> and 
+    <CODE>#include&nbsp;&quot;fdesc3.h&quot;</CODE> for C.
+    <P> 
+
+    I/O API must already be initialized by a call to
+    <A HREF = "INIT3.html"><CODE>INIT3()</CODE></A>.
+    <P> 
+
+    File <CODE>FNAME</CODE> must already have been opened by 
+    <A HREF = "OPEN3.html"><CODE>OPEN3()</CODE> or
+    <CODE>open3c()</CODE></A>.
+    <P> 
+    
+<H2> Fortran Usage: </H2>
+
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    &lt;under construction&gt;
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    &lt;under construction&gt;
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "SHUT3.html" >
+Previous:  <STRONG>FILCHK3</STRONG>
+</A><P> 
+
+<A HREF = "WRITE3.html" >
+Next:  <STRONG>INQATT3</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#ioapi"> 
+Up: <STRONG>I/O API:  Public Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

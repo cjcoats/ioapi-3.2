@@ -1,0 +1,422 @@
+
+        PROGRAM SFCMET
+
+C***********************************************************************
+C Version "$Id$"
+C EDSS/Models-3 M3TOOLS.  Copyright (C) 1992-2001 MCNC
+C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
+C See file "GPL.txt" for conditions of use.
+C.........................................................................
+C  program body       starts at line   81
+C  subroutine MAKEMET starts at line  322
+C
+C  DESCRIPTION:
+C       Builds 1-layer hourly-time-stepped ID-REFERENCED file with data
+C       read from a NCDC-format surface meteorology observation file.
+C
+C  PRECONDITIONS REQUIRED:
+C       "setenv"s for output files, GRIDDESC file
+C       "f77 sfcmet.F -o sfcmet -L/home/xcc/SunOS5 -lemstuff -lm3io -lnetcdf"
+C       from a directory containing PARMS3.EXT, FDESC3.EXT, IODECL3.EXT
+C       Workstation "f77" only; no Crays.
+C
+C  SUBROUTINES AND FUNCTIONS CALLED:
+C       I/O API and utility routines; PROMPTFFILE routine from
+C       libemstuff
+C
+C  REVISION  HISTORY:
+C       prototype 7/1996 by CJC
+C       Revised  11/2001 by CJC for I/O API Version 2.1
+C***********************************************************************
+
+      USE M3UTILIO
+      IMPLICIT NONE
+
+C...........   EXTERNAL FUNCTIONS and their descriptions:
+
+        REAL*8          GETDBLE
+        INTEGER         GETMENU
+        INTEGER         GETNUM
+        REAL            GETREAL
+        LOGICAL         GETYN
+        INTEGER         PROMPTFFILE
+        LOGICAL         READSMET
+        INTEGER         TRIMLEN
+
+        EXTERNAL  GETDBLE, GETMENU, GETNUM, GETREAL, GETYN, 
+     &            PROMPTFFILE, READSMET, TRIMLEN
+
+C.......   Parameter
+
+        CHARACTER*16, PARAMETER :: NONE  = 'NONE'
+        CHARACTER*16, PARAMETER :: PNAME = 'SFCMET'
+
+
+C...........   LOCAL VARIABLES and their descriptions:
+
+        INTEGER         L, H
+        INTEGER         NSTEPS, JDATE, JTIME
+        INTEGER         IDUM, JDUM
+        REAL            RDUM
+        INTEGER         LOGDEV
+        INTEGER         METDEV
+        CHARACTER*16    FNAME
+        CHARACTER*160   MESG
+
+C***********************************************************************
+C.......   First:  Initialize the I/O API:
+
+        LOGDEV = INIT3()        !  initialization returns unit # for log
+
+        WRITE( *, '( 5X, A )' )        !  opening screen:
+     &' ',
+     &'Program SFCMET to construct matching TIME-STEPPED 1-LAYER ID   ',
+     &'REFERENCED I/O API file containing surface meteorology data    ',
+     &'for a user specified Lat-Lon-based observation window.         ',
+     &' ',
+     &'You will be prompted for the logical name of the output files. ',
+     &'You will need to have set up the environment for this program  ',
+     &'by appropriate commands ',
+     &' ',
+     &'    setenv  <FILENAME>      <PHYSICAL PATH NAME>"',
+     &'    setenv  SURMET_INT_IDS  TRUE" iff IDs are (WBAN) integers',
+     &' ',
+     &'Program copyright (C) 2001 MCNC and released under Version 2',
+     &'of the GNU General Public License.  See enclosed GPL.txt, or',
+     &'URL  http://www.gnu.org/copyleft/gpl.html  Comments and',
+     &'questions are welcome and can be sent to',
+     &' ',
+     &'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',
+     &'    UNC Institute for the Environment',
+     &'    137 E. Franklin St. Suite 602 Room 613-C',
+     &'    Campus Box 1105',
+     &'    Chapel Hill, NC 27599-1105',
+     &' ',
+     &'See URL  http://www.emc.mcnc.org/products/ioapi/AA.html#tools',
+     &' ',
+     &'Program version: ' // PROGVER, 
+     &'$Id::                                                        $',
+     &' '
+
+        IF ( .NOT. GETYN( 'Continue with program?', 
+     &                    .TRUE. ) ) THEN
+            CALL M3EXIT( PNAME, 0, 0,
+     &                   'Program ended at user request', 0 )
+        END IF
+
+        MESG   = 'Enter logical name for ASCII SURFACE MET file'
+        METDEV = PROMPTFFILE( MESG, .TRUE., .TRUE., 'SFCMET', PNAME )
+        IF ( METDEV .LT. 0 ) THEN
+            CALL M3EXIT( PNAME, 0, 0,
+     &                   'Error opening input SURFACE MET file', 2 )
+        END IF
+
+        MESG = 'Enter logical name for output MET file'
+        CALL GETSTR( MESG, 'BDYFILE', FNAME )
+        CALL GETSTR( 'Enter grid name', 'LATLON_foo', GDNAM3D )
+        GDTYP3D = LATGRD3
+        P_ALP3D = 0.0D0
+        P_BET3D = 0.0D0
+        P_GAM3D = 0.0D0
+        XCENT3D = 0.0D0
+        YCENT3D = 0.0D0
+        NCOLS3D = 1             !  1-cell observation window
+        NROWS3D = GETNUM( 1, 999999999, 400, 
+     &                   'Enter max number (dimension) for met sites' )
+        NTHIK3D = 1
+        XORIG3D = GETDBLE( -180.0D0, 180.0D0, -99.0D0,
+     &                     'Enter SW corner longitude for met obs.' )
+        IF ( XORIG3D .GE. 0.0D0 ) THEN
+            CALL M3WARN( 'SFCMET', 0, 0,
+     &      'Positive longitude indicates EASTERN HEMISPHERE' )
+        END IF
+
+        YORIG3D = GETDBLE( -90.0D0, 90.0D0, 26.0D0,
+     &                     'Enter SW corner  latitude for met obs.' )
+        XCELL3D = GETDBLE( 0.0D0, 360.0D0, 30.0D0,
+     &                     'Enter NE corner longitude for met obs.' )
+        YCELL3D = GETDBLE( 0.0D0, 180.0D0, 25.0D0, 
+     &                     'Enter NE corner  latitude for met obs.' )
+        NLAYS3D = 1
+        VGTYP3D = IMISS3
+        VGTOP3D = IMISS3
+
+
+C.......   Time step structure: readsmet() with negative date-time arguments
+C.......   sets date&time to start of the file.
+
+        TSTEP3D = 10000         !  format HHMMSS -- 1 hour
+        SDATE3D = IMISS3
+        STIME3D = IMISS3
+        IF ( .NOT. READSMET( METDEV, SDATE3D, STIME3D,
+     &                       SNGL( XORIG3D ), SNGL( YORIG3D ),
+     &                       SNGL( XCELL3D ), SNGL( YCELL3D ),
+     &                       IDUM, JDUM, RDUM ) ) THEN
+            CALL M3EXIT( 'SFCMET', 0, 0,
+     &      'Error initializing SDATE:STIME from SURFACE MET file', 2 )
+        END IF
+        SDATE3D = 1900000 + SDATE3D
+        SDATE3D = GETNUM( SDATE3D, 9999999, SDATE3D,
+     &                    'Enter starting date (YYYYDDD)' )
+        STIME3D = GETNUM( 0, 23, STIME3D/1000,
+     &                    'Enter starting hour (HH)' )
+        STIME3D = 10000 * STIME3D
+        NSTEPS  = GETNUM( 1, 999999999, 120,
+     &                    'Enter run duration (hours)' )
+
+C.......   Variables and their descriptions; file description
+
+        NVARS3D = 16
+
+C.......   Variables and their descriptions; file description
+
+        NVARS3D = 2
+        VNAME3D( 1 ) = 'LAT'
+        UNITS3D( 1 ) = 'degrees lat'
+        VDESC3D( 1 ) = 'cell-centers latitudes'
+        VTYPE3D( 1 ) = M3REAL
+
+        VNAME3D( 2 ) = 'LON'
+        UNITS3D( 2 ) = 'degrees lon'
+        VDESC3D( 2 ) = 'cell-centers longitudes'
+        VTYPE3D( 2 ) = M3REAL
+
+        VNAME3D( 3 ) = 'OPAQUECOV'
+        UNITS3D( 3 ) = 'percent'
+        VDESC3D( 3 ) = 'opaque sky cover percentage'
+        VTYPE3D( 3 ) = M3REAL
+
+        VNAME3D( 4 ) = 'SKYCLASS'
+        UNITS3D( 4 ) = 'none'
+        VDESC3D( 4 ) = ' total sky cover classification'
+        VTYPE3D( 4 ) = M3REAL
+
+        VNAME3D( 5 ) = 'CLDCOV1'
+        UNITS3D( 5 ) = 'percent'
+        VDESC3D( 5 ) = 'lowest cloud cover percentage'
+        VTYPE3D( 5 ) = M3REAL
+
+        VNAME3D( 6 ) = 'CLDHT1'
+        UNITS3D( 6 ) = 'meters'
+        VDESC3D( 6 ) = 'lowest cloud height (meters)'
+        VTYPE3D( 6 ) = M3REAL
+
+        VNAME3D( 7 ) = 'CLDCOV2'
+        UNITS3D( 7 ) = 'percent'
+        VDESC3D( 7 ) = '2nd lowest cloud cover percentage'
+        VTYPE3D( 7 ) = M3REAL
+
+        VNAME3D( 8 ) = 'CLDHT2'
+        UNITS3D( 8 ) = 'meters'
+        VDESC3D( 8 ) = '2nd lowest cloud height (meters)'
+        VTYPE3D( 8 ) = M3REAL
+
+        VNAME3D( 9 ) = 'CLDCOV3'
+        UNITS3D( 9 ) = 'percent'
+        VDESC3D( 9 ) = '3rd lowest cloud cover percentage'
+        VTYPE3D( 9 ) = M3REAL
+
+        VNAME3D( 10 ) = 'CLDHT3'
+        UNITS3D( 10 ) = 'meters'
+        VDESC3D( 10 ) = '3rd lowest cloud height (meters)' 
+        VTYPE3D( 10 ) = M3REAL
+
+        VNAME3D( 11 ) = 'SLPRES'
+        UNITS3D( 11 ) = 'millibars'
+        VDESC3D( 11 ) = 'sea level pressure (millibars)'
+        VTYPE3D( 11 ) = M3REAL
+
+        VNAME3D( 12 ) = 'WINDDIR'
+        UNITS3D( 12 ) = 'deg from N'
+        VDESC3D( 12 ) = 'wind direction (bearing, deg from N)'
+        VTYPE3D( 12 ) = M3REAL
+
+        VNAME3D( 13 ) = 'WNDSPD'
+        UNITS3D( 13 ) = 'meters/second'
+        VDESC3D( 13 ) = 'wind speed (meters/second)'
+        VTYPE3D( 13 ) = M3REAL
+
+        VNAME3D( 14 ) = 'TEMPC'
+        UNITS3D( 14 ) = 'deg C'
+        VDESC3D( 14 ) = 'temperature, degrees C'
+        VTYPE3D( 14 ) = M3REAL
+
+        VNAME3D( 15 ) = 'TDEW'
+        UNITS3D( 15 ) = 'deg C'
+        VDESC3D( 15 ) = 'dew point, degrees C'
+        VTYPE3D( 15 ) = M3REAL
+
+        VNAME3D( 16 ) = 'PRES'
+        UNITS3D( 16 ) = 'millibars'
+        VDESC3D( 16 ) = 'station pressure (millibars)'
+        VTYPE3D( 16 ) = M3REAL
+
+        FTYPE3D      = IDDATA3
+        FDESC3D( 1 ) = 
+     &      'Surface meteorology observations file generated by ' //
+     &      'program SFCMET'
+        FDESC3D( 2 ) = 'for observation window'
+        WRITE( FDESC3D( 3 ), '( 5X, F7.2, A, F7.2 )' )
+     &      XORIG3D, ' < LON < ', XORIG3D+XCELL3D
+        WRITE( FDESC3D( 4 ), '( 5X, F7.2, A, F7.2 )' )
+     &      YORIG3D, ' < LAT < ', YORIG3D+YCELL3D
+        DO  22  L = 5, MXDESC3  ! = 60, from PARMS3.EXT
+            FDESC3D( L ) = ' '          !  rest of lines are blank
+22      CONTINUE
+
+
+C.......   Open file as "unknown" -- if it does not exist, create it;
+C.......   else check header against description supplied in FDESC3.EXT;
+C.......   open for output in any case.
+C.......   Use subroutines MAKEMET, MAKEBDY to allocate arrays for variables,
+C.......   read from them, and write them to files FNAME and BNAME.
+
+        IF ( .NOT. OPEN3( FNAME, FSUNKN3, 'SFCMET' ) ) THEN
+            MESG = 'Could not open file "' //
+     &             FNAME( 1: TRIMLEN( FNAME ) ) // '" for output'
+            CALL M3EXIT( 'SFCMET', 0, 0, MESG, 2 )
+        END IF
+
+        JDATE = SDATE3D
+        JTIME = STIME3D
+
+        DO  33  H = 1, NSTEPS
+
+            CALL MAKEMET( FNAME, METDEV, JDATE, JTIME ) ! see below
+            CALL NEXTIME( JDATE, JTIME, 10000 )         ! timestep H=1 MM=0 SS=0
+
+33      CONTINUE
+
+
+C.......   Clean up and exit (M3EXIT calls SHUT3() automatically)
+
+        CALL M3EXIT( PNAME, 0, 0, 'Successful completion', 0 )
+
+        END PROGRAM SFCMET
+
+
+C*************  subroutine MAKEMET starts here  ***********************
+C
+C       This also serves as an example to show how to do
+C       dynamic memory allocation from within Fortran on
+C       workstations
+C
+C***********************************************************************
+
+      SUBROUTINE  MAKEMET( FNAME, IUNIT, JDATE, JTIME )
+
+      IMPLICIT NONE
+
+
+C...........   ARGUMENTS and their descriptions:
+
+        CHARACTER*16    FNAME   !  name for output file
+        INTEGER         IUNIT   !  Fortran unit number for input file
+        INTEGER         JDATE   !  requested date YYYYDDD
+        INTEGER         JTIME   !  requested time HHMMSS
+
+
+C...........   EXTERNAL FUNCTIONS and their descriptions:
+
+        LOGICAL         READSMET
+        INTEGER         TRIMLEN
+        INTEGER         MALLOC
+
+        EXTERNAL        READSMET, TRIMLEN
+
+C...........   LOCAL VARIABLES and their descriptions:
+
+C.......   Input buffer for READSMET.  Pointers are set up so that it has
+C.......   contiguous memory layout, as though it were specified by the
+C.......   following common (where MAX is a compile time parameter):
+C
+C       COMMON  / RDBUF / NMET, IMET( MAX ), RMET( 16, MAX )
+
+        INTEGER         NMET( 1 )               !  number of sites this hour
+        INTEGER         IMET( NROWS3D )         !  array of site IDs
+        REAL            RMET( 16, NROWS3D )     !  array of obs variables
+
+C.......   Output buffer for WRITE3.  Pointers are set up so that it has
+C.......   contiguous memory layout, as though it were specified by
+C       COMMON  / WRBUF / NSTA, ISTA( MAX ), VARS( MAX, 16 )
+
+        INTEGER        NSTA( 1 )               !  number of sites this hour
+        INTEGER        ISTA( NROWS3D )         !  array of site IDs
+        REAL           VARS( NROWS3D, 16 )     !  array of obs variables
+
+        POINTER       ( P1, NMET )
+        POINTER       ( P2, IMET )
+        POINTER       ( P3, RMET )
+        POINTER       ( P4, NSTA )
+        POINTER       ( P5, ISTA )
+        POINTER       ( P6, VARS )
+        REAL            N, E, S, W      !  window boundaries
+        LOGICAL         FIRSTIME
+        DATA            FIRSTIME / .TRUE. /
+        
+        SAVE    P1, P2, P3, P4, P5, P6, FIRSTIME
+        
+        INTEGER         I, J            !  loop counters
+        INTEGER         SIZE            !  array size (bytes)
+        CHARACTER*80    MESG
+
+
+C***********************************************************************
+C   begin body of subroutine  MAKEMET
+
+        IF ( FIRSTIME ) THEN
+
+            SIZE = 4 * ( 1 + 17 * NROWS3D )
+            P1   = MALLOC( SIZE )
+            IF( P1 .EQ. 0 ) 
+     &              CALL M3EXIT( 'SFCMET/MAKEMET', 0, 0, 
+     &                           'Memory allocation error for LAT.', 2 )
+            P2   = P1 + 4
+            P3   = P2 + 4 * NROWS3D
+
+            P4   = MALLOC( SIZE )
+            IF( P2 .EQ. 0 ) 
+     &              CALL M3EXIT( 'SFCMET/MAKEMET', 0, 0, 
+     &                           'Memory allocation error for LON.', 2 )
+            P5   = P4 + 4
+            P6   = P5 + 4 * NROWS3D
+
+            N    = SNGL( YORIG3D + YCELL3D )
+            S    = SNGL( YORIG3D )
+            E    = SNGL( XORIG3D + XCELL3D )
+            W    = SNGL( XORIG3D )
+
+            FIRSTIME = .FALSE.
+
+        END IF          !  if firstime
+
+C.......   Use READSMET() to read in this hour's meteorology
+
+        IF ( .NOT. READSMET( IUNIT, JDATE, JTIME, N, S, E, W, NROWS3D,
+     &                       NMET, IMET, RMET ) ) THEN
+            CALL M3EXIT( 'SFCMET/MAKEMET', JDATE, JTIME,
+     &                   'Error reading SURFACE MET input file', 2 )
+        END IF
+
+C.......   Copy/transpose the variables into I/O API output order:
+
+        NSTA( 1 ) = NMET( 1 )
+        DO  22  I = 1, NMET( 1 )
+            ISTA( I ) = IMET( I )
+            DO  11  J = 1, 16
+                VARS( I,J ) = RMET( J,I )
+11          CONTINUE
+22      CONTINUE
+
+
+C.......   Write out results (all variables) to file FNAME, then return:
+
+        IF ( .NOT. WRITE3( FNAME, ALLVAR3, 0, 0, NSTA ) ) THEN
+            MESG = 'Error writing to file "' // TRIM( FNAME ) // '"'
+            CALL M3EXIT( 'SFCMET/MAKEMET', 0, 0, MESG, 2 )
+        END IF
+
+        RETURN
+
+        END  SUBROUTINE  MAKEMET
+

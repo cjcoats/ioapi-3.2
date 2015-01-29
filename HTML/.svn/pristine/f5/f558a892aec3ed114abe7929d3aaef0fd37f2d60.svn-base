@@ -1,0 +1,199 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> PROMPTMFILE() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    PROMPTMFILE() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    CHARACTER*16 FUNCTION  PROMPTMFILE( PROMPT, FMODE, DEFAULT, CALLER )
+      CHARACTER*(*) PROMPT         !  prompt for user
+      INTEGER       FMODE          !  file opening-mode
+      CHARACTER*(*) DEFAULT        !  default logical file name
+      CHARACTER*(*) CALLER         !  caller-name for logging messages
+</PRE><P> 
+
+<H2> C version:  none </H2>
+<P> 
+
+<H2> Summary: </H2>
+
+    <STRONG>
+    For interactive use -- not for modeling nor for programs that will
+    be driven by scripts!  For modeling or script driven programs, use
+    <A HREF="OPEN3.html"><VAR>OPEN3()</VAR></A>, instead.
+    </STRONG>
+    <P>
+
+    Prompts user for logical file name, then uses 
+    <A HREF = "OPEN3.html">OPEN3() </A> to open the I/O API
+    file associated with it according to the indicated FMODE:
+    <UL>
+        <LI>  <STRONG>FSREAD3==1</STRONG>  for read-only
+        <LI>  <STRONG>FSRDWR3==2</STRONG>  for read/write/update of
+              existing files,
+        <LI>  <STRONG>FSNEW3 ==3</STRONG>  for read/write of new files
+        <LI>  <STRONG>FSUNKN3==4</STRONG>  for read/write/update of
+                                           unknown (new vs. old)files.
+                                           If file does not exist,
+                                           create it; else check for
+                                           consistency with
+                                           user-supplied file
+                                           description
+        <LI>  <STRONG>FSCREA3==5</STRONG>  for create/truncate/read/write
+                                           of files.  If file exists,
+                                           delete it; then create a new
+                                           (empty) file according to
+                                           the user-supplied file
+                                           description
+    </UL>
+    If file may possibly be created (i.e., if the access mode is
+    either FSNEW3, FSUNKN3, or FSCREA3), the user must supply a file
+    description in the COMMONs in INCLUDE-file  
+    <A HREF = "INCLUDE.html#fdesc">FDESC3.EXT</A> (for Fortran) or in the data
+    structures pointed to by arguments <VAR>bdesc</VAR> and
+    <VAR>cdesc</VAR> (for C).  In the latter case, the file description
+    struct pointers are only required when the file is being opened
+    &quot;new&quot; or &quot;unknown&quot;.
+    <P> 
+
+    <STRONG>NOTE: </STRONG> Joan Novak (EPA)  and Ed Bilicki (MCNC) 
+    have declared as a software standard that <STRONG>modeling programs
+    may not  use FSCREA3 as the mode for opening files.</STRONG>  
+    FSCREA3 is reserved for use by analysis/data extraction programs
+    only.
+    <P>
+    
+    If <A HREF = "ENVIRONMENT.html"> environment variable PROMPTFLAG</A> 
+    is set to &quot;N&quot;, returns the logical 
+    name contained in DEFAULT without prompting the user.  
+    <P>
+
+    Logs the value returned, for tracking and validation purposes.
+    <P> 
+
+    <STRONG>Returns</STRONG> 
+      <UL>            
+          <LI>  logical name for the file opened, or
+          <LI>  'NONE', provided that '&quot;NONE&quot;'
+                 occurs within the prompt.
+      </UL>
+      <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    <STRONG>See also</STRONG>:
+    <BLOCKQUOTE>
+        <A HREF = "GETDFILE.html">GETDFILE()</A>, <BR>
+        <A HREF = "GETEFILE.html">GETEFILE()</A>, <BR>
+        <A HREF = "PROMPTDFILE.html"> PROMPTDFILE()</A>, and <BR>
+        <A HREF = "PROMPTFFILE.html"> PROMPTFFILE()</A>.
+    </BLOCKQUOTE>
+    <P>
+
+    See also  <A HREF = "OPEN3.html">OPEN3()</A>,
+    <A HREF = "PROMPTDFILE.html"> PROMPTDFILE()</A>, and
+    <A HREF = "PROMPTFFILE.html"> PROMPTFFILE()</A>.
+    <P> 
+
+
+<H2> Preconditions: </H2>
+
+    <CODE><A HREF = "M3UTILIO.html">USE M3UTILIO</A></CODE>
+    or <A HREF = "INCLUDE.html#iodecl"> 
+    <CODE>INCLUDE 'IODECL3.EXT'</CODE> </A> and 
+    <A HREF = "INCLUDE.html#fdesc"> 
+    <CODE>INCLUDE 'FDESC3.EXT'</CODE> </A>
+    <P>
+
+    <CODE>setenv &lt;lname&gt; &lt;pathname&gt; </CODE> for the file
+    before program launch.
+    <P> 
+    
+    File name must have length at most 16.
+    <P>
+    
+    For FSREAD3 or FSRDWR3, file must already exist.
+    <P> 
+    
+    For FSNEW3, file must <EM>not</EM> already exist.
+    <P> 
+    
+    For FSNEW3, FSUNKN3, or FSCREA3, caller must supply file
+    description (which must follow Models-3 <A HREF = "DATETIME.html"> 
+    date and time conventions </A>).
+    <P> 
+    
+    I/O API must already be initialized by a call to 
+    <A HREF = "INIT3.html"> INIT3() or init3c(). </A>
+    <P> 
+    
+    Must not be called for read/write/update (FSRDWR3, FSNEW3,
+    FSUNK3, or FSCREA3) on a file already open for read-only (FSREAD3).
+    <P>
+
+    Must not be called for new (FSNEW3) on a file already
+    open.
+    <P>
+    
+    
+
+
+<H2> Fortran Usage: </H2>
+
+    To get a logical name from the user, and open an optional output
+    file with the indicated description:
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    CHARACTER*16  FNAME
+    ...
+    ... set up file description if FDESC3 COMMONs...
+    FNAME = PROMPTMFILE( 
+   &amp;        'Enter optional file name for FOO (or "NONE")',
+   &amp;        FSUNKN3, 'FOO', 'me' )
+    IF ( FNAME .EQ. 'NONE" ) THEN
+        ... user doesn't want output foo-file
+    END IF
+    ...
+</PRE><P> 
+
+<H2> C Usage: don't.</H2>
+
+<HR> <!----------------------------------------------------------------->
+
+
+<A HREF = "PROMPTFFILE.html" >
+Previous:  <STRONG>PROMPTFFILE</STRONG>
+</A><P> 
+
+<A HREF = "READSMET.html" >
+Next:  <STRONG>READSMET</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

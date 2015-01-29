@@ -1,0 +1,224 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: index.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE>  
+    The EDSS/Models-3 I/O&nbsp;API 
+</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>  The EDSS/Models-3  I/O&nbsp;API </H1>
+
+<HR> <!----------------------------------------------------------------->
+
+     <BLOCKQUOTE><STRONG>
+     <U>NOTES:</U>
+     <DL>
+         <DT> The Models-3 I/O&nbsp;API is <EM>not a data format&nbsp;!!</EM>
+         <P>
+         <DT> <EM>I/O&nbsp;API files are <U>not synonymous</U> with
+              netCDF files&nbsp;!!</EM>  
+     </DL>
+     Instead, netCDF is one of <U>four distinct lower layers</U> on
+     which the data and metadata structures for I/O&nbsp;API files are
+     currently available; additional lower layers may very well be
+     incorporated at various times in the future (<EM>Does anyone want
+     to fund development of an MPI&nbsp;2 lower layer? -- Contact the
+     author!</EM>)
+     </STRONG></BLOCKQUOTE>
+
+<HR> <!----------------------------------------------------------------->
+
+    <UL>
+        <LI> <A HREF = "AA.html"          >User (Programming) Manual</A>
+        <LI> <A HREF = "TUTORIAL.html"    >Tutorial</A>
+        <LI> <A HREF = "REQUIREMENTS.html">Requirements Document
+                                           (1991-2001)</A>
+        <LI> <A HREF = "BINIO.html"       >Native-Binary Mode Extension
+                                           for NCEP</A>
+        <LI> <A HREF = "COUPLING.html"    >Coupling-ModeExtensions for Coupled Models</A>
+        <LI> <A HREF = "NEWSTUFF.html"    >&quot;What's New&quot; --
+                                           New Research and Development
+                                           with the I/O&nbsp;API</A>
+        <LI> <A HREF = "AVAIL.html"       >Availability/Download</A>
+        <LI> <A HREF = "ERRORS.html"      >Trouble-Shooting</A>
+        <LI> <A HREF = "MCPL.html"        >MCPL: an I/O&nbsp;API 
+                                           output module for MM5</A>
+        <LI> <A HREF = "NOTICES.html"     >Notices:  Copyright,
+                                           Acknowledgements</A>
+        <LI> <A HREF = "WRF_IOAPI.html"   >Layering the WRF I/O&nbsp;API
+                                           on Top of the Models-3/EDSS
+                                           I/O&nbsp;API</A>
+     </UL> 
+
+<HR> <!----------------------------------------------------------------->
+
+    The Models-3/EDSS Input/Output Applications Programming Interface 
+    (I/O&nbsp;API) provides the environmental model developer with an 
+    easy-to-learn, easy-to-use <STRONG>programming library for data
+    storage and access</STRONG>, available from both Fortran and C.  The
+    same routines can be used for both file storage (using netCDF files)
+    and model coupling (using PVM mailboxes). It is the standard data
+    access library for both the NCSC/CMAS's EDSS project and EPA's
+    Models-3. There is a external-package wrapper for the I/O&nbsp;API
+    in the <A HREF = "http://wrf-model.org/index.php">Weather Research
+    and Forecasting Model [WRF]</A>, which optionally uses I/O&nbsp;API 
+    coupling mode to couple WRF-Chem with SMOKE.
+    <P> 
+
+    The I/O&nbsp;API provides a variety of data structure types for 
+    organizing the data, and a set of access routines which offer
+    selective direct access to the data in terms meaningful to the 
+    modeler. For example,
+         <BLOCKQUOTE><CODE>
+         Read layer 1 of variable 'OZONE' from 'CONCFILE' for 
+         5:00&nbsp;PM GMT on July&nbsp;19, 1988 and put the result 
+         into array&nbsp;A.
+         </CODE></BLOCKQUOTE>
+    is a direct English translation of a typical I/O&nbsp;API READ3() call.
+    "Selective direct access" means that this READ3 call retrieves exactly
+    this ozone data immediately.  It does not have to read through previous 
+    hours of data, nor whatever other variables (such as NOX or PAN) are 
+    in the file.  Data can be read or written in any order (or not at all).
+    This characteristic provides the following advantages:
+    <UL>  
+        <LI> <STRONG>performance:</STRONG> visualization and analysis 
+             programs looking at  selected parts of the data don't need
+             to read unrequested data from the files.
+
+        <LI> <STRONG>modularity:</STRONG>  Data can be read or written 
+             in any order (or not at all).  The same input files serve
+             both MAQSIP engineering models and full-chemistry 
+             models -- the former reading just a few of the variables 
+             from the files, the latter reading most of them. 
+             The modular-model structure used for MAQSIP and Models-3 
+             depends upon this.
+
+        <LI> <STRONG>robustness:</STRONG>  data are "tagged" by name, 
+             date, and time; miscounted record-numbers don't scramble
+             temperatures with pressures, for example.
+    </UL>
+
+    I/O&nbsp;API files also have the following characteristics 
+    <UL>  
+        <LI>  They are <STRONG>machine-independent</STRONG> and 
+              network-transparent, except for the NCEP native-binary
+              mode.  Files created on a Cray can be read on a desktop
+              workstation (or vice versa) either via NFS mounting or
+              FTP, with no further translation necessary.
+
+        <LI>  They are <STRONG>self-describing</STRONG> -- that is, they 
+              contain headers which provide a complete set of information
+              necessary to use and interpret the data they contain. 
+
+        <LI>  The API provides automated  built-in mechanisms to support 
+              <STRONG>production application requirements </STRONG>for 
+              histories and audit trails:
+              <UL>  
+                  <LI> ID of the program execution which produced the
+                       file
+                  <LI> Description of the study scenario in which 
+                       the file was generated
+              </UL>
+
+        <LI>  They support a <STRONG>variety of data types</STRONG> used in 
+              the environmental sciences, among them
+              <UL>  
+                  <LI>  <VAR>gridded</VAR> (e.g., concentration fields or 
+                        meteorology-model temperatures)
+
+                  <LI>  <VAR>grid-boundary</VAR> (for air quality model 
+                        boundary conditions)
+
+                  <LI>  <VAR>scattered</VAR> (e.g., meteorology 
+                        observations or source level emissions)
+
+                  <LI>  <VAR>sparse matrix</VAR> (as used in the 
+                        SMOKE emissions model)
+
+                  <LI>  <VAR>User customized</VAR> to cover other
+                        potential applications.
+
+              </UL>
+
+        <LI>  They support three different <STRONG>time step
+              structures:</STRONG>
+              <UL>  
+                  <LI>  <VAR>time-stepped</VAR> (with regular time-steps) like
+                        hourly model-output concentration fields or
+                        twice-daily upper air meteorology observation
+                        profiles, or
+                  <LI>  <VAR>time-independent</VAR> like terrain height.
+                  <LI>  <VAR>restart,</VAR> which maintains
+                        &quot;even&quot; and &quot;odd&quot;
+                        time step records, so that restart data
+                        does not consume an inordinate amount of
+                        disk space
+              </UL>
+    </UL>
+    <P> 
+
+    The I/O&nbsp;API also contains an extensive set of utility routines 
+    for manipulating dates and times, performing coordinate conversions, 
+    storing and recalling grid definitions, sparse matrix arithmetic,
+    etc., as well as a set of data-manipulation and statistical analysis
+    programs.  It has an extensive documentation set, including 
+    <UL>  
+        <LI>  <A HREF = "TUTORIAL.html">tutorial</A>; 
+        <LI>  <A HREF = "REQUIREMENTS.html">requirements document</A>; 
+        <LI>  <A HREF = "AA.html">indexes and user manuals</A>
+              for data access routines, utility routines, date/time
+              manipulation routines, and analysis programs; 
+        <LI>  <A HREF = "AA.html#tools">Data-manipulation,
+              geospatial-transform, and statistical-analysis
+              programs</A>
+        <LI>  <A HREF = "SAMPLE.html">several sample programs</A>
+    </UL>
+    <P> 
+    
+    Various <A HREF = "NEWSTUFF.html">extensions and research
+    efforts</A>  to the I/O&nbsp;API have been developed or are under
+    development. Developments include the use of the I/O&nbsp;API
+    interacting with PVM for model coupling, and adding operations to
+    read or write entire time series (with multiple time steps) as
+    single operations, and research projects include data-parallel I/O
+    and a very powerful &quot;geospatial cell complex&quot; data type
+    with polygonal-cell decompositions that may be both time
+    independent (as for finite elememt modeling) and time dependent (as
+    for moving-mesh plume-in-grid modeling).
+    <P> 
+    
+    These web pages are copyright &copy; 1992-2002 MCNC and
+    Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr., 2003-2005 by Baron Advanced
+    Meteorological Systems (hereinafter, BAMS), &copy; 2005-2013
+    Carlie&nbsp;J.&nbsp;Coats, Jr., and &copy; 2014- UNC Institute
+    for the Environment.
+    The I/O&nbsp;API source code and
+    documentation are copyright 1992-2002 MCNC and
+    Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr., 2003-2013 by Baron Advanced
+    Meteorological Systems (hereinafter, BAMS), &copy; 2005-2013
+    Carlie&nbsp;J.&nbsp;Coats, Jr.,, and &copy; 2014- UNC Institute
+    for the Environment, and distributed under the
+    <A HREF="https://www.gnu.org/licenses/lgpl-2.1.html">
+    GNU Lesser (library) Public License (LGPL) Version&nbsp;2.1</A>,
+    subject to copyright-statement retention constraints.
+    See <A HREF = "NOTICES.html">the <EM>Notices:  Copyright, and
+    Acknowledgements</EM> page.</A>
+    <P>
+    <P> 
+    
+    <PRE>
+    $Id: index.html 103 2015-01-16 16:55:45Z coats $
+    </PRE>
+
+ </BODY>
+</HTML>
+

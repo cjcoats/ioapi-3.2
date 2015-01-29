@@ -1,0 +1,83 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> DMATVEC() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    DMATVEC() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    SUBROUTINE DMATVEC( N, D, V, C )
+      INTEGER, INTENT(IN   ) :: N      !  input:  dimension
+      REAL   , INTENT(IN   ) :: D( N ) !  input:  diagonal matrix
+      REAL   , INTENT(IN   ) :: V( N ) !  input:  vector
+      REAL   , INTENT(  OUT) :: C( N ) !  output: vector
+</PRE><P> 
+
+<H2> C version:  none </H2>
+
+<H2> Summary: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    <VAR>DMATVEC()</VAR> applies diagonal matrix <CODE>D</CODE>
+    to vector <CODE>V</CODE> to generate output 
+    vector <CODE>C</CODE>:
+    <BLOCKQUOTE>
+        <VAR>C(K) = D(R)*V(R)</VAR>
+    </BLOCKQUOTE>
+    
+    See also subroutines
+    <BLOCKQUOTE>
+    <A HREF = "BMATVEC.html">BMATVEC and BILIN</A>,
+    <A HREF = "PMATVEC.html">PMATVEC</A>,
+    <A HREF = "SMATVEC.html">SMATVEC</A>, and
+    <A HREF = "UNGRIDB.html">UNGRIDB</A>
+    </BLOCKQUOTE>
+    and programs
+    <BLOCKQUOTE>
+    <A HREF = "MTXBLEND.html">MTXBLEND</A>,
+    <A HREF = "MTXBUILD.html">MTXBUILD</A>,
+    <A HREF = "MTXCALC.html">MTXCALC</A>,
+    <A HREF = "MTXCPLE.html">MTXCPLE</A>.
+     </BLOCKQUOTE>
+   <P> 
+
+
+<H2> Fortran Usage: </H2>
+    
+    <VAR>!! under construction !!</VAR>
+
+<HR> <!----------------------------------------------------------------->
+    
+<A HREF = "CBARNES.html" >
+Previous:  <STRONG>CBARNES1 and CBARNESN</STRONG>
+</A><P> 
+
+<A HREF = "DSCGRID.html" >
+Next:  <STRONG>DSCGRID</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

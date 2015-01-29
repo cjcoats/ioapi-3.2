@@ -1,0 +1,34 @@
+# VERSION "$Id: Makeinclude.Linux2_x86_64dbg 100 2015-01-16 16:52:16Z coats $"
+#
+#       Linux for x86 using the GNU compiler suite
+#
+AR = ar
+CC = gcc
+FC = gfortran
+M4 = m4
+LINK = $(CC)
+
+MODI = -J       ## Module-include-directory command
+
+# MFLAGS = #  -mcpu=opteron -march=opteron \
+#             -ffast-math -funroll-loops -fschedule-insns
+#
+#  Weakening these flags seems to be necessary for the "gcc/g77"
+#  shipped with Fedoraa Core 3/x86_64:
+
+MFLAGS    =  -mcpu=opteron
+
+OMPFLAGS  = -fopenmp
+OMPLIBS   = -L/usr/lib/gcc/x86_64-mandriva-linux-gnu/4.2.2/ -lgomp
+COPTFLAGS = -g ${MFLAGS}
+FOPTFLAGS = -g ${MFLAGS}
+FPPFLAGS  =
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DSECOND_UNDERSCORE=1
+PARFLAGS  =
+ARCHLIB   = -lc
+
+PVM_ROOT  = /usr/share/pvm3
+PVM_ARCH  = LINUX64
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

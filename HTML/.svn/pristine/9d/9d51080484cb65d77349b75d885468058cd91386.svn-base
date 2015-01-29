@@ -1,0 +1,1017 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML> 
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> 
+    Proposal:  Geo-Element Files
+</TITLE>
+</HEAD>
+   
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<!--#include virtual="/INCLUDES/header.html" -->
+
+<H1><CENTER>
+    Proposal:  A <I>Geo-Element File Type</I><BR>
+    in the Models-3/EDSS I/O&nbsp;API
+</CENTER></H1>
+<H2>
+<CENTER>
+    Carlie J. Coats, Jr., Ph.D.<BR>
+    MCNC Environmental Programs<BR>
+    <VAR><A HREF = "mailto:cjcoats@email.unc.edu">cjcoats@email.unc.edu</A></VAR>
+</CENTER>
+</H2>
+
+<CENTER><I>
+!! This document is under construction !!
+</I></CENTER><P>
+
+    <!-- There are no tyops in this web page. -->
+
+<H2>
+    <A NAME="contents">Contents</A>
+</H2>
+    <UL>
+         <LI>  <A HREF="#abstract">Abstract</A>
+         <LI>  <A HREF="#gecc"    >Geospatial Cell Complexes</A>
+         <LI>  <A HREF="#public"  >Public Data Structures and Routines</A>
+         <LI>  <A HREF="#apply"   >Applicability to Geospatial
+                                   and Finite Element Problems</A>
+         <LI>  <A HREF="#issues"  >Issues and Questions to be Resolved</A>
+         <LI>  <A HREF="#status"  >Implementation Status</A>
+         <LI>  <A HREF="#dummy"   >(dummy index entry)</A>
+    </UL>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="abstract">Abstract</A>
+</H2>
+
+    The intent is to extend the Models-3/EDSS I/O&nbsp;API by adding a
+    new data type (and therefore a new file type), the
+    <STRONG><EM>geospatial-element cell complex (GECC) </EM></STRONG>
+    data type, that supports both geospatial and finite-element data in
+    a way upwardly compatible with the existing API and its library. 
+    This extension significantly generalizes the geospatial metadata
+    structure espoused by Butler <EM>et&nbsp;al</EM>, along lines
+    discussed by John&nbsp;Ambrosiano and the author since 1996.  The
+    data structures involved are based upon foundational twentieth
+    century work on the classification of geometric structure by
+    topologists and geometers Whitney, Whitehead, Kervaire, Milnor, and
+    Adams, and more recently Quillen and Sullivan, who proved that the
+    data structures proposed are both necessary and sufficient to deal
+    with problems of three dimensional geometric structure (and that
+    the obvious generalization is adequate through six dimensions;
+    Sullivan and Quillen give an explicit classification of its
+    indeterminacy for problems of seven or greater dimensions).
+    <P>
+
+    GECC files have three sections:
+    <UL>
+         <LI>  A <STRONG>header</STRONG>, like current  I/O&nbsp;API
+               file headers;
+         <LI>  A <STRONG>geometry specification</STRONG>, which
+               specifies the geometric/topological structure and its
+               georegistration;
+         <LI>  A set of <STRONG>variables</STRONG>, which may be optionally
+               time-stepped, and which live on a specified dimensional
+               part of the geometry (i.e., each variable
+               &quot;lives&quot; either on the vertices, the edges, the
+               faces, or the 3-cells of the geometry.
+    </UL>
+    There are new data structures introduced to allow for access,
+    storage, and retrieval of these geometric specifications, as well
+    as new API-methods <CODE>GEOPEN3()</CODE> (if necessary, depending
+    upon decisions that need to be made <A HREF = "#issues">(below)</A>)
+    to open or create GECC files, <CODE>GEDESC3()</CODE> to retrieve a
+    file's geometric specification, and various utility methods to
+    perform other geometry-related tasks.  Existing I/O&nbsp;API
+    routines  <CODE>READ3()</CODE>, <CODE>WRITE3()</CODE>,
+    <CODE>INTERP3()</CODE>, and <CODE>DDTVAR3()</CODE> would be
+    extended for GECC-file data access, storage, and retrieval. The
+    resulting API will be callable from at least Fortran 77 and 90, C,
+    and C++.  GECC-files offer direct support for polygon-based data
+    such as is found in emissions (e.g., area sources) and in
+    GIS-related coverages, without biasing the representation by
+    artificial triangulation or reticulation, and without the extra
+    storage overhead which would also ensue.
+    <P>
+    
+    One aspect that deserves attention is dealing with the existing
+    built-in <STRONG>I/O&nbsp;API layer structure</STRONG>:  unless
+    this is over-ridden, the geometry will automatically have a layer
+    structure given by the built-in layer structure.  One could argue
+    that it would be simpler to ignore the 3-dimensional-cell
+    description aspect and use purely the layer structure to extend the
+    geometry to the vertical dimension.  This would be sufficient for
+    the vast majority of GIS-related geospatial data applications;
+    however, it would fail to support data with irregular or only
+    partially-layered vertical structures (like ocean models or
+    irregular three-dimensional geological structures for ground water
+    modeling) which would be significant at a later date.  The
+    recommendation is to do the fully three-dimensional cell-complex
+    geometry descriptions <EM>and</EM> to support the I/O&nbsp;API
+    layer structure, with the interpretation that when the number of
+    layers is nontrivial and the number of higher-dimensional cells
+    is zero (no 3-cells, etc.), then the generic I/O&nbsp;API layer
+    structure is responsible for the vertical structure (giving
+    &quot;prismic geometry&quot; for which all horizontal
+    cross-sections are identical as a result). This would be useful,
+    for example, for emissions point-source plume rise for which there
+    is a vertical structure, but only at the vertices (there being no
+    edges, faces, nor 3-cells).  The one ambiguous interpretation
+    problem is dealing with the case of a fully three-dimensional
+    cell complex that also has a nontrivial vertical layer structure. 
+    Options are to:
+    <UL>
+        <LI>  prohibit it within the I/O&nbsp;API code itself; 
+        <LI>  forbid it as a matter of coding standards; or
+        <LI>  allow it, on the chance that someone will find
+              a useful reason for it as a case of data-structure abuse.
+    </UL>
+    <P>
+
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="gecc">Geospatial Cell Complexes</A>
+</H2>
+
+    A <STRONG>Geospatial Element Cell Complex</STRONG> is a
+    geometric data structure with the following components and
+    relationships:
+    <UL>
+        <LI>  A set of <STRONG>nodes</STRONG> (or vertices), that 
+              have specified positions.  Topologists will frequently
+              call this set the <STRONG>0-skeleton</STRONG>.
+        <LI>  A set of <STRONG>edges</STRONG> (which are line segments).
+              Topologists will frequently call this set the
+              <STRONG>1-skeleton</STRONG>.
+        <LI>  A set of <STRONG>faces</STRONG> (which are polygons).
+              Topologists will frequently call this set the
+              <STRONG>2-skeleton</STRONG>.
+       <LI>  A set of <STRONG>cells</STRONG> (which are 3-dimensional
+              polyhedral solids). Topologists will frequently call this
+              set the <STRONG>3-skeleton</STRONG>.
+        <LI>  An <STRONG>edge::node boundary relation</STRONG> that
+              specifies the beginning and ending nodes for each
+              edge.
+        <LI>  A <STRONG>face::edge boundary relation</STRONG> that
+              specifies the (signed) set of edges which constitute
+              the boundary of each face.
+        <LI>  An <STRONG>cell::face boundary relation</STRONG> that
+              specifies the (signed) set of faces which constitute
+              the boundary of each cell.
+    </UL>
+    The <STRONG>dimension</STRONG> of a GECC is given by the smallest
+    nonempty skeleton:  0-dimensional if only the node-set is nonempty,
+    1-dimensional if the edge-set (and therefore the node-set) is
+    nonempty. etc.  In environmental modeling, we need to describe 
+    variables in terms of how the modeling algorithms interpret them:
+    some variables are naturally thought of as being a property of the
+    nodes; others of the edges, faces, or cells.  In the current air
+    quality models, for example, we think of concentrations as being
+    cell-means (and so associated with the 3-skeleton), whereas we think
+    of wind fields as being associated with corners (and so associated
+    with the 0-skeleton).  In emissions, area and biogenic sources will
+    be associated with county-polygons, i.e., the 2-skeleton, etc.
+    <P>
+
+    All edges, faces, and cells are <STRONG>oriented</STRONG>, as is
+    required to do line, surface, and volume integrals (and to make the
+    relationships among them correct -- Green's, Stokes', Gauss'
+    Theorems, etc.).  This orientedness shows up in the boundary
+    relations:
+    <UL>
+        <LI>  An edge has a starting node and an ending node. The
+              boundary relation can be represented as a mapping of
+              the set of edges into ordered pairs&nbsp;
+              <STRONG><CODE>&lt;starting-node,ending-node&gt;</CODE></STRONG>
+              &nbsp;of nodes.  
+              <P>
+        <LI>  A face has a &quot;top&quot; and a &quot;bottom&quot;
+              as its specification of orientation, and it has some
+              finite set of edges.  The face and an edge in  its
+              boundary have <EM>matching orientations</EM> if the edge
+              is oriented in the counterclockwise direction relative to
+              the interior of the face when viewed from the top side of
+              the face, and <EM>reverse orientations</EM> otherwise. 
+              The boundary relation can be represented as (sparse)
+              incidence matrix, with rows subscripted by faces, columns
+              subscripted by edges, with positive values for boundary
+              edges with orientations matching  the face, negative
+              values for reversed orientation, and zeros for edges
+              not on the boundaries of the respective faces.
+              <P>
+        <LI>  A cell has a <EM>positive orientation</EM> if it has
+              a right handed coordinate system with respect to the
+              underlying map projection Cartesian coordinate system,
+              and <EM>negative orientation </EM> otherwise.  The
+              boundary relation can be represented as (sparse)
+              incidence matrix, with rows subscripted by cells, columns
+              subscripted by faces, with positive values for boundary
+              faces with matching orientations, negative values for
+              reverse orientation, etc., much as for faces and edges.
+              <P>
+    </UL>
+    Many of the applications anticipated in atmosphere-related
+    environmental modeling will profit from a natural I/O&nbsp;API
+    extension -- <STRONG>layered GECC's</STRONG>, for which the set
+    of cells (and possibly the sets of faces or edges) is empty, and
+    one is trying to model the Cartesian product structure of some
+    lower-dimensional cell complex with a layered atmospheric
+    structure.  The most obvious application of this is in modeling
+    point source plume rise, in which there is a natural 0-dimensional
+    cell complex of point sources, and a variable (<VAR>plume
+    fraction</VAR>) that &quot;lives&quot; on the atmospheric layer
+    structure above the point sources.  Arguably, one might improve
+    plume-in-grid modeling by having either a 1-dimensional cell
+    complex that is the union of the various plume-centerlines, a
+    vertically layered atmospheric structure, and a Gaussian horizontal
+    structure, or a two-dimensional horizontal GECC structure with a
+    vertically layered atmospheric structure.  Both cases require at
+    least <EM>time-varying geometry</EM> (with time-independent
+    topology), as discussed <A HREF = "#issues">in the section on
+    issues, below</A>.
+    <P>
+
+    There are <STRONG>additional geometric-utility routines</STRONG>
+    that might be desirable, including routines for at least the
+    following tasks:
+    <UL>
+        <LI>  Find the <STRONG>Centroids, areas, volumes..</STRONG>
+              of cells/faces/edges.
+              <P>
+        <LI>  Find the <STRONG>intersection-complex</STRONG> of a pair
+              of GECCs or of a GECC and a regualr grid.
+              <P>
+        <LI>  Find the <STRONG>common-boundary</STRONG> sub-complex
+              for a pair of neighboring cells/faces/edges.
+              <P>
+        <LI>  Construct the Poincare dual complex to a particular
+              GECC.  (This is a homeomorphic complex, with one node
+              for each cell, one edge for each face, one face for each
+              edge, and one cell for each node.  Note that in the usual
+              2-D gridded situation, the &quot;dot-point grid&quot; is
+              the Poincare dual of the &quot;cross-point grid&quot;)
+              <P>
+        <LI>  Others to be determined <A HREF = "#issues">(below)</A>...
+              <P>
+    </UL>
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="public">Public Data Structures and Routines</A>
+</H2>
+
+    <EM>NOTE:  details of these will vary, dependent upon certain
+    choices/design decisions that need to be made
+    <A HREF = "#issues">(below)</A>.</EM>
+    <P>
+    <UL>
+        <LI>  New parameter tokens for include
+              files <STRONG><CODE>PARMS3.EXT</CODE></STRONG> 
+              and <STRONG><CODE>parms3.h</CODE></STRONG>:
+              <BLOCKQUOTE>
+                  <U><STRONG><CODE>GEODAT3</CODE></STRONG></U> as a
+                  file type, to indicate a GECC-file.
+                  <P>
+                  <U><STRONG><CODE>GESKEL0</CODE></STRONG></U> to
+                  indicate in <STRONG><CODE>GDESC3.EXT</CODE></STRONG>
+                  (etc., below) that the corresponding variable in
+                  GECC-file lives on the 0-skeleton of the GECC.
+                  <P>
+                  <U><STRONG><CODE>GESKEL1</CODE></STRONG></U> to
+                  indicate that the corresponding variable in
+                  GECC-file lives on the 1-skeleton of the GECC.
+                  <P>
+                  <U><STRONG><CODE>GESKEL2</CODE></STRONG></U> to
+                  indicate that the corresponding variable in
+                  GECC-file lives on the 2-skeleton of the GECC.
+                  <P>
+                  <U><STRONG><CODE>GESKEL3</CODE></STRONG></U> to
+                  indicate that the corresponding variable in
+                  GECC-file lives on the 3-skeleton of the GECC.
+                  <P>
+              </BLOCKQUOTE>
+              <P>
+
+        <LI>  New COMMON <U><STRONG><CODE>GDESC3</CODE></STRONG></U>
+              either in include file
+              <STRONG><CODE>FDESC3.EXT</CODE></STRONG> or in new
+              include file
+              <U><STRONG><CODE>GDESC3.EXT</CODE></STRONG></U>
+              <A HREF = "#issues">(tbd, below)</A>, and new
+              <VAR>typedef</VAR>
+              <U><STRONG><CODE>IOAPI_GDesc3</CODE></STRONG></U>
+              and its memory-layout-compatible definition as a
+              <VAR>struct</VAR> in
+              <STRONG><CODE>iodecl3.h</CODE></STRONG>.  Fields in this
+              COMMON or <VAR>struct</VAR> include
+              <BLOCKQUOTE>
+                  <U><STRONG><CODE>NVERT3D</CODE></STRONG></U> the
+                  number of elements in the 0-skeleton (the set of
+                  nodes/vertices).
+                  <P>
+                  <U><STRONG><CODE>NEDGE3D</CODE></STRONG></U> the
+                  number of elements in the set of edges
+                  <P>
+                  <U><STRONG><CODE>NFACE3D</CODE></STRONG></U> the
+                  number of elements in the set of faces
+                  <P>
+                  <U><STRONG><CODE>NCELL3D</CODE></STRONG></U> the
+                  number of elements in the set of cells
+                  <P>
+                  <U><STRONG><CODE>N2BDY3D</CODE></STRONG></U> the
+                  number of nonzero entries in the (sparse)
+                  faces::edges boundary relation.
+                  <P>
+                  <U><STRONG><CODE>N3BDY3D</CODE></STRONG></U> the
+                  number of nonzero entries in the (sparse)
+                  cells::faces boundary relation.
+                  <P>
+                  <U><STRONG><CODE>VSKEL3D(MXVARS3)</CODE></STRONG></U>
+                  Token value <STRONG><CODE>GESKEL[0-3]</CODE></STRONG>
+                  to indicate which skeleton each variable lives on.
+                  <P>
+                  <U><STRONG><CODE>VSTEP3D(MXVARS3)</CODE></STRONG></U> 
+                  Token value 0 or <CODE>TSTEP3D</CODE> to indicate
+                  that a variable is time independent or time stepped.
+                  See <A HREF = "#issues">(below)</A>.
+                  <P>
+              </BLOCKQUOTE>
+              <EM>One reason this should be in a new COMMON is to
+              ensure that bad attempts at configuration, with
+              incompatible INCLUDE-files and/or libraries, will
+              either fail to compile or fail to link, instead of
+              having obscure and difficult-to-debug run-time failures.
+              </EM>
+              <P>
+
+        <LI>  <STRONG>Sparse matrix data structures for the
+              boundary relations</STRONG> defined as follows, where 
+              <CODE>NEDGES, NFACES, NCELLS, N2BDY,</CODE> and
+              <CODE>N3BDY</CODE> are the numbers of edges, faces,
+              cells, size of the sparse  face::edge boundary relation,
+              and size of the cell::face boundary relation,
+              respectively) :
+              <BLOCKQUOTE>
+                  <U><STRONG><CODE>EDGEBDY(2,NEDGES)</CODE></STRONG></U> 
+                  is an <CODE>INTEGER</CODE> array containing the vertex
+                  subscripts for the starting and ending nodes of each
+                  edge. <EM>Note that in this case there are always
+                  exactly two boundary vertices for each edge.</EM>
+                  <P>
+                  <U><STRONG><CODE>FACEDEX(NFACES)</CODE></STRONG></U> 
+                  is an <CODE>INTEGER</CODE> array containing the number
+                  of boundary-edges for each face.
+                  <P>
+                  <U><STRONG><CODE>FACEBDY(N2BDY)</CODE></STRONG></U> 
+                  is an <CODE>INTEGER</CODE> array containing the plus
+                  or minus the edge subscripts (according to whether
+                  the edge occurs with positive orientation or negative
+                  orientation within the boundary) for the 
+                  boundary-edges of the faces, in serialized
+                  consecutive order: 
+                  <CODE>FACEBDY(1:FACEDEX(1))</CODE> contains the 
+                  boundary edges for the first face, 
+                  <CODE>FACEBDY(FACEDEX(1)+1:FACEDEX(1)+FACEDEX(2))</CODE>
+                  the boundary edges for the second face, etc.
+                  <P>
+                  <U><STRONG><CODE>CELLDEX(NCELLS)</CODE></STRONG></U>
+                  has the same role for the cell::face boundary relation
+                  that <CODE>FACEDEX</CODE> does for the face::edge
+                  boundary relation.
+                  <P>
+                  <U><STRONG><CODE>CELLBDY(N3BDY)</CODE></STRONG></U>
+                  has the same role for the cell::face boundary relation
+                  that <CODE>FACEBDY</CODE> does for the face::edge
+                  boundary relation.
+                  <P>
+             </BLOCKQUOTE>
+              <P>
+
+        <LI>  <U><STRONG><CODE>GEOPEN3()</CODE></STRONG></U> and 
+              <U><STRONG><CODE>geopen3c()</CODE></STRONG></U> are the
+              Fortran and routines used instead of
+              <STRONG><CODE>OPEN3()</CODE></STRONG> to open/create
+              GECC-files.  It has extra arguments for the boundary
+              relations (and possibly for the node-position variables,
+              depending upon decisions <A HREF = "#issues">described
+              below</A>).
+              <STRONG><CODE>COMMON GDESC3</CODE></STRONG> or the extra
+              <STRONG><CODE>IOAPI_GDesc3</CODE></STRONG>-pointer argument
+              must be correctly filled in, if the mode of opening is
+              &quot;new&quot;, &quot;unknown&quot;, or &quot;truncate&quot;
+              and thus may require file creation or consistency
+              checking.
+              <P>
+              <EM><STRONG>NOTE:</STRONG> For GEODAT3 files which
+              already exist, one may also use</EM>
+              <STRONG><CODE>OPEN3()</CODE></STRONG> <EM>or</EM>
+              <STRONG><CODE>open3c()</CODE></STRONG>  <EM>to open them
+              in modes </EM><CODE>FSREAD3, FSRDWR3.</CODE>
+              <P>
+              <STRONG>Fortran and C Usages:</STRONG><P>
+              <PRE>
+              LOGICAL FUNCTION  GEOPEN3( FNAME,
+     &amp;                                   EDGEBDY, 
+     &amp;                                   FACEDEX, FACEBDY, 
+     &amp;                                   CELLDEX, CELLBDY,
+     &amp;                                   FSTATUS, PGNAME )
+              CHARACTER*(*)  FNAME
+              INTEGER        EDGEBDY( 2, NEDGE3D )
+              INTEGER        FACEDEX( NFACE3D )
+              INTEGER        FACEBDY( N2BDY3D )
+              INTEGER        CELLDEX( NCELL3D )
+              INTEGER        CELLBDY( N3BDY3D )
+              INTEGER        FSTATUS    !  FSREAD3, FSRDWR3, FSUNKN3, etc.
+              CHARACTER*(*)  PGNAME
+              ...
+              int geopen3c( const char * FNAME, 
+                            const IOAPI_Bdesc3  * bdesc ,
+                            const IOAPI_Cdesc3  * cdesc ,
+                            const IOAPI_GEdesc3 * gdesc ,
+                            const int    EDGEBDY[][2],
+                            const int    FACEDEX[],
+                            const int    FACEBDY[],
+                            const int    CELLDEX[],
+                            const int    CELLBDY[],
+                            int          STATUS,
+                            const char * PNAME ) ;
+              </PRE>
+
+        <LI>  <U><STRONG><CODE>GEDESC3()</CODE></STRONG></U> and 
+              <U><STRONG><CODE>gedesc3c()</CODE></STRONG></U> return
+              as arguments sparse-matrix arrays containing the boundary
+              relations (and possibly the node-positions, depending
+              upon decisions <A HREF = "#issues">described below</A>)
+              for the geometry from the file header.  It is the
+              responsibility of the caller to allocate these arrays
+              before the call.
+              <P>
+              <STRONG>Fortran and C Usages:</STRONG><P>
+              <PRE>
+              LOGICAL FUNCTION GEDESC3( FNAME,
+              &amp;                         EDGEBDY,
+              &amp;                         FACEDEX, FACEBDY,
+              &amp;                         CELLDEX, CELLBDY )
+              CHARACTER*(*)  FNAME
+              INTEGER        EDGEBDY( 2, NEDGE3D )
+              INTEGER        FACEDEX( NFACE3D )
+              INTEGER        FACEBDY( N2BDY3D )
+              INTEGER        CELLDEX( NCELL3D )
+              INTEGER        CELLBDY( N3BDY3D )
+              ...
+              int gedesc3c( const char * FNAME, 
+                            int          EDGEBDY[][2],
+                            int          FACEDEX[],
+                            int          FACEBDY[],
+                            int          CELLDEX[],
+                            int          CELLBDY[] ) ;
+              </PRE>
+
+        <LI>  When called on a GECC-file,
+              <STRONG><CODE>DESC3()</CODE></STRONG> fills in the
+              COMMONs in both <STRONG><CODE>FDESC3.EXT</CODE></STRONG> 
+              and <STRONG><CODE>GDESC3.EXT</CODE></STRONG>.
+              <P>
+              <EM>There is an issue here about the C routine
+              <STRONG><CODE>desc3c()</CODE></STRONG>, because this 
+              would need both FDESC-pointer and GDESC3-pointer
+              arguments, changing the routine's signature... 
+              this probably means that we need an extra C routine
+              for the GECC-file description-task <BR>;-(</EM>
+              <P>
+
+        <LI>  <EM>Other C bindings are unchanged.
+              <BR>:-) !!</EM>
+              <P>
+
+        <LI>  Additional <STRONG>new geometric-utility routines
+              and tools</STRONG>
+              <A HREF = "#issues">(tbd, below...)</A>
+              <P>
+              <P>
+        <LI>  Extensions of existing <STRONG>analysis and visualization
+              tools</STRONG>:
+              <UL>
+                  <LI>    <VAR>PAVE</VAR>
+                  <LI>    Models-3 Vis Tool
+                  <LI>    <VAR>m3stat</VAR>
+                  <LI>    <VAR>m3diff</VAR>
+                  <LI>    <VAR>m3xtract</VAR>
+                  <LI>    <VAR>m3tshift</VAR>
+                  <LI>    <VAR>m3cple</VAR>
+                  <LI>    <VAR>mtxcple</VAR>
+              </UL>
+              <P>
+    </UL>
+
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="apply">Applicability to Geospatial and
+    Finite Element Problems</A>
+</H2>
+
+    <UL>
+        <LI>  <STRONG>(Optionally Time-stepped) Geographic Coverage
+              Representation</STRONG> (something which traditional GIS
+              systems do not do well, since they have a &quot;flat
+              database&quot; view of coverages without any temporal
+              structure.
+              <P>
+
+        <LI>  <STRONG>Finite Element Modeling: </STRONG> Supports
+              multiple finite element schemes with various different
+              kinds of element decompositions/triangulations/griddings,
+              and with shape functions that &quot;live&quot; on the
+              various skeletons. Because of the generality, there may
+              be more set-up overhead than with data structures closely
+              tailored for the specifics of particular finite element
+              schemes, but this should still offer excellent
+              performance for the time-dependent part of processing.
+              <P>
+
+        <LI>  <STRONG>Emissions Modeling</STRONG>: 
+              <UL>
+                  <LI>  <EM>Area source emissions</EM> very naturally
+                        fits as an application of 2-dimensional GECC
+                        files., for which the primary polygons are the
+                        relevant counties.
+                  <LI>  <EM>Biogenic emissions</EM> also is an
+                        application of 2-dimensional GECC files,
+                        where the polygons are either counties or
+                        land-cover tracts (depending upon the nature
+                        of the underlying land-cover inventory).
+                  <LI>  <EM>Mobile source emissions</EM> is naturally
+                        an application of mixed 1,2-dimensinal GECC
+                        files, with emissions living on either links
+                        or counties.
+                  <LI>  <EM>Point source emissions</EM> live naturally
+                        on 0-dimensional GECC files.
+                  <LI>  <EM>Point source plume rise</EM> is naturally
+                        an application of <EM>layered</EM> 0-dimensional
+                        GECC files.
+              </UL>
+              <P>
+
+        <LI>  <STRONG>Plume in Grid Modeling: </STRONG> The plumes are
+              layered two-dimensional (effectively three-dimensional)
+              GECC's with time dependent geometry (the cell complex
+              having a down-plume structure, a cross-plume structure,
+              and also a layer structure inherited from the atmospheric
+              grid model).
+              <P>
+
+        <LI>  <STRONG>Stream-Network Flow Modeling: </STRONG> with a
+              one-dimensional tree-connected cell complex with one link
+              for each significant stream-reach.
+              <P>
+
+        <LI>  <STRONG>Hydrology/Runoff Modeling: </STRONG>  with a
+              two-dimensional cell complex composed of hill-slope
+              patches that have specific drainiage characteristics.
+              <P>
+
+        <LI>  <STRONG>&quot;Mesa-layered&quot; models</STRONG> (for
+              which there are voids in the grid or layer structure).
+              Examples include <STRONG>ocean circulation models</STRONG>
+              and the <STRONG>ETA met model</STRONG>.
+              <P>
+
+        <LI>  <STRONG>Groundwater models</STRONG>, especially ones with
+              irregular two- or three-dimensional geological structures.
+              <P>
+
+        <LI>  <STRONG>(dummy list item)</STRONG>
+              <P>
+
+    </UL>
+
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="issues">Issues and Questions to be Resolved</A>
+</H2>
+
+    <UL>
+        <LI>  Put the <STRONG><CODE>&nbsp;GEDESC3&nbsp;</CODE></STRONG>
+              COMMON into the existing
+              <STRONG><CODE>&nbsp;FDESC3.EXT&nbsp;</CODE></STRONG>
+              include-file, or not?
+              <P>
+              <EM>My inclination is to say that it should be put
+              into the same INCLUDE file, simplifying the API
+              for the modelers that use it, particularly since
+              it is used for exactly the same purpose, and in the
+              same <STRONG><CODE>&nbsp;OPEN3()&nbsp;</CODE></STRONG>
+              and <STRONG><CODE>&nbsp;DESC3()&nbsp;</CODE></STRONG>
+              calls as that file.</EM>
+              <P>
+
+        <LI>  How much flexibility do we give to the variables?
+              We can potentially allow individual variables to be
+              time-stepped or time-independent... do we allow
+              time-stepped variables to have different time steps?
+              <P>
+              <EM>(Almost certainly this would cause extra netCDF
+              fill-overhead and probably break the internal paradigm
+              of some of our visualization tools; just the choice of
+              &quot;this is time independent&quot; versus &quot;this
+              uses the file's time step&quot; on a variable-by-variable
+              basis would be relatively clean to implement and use,
+              would not incur extra netCDF overhead, and not break vis
+              tools.)</EM>
+              <P>
+
+        <LI>  Given the time-stepping flexibility above, do we make the
+              node-position variables user-level variables, or do we
+              insist that they be part of the geometry data structure,
+              and so specified during the
+              <STRONG><CODE>&nbsp;GEOPEN3()&nbsp;</CODE></STRONG> call?
+              <P>
+              <EM>I favor the choice of allowing individual variables
+              to be either time-stepped with the file-specified time
+              step, or time-independent:  this deals cleanly with the
+              situation of cleanly allowing 2-dimensional GECCs to
+              require only two node-position variables, whereas
+              3-dimensional GECCs need three.  It also cleanly handles
+              the question: &quot;What are the units for the node
+              position variables&quot;.  At the same time, it allows
+              both easy implementation and additional flexibility which
+              may prove useful to support additional time-independent
+              attributes of GECCs.</EM>
+              <P>
+
+        <LI>  Do we need also to support some version of <STRONG>time
+              varying geometry</STRONG>?  If so, there are two options,
+              a simpler and weaker notion that is much easier to deal
+              with from both the I/O&nbsp;API implementation and the
+              user/modeler points of  view, and a more-complex
+              alternative notion:
+              <BLOCKQUOTE> 
+                  <STRONG>Time-independent topology</STRONG> where only
+                  the (node) positions change, but the sets of nodes,
+                  faces, edges, and cells, and the boundary relations
+                  among them are time-independent.  For this case,
+                  <STRONG><CODE>INTERP3()</CODE></STRONG> make sense as
+                  an I/O&nbsp;API call.  This choice can be implemented
+                  by simply allowing the node-position variables to be
+                  either time-stepped or time independent, as the user
+                  selects at file-creation time.
+                  <P>
+                  <STRONG>Time-dependent topology</STRONG> in which
+                  the entire geometry can change from time step to
+                  time step (and for which the modeler reading data
+                  must first make a geometry inquiry, then allocate
+                  appropriate buffers, and finally read data into
+                  them.  The write-operation also requires a separate
+                  call, for which both the geometry and the data are
+                  arguments.  Note that
+                  <STRONG><CODE>INTERP3()</CODE></STRONG> does not make
+                  sense as an I/O&nbsp;API call in this case, because
+                  there is no topology on which to define it.
+                  <P>
+                  <EM>I recommend that we not implement this option at
+                  first; if we later decide that it is necessary, then
+                  we should implement it as an additional and different
+                  file type (Time  Stepped Cell Complex, or TSCC
+                  files?), using similar data structures and employing
+                  the lessons learned with the time-independent
+                  topology GECC files.
+                  </EM>
+              </BLOCKQUOTE>
+              <P>
+
+        <LI>  How do we handle <STRONG>text based metadata</STRONG>,
+              such as names and descriptions for nodes, edges, faces,
+              or cells?
+              <P>
+
+        <LI>  What <STRONG>additional geometry-related routines</STRONG>
+              are needed?
+              <P>
+              <EM>Examples of these might include routines to compute:
+              <UL>
+                  <LI>  <STRONG>connected components</STRONG> of a GECC;
+                  <LI>  <STRONG>area or volume</STRONG> of faces
+                        or cells;
+                  <LI>  <STRONG>centroids</STRONG> of faces or cells;
+                  <LI>  <STRONG>geometric intersections</STRONG> of
+                        pairs of GECCs, or of GECC's with regular grids
+                        or grid boundaries;
+                  <LI>  <STRONG>neighbors</STRONG> of
+                        particular faces or cells;
+                  <LI>  <STRONG>common-boundary
+                        subcomplexes</STRONG> of all neighbors of a
+                        cell, node, edge, or vertex, 
+                  <LI>  <STRONG>Poincare-dual</STRONG> cell complexes,
+                  <LI>  etc.
+              </UL>
+              </EM><P>
+
+        <LI>  <STRONG>Geometry-construction</STRONG> is apt to be a rather
+              tedious and detailed task, particularly for the irregular
+              geometry cases. What <STRONG>support tools</STRONG> do
+              there need to be in order to:
+              <UL>
+                  <LI>  Construct the geometry for the various cases.
+                  <LI>  Import data from &quot;foreign&quot; databases
+                        and inventories.
+                  <LI>  Compute GECC-to grid, grid-to-GECC, and
+                        GECC-to-GECC sparse transform matrices
+                        to use with general I/O&nbsp;API transform
+                        program
+                        <A HREF = 
+                        "/products/ioapi/MTXCPLE.html">MTXCPLE</A>,
+                        etc.
+                  <LI>  Do what other tasks?
+              </UL>
+              <P>
+
+        <LI>  (dummy list item)
+              <P>
+
+    </UL>
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="status">Implementation Status</A>
+</H2>
+
+    The following <STRONG>INCLUDE files</STRONG> are affected:
+    <UL>
+        <LI>  Public Fortran and C INCLUDE files
+               <STRONG><CODE>PARMS3.EXT</CODE></STRONG> and
+               <STRONG><CODE>parms3.h</CODE></STRONG>:&nbsp; 
+              new parameters
+              <UL>
+                  <LI>  <CODE>GEODAT3</CODE>:&nbsp; new file type token
+                        parameter &quot;geospatial-element cell
+                        complex&quot;
+                  <LI>  <CODE>GESKEL0</CODE>:&nbsp; new
+                        description-token parameter&quot;variable
+                        lives on the 0-skeleton in a GEODAT3-file&quot;
+                  <LI>  <CODE>GESKEL1</CODE>:&nbsp; new
+                        description-token parameter&quot;variable
+                        lives on the 1-skeleton in a GEODAT3-file&quot;
+                  <LI>  <CODE>GESKEL2</CODE>:&nbsp; new
+                        description-token parameter&quot;variable
+                        lives on the 2-skeleton in a GEODAT3-file&quot;
+                  <LI>  <CODE>GESKEL3</CODE>:&nbsp; new
+                        description-token parameter&quot;variable
+                        lives on the 3-skeleton in a GEODAT3-file&quot;
+              </UL>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+              
+        <LI>  Public Fortran and C INCLUDE files
+              <STRONG><CODE>FDESC3.EXT</CODE></STRONG> and
+              <STRONG><CODE>fdesc3.h</CODE></STRONG>::&nbsp; new
+              <CODE>COMMON GDESC3</CODE> with data structures to
+              use describing/defining GEODAT3-files:
+              <UL>
+                  <LI>  <CODE>NVERT3D</CODE>:&nbsp; number of vertices
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>NEDGE3D</CODE>:&nbsp; number of edges
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>NFACE3D</CODE>:&nbsp; number of faces
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>NCELL3D</CODE>:&nbsp; number of 3-cells
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>N2BDY3D</CODE>:&nbsp; number of elements
+                        in the face::edge boundary relation of the cell
+                        complex.
+                  <LI>  <CODE>N3BDY3D</CODE>:&nbsp; number of elements
+                        in the cell::face boundary relation of the cell
+                        complex.
+                  <LI>  <CODE>VSKEL3D( MXVARS3 )</CODE>:&nbsp; skeleton
+                        on which each variable &quot;lives&quot;:  
+                        values are token parameters <CODE>GESKEL[0-3]</CODE>
+                  <LI>  <CODE>VSTEP3D( MXVARS3 )</CODE>:&nbsp;
+                        per-variable time step.  Should be either
+                        zero or <CODE>TSTEP3D</CODE>.
+                  <LI>  <CODE>typedef struct{...} IOAPI_GEdesc3</CODE> to
+                        provide a data structure definition to use for
+                        GEODAT3 geometry for use by C programs.
+              </UL>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+              
+        <LI>  Public Fortran and C INCLUDE files
+              <STRONG><CODE>IODECL3.EXT</CODE></STRONG> and
+              <STRONG><CODE>iodecl3.h</CODE></STRONG>:&nbsp; new
+              public I/O&nbsp;API routines declared:
+              <UL>
+                  <LI>  <CODE>GEDESC3()</CODE>
+                  <LI>  <CODE>GEOPEN3()</CODE>
+              </UL>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+              
+        <LI>  Private Fortran INCLUDE file
+              <STRONG><CODE>STATE3.EXT</CODE></STRONG>:&nbsp; new
+              <CODE>COMMON GSTATE3</CODE> with data structures to
+              use accessing/managing GEODAT3-files:
+              <UL>
+                  <LI>  <CODE>NVERT( MXFILE3 )</CODE>:&nbsp; number of vertices
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>NEDGE( MXFILE3 )</CODE>:&nbsp; number of edges
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>NFACE( MXFILE3 )</CODE>:&nbsp; number of faces
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>NCELL( MXFILE3 )</CODE>:&nbsp; number of 3-cells
+                        in the geomety of the cell complex.
+                  <LI>  <CODE>N2BDY( MXFILE3 )</CODE>:&nbsp; number of elements
+                        in the face::edge boundary relation of the cell
+                        complex.
+                  <LI>  <CODE>N3BDY( MXFILE3 )</CODE>:&nbsp; number of elements
+                        in the cell::face boundary relation of the cell
+                        complex.
+                  <LI>  <CODE>VSKEL( MXVARS3, MXFILE3 )</CODE>:&nbsp; skeleton
+                        on which each variable &quot;lives&quot;:  
+                        values are token parameters <CODE>GESKEL[0-3]</CODE>
+                  <LI>  <CODE>VSTEP( MXVARS3, MXFILE3 )</CODE>:&nbsp;
+                        per-variable time step.  Should be either
+                        zero or <CODE>TSTEP3D</CODE>.
+                   <LI>  <CODE>GINDX( 5, MXFILE3 )</CODE>:&nbsp;
+                        netCDF ID's for the private variables 
+                        used to implement the boundary relations.
+             </UL>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+    </UL>
+    <P>
+
+    The following <STRONG>Fortran routines</STRONG> are affected:
+    <UL>
+        <LI>  Public Fortran routine
+              <STRONG><CODE>DDTVAR3</CODE></STRONG>:&nbsp; support
+              for GEODAT3 file operation.<BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  Public Fortran routine
+              <STRONG><CODE>DESC3</CODE></STRONG>:&nbsp; support for
+              GEODAT geometry descriptions.<BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  Public Fortran routine
+              <STRONG><CODE>INIT3</CODE></STRONG>:&nbsp; changes in
+              internal state-variable initializations.<BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  Public Fortran routine
+              <STRONG><CODE>INTERP3</CODE></STRONG>:&nbsp; support
+              for GEODAT3 file operation.<BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  Public Fortran routine
+              <STRONG><CODE>READ3</CODE></STRONG>:&nbsp; support
+              for GEODAT3 file operation.<BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  Public Fortran routine
+              <STRONG><CODE>WRITE3</CODE></STRONG>:&nbsp; support
+              for GEODAT3 file operation.<BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  Public Fortran routine
+              <STRONG><CODE>CHECK3</CODE></STRONG>:&nbsp; support
+              for GEODAT3 file operation.<BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  Existng private Fortran routines
+              <UL>
+                   <LI>  <CODE>CRTFIL3</CODE>
+                   <LI>  <CODE>INTERP3V</CODE>
+                   <LI>  <CODE>OPNFIL3</CODE>
+                   <LI>  <CODE>OPNKF</CODE>
+                   <LI>  <CODE>RDBUF3</CODE>
+                   <LI>  <CODE>UPDTVIR3</CODE>
+                   <LI>  <CODE>WRBUF3</CODE>
+              </UL>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  New private Fortran routines
+              <UL>
+                   <LI>  <CODE>WRGEODAT</CODE>
+                   <LI>  <CODE>RDGEODAT</CODE>
+              </UL>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+    </UL>
+    <P>
+
+    The following <STRONG>C bindings</STRONG> are affected:<BR>
+    <UL>
+        <LI>  New C routine <STRONG><CODE>geopen3c()</CODE></STRONG>:&nbsp;
+              C wrapper around public Fortran GEOPEN3(), used to open
+              files of type GEODAT3.
+              <BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  New C routine <STRONG><CODE>gedesc3c()</CODE></STRONG>:&nbsp;
+              C wrapper around public Fortran GEDESC3() used to return
+              GECC geometry specification (boundary relations, etc.) for
+              files of type GEODAT3.
+              <BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; Coded
+              <P>
+        <LI>  ??  <STRONG><CODE>desc3c()</CODE></STRONG>:&nbsp; <BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; under way... is
+              it proper to require a change to the call interface to
+              <CODE>desc3c()</CODE>, thus breaking existing C code that
+              depends upon it?  Otherwise, we need to invent a new
+              routine that does this task specifically for GEODAT3
+              files.
+              <BR>
+              <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; needs design
+              decision...
+              <P>
+              <P>
+        <LI>  <STRONG><CODE>Others?</CODE></STRONG>:&nbsp; The entire
+              remainder of the C bindings should be unaffected, by
+              virtue of properly modular design and implementation.
+              <P>
+    </UL>
+    <P>
+
+    Extensions of existing <STRONG>analysis and visualization tools</STRONG>:
+     <UL>
+         <LI>    <VAR>PAVE</VAR>
+         <LI>    Models-3 Vis Tool
+         <LI>    <VAR>m3stat</VAR>
+         <LI>    <VAR>m3diff</VAR>
+         <LI>    <VAR>m3xtract</VAR>
+         <LI>    <VAR>m3tshift</VAR>
+         <LI>    <VAR>m3cple</VAR>
+         <LI>    <VAR>mtxcple</VAR>
+     </UL>
+     <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; not yet started.
+     <P>
+     <P>
+
+    GECC-related <STRONG>geometric utility routines</STRONG>:<BR>
+    <EM>  <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; 
+    <A HREF="#issues">!!  TBD -- open issue !!</A></EM>
+    <P>
+
+    GECC-related <STRONG>geometric tool/support programs</STRONG>:<BR>
+    <EM>  <STRONG><EM>STATUS:</EM></STRONG>:&nbsp; 
+    <A HREF="#issues">!!  TBD -- open issue !!</A></EM>
+    <P>
+
+
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+    <A NAME="dummy">dummy section</A>
+</H2>
+
+
+    <P>
+    <I><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></I>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+Send comments to 
+<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS> 
+          Carlie J. Coats, Jr. <br> 
+          cjcoats@email.unc.edu  </ADDRESS> </A><P> 
+
+<!--#include virtual="/INCLUDES/footer.html" -->
+</BODY>      <!--end body  -->
+</HTML>      <!--end html  -->
+

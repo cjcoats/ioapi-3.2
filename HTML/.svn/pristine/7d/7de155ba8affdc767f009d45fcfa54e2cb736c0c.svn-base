@@ -1,0 +1,231 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> WRITE3() and write3c() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    WRITE3() and write3c() </H1>
+        
+<H2> Fortran version: </H2>
+<PRE>
+    LOGICAL FUNCTION WRITE3( FNAME, VNAME, JDATE, JTIME, BUFFER)
+        CHARACTER*(*), INTENT(IN   ) :: FNAME     !  file name for query
+        CHARACTER*(*), INTENT(IN   ) :: VNAME     !  vble  name   (or ALLVAR3 (='ALL'))
+        INTEGER      , INTENT(IN   ) :: JDATE     !  date, formatted YYYYDDD
+        INTEGER      , INTENT(IN   ) :: JTIME     !  time, formatted HHMMSS
+        &lt;type&gt;       , INTENT(IN   ) :: BUFFER(*) !  array holding output data
+</PRE><P> 
+
+<H2> C version: </H2>  
+<BLOCKQUOTE>
+    write3c() is a C wrapper calling the Fortran WRITE3()
+</BLOCKQUOTE><P> 
+
+<PRE>
+    int write3c( const char * fname ,
+                 const char * vname ,
+                 int          jdate ,
+                 int          jtime ,
+                 void       * buffer )
+</PRE><P> 
+
+<H2>NOTE</H2>
+     
+     The 2002 <CODE>CMAQ</CODE> release contains an unauthorized fork
+     of the I/O&nbsp;API, with a new routines <CODE>INTERPX</CODE> and 
+     <CODE>WRITEX</CODE>.  This latter routine does not respect
+     I/O&nbsp;API data-integrity checking, and internal and on-disk
+     data structures.  It can lead to silent data corruption/data
+     integrity problems unless the hardware and network interconnect
+     work flawlessly, and then only if the model is running
+     &quot;stand-alone&quot;, with no other program reading the output
+     while the model is running.  This problem is inherent to the
+     conncept of <CODE>WRITEX</CODE>, and is the result of the way the
+     2002 <CODE>CMAQ</CODE> release violates the Models-3 architectural
+     analysis.
+     <P>
+     <BLOCKQUOTE><EM>
+     Carlie J. Coats, Jr., Ph.D.<BR>
+     I/O&nbsp;API Author
+     </EM></BLOCKQUOTE>
+     <P>
+     
+
+<H2> Summary: </H2>
+
+    Writes data for the <A HREF="VBLE.HTML">variable</A> with name
+    VNAME, for the <A HREF = "DATETIME.html"> date and time </A>
+    JDATE (coded YYYYDDD), JTIME (HHMMSS) to Models-3 data file with 
+    <A HREF = "LOGICALS.html"> logical name </A> FNAME.
+    For <A HREF = "DATATYPES.html#timestruct"> time independent </A> 
+    files, JDATE:JTIME are ignored.  If VNAME is the 
+    &quot;magic name&quot;  ALLVAR3 (= 'ALL', defined in 
+    <A HREF = "INCLUDE.html#magic">  PARMS3.EXT </A> ), WRITE3()
+    writes all variables.  If FNAME is a  
+    <A HREF = "DATATYPES.html#"> dictionary </A> file, WRITE3() 
+    treats VNAME as a dictionary index (and ignores JDATE:JTIME).
+    <P> 
+
+    Single-variable writes (as opposed to all-variable writes)
+    are only supported for file types
+    <A HREF = "INCLUDE.html#custom"> CUSTOM </A>, 
+    <A HREF = "INCLUDE.html#grdded"> GRIDDED </A>, 
+    <A HREF = "INCLUDE.html#bndary"> BOUNDARY </A>, and 
+    <A HREF = "INCLUDE.html#smatrx"> SPARSE-MATRIX </A>; writes 
+    to files of type 
+    <A HREF = "INCLUDE.html#iddata"> ID-REFERENCED </A>, 
+    <A HREF = "INCLUDE.html#profil"> PROFILE </A>, or 
+    <A HREF = "INCLUDE.html#grnest"> GRID-NEST </A> must be writes of 
+    all variables at a time step.
+    <P> 
+
+    Returns .TRUE. (or 1) if the operation succeeds, .FALSE. (or 0)
+    if it fails.  For failure, writes a log message indicating the
+    nature of the failure.
+    <P>
+
+    <STRONG>See also</STRONG>
+    <BLOCKQUOTE>
+    <A HREF = "DDTVAR3.html">DDTVAR3</A>, <BR>
+    <A HREF = "INTERP3.html">INTERP3 and INTERPX</A>,<BR>
+    <A HREF = "READ3.html">READ3</A>,<BR>
+    <A HREF = "READ4D.html">READ4D</A>,<BR>
+    <A HREF = "WRITE3.html">WRITE3</A>,<BR>
+    <A HREF = "WRITE4D.html">WRITE4D</A>,<BR>
+    <A HREF = "XTRACT3.html">XTRACT3</A>,<BR>
+    </BLOCKQUOTE>
+    <P> 
+    
+<H2> Preconditions: </H2>
+
+    <CODE><A HREF = "M3UTILIO.html">USE M3UTILIO</A></CODE> or
+    <A HREF = "INCLUDE.html#iodecl"><CODE>INCLUDE 'IODECL3.EXT'</CODE></A> for
+    Fortran, or <CODE>#include &quot;iodecl3.h&quot;</CODE> for C.
+    <P> 
+
+    I/O API must already be initialized by a call to 
+    <A HREF = "INIT3.html"> INIT3() </A>.
+    <P> 
+
+    FNAME and VNAME must have length at most 16.
+    <P> 
+
+    FNAME must already have been opened by 
+    <A HREF = "OPEN3.html"> OPEN3() or open3c() </A>.
+    <P> 
+
+    JDATE and JTIME must be expressed in terms of Models-3 
+    <A HREF = "DATETIME.html"> date and time conventions </A> 
+    (and must be an exact positive integer multiple of the 
+    time step from the file's starting date and time).
+    <P> 
+
+    Dimensionality of the BUFFER argument should agree with
+    dimensionality of the data being written.
+    <P>
+
+<H2> See Also: </H2>
+
+    <UL>
+        <LI>  <A HREF = "READ3.html" >READ3</A>
+        <LI>  <A HREF = "READ4D.html" >READ4D</A>
+        <LI>  <A HREF = "WRITE4D.html" >WRITE4D</A>
+    </UL>
+    <P>
+
+
+<H2> Fortran Usage: </H2>
+
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A>, 
+    <A HREF = "PRESZ.txt">PRESZ</A>, or 
+    <A HREF = "SFCMET.txt">SFCMET</A> 
+    for additional usage examples.)
+
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    PARAMETER ( NCOLS = ??, NROWS = ??, NLAYS = ??, NMETS = ?? )
+    ...
+    REAL  SO4 ( NCOLS, NROWS, NLAYS )
+    REAL  METS( NCOLS, NROWS, NLAYS, NVARS )
+C            NOTE:  It isn't required that the name of the Fortran
+C            variable match the name of the file-variable, but it
+C            can often help the maintainability of the code if it does.
+    ...
+    IF ( WRITE3( 'AFILE', 'SO4', 1988021, 123000, SO4 ) ) THEN
+C            All layers of SO4 for 12:30:00 Jan 21, 1988 written from AFILE
+        ...
+    ELSE
+C           Error:  see program log for further info.
+        ...
+    END IF
+    ...
+    IF ( WRITE3( 'BFILE', ALLVARS3, 1988021, 123000, METS ) ) THEN
+C            All BFILE-variables for 12:30:00 Jan 21, 1988 written from
+C            array METS.
+        ...
+    ELSE
+C           Error:  see program log for further info.
+        ...
+    END IF
+    ...
+</PRE><P> 
+
+
+<H2> <H2> C Usage: </H2> </H2>
+
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    float  mets[ NVARS ][ NLAYS ][ NROWS ][ NCOLS ] ;
+    ...
+    if ( write3c( &quot;BFILE&quot;, &quot;ALL&quot;, ALLAYS3, 
+                  1988021, 123000, mets ) )
+        {
+            /*  All BFILE-variables for 12:30:00 Jan 21, 1988
+                written from array METS.                         */
+        ...
+        }
+    else
+        {
+            /*  Error:  see program log for further info.  */
+        ...
+        }
+    ...
+</PRE><P> 
+
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "SYNC3.html" >
+Previous:  <STRONG>SHUT3</STRONG>
+</A><P> 
+
+<A HREF = "XTRACT3.html" >
+Next:  <STRONG>XTRACT3</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#ioapi"> 
+Up: <STRONG>I/O API:  Public Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

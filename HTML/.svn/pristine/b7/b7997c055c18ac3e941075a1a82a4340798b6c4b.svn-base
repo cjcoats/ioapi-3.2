@@ -1,0 +1,150 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GETDFILE() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GETDFILE() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION GETDFILE( LNAME, RDONLY, FMTFLAG, RECLEN, CALLER )
+        CHARACTER*(*), INTENT(IN   ) :: LNAME          !  logical file name
+        LOGICAL      , INTENT(IN   ) :: RDONLY         !  TRUE iff file is input-only
+        LOGICAL      , INTENT(IN   ) :: FMTFLAG        !  TRUE iff file should be formatted
+        INTEGER      , INTENT(IN   ) :: RECLEN         !  direct access record length
+        CHARACTER*(*), INTENT(IN   ) :: CALLER         !  caller-name for logging
+</PRE><P>    
+
+<H2> C version: </H2>
+<PRE>
+    int getdfilec( const char          * fname ,
+                   int                   rstatus,
+                   int                   fstatus,
+                   int                   reclen,
+                   const char          * pname )
+</PRE>
+<P> 
+
+<H2> See also: </H2>
+    <A HREF = "GETEFILE.html">GETEFILE()</A> for sequential files
+    instead of direct access files, and <A HREF = "PROMPTDFILE.html">
+    PROMPTDFILE()</A>, a wrapper around GETDFILE() that prompts the 
+    user for the file's logical name.
+    <P> 
+
+<H2> Summary: </H2>
+
+    Gets value of <A HREF = "LOGICALS.html"> logical name
+    <CODE>LNAME</CODE></A>  from the environment, checks for existence
+    of a file whose file name is that value, then opens the file as a
+    Fortran direct access file with the indicated record length
+    <CODE>RECLEN</CODE>,  according to the <CODE>LOGICAL</CODE> flags
+    <CODE>RDONLY</CODE> (open for read-only iff <CODE>TRUE</CODE>, 
+    read/write if <CODE>FALSE</CODE>) and <CODE>FMTFLAG</CODE>
+    (formatted iff <CODE>TRUE</CODE>, else unformatted).
+    <P> 
+
+    <EM>WARNING:  interpretation of <CODE>RECLEN</CODE> -- whether it
+    measures record  length in words or in bytes -- is vendor-dependent
+    </EM> (and not always easy to dig out of the vendor's
+    documentation).
+    <P> 
+    
+    <A HREF = "ENVIRONMENT.html"> Logs </A> the file-opening, together 
+    with the <CODE>CALLER</CODE> version, and returns the unit number
+    of the file opened, or -1 for failure. 
+    <P> 
+
+    Uses <A HREF = "JUNIT.html"><VAR>JUNIT()</VAR></A> to get a unit number.
+    <P>  
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    <STRONG>See also</STRONG> <A HREF = "GETEFILE.html">GETEFILE()</A>
+    for opening sequential Fortran files.
+    <P>
+
+        
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    Logical name for the file set (else it will open a file with the 
+    indicated name in the current working directory).
+    <P> 
+    
+    If RDONLY, file must already exist.
+    <P> 
+    
+    If file already exists, record lengths must be consistent.
+<P> 
+
+    
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    INTEGER        JDEV, KDEV, LDEV, MDEV
+    INTEGER        GETDFILE
+    ...
+    JDEV = GETDFILE( 'AFILE, .TRUE. , .TRUE. , 512, 'me' ) ! read-only  formatted
+    KDEV = GETDFILE( 'BFILE, .TRUE. , .FALSE., 512, 'me' ) ! read-only  unformatted
+    LDEV = GETDFILE( 'CFILE, .FALSE., .TRUE. , 512, 'me' ) ! read-write formatted
+    MDEV = GETDFILE( 'DFILE, .FALSE., .FALSE., 512, 'me' ) ! read-write unformatted
+    ...
+    IF ( JDEV .LT. 0 ) THEN
+        !  error opening AFILE:  deal with it
+        ...
+    END IF
+    ...etc...
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    integer   jdev ;
+    if ( 0 &gt; ( jdev = getdfilec( "AFILE", 1, 1, 512, "me from C" ) ) )
+        {
+        /*  oops -- attempt to open file with logical name AFILE failed */
+        }
+    ...
+</PRE>
+<P>         
+
+
+<HR>
+
+<A HREF = "GETDBLE.html" >
+Previous:  <STRONG>GETDBLE</STRONG>
+</A><P> 
+
+<A HREF = "GETEFILE.html" >
+Next:  <STRONG>GETEFILE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

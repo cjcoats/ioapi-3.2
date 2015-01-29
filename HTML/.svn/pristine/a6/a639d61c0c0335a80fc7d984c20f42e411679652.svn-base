@@ -1,0 +1,390 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE> ENVGET(), [B]ENV*() and env*c() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+<H1> ENVGET(), [B]ENV*() and env*c() </H1>
+
+<BLOCKQUOTE>
+    <CODE>ENVINT(), ENVDBLE(), ENVREAL(), ENVSTR(), ENVYN()</CODE> are Fortran wrappers
+    calling the C <CODE>envintc(), envdblec(), envrealc(), envstrc(), envync()<CODE>
+    respectively.
+</BLOCKQUOTE>
+<P>
+
+<H2>For I/O&nbsp;API Version 3.2 and later:</H2>
+
+    <BLOCKQUOTE>
+        New routines <CODE>BENVINT(), BENVDBLE(), BENVREAL()</CODE> are
+        &quot;bounded&quot;  versions of <CODE>ENVINT(), ENVDBLE(),
+        ENVREAL()</CODE>:  instead of a <CODE>DEFAULT</CODE> argument, they
+        have three <CODE>MINVAL, MAXVAL, DEFAULT</CODE> arguments:  the
+        result is guaranteed to be between  <CODE>MINVAL</CODE> and
+        <CODE>MAXVAL</CODE>, out-of-range environment values will cause
+        <CODE>STATUS=2</CODE>.
+        <P>
+        Routine <CODE>ENVGET()</CODE> is a generic routine that can invoke
+        any of the following:
+        <P>
+    </BLOCKQUOTE>
+
+
+<H2> Fortran version: </H2>
+
+<PRE>
+    INTERFACE ENVGET()      !! generic:  I/O API v3.2 or later, only
+    
+        !!  REAL*8 (DOUBLE PRECISION) arguments MINVAL, MAXVAL, DEFAULT; return a REAL*8:
+        
+        DOUBLE PRECISION FUNCTION BENVDBLE( LNAME, DESCRIP, MINVAL, MAXVAL, DEFAULT, STATUS )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESC    ! description of the value
+            REAL*8       , INTENT(IN   ) :: MINVAL
+            REAL*8       , INTENT(IN   ) :: MAXVAL
+            REAL*8       , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            INTEGER      , INTENT(  OUT) :: STAT    ! for error/default-case detection
+        DOUBLE PRECISION FUNCTION ENVDBLE( LNAME, DESCRIP, DEFAULT, STATUS )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESC    ! description of the value
+            REAL*8       , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            INTEGER      , INTENT(  OUT) :: STAT    ! for error/default-case detection
+    
+        !!  INTEGER arguments; return a INTEGER:
+
+        INTEGER FUNCTION BENVINT( LNAME, DESCRIP, MINVAL, MAXVAL, DEFAULT, STAT )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESC    ! description of the value
+            INTEGER      , INTENT(IN   ) :: MINVAL
+            INTEGER      , INTENT(IN   ) :: MAXVAL
+            INTEGER      , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            INTEGER      , INTENT(  OUT) :: STAT    ! for error/default-case detection
+       INTEGER FUNCTION ENVINT( LNAME, DESCRIP, DEFAULT, STAT )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESC    ! description of the value
+            INTEGER      , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            INTEGER      , INTENT(  OUT) :: STAT    ! for error/default-case detection
+    
+        !!  REAL arguments; return a REAL:
+
+        REAL FUNCTION BENVREAL( LNAME, DESCRIP, MINVAL, MAXVAL, DEFAULT, STATUS )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESCRIP ! description of the value
+            REAL         , INTENT(IN   ) :: MINVAL
+            REAL         , INTENT(IN   ) :: MAXVAL
+            REAL         , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            INTEGER      , INTENT(  OUT) :: STAT    ! for error/default-case detection
+        REAL FUNCTION ENVREAL( LNAME, DESCRIP, DEFAULT, STATUS )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESCRIP ! description of the value
+            REAL         , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            INTEGER      , INTENT(  OUT) :: STAT    ! for error/default-case detection
+    
+        !!  CHARACTER-string arguments; return a CHARACTER-string:
+
+        SUBROUTINE ENVSTR( LNAME, DESCRIP, DEFAULT, EVALUE, STATUS )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESCRIP ! description of the value
+            CHARACTER*(*), INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            CHARACTER*(*), INTENT(IN   ) :: EVALUE  ! result
+            INTEGER      , INTENT(  OUT) :: STATUS  ! for error/default-case detection
+    
+        !!  LOGICAL arguments; return a LOGICAL:
+        !!  Environment variable should have values from {T, F, Y, N}
+
+        LOGICAL FUNCTION ENVYN( LNAME, DESCRIP, DEFAULT, STATUS )
+            CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+            CHARACTER*(*), INTENT(IN   ) :: DESCRIP ! description of the value
+            LOGICAL      , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+            INTEGER      , INTENT(  OUT) :: STATUS  !  for distinguishing error/default-value cases
+</PRE><P> 
+
+
+<H2> C versions: </H2>
+
+<PRE>
+double envdblec( const char * lname       ,
+                 const char * description ,
+                 double       defaultval  ,
+                 int        * status )
+int envintc( const char * lname       ,
+             const char * description ,
+             int          defaultval  ,
+             int        * status )
+float envrealc( const char * lname       ,
+                const char * description ,
+                float        defaultval  ,
+                int        * status )
+void envstrc( const char * lname        ,   /* logical name */
+               const char * description ,   /* description */
+               const char * defaultval  ,   /* default value */
+               char       * evalue      ,   /* result buffer */
+               int        * status      ,   /* error/default-case  */
+               int          elen /* length of the &quot;evalue&quot; buffer */
+	       )
+int envync( const char * lname       , 
+            const char * description , 
+            int          defaultval  ,
+            int        * status )
+</PRE>
+
+    <STRONG>NOTE: </STRONG> envstrc() null-terminates the returned 
+    value iff its length is at most <VAR>elen</VAR>.  Otherwise, it
+    padds from the end of the value up to <VAR>elen</VAR> with ASCII
+    NULLs (i.e., its behavior is the same as strncpy() ).
+    <P>
+
+
+<H2> Summary: </H2>
+
+    These routines are wrappers around the <VAR>getenv()</VAR> system
+    call:   find, log, and return the value of <A HREF = "LOGICALS.html">shell
+    variable/logical name</A>  <CODE>LNAME</CODE> from the
+    <A HREF = "ENVIRONMENT.html"> environment </A>, and interpret it
+    in the appropriate manner (e.g., as an <CODE>INTEGER</CODE> for
+    <CODE>ENVINT()</CODE>), returning <CODE>DEFAULT</CODE> if
+    the  logical name is not defined, is defined but has an empty
+    value,  or has an improper value.  Writes a message to the log
+    indicating  the value returned -- and if the value was improper,
+    writes a  warning notice.  Returns <CODE>STATUS</CODE> indicating the
+    nature of the  <CODE>DEFAULT</CODE> returned.  <CODE>STATUS</CODE>
+    takes the following values:
+    <UL> 
+        <LI>  2  for out-of-bounds value, returning <CODE>DEFAULT</CODE> (for <CODE>BENV*()</CODE>)
+        <LI>  1  for improperly formatted value, returning <CODE>DEFAULT</CODE>
+        <LI>  0  for normal value
+        <LI>  -1 for environment value set but empty (returning <CODE>DEFAULT</CODE>)
+        <LI>  -2 for environment value not set (returning <CODE>DEFAULT</CODE>)
+    </UL>
+    <P>  
+    
+    Note that the new <CODE>ENVGET()</CODE> generic routine acts as any of these,
+    the compiler selecting which one is actually used on the basis of the types
+    of the arguments.
+    <P>
+    
+    Note that the new <CODE>BENV*()</CODE> routines also have
+    <CODE>MINVAL, MAXVAL</CODE> arguments and return a result
+    within this indicated range.
+    <P>
+
+
+    For Fortran-90 declarations and interface checking:
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+
+    <STRONG>See also</STRONG>
+    <BLOCKQUOTE>
+    <A HREF = "NAMEVAL.html">NAMEVAL</A>, and<BR>
+    <A HREF = "SETENV.html">SETENVVAR</A>.
+    </BLOCKQUOTE>
+    <P>
+
+
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P>
+
+    LNAME and DESCRIP have length at most 256.  (NOTE:  POSIX says that
+    environment variables may have lengths this long.)
+<P>
+
+
+<H2> Fortran Usage:  </H2>
+
+In the calling script, set program-control parameters for logical
+names <CODE>FOO*</CODE>:
+<PRE>
+...
+setenv FOOC /work/qux/data
+setenv FOOD 123.4D5
+setenv FOOI 23
+setenv FOOR 3.14159
+setenv FOOY T
+setenv FOON N
+setenv FOO
+...
+</PRE>
+<P>
+
+Below are explicit-routine uses in the Fortran program. It is not
+<EM>necessary</EM> that the environment variable name be the same
+as the Fortran-program-variable name; however, it is good software
+engineering practice to do so where feasible.
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    CHARACTER*16, PARAMETER :: BLANK = ' '
+    CHARACTER*256   FOOC
+    INTEGER         FOOI, FOOJ, FOOK
+    REAL            FOOR
+    REAL*8          FOOD
+    LOGICAL         FOOY
+    INTEGER         STATUS
+    ...
+    !!  the following all return the environment value (23, etc...)
+    !!  with STATUS = 0, normal environment value:
+    !!  FOOI==23, FOOJ==23, FOOR=3.14159, FOOD=123.4D5, FOOY=.TRUE.
+    !!  FOOC=='/work/qux/data'
+    
+    FOOI = ENVINT(  'FOOI', 'Env vble FOOI',        17, STATUS )
+    FOOJ = BENVINT( 'FOOI', 'Env vble FOOI', 0, 30, 14, STATUS )
+    FOOR = ENVREAL( 'FOOR', 'Env vble FOOR', 1.41424, STATUS )
+    FOOD = ENVDBLE( 'FOOD', 'Env vble FOOD', 1.0d3,   STATUS )
+    FOOY = ENVYN(   'FOOY', 'Env flag FOOY', .FALSE., STATUS )
+    CALL   ENVSTR(  'FOOC;, 'Env string FOOC', BLANK, FOOC, STATUS )
+    ...
+
+    !!  the following return the default value, with STATUS = -1,
+    !!  environment-variable set-but-empty
+    !!  FOOI==17, FOOR==1.41424, FOOC=BLANK
+    
+    FOOI = ENVINT(  'FOO', 'Env vble FOO', 17, STATUS )
+    FOOR = ENVREAL( 'FOO', 'Env vble FOO', 1.41424, STATUS )
+    CALL   ENVSTR(  'FOO;, 'Env string FOO', BLANK, FOOC, STATUS )
+    ...
+
+    !!  the following return the default value, with STATUS = 1,
+    !!  environment variable improperly formatted;
+    !!  the FOOC-value '/work/qux/data' is not an INTEGER:
+    
+    FOOK = ENVINT( 'FOOC', 'Env vble FOOC', 17, STATUS )
+
+    !!  the following returns the default value, with STATUS = -2,
+    !!  environment-variable not set:  FOOJ==17
+    
+    FOOJ = ENVINT( 'BAR', 'Env vble BAR', 17, STATUS )
+
+    !!  the following return the default value, with STATUS = 2,
+    !!  environment-variable value out-of-bounds:
+    !!  FOOJ==17, FOOR== 1.41424
+    
+    FOOJ = BENVINT( 'FOOI', 'Env vble FOOI', 0,   20,  17,      STATUS )
+    FOOR = BENVREAL('FOOR', 'Env vble FOOR', 0.0, 2.0, 1.41424, STATUS )
+    ...
+    
+</PRE>
+and here are generic-routine uses in the Fortran program, equivalent to 
+various of the calls in the explicit-routine code above:
+<PRE>
+    ...
+    FOOI = ENVGET( 'FOOI', 'Env vble FOOI',        17, STATUS )
+    FOOJ = ENVGET( 'FOOI', 'Env vble FOOI', 0, 30, 17, STATUS )
+    FOOR = ENVGET( 'FOOR', 'Env vble FOOR', 1.41424, STATUS )
+    FOOD = ENVGET( 'FOOD', 'Env vble FOOD', 1.0d3,   STATUS )
+    FOOL = ENVGET( 'FOOY', 'Env flag FOOY', .FALSE., STATUS )
+    CALL   ENVGET( 'FOOC', 'Env string FOOL', BLANK, FOOC,, STATUS )
+    CALL   ENVGET( 'FOO',  'Env string FOOL', BLANK, FOOC,, STATUS )
+    FOOL = ENVGET( 'FOOY', 'Env flag   FOOY', .FALSE., STATUS )    
+    FOOJ = ENVGET( 'FOOI', 'Env vble FOOI', 0,   20,  17,      STATUS )
+    FOOR = ENVGET( 'FOOR', 'Env vble FOOR', 0.0, 2.0, 1.41424, STATUS )
+    ...
+</PRE>
+
+
+    
+<H2> C Usage: </H2>
+
+<EM>No generics; no equivalent to the <CODE>BENV*()</CODE></EM>
+<P>
+
+Similar to the Fortran above:
+
+<PRE>
+#include &quot;iodecl3.h&quot;
+...
+int   status, ivalue, lvalue ;
+double dvalue ;
+float  rvalue ;
+char   svalue[ 257 ] ;
+...
+ivalue =  envintc( &quot;FOO&quot;,
+                  &quot;Here is where I put a description&quot;,
+                  17 ,
+                  &amp; status ) )
+if ( status  0 )
+    {
+    ... stuff for bad (non-integer) value of environment variable FOO
+    }
+else if ( status == -1 )
+    {
+    ... stuff for empty-but-defined FOO
+    }
+else if ( status == -2 )
+    {
+    ... stuff for not-defined-at-all FOO
+    }
+...
+use ivalue...
+...
+dvalue = envdblec( &quot;FOO&quot;,
+                   &quot;Here is where I put a description&quot;,
+                   17.0 ,
+                   &amp; status ) )
+...[and check status]
+...
+rvalue = envrealc( &quot;FOO&quot;,
+                   &quot;Here is where I put a description&quot;,
+                   17.0 ,
+                   &amp; status ) )
+...[and check status]
+...
+lvalue =  envync( &quot;FOOOFLAG&quot;, 
+                  &quot;Here is where I put a description&quot;,
+                  0 ,
+                  &amp; status ) )
+...[and check status]
+...
+if ( lvalue ) 
+    {
+    ... stuff for FOOFLAG TRUE
+    }
+else{
+    ...stuff for FOOFLAG FALSE
+    }
+...
+envstrc( &quot;FOO&quot;, 
+                  &quot;Here is where I put a description&quot;,
+                  &quot;some_default&quot;,
+                  svalue,
+                  &amp; status ) )
+...[and check status]
+...
+
+</PRE>    <P> 
+    
+
+<HR>
+
+<A HREF = "DSCGRID.html" >
+Previous:  <STRONG>DSCGRID</STRONG>
+</A><P>
+
+<A HREF = "FINDS.html" >
+Next:  <STRONG>FINDC, FINDKEY, FIND1, FIND2, FIND3, FIND4,
+               FINDR1, FINDR2, FINDR3, FINDR4</STRONG>
+</A><P>
+
+<A HREF = "AA.html#utility">
+Up: <STRONG>Utility Routines</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
+</A><P>
+
+</BODY>
+</HTML>
+

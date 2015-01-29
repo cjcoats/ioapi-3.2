@@ -1,0 +1,156 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: GRID2XY.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> SUBROUTINE GRID2XY </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1> SUBROUTINE GRID2XY </H1>
+
+<H2> Fortran version: </H2>
+
+&quot;Generic&quot; Fortran-90 routine to convert grid cell-centers to a
+different map projection, with optional <CODE>SPHER1</CODE>,
+<CODE>SPHER2</CODE> spheroid arguments:
+<PRE>
+    SUBROUTINE GRID2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,   &amp;
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2,   &amp;
+                        NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,           &amp;
+                        XLOC2, YLOC2 )
+
+    SUBROUTINE GRID2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,           &amp;
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,           &amp;
+                        NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,           &amp;
+                        XLOC2, YLOC2 )
+
+        INTEGER, INTENT(IN   ) :: GDTYP1, GDTYP2
+        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2
+        REAL*8 , INTENT(IN   ) :: SPHER1, SPHER2        !!  input, output spheres
+        REAL*8 , INTENT(IN   ) :: P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1
+        REAL*8 , INTENT(IN   ) :: P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2
+        REAL*8 , INTENT(IN   ) :: XORIG2, YORIG2, XCELL2, YCELL2
+</PRE><P>    
+
+
+<H2> Summary: </H2>
+
+    Compute cell-centers  <CODE>&lt;XLOC2,YLOC2&gt;</CODE> for
+    <VAR>GRID2</VAR> relative to the coordinate system for
+    <VAR>GRID1</VAR> using USGS GCTP-package routine
+    <CODE>GTPZ0()</CODE>.
+    <P>
+    
+    NOTE:  The GRID1-vs-GRID2 issue for many uses is
+    &quot;backward&quot; to the naive intuition:  to interpolate
+    data-grids from GRID1 to GRID2, one needs to compute the locations
+    of GRID2-nodes relative to the GRID1  coordinate-and-grid
+    system in order to compute the bilinear coefficients for those
+    points&mdash;a coordinate transformation in the reverse of the
+    direction of the data-interpolation.    
+    <P>
+
+    For I/O&nbsp;API Version 3.2 or later, only:  generic module-routine
+    <CODE>CONTAIN</CODE>ed in <CODE>MODULE MODGCTP</CODE>.
+    <P>
+
+    <STRONG>See also</STRONG> Coordinate-coordinate conversion routines:
+    <BLOCKQUOTE>
+        <A HREF = "GCTP.html">GCTP</A> coordinate-transform package from USGS<P>
+
+        <A HREF = "GRID2INDX.html" ><CODE>GRID2INDX()/PNTS2INDX()/INDXMULT()</CODE></A>
+        &quot;New&quot; bilinear interpolation package from <CODE>MODULE&nbsp;MODGCTP</CODE><P>
+
+        <A HREF = "XY2XY.html">XY2XY()</A>: array-of-points coordinate transformation
+        routine from <CODE>MODULE&nbsp;MODGCTP</CODE><P>
+    </BLOCKQUOTE>
+
+
+<H2> Preconditions </H2>
+
+    <CODE>USE MODGCTGP</CODE>
+    <P>
+
+
+<H2> Fortran Usage: </H2>
+ 
+    In addition to the example below, see also <A
+    HREF="BMATVEC.html#usage">the example under <CODE>BMATVEC()</CODE>
+    and <CODE>BILIN()</CODE> and the <A
+    HREF="MTXCALC.txt"><VAR>m3tools</VAR> program <VAR>mtxcalc</VAR></A>
+    for a full-program example.
+ 
+    <PRE>
+    ...
+    INTEGER     GDTYP1      !!  parameters for output coordinate system
+    REAL*8      P_ALP1
+    REAL*8      P_BET1
+    REAL*8      P_GAM1
+    REAL*8      XCENT1
+    REAL*8      YCENT1
+    INTEGER     GDTYP2      !!  parameters for input grid and coord system
+    INTEGER     NCOLS2
+    INTEGER     NROWS2
+    INTEGER     NTHIK2
+    REAL*8      P_ALP2
+    REAL*8      P_BET2
+    REAL*8      P_GAM2
+    REAL*8      XCENT2
+    REAL*8      YCENT2
+    REAL*8      XORIG2
+    REAL*8      YORIG2
+    REAL*8      XCELL2
+    REAL*8      YCELL2
+    ...
+    REAL*8      XGRID2( NCOLS2,NROWS2 )
+    REAL*8      YGRID2( NCOLS2,NROWS2 )
+    ...
+    CALL GRID2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,       &amp;
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, &amp;
+                        NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2, &amp;
+                        XGRID2, YGRID2 )
+    ...
+    </PRE>
+    <P>
+
+    <STRONG>See also</STRONG>:
+    <BLOCKQUOTE>
+        <A HREF = "GCTP.html"     >GCTP</A> coordinate transformation routine
+        from USGS <P>
+        <A HREF = "MODGCTP.html"  ><CODE>MODULE MODGCTP</CODE></A> <P>
+        <A HREF = "GRID2INDX.html"><CODE>GRID2INDX()/PNTS2INDX()/INDXMULT()</CODE></A>:  
+             Bilinear-interpolation package in <CODE>MODULE MODGCTP</CODE>
+             <P>
+        <A HREF = "XY2XY.html"    ><CODE>XY2XY()</CODE></A>:  array-of-points coordinate 
+             transformation routinee in <CODE>MODULE MODGCTP</CODE>
+             <P>
+        <A HREF = "UNGRIDB.html"><CODE>UNGRIDB()</CODE></A> and
+        <A HREF = "BMATVEC.html"><CODE>BILIN()/BMATVEC()</CODE></A> &quot;old&quot; bilinear
+        interpolation packages
+    </BLOCKQUOTE>
+
+
+
+<HR> <!----------------------------------------------------------------->
+</A><P> 
+
+<A HREF = "MODGCTP.html" >
+Up:  <STRONG>MODULE MODGCTP</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#coordstuff"> 
+Up: <STRONG>Coordinate and Grid Related Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>

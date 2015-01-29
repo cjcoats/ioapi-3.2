@@ -1,0 +1,135 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> PMATVEC() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    PMATVEC() </H1>
+
+<H2> Fortran version: </H2>
+
+For I/O&nbsp;APIv3.2:  these are OpenMP-parallel generic routines, with
+optionally 1-D-horizontal (&quot;vector&quot;) or 2-D-horizontal
+(&quot;gridded&quot;) inputs and outputs.  The generic 
+<CODE>INTERFACE</CODE>s defined in <CODE>MODULE M3UTILIO</CODE>.  For
+previous I/O&nbsp;API versions, <CODE>PMATVEC()</CODE> is the same as
+I/O&nbsp;API Version&nbsp;3.2 <CODE>PMATVEC11()</CODE>.
+
+<PRE>
+    SUBROUTINE PMATVEC( M..., NX, IX, U, V ):
+
+        SUBROUTINE  PMATVEC11( M, N, P, NX, IX, U, V )
+        INTEGER, INTENT(IN   ) :: M             ! length of input vector
+        INTEGER, INTENT(IN   ) :: N             ! length of output vector
+        INTEGER, INTENT(IN   ) :: P             ! max number of coefficients
+        INTEGER, INTENT(IN   ) :: NX( N )       ! # of entries per row
+        INTEGER, INTENT(IN   ) :: IX( P )       ! columns list
+        REAL   , INTENT(IN   ) ::  U( M )       !  input vector
+        REAL   , INTENT(  OUT) ::  V( N )       ! output vector
+        END SUBROUTINE  PMATVEC11
+
+        SUBROUTINE  PMATVEC12( M, NC, NR, P, NX, IX, U, V )
+        INTEGER, INTENT(IN   ) :: M             ! length of input vector
+        INTEGER, INTENT(IN   ) :: NC, NR        ! length of output vector
+        INTEGER, INTENT(IN   ) :: P             ! max number of coefficients
+        INTEGER, INTENT(IN   ) :: NX( NC*NR )   ! # of entries per row
+        INTEGER, INTENT(IN   ) :: IX( P )       ! columns list
+        REAL   , INTENT(IN   ) :: U( M )        !  input vector
+        REAL   , INTENT(  OUT) :: V( NC,NR )    ! output vector
+        END SUBROUTINE  PMATVEC12
+
+        SUBROUTINE  PMATVEC21( MC, MR, N, P, NX, IX, U, V )
+        INTEGER, INTENT(IN   ) :: MC, MR        ! length of input vector
+        INTEGER, INTENT(IN   ) :: N             ! length of output vector
+        INTEGER, INTENT(IN   ) :: P             ! max number of coefficients
+        INTEGER, INTENT(IN   ) :: NX( N )       ! # of entries per row
+        INTEGER, INTENT(IN   ) :: IX( P )       ! columns list
+        REAL   , INTENT(IN   ) :: U( MC,MR )    !  input vector
+        REAL   , INTENT(  OUT) :: V( N )        ! output vector
+        END SUBROUTINE  PMATVEC21
+
+        SUBROUTINE  PMATVEC22( MC, MR, NC, NR, P, NX, IX, U, V )
+        INTEGER, INTENT(IN   ) :: MC, MR        ! length of input vector
+        INTEGER, INTENT(IN   ) :: NC, NR        ! length of output vector
+        INTEGER, INTENT(IN   ) :: P             ! max number of coefficients
+        INTEGER, INTENT(IN   ) :: NX( NC*NR     ! # of entries per row
+        INTEGER, INTENT(IN   ) :: IX( P )       ! columns list
+        REAL   , INTENT(IN   ) :: U( MC, MR )   !  input vector
+        REAL   , INTENT(  OUT) :: V( NC, NR )   ! output vector
+        END SUBROUTINE  PMATVEC22
+
+</PRE><P> 
+
+<H2> C version:  none </H2>
+
+<H2> Summary: </H2>
+
+    PMATVEC() multiplies the (0 | 1)-coefficient sparse matrix &lt;NX,IX&gt; by 
+    input vector U and return the resulting output vector V, as is 
+    done by the SMOKE emissions model in point-source gridding. 
+    <BLOCKQUOTE>
+        <VAR>C(R)</VAR> =  
+        <STRONG>SUM<SUB>K=N(R-1)-1</SUB><SUP>N(R)</SUP></STRONG> 
+                           <VAR>U(I(K))</VAR>
+    </BLOCKQUOTE>
+    
+    See also subroutines
+    <BLOCKQUOTE>
+    <A HREF="GRID2INDX.html">Bilinear interpolation package </A>
+          <CODE>GRID2INDX(), PNTS2INDX(), and INDXMULT()</CODE>
+          from <CODE>MODULE MODGCTP</CODE>
+          <P>
+    <A HREF = "BMATVEC.html">BMATVEC and BILIN</A>,
+    <A HREF = "DMATVEC.html">DMATVEC</A>,
+    <A HREF = "SMATVEC.html">SMATVEC</A>, and
+    <A HREF = "UNGRIDB.html">UNGRIDB</A>
+    </BLOCKQUOTE>
+    and programs
+    <BLOCKQUOTE>
+    <A HREF = "MTXBLEND.html">MTXBLEND</A>,
+    <A HREF = "MTXBUILD.html">MTXBUILD</A>,
+    <A HREF = "MTXCALC.html">MTXCALC</A>,
+    <A HREF = "MTXCPLE.html">MTXCPLE</A>.
+    </BLOCKQUOTE>
+    <P> 
+
+
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+    
+    <VAR>!! under construction !!</VAR>
+
+<HR> <!----------------------------------------------------------------->
+    
+<A HREF = "PCOEF.html" >
+Previous:  <STRONG>PCOEF</STRONG>
+</A><P> 
+
+<A HREF = "POLY.html" >
+Next:  <STRONG>POLY</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

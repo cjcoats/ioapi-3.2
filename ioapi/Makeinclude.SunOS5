@@ -1,0 +1,28 @@
+# VERSION "$Id: Makeinclude.SunOS5 100 2015-01-16 16:52:16Z coats $"
+#
+#  Library flags severely hacked to satisfy Sun's broken
+#  compiler-linker system
+
+AR   = ar
+CC   = cc
+FC   = f90
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -M       ## Module-include-directory command
+
+MFLAGS    = 
+
+OMPFLAGS  = -openmp
+OMPLIBS   = -openmp -mt -lsocket -lnsl -lthread
+COPTFLAGS = -xO3 -xcg92 ${MFLAGS}
+FOPTFLAGS =  -O3  -cg92 -xtarget=native ${MFLAGS}
+FPPFLAGS  = -xpp=cpp
+FSFLAGS   = 
+ARCHFLAGS = -DAUTO_ARRAYS=1 -DF90=1 -DFLDMN=1
+PARFLAGS  =
+ARCHLIB   = 
+
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4

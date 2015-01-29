@@ -1,0 +1,159 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> ENVREAL() and envrealc() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    ENVREAL() and envrealc() </H1>
+
+<H2> Fortran version: </H2>
+<BLOCKQUOTE>
+        ENVREAL() is a Fortran wrapper calling the C envrealc()
+</BLOCKQUOTE><P> 
+<PRE>
+    REAL FUNCTION ENVREAL( LNAME, DESCRIP, DEFAULT, STATUS )
+        CHARACTER*(*)    LNAME   ! logical name to evaluate
+        CHARACTER*(*)    DESCRIP ! description of the value
+        REAL             DEFAULT ! default value (if LNAME not set, or empty)
+        INTEGER          STAT    ! for error/default-case detection
+</PRE><P>    
+
+<H2> C version: </H2>
+<PRE>
+float envrealc( const char * lname       , 
+                const char * description , 
+                float        defaultval  ,
+                int        * status )
+</PRE>
+
+<H2> Summary: </H2>
+
+    This function is a shell around the <VAR>getenv()</VAR> system call:  
+    find, log, and return the value of 
+    <A HREF = "LOGICALS.html">  shell variable/logical name </A> 
+    LNAME in the <A HREF = "ENVIRONMENT.html"> environment </A>,
+    and interpret it as REAL.  Returns the  DEFAULT if the 
+    logical name is not defined, is defined but has an empty value, 
+    or has an improper value.  Writes a message to the log indicating 
+    the value returned -- and if the value was improper, writes a 
+    warning notice.  <CODE>STAT</CODE> takes the following values:
+    <UL> 
+        <LI>  1  for improperly formatted value, returning <CODE>DEFAULT</CODE>
+        <LI>  0  for normal value
+        <LI>  -1 for environment value set but empty (returning <CODE>DEFAULT</CODE>)
+        <LI>  -2 for environment value not set (returning <CODE>DEFAULT</CODE>)
+    </UL>
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+        
+    <STRONG>See also</STRONG>
+    <BLOCKQUOTE>
+    <A HREF = "ENVDBLE.html">ENVDBLE</A>,<BR>
+    <A HREF = "ENVINT.html">ENVINT</A>, <BR>
+    <A HREF = "ENVSTR.html">ENVSTR</A>,<BR>
+    <A HREF = "ENVYN.html">ENVYN</A>,<BR>
+    <A HREF = "NAMEVAL.html">NAMEVAL</A>, and<BR>
+    <A HREF = "SETENV.html">SETENVVAR</A>.
+    </BLOCKQUOTE>
+    <P> 
+    
+        
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    LNAME and DESCRIP have length at most 256.  (NOTE:  POSIX says that
+    environment variables may have lengths this long.)
+<P> 
+
+    
+<H2> Fortran Usage:  </H2>
+Get a program-control parameter for logical name 'FOO' which defaults to 
+17.0, generating appropriate log messages, etc.:
+<PRE>
+...
+setenv FOOFLAG True
+...
+/mydirectory/myprogram
+... 
+</PRE>
+<PRE>
+    ...
+    INTEGER        FOO
+    INTEGER        STATUS
+    ...
+    FOO = ENVREAL( 'FOO', 
+ &amp;             'Some control parameter or other, called FOO',
+ &amp;             17.0 ,
+ &amp;             STATUS )
+    IF ( STATUS .GT. 0 ) THEN
+        ... bad value for FOO; do something.
+    END IF
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  
+Same as above, but test for defaults as well:
+<PRE>
+#include &quot;iodecl3.h&quot;
+...
+int    status ;
+double value ;
+...
+value = envrealc( &quot;FOO&quot;, 
+                  &quot;Here is where I put a description&quot;,
+                  17.0 ,
+                  &amp; status ) )
+if ( status &gt; 0 ) 
+    {
+    ... stuff for bad (non-integer) value of environment variable FOO
+    }
+else if ( status == -1 ) 
+    {
+    ... stuff for empty-but-defined FOO
+    }
+else if ( status == -2 ) 
+    {
+    ... stuff for not-defined-at-all FOO
+    }
+... 
+use value...
+</PRE>    <P> 
+    
+        
+
+<HR>
+
+<A HREF = "ENVINT.html" >
+Previous:  <STRONG>ENVINT</STRONG>
+</A><P> 
+
+<A HREF = "ENVSTR.html" >
+Next:  <STRONG>ENVSTR</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

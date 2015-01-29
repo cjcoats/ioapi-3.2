@@ -1,0 +1,245 @@
+%!PS-Adobe-2.0
+%%Title: /tmp/xfig-fig019591
+%%Creator: fig2dev
+%%CreationDate: Fri Aug 25 16:01:58 1995
+%%For: xcc@hilbert (Carlie Coats (919)248-9241, MCNC, )
+%%BoundingBox: 14 305 590 772
+%%Pages: 1
+%%EndComments
+/$F2psDict 200 dict def 
+$F2psDict begin
+$F2psDict /mtrx matrix put
+/l {lineto} bind def
+/m {moveto} bind def
+/s {stroke} bind def
+/n {newpath} bind def
+/gs {gsave} bind def
+/gr {grestore} bind def
+/clp {closepath} bind def
+/graycol {dup dup currentrgbcolor 4 -2 roll mul 4 -2 roll mul
+4 -2 roll mul setrgbcolor} bind def
+/col-1 {} def
+/col0 {0 0 0 setrgbcolor} bind def
+/col1 {0 0 1 setrgbcolor} bind def
+/col2 {0 1 0 setrgbcolor} bind def
+/col3 {0 1 1 setrgbcolor} bind def
+/col4 {1 0 0 setrgbcolor} bind def
+/col5 {1 0 1 setrgbcolor} bind def
+/col6 {1 1 0 setrgbcolor} bind def
+/col7 {1 1 1 setrgbcolor} bind def
+	end
+/$F2psBegin {$F2psDict begin /$F2psEnteredState save def} def
+/$F2psEnd {$F2psEnteredState restore end} def
+%%EndProlog
+
+$F2psBegin
+0 setlinecap 0 setlinejoin
+0.0 792.0 translate 0.720 -0.720 scale
+0.500 setlinewidth
+	[4.000000] 0 setdash
+% Polyline
+n 339 479 m 339 79 l  299 79 l  299 479 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 419 479 m 419 79 l  379 79 l  379 479 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 499 479 m 499 79 l  459 79 l  459 479 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 659 479 m 659 79 l  619 79 l  619 479 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 259 479 m 259 79 l  219 79 l  219 479 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 579 479 m 579 79 l  539 79 l  539 479 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 659 119 m 659 79 l  139 79 l  139 119 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 659 199 m 659 159 l  139 159 l  139 199 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 659 279 m 659 239 l  139 239 l  139 279 l  clp gs col-1 s gr
+	[] 0 setdash
+	[4.000000] 0 setdash
+% Polyline
+n 659 439 m 659 399 l  139 399 l  139 439 l  clp gs col-1 s gr
+	[] 0 setdash
+% Polyline
+n 19 79 m 119 79 l gs col-1 s gr
+% Polyline
+n 434 534 m 659 534 l gs col-1 s gr
+n 641.000 530.000 m 659.000 534.000 l 641.000 538.000 l gs 2 setlinejoin col-1 s gr
+% Polyline
+n 329 534 m 139 534 l gs col-1 s gr
+n 157.000 538.000 m 139.000 534.000 l 157.000 530.000 l gs 2 setlinejoin col-1 s gr
+% Polyline
+n 74 254 m 74 79 l gs col-1 s gr
+n 70.000 97.000 m 74.000 79.000 l 78.000 97.000 l gs 2 setlinejoin col-1 s gr
+% Polyline
+n 74 279 m 74 479 l gs col-1 s gr
+n 78.000 461.000 m 74.000 479.000 l 70.000 461.000 l gs 2 setlinejoin col-1 s gr
+	[4.000000] 0 setdash
+% Polyline
+n 179 479 m 179 79 l  139 79 l  139 479 l  clp gs col-1 s gr
+	[] 0 setdash
+1.000 setlinewidth
+% Polyline
+n 659 479 m 659 119 l  619 119 l  619 479 l  clp gs col-1 s gr
+% Polyline
+n 659 119 m 659 79 l  179 79 l  179 119 l  clp gs col-1 s gr
+% Polyline
+n 179 439 m 179 79 l  139 79 l  139 439 l  clp gs col-1 s gr
+% Polyline
+n 619 479 m 619 439 l  139 439 l  139 479 l  clp gs col-1 s gr
+0.500 setlinewidth
+% Polyline
+n 139 499 m 139 559 l gs col-1 s gr
+% Polyline
+n 659 499 m 659 559 l gs col-1 s gr
+% Polyline
+n 19 479 m 119 479 l gs col-1 s gr
+% Polyline
+n 679 479 m 819 479 l gs col-1 s gr
+% Polyline
+n 679 439 m 819 439 l gs col-1 s gr
+% Polyline
+n 739 559 m 739 479 l gs col-1 s gr
+n 735.000 497.000 m 739.000 479.000 l 743.000 497.000 l gs 2 setlinejoin col-1 s gr
+% Polyline
+n 739 359 m 739 439 l gs col-1 s gr
+n 743.000 421.000 m 739.000 439.000 l 735.000 421.000 l gs 2 setlinejoin col-1 s gr
+	[4.000000] 0 setdash
+% Polyline
+n 659 359 m 659 319 l  139 319 l  139 359 l  clp gs col-1 s gr
+	[] 0 setdash
+/Times-Bold findfont 15.00 scalefont setfont
+379 604 m 
+gs 1 -1 scale (EQUIVALENCE \( S\(1\), B\( 1 \) \)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+319 464 m 
+gs 1 -1 scale (Boundary component  S) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+154 194 m 
+gs 1 -1 scale  270.0 rotate (Boundary component  W) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+634 194 m 
+gs 1 -1 scale  270.0 rotate (Boundary component  E) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+304 104 m 
+gs 1 -1 scale (Boundary component  N) col-1 show gr
+/Times-Bold findfont 18.00 scalefont setfont
+264 284 m 
+gs 1 -1 scale (Main Grid  G\( NCOLS, NROWS \)) col-1 show gr
+/Times-Bold findfont 24.00 scalefont setfont
+139 49 m 
+gs 1 -1 scale (EXAMPLE:  One-Layer Internal Boundary \(NTHIK = -1\)) col-1 show gr
+/Times-Italic findfont 12.00 scalefont setfont
+154 499 m 
+gs 1 -1 scale  270.0 rotate (col  1) col-1 show gr
+/Times-Italic findfont 12.00 scalefont setfont
+194 499 m 
+gs 1 -1 scale  270.0 rotate (col  2) col-1 show gr
+/Times-Italic findfont 12.00 scalefont setfont
+234 499 m 
+gs 1 -1 scale  270.0 rotate (col  3) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+719 464 m 
+gs 1 -1 scale (NTHIK = -1) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+24 274 m 
+gs 1 -1 scale (NROWS = 10) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+339 539 m 
+gs 1 -1 scale (NCOLS = 13) col-1 show gr
+/Times-Italic findfont 12.00 scalefont setfont
+634 499 m 
+gs 1 -1 scale  270.0 rotate (col          NCOLS = 13) col-1 show gr
+/Times-Italic findfont 12.00 scalefont setfont
+669 464 m 
+gs 1 -1 scale (row  1) col-1 show gr
+/Times-Italic findfont 12.00 scalefont setfont
+664 424 m 
+gs 1 -1 scale (row  2) col-1 show gr
+/Times-Italic findfont 12.00 scalefont setfont
+664 104 m 
+gs 1 -1 scale (row  NROWS = 10) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+144 464 m 
+gs 1 -1 scale (B\(1\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+184 464 m 
+gs 1 -1 scale (B\(2\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+224 464 m 
+gs 1 -1 scale (B\(3\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+184 104 m 
+gs 1 -1 scale (B\(22\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+584 104 m 
+gs 1 -1 scale (B\(32\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+624 104 m 
+gs 1 -1 scale (B\(33\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+584 464 m 
+gs 1 -1 scale (B\(12\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+624 464 m 
+gs 1 -1 scale (B\(13\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+624 424 m 
+gs 1 -1 scale (B\(14\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+624 144 m 
+gs 1 -1 scale (B\(21\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+144 424 m 
+gs 1 -1 scale (B\(34\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+144 144 m 
+gs 1 -1 scale (B\(41\)) col-1 show gr
+/Times-Bold findfont 12.00 scalefont setfont
+144 104 m 
+gs 1 -1 scale (B\(42\)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+59 579 m 
+gs 1 -1 scale (B\( 2*NCOLS + 2*NROWS - 4 \) single-indexes the entire boundary) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+59 603 m 
+gs 1 -1 scale (S\( 1 : NCOLS-1 \)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+59 627 m 
+gs 1 -1 scale (E\( 1 : NROWS-1 \)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+59 651 m 
+gs 1 -1 scale (N\( 2 : NCOLS \)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+59 675 m 
+gs 1 -1 scale (W\( 2 : NROWS \)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+379 628 m 
+gs 1 -1 scale (EQUIVALENCE\( E\(1\), B\( NCOLS \) \)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+379 652 m 
+gs 1 -1 scale (EQUIVALENCE\( N\(2\), B\( NCOLS+NROWS-1 \) \)) col-1 show gr
+/Times-Bold findfont 15.00 scalefont setfont
+379 676 m 
+gs 1 -1 scale (EQUIVALENCE\( W\(2\), B\( 2*NCOLS+NROWS-2 \) \)) col-1 show gr
+/Times-Bold findfont 18.00 scalefont setfont
+324 319 m 
+gs 1 -1 scale (\(overlaps boundary\)) col-1 show gr
+showpage
+$F2psEnd

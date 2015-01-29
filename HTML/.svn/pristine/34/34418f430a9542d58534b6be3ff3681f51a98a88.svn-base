@@ -1,0 +1,114 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> YEAR4() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    YEAR4() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION  YEAR4( YY )
+        INTEGER, INTENT(IN   ) :: YY
+</PRE><P> 
+
+<H2> C version: </H2>
+
+    None.  But can probably be called as:
+<PRE>
+#if __hpux || _AIX
+#define   YEAR4 year4_
+#elif  __sgi || __sun || __osf__ || __mips__
+#define   YEAR4 year4_
+#enduf
+
+    int YEAR4( const int *yy )
+
+</PRE>
+
+<H2> Summary: </H2>
+
+    YEAR4() returns the 4-digit year corresponding to the argument YY.
+    Controlled by two environment variables:
+    <DL> 
+        <DT><STRONG> YEAR4_BASE:  </STRONG>
+        <DD> base century for the result (default value 1900)
+        <DT><STRONG> YEAR4_PIVOT </STRONG>
+        <DD> cutoff year (YY) for decision between base century and the
+        century after it (default value 70)
+    </DL>
+    IF <CODE>YY &gt; YEAR4_BASE </CODE>, YEAR4 returns YY.  Otherwise,
+    <STRONG>YY must be in the range 0-99</STRONG>
+<P> 
+
+
+<H2> Preconditions: </H2>
+
+    If you wish to use some other year than 1970 as the transition year
+    for consecutive centuries, 
+    <VAR><BLOCKQUOTE>
+        setenv YEAR4_BASE &lt;century&gt;
+        setenv YEAR4_PIVOT &lt;year&gt;
+    </BLOCKQUOTE></VAR>
+<P> 
+
+
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+In the following, note that V is out-of-range - the call to YEAR4(V)
+will generate an out-of-range message and stop the program.
+<PRE>
+    ...
+    ...
+    INTEGER   YEAR4
+    INTEGER   P, Q, R, S, T, U, V
+    ...
+    ( suppose defaults:  YEAR4_BASE = 1900, YEAR4_PIVOT = 1970,
+    ( P = 15, Q = 69, R = 70, S = 93, T = 1985, U = 2020, V = 111 )
+    WRITE (*,* ) YEAR4( P )	!  is 2015
+    WRITE (*,* ) YEAR4( Q )	!  is 2069
+    WRITE (*,* ) YEAR4( R )	!  is 1970
+    WRITE (*,* ) YEAR4( S )	!  is 1993
+    WRITE (*,* ) YEAR4( T )	!  is 1985
+    WRITE (*,* ) YEAR4( U )	!  is 2020
+
+    WRITE (*,* ) YEAR4( V )     !  ERROR -- generates out-of-range message
+    ...
+</PRE><P> 
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "WKDAY.html" >
+Previous:  <STRONG>WKDAY</STRONG>
+</A><P> 
+
+<A HREF = "YR2DAY.html" >
+Next:  <STRONG>YR2DAY</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

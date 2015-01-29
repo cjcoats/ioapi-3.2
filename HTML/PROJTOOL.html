@@ -1,0 +1,140 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: PROJTOOL.html 120 2015-01-20 22:24:03Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE> Program PROJTOOL </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+
+<H1>    Program PROJTOOL </H1>
+
+<H2> Usage </H2>
+<STRONG><PRE>
+    PROJTOOL
+</PRE></STRONG>
+(and then respond to the prompts for coordinate system
+specification and coordinate-conversion operation that PROJTOOL
+gives you)
+<P>
+
+<STRONG><EM>Supersedes
+<A HREF = "UTMTOOL.html"><CODE>utmtool</CODE></A></EM></STRONG>
+
+<H2> Summary </H2>
+
+    The <CODE>PROJTOOL</CODE> program provides coordinate conversion back
+    and forth among LAT-LON, Lambert Conformal, UTM, Polar Stereographic,
+    General Transverse Mercator, Equatorial Mercator, and Albers Conic
+    Equal Area  coordinate systems.
+    Longitudes are specified in <STRONG>signed degrees </STRONG> (so
+    that for the US, longitudes are negative); coordinate system
+    &quot;UAM/EPS&quot; means the thing with the <EM>kilometer</EM>
+    units instead of the UTM standard units, which are meters.
+    <P>
+
+    Inputs are  8-byte REAL double precision, matching the double
+    precision used internally by GCTP.  For high precision
+    calculations, uses the I/O&nbsp;API <A HREF = "SETSPHERE.html">
+    <STRONG>SETSPHERE and SPHEREDAT</STRONG></A> package to allow the
+    user to customize the geodetic spheroid to be used for high
+    precision computations.
+    <P>
+
+    PROJTOOL also provides grid-corner calculations, assuming either
+    a UTM-based or a Lambert-based grid, as appropriate (to get UTM or
+    Lambert corners of a LAT-LON based grid, work one corner at a time
+    using the coordinate conversion facilities).
+    <P>
+
+    <STRONG>NOTE: </STRONG> according to the standard, UTM coordinates
+    should be specified in _meters_ instead of the UAM/EPS bastardized
+    system which claims to be UTM but in fact uses
+    <STRONG>kilo</STRONG>meters; the latter is a distinct
+    (partially-supported) system, also. <P>
+
+<H2> Usage </H2>
+
+    The program is a character-based application (runs in, e.g., an
+    <VAR>xterm</VAR>) rather than being a GUI X application.  It will
+    repeatedly prompt you for operation to be performed, from a menu
+    that offers the following choices, for specification of (input or
+    output) coordinate transformation, coordinate-to-coordinate
+    conversion, and grid-corner determination.  Note that for Lambert,
+    Polar Stereographic, Transverse Mercator, and Equatorial Mercator
+    projections, you must specify it before using it as an input or
+    output coordinate system.
+    <P>
+
+    The menu is:
+    <BLOCKQUOTE>
+    <OL>
+        <LI><CODE>Quit the program</CODE>
+        <LI><CODE>Set up input  map projection by name</CODE>
+        <LI><CODE>Set up output map projection by name</CODE>
+        <LI><CODE>Set up input  grid &amp;  projection by name</CODE>
+        <LI><CODE>Set up output grid &amp;  projection by name</CODE>
+        <LI><CODE>Set up input  map projection by angles (etc.)</CODE>
+        <LI><CODE>Set up output map projection by angles (etc.)</CODE>
+        <LI><CODE>Define an input grid w.r.t. the input map projection</CODE>
+        <LI><CODE>Convert from input X-Y to output X-Y</CODE>
+        <LI><CODE>Get output-projection grid corners for input grid</CODE>,
+             e.g., for Lat-Lon corners, set the output projection to
+             Lat-Lon and choose this action.
+        <LI><CODE>Get output-projection grid corner-cell centers for
+        the input grid</CODE>,
+        <LI><CODE>Define an output grid w.r.t. the output map projection</CODE>
+        <LI><CODE>Get output-grid &lt;C,R&gt; for input-coord
+        &lt;X,Y&gt;</CODE>
+    </OL>
+    </BLOCKQUOTE>
+    <P>
+
+
+<H2> See Also </H2>
+
+<A HREF = "GRIDS.html#horiz">
+EDSS/Models-3 horizontal coordinate and grid conventions</A>
+<P>
+
+<A HREF = "AA.html#coordstuff">
+EDSS/Models-3 grid and coordinate manipulation routines</A>
+<P>
+
+<A HREF = "UTMTOOL.html">
+Earlier coordinate-transform program <CODE>UTMTOOL</CODE></A>
+<P>
+
+<A HREF = "GCTP.html" >
+US Geological Survey General Coordinate Transformation Package (GCTP)</A>
+<P>
+
+<A HREF = "SETSPHERE.html">
+Geodetic spheroid manipulation routine <CODE>SETSPHERE</CODE></A>
+<P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "JULDATE.html" >
+Previous:  <STRONG>JULDATE</STRONG>
+</A><P>
+
+<A HREF = "AA.html#tools">
+Up: <STRONG>Related Programs</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
+</A><P>
+
+
+</BODY>
+</HTML>
+

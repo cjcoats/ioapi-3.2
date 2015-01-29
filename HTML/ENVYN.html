@@ -1,0 +1,191 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: ENVYN.html 132 2015-01-26 19:18:10Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> ENVYN() and envync() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    ENVYN() and envync() </H1>
+
+<H2> Fortran version: </H2>
+<BLOCKQUOTE>
+        ENVYN() is a Fortran wrapper calling the C envync()<BR>
+        <A HREF="ENVGETS.html"><CODE>ENVGET()</CODE></A> is the
+        Fortran-90-generic (I/O&nbsp;API-3.2 or later only)
+</BLOCKQUOTE><P> 
+<PRE>
+LOGICAL FUNCTION ENVYN( LNAME, DESCRIP, DEFAULT, STATUS )
+    CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+    CHARACTER*(*), INTENT(IN   ) :: DESCRIP ! description of the value
+    LOGICAL      , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
+    INTEGER      , INTENT(  OUT) :: STATUS  !  for distinguishing error/default-value cases
+</PRE><P>    
+
+<H2> C version: </H2>
+<PRE>
+int envync( const char * lname       , 
+            const char * description , 
+            int          defaultval  ,
+            int        * status )
+</PRE>
+
+<H2> Summary: </H2>
+
+    This function is a shell around the <VAR>getenv()</VAR> system call:  
+    find, log, and return the value of 
+    <A HREF = "LOGICALS.html">  shell variable/logical name </A> 
+    LNAME in the <A HREF = "ENVIRONMENT.html"> environment </A>,
+    interpret it as a logical TRUE or FALSE according to whether
+    the first character of the value is (after upcasing) either
+    'T' or 'Y' (for TRUE) or 'F' or 'N' (for FALSE).  Returns the
+    DEFAULT if the logical name is not defined, is defined but has
+    an empty value, or has an improper value.  Writes a message to
+    the log indicating the value returned -- and if the value was
+    improper, writes a warning notice.
+    <P> 
+
+    Treats &quot;.T&quot;... and &quot;.F&quot;... as though they were
+    &quot;T&quot;... and &quot;F&quot;..., respectively.
+    <P> 
+
+    Returns DEFAULT in case that LNAME not defined, that LNAME
+    is defined but has an empty value, or that the value of LNAME
+    does not begin with 'T' or 'Y' (for TRUE) or 'F' or 'N' (for FALSE).
+    <P> 
+        
+    STATUS takes the following values:
+    <UL> 
+        <LI>  1  for improperly formatted value (i.e., not in {T,F,Y,N};
+              DEFAULT returned)
+        <LI>  0  for normal returned value
+        <LI>  -1 for environment value set but empty (DEFAULT returned)
+        <LI>  -2 for environment value not set (DEFAULT returned)
+    </UL>
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+        
+    <STRONG>See also</STRONG>
+    <BLOCKQUOTE>
+    <A HREF = "ENVGETS.html">ENVGET</A> (generic environment-value
+    routine, I/O&nbsp;API-3.2 or later),<BR>
+    <A HREF = "LISTS.html">ENVLIST</A> (generic environment-list
+    routine, I/O&nbsp;API-3.1 or later),<BR>
+    <A HREF = "ENVDBLE.html">ENVDBLE</A>,<BR>
+    <A HREF = "ENVINT.html">ENVINT</A>, <BR>
+    <A HREF = "ENVREAL.html">ENVREAL</A>, <BR>
+    <A HREF = "ENVSTR.html">ENVSTR</A>,<BR>
+    <A HREF = "ENVYN.html">ENVYN</A>,<BR>
+    <A HREF = "NAMEVAL.html">NAMEVAL</A>; and<BR>
+    <A HREF = "SETENV.html" >SETENVVAR()</A>
+    for setting environment variables from within a program<BR>.
+    </BLOCKQUOTE>
+    <P> 
+    
+        
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    LNAME and DESCRIP have length at most 512 for I/O&nbsp;API-3.0 or
+    earlier, 65535 for I/O&nbsp;API-3.1.  (NOTE:  POSIX says that
+    environment variables with lengths at least 512 must be supported.)
+    <P> 
+
+    
+<H2> Fortran Usage:  </H2>
+
+Get a program-control flag for logical name 'FOOFLAG' which defaults to 
+FALSE, generating appropriate log messages, etc.:
+<PRE>
+...
+setenv FOOFLAG True
+...
+/mydirectory/myprogram
+... 
+</PRE>
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    LOGICAL        ENVYN
+    LOGICAL        FOOFLAG
+    INTEGER        STATUS
+    ...
+    FOOFLAG = ENVYN( 'FOOFLAG', 
+ &amp;             'Some flag or other, called FOO',
+ &amp;             .FALSE. ,
+ &amp;             STATUS )
+    IF ( STATUS .GT. 0 ) THEN
+        ... bad value for FOOFLAG; do something.
+    END IF
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  
+As above, but distinguish the various kinds of default cases.
+<PRE>
+#include &quot;iodecl3.h&quot;
+...
+int status, value ;
+value =  envync( &quot;FOOOFLAG&quot;, 
+                 &quot;Here is where I put a description&quot;,
+                 0 ,
+                 &amp; status ) )
+if ( status &gt; 0 ) 
+    {
+    ... stuff for bad value of this environment variable 
+    }
+else if ( status == -1 ) 
+    {
+    ... stuff for empty-but-defined FOO
+    }
+else if ( status == -2 ) 
+    {
+    ... stuff for not-defined-at-all FOO
+    }
+
+if ( value ) 
+    {
+    ... stuff for FOOFLAG TRUE
+    }
+else{
+    ...stuff for FOOFLAG FALSE
+    }
+...
+</PRE>    <P> 
+    
+        
+
+<HR>
+
+<A HREF = "ENVSTR.html" >
+Previous:  <STRONG>ENVSTR</STRONG>
+</A><P> 
+
+<A HREF = "FINDS.html" >
+Next:  <STRONG>FIND1, FIND2, FIND3, FIND4</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

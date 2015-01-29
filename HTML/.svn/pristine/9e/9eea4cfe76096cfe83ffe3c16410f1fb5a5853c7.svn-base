@@ -1,0 +1,112 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> MMDDYY() and mmddyyc() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    MMDDYY() and mmddyyc() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    CHARACTER*14 FUNCTION MMDDYY( JDATE )
+        INTEGER, INTENT(IN   ) :: JDATE   ! date, YYYDDD = 1000*year + day(1...365,6)
+</PRE><P> 
+
+<H2> C version: </H2>
+<PRE>
+    void mmddyyc( int  jdate , 
+                  char buffer[ 15 ] )
+</PRE><P> 
+
+<H2> Summary: </H2>
+    Format and return the <A HREF = "DATETIME.html"> Julian date JDATE </A> 
+    as a character string &quot;Month DD, YYYY&quot;
+    <P> 
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    See also subroutines
+    <BLOCKQUOTE>
+    <A HREF = "JULIAN.html"> JULIAN()</A>,  <BR>
+    <A HREF = "DAYMON.html"> DAYMON()</A>,  <BR>
+    <A HREF = "WKDAY.html">   WKDAY()</A>, <BR>
+    <A HREF = "ISDSTIME.html"> ISDSTIME()</A>, <BR>
+    <A HREF = "DT2STR.html"> DT2STR() </A> <BR>
+    </BLOCKQUOTE>
+    as well as EDSS/ Models-3 date-time manipulation programs
+    <BLOCKQUOTE>
+    <A HREF = "GREGDATE.html"> <STRONG>gregdate</STRONG></A>, <BR>
+    <A HREF = "GREG2JUL.html"> <STRONG>greg2jul</STRONG></A>, <BR>
+    <A HREF = "JULDATE.html">  <STRONG>juldate</STRONG></A>, <BR>
+    <A HREF = "JUL2GREG.html">  <STRONG>jul2greg</STRONG></A> <BR>
+    <A HREF = "JULSHIFT.html">  <STRONG>julshift</STRONG></A> <BR>
+    <A HREF = "TIMESHIFT.html">  <STRONG>timeshift</STRONG></A>. <BR>
+    </BLOCKQUOTE>
+
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    JDATE represents a date  YYYYDDD according to 
+    <A HREF = "DATETIME.html"> Models-3 conventions </A>
+
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    CHARACTER*14  BUFFER
+    ...
+    BUFFER = MMDDYY( 1988060 )  ! BUFFER now holds &quot;March 1, 1988&quot;
+    ...
+    WRITE( *,* ) 
+  &amp;     'Date ', MMDDYY( 1995001 ) ! writes &quot;Date Jan. 1, 1995&quot;
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include "iodecl3.h"
+    ...
+    char  buffer[ 15 ] ;
+    ...
+    mmddyyc( 1995001, buffer ) ; /*  buffer now holds "Jan. 1, 1995" */
+    ...
+</PRE><P>         
+
+
+<HR>
+
+<A HREF = "LASTTIME.html" >
+Previous:  <STRONG>JULIAN</STRONG>
+</A><P> 
+
+<A HREF = "NEXTIME.html" >
+Next:  <STRONG>NEXTIME</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,301 @@
+#.........................................................................
+# VERSION "$Id: Makefile.nocpl.sed 107 2015-01-16 18:49:22Z coats $"
+#    EDSS/Models-3 I/O API Version 3.1
+#.........................................................................
+#    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+#    (C) 2003-2004 by Baron Advanced Meteorological Systems, and
+#    (C) 2005-2014 Carlie J. Coats, Jr.
+#    Distributed under the GNU Lesser PUBLIC LICENSE version 2.1
+#    See file "LGPL.txt" for conditions of use.
+#.........................................................................
+#  Environment Variables:
+#       BIN     machine/OS/compiler/mode type. Shows up as suffix
+#               for "Makeinclude.${BIN}" to determine compilation
+#               flags, and in ${OBJDIR} and $(INSTALL) to determine
+#               binary directories
+#       INSTALL installation-directory root, used for "make install":
+#               "libioapi.a" and the tool executables will be installed
+#               in $(INSTDIR) = $(INSTALL)/${BIN}
+#.........................................................................
+#  Directories:
+#       BASEDIR serves as a root directory for the I/O API library
+#               source, M3Tools source, HTML documentation, and
+#               (machine-specific) object/library/executable
+#               directories.
+#       IODIR is where the I/O API source "lives"
+#       OBJDIR is where the ".o" and "libioapi.a" files will be built.
+#               Note that its default depends upon the machine/compiler
+#               architecture type, specified by environment variable BIN
+#       INSTDIR = $(INSTALL)/${BIN} is where the "libioapi.a" files will be
+#               copied--must be a user-supplied environment variable
+#       FIXDIR  is the directory in which to build extended-source-line
+#               fixed-source-form INCLUDE files (these files are so
+#               coded as to work correctly with both f90 free-form and
+#               standard (f77 and f90) fixed source forms.)
+#.........................................................................
+# Special Make-targets
+#       all:        OBJDIR and libioapi.a
+#       clean:      remove .o's and libioapi.a from OBJDIR
+#       install:    copy "libioapi.a" (and "m3tools" executables) to $(INSTDIR)
+#       gtar:       GZipped tar-file of the source
+#       fixed_src:  FIXDIR and extended-fixed-source INCLUDE-files
+#.........................................................................
+# Library Versions:
+#     Environment variable "BIN" specifies library version up to
+#     link- and compile-flag compatibility.  Dependecies upon machine,
+#     OS, and compiler are found in file "Makeinclude.${BIN}.
+#     In particular, pay attention to the notes for various versions
+#     that may be built for Linux x86 with the Portland Group
+#     compilers:  see comments in Makeinclude.Linux2_x86pg
+#
+#     The following options are NOT library- nor object-compatible;
+#     versions with distinct combinations of these options should be
+#     built in *distinct*  ${OBJDIR}s:
+#
+#     Defining IOAPICPL turns on "coupling mode."
+#
+#     Defining IOAPI_NO_STDOUT suppresses WRITEs to the screen in
+#     routines INIT3(), M3MSG2(), M3MESG(), and M3ABORT().
+#
+#     Defining IO_360 creates the 360-day "global climate" version
+#     of the library.
+#
+# DEFINEFLAGS = $(ARCHFLAGS) $(PARFLAGS) \
+#               -DIOAPICPL=1 -DIOAPI_NO_STDOUT=1 -DIO_360=1
+#
+######################################################################
+
+.SUFFIXES: .m4 .c .F .f .f90 .F90 .mod
+
+BASEDIR = IOAPI_BASE
+INSTDIR = LIBINSTALL
+
+IODIR  = ${BASEDIR}/ioapi
+
+# OBJDIR = ${IODIR}/../lib
+# OBJDIR = ${IODIR}/../${BIN}
+OBJDIR  = ${BASEDIR}/${BIN}
+
+FIXDIR  = ${IODIR}/fixed_src
+
+# Architecture dependent stuff
+
+MAKEINCLUDE
+
+DEFINEFLAGS = $(ARCHFLAGS) $(PARFLAGS)
+
+VFLAG  = -DVERSION='3.1-nocpl'
+
+CFLAGS = $(DEFINEFLAGS) $(COPTFLAGS) $(VFLAG)
+FFLAGS = $(DEFINEFLAGS) $(FOPTFLAGS) $(OMPFLAGS) $(ARCHFLAGS) -I${IODIR}
+
+VPATH = ${OBJDIR}
+
+CSRC = \
+bufint3.c   check3c.c   close3c.c   currstepc.c daymonc.c   ddtvar3c.c  \
+desc3c.c    dscgridc.c  dt2strc.c   envgets.c   filchk3c.c  findsc.c    \
+get_endian.c sleep3.c   \
+getdfilec.c getdttime.c getefilec.c hhmmssc.c   init3c.c    inqatt3c.c  \
+interp3c.c  iobin3.c    julianc.c   locatsc.c   m3errc.c    m3exitc.c   \
+m3mesgc.c   m3warnc.c   mmddyyc.c   nameval.c   nextimec.c  open3c.c    \
+rdatt3c.c   read3c.c    read4dc.c   rmfile.c    sec2timec.c secsdiffc.c \
+shut3c.c    sortic.c    sortir.c    sortis.c    sync3c.c    systemf.c   \
+time2secc.c wkdayc.c    wratt3c.c   write3c.c   write4dc.c  xtract3c.c  \
+# iocpl.c
+
+M4SRC = # iocplf2c.m4
+
+fSRC = \
+bilin.f       bmatvec.f     chkfil3.f     ckdesc3.f     ckfile3.f     \
+ckgeom.f      ckname.f      cktflag3.f    close3.f      crdict3.f     \
+crtbuf3.f     currstep.f    dble2real.f   dmatvec.f     dscgrid.f     \
+dt2str.f      filchk3.f     find1.f       find2.f       find3.f       \
+find4.f	      findc.f       findr1.f      findr2.f      findr3.f      \
+findr4.f      flush3.f      gcd.f         gctp.f        getdble.f     \
+getmenu.f     getnum.f      getreal.f     getstr.f      getyn.f	      \
+grdchk3.f     gridops.f     hhmmss.f      index1.f      initblk3.f    \
+inqatt3.f     intg2real.f   intlist.f     ioparms3.f    kfindx.f      \
+kfopen.f      lblank.f      len2.f        locat1.f      locat2.f      \
+locat3.f      locat4.f      locatc.f      locatr1.f     locatr2.f     \
+locatr3.f     locatr4.f     lustr.f	      m3warn.f      name2fid.f    \
+opnlist3.f    pcoef.f	    pgrdsum.f     pmatvec.f     poly.f        \
+promptdfile.f promptffile.f promptgrid.f  promptmfile.f rdatt3.f      \
+rdbndary.f    rdbuf3.f      rdcustom.f    rddict3.f     rdgrdded.f    \
+rdiddata.f    rdsmatrx.f    rdtflag.f     readsmet.f    realist.f     \
+scanint.f     sec2time.f    str2dble.f    skipl.f       smatvec.f     \
+splitline.f   str2int.f     str2real.f    strlist.f     sync3.f       \
+syncfid.f     synchtao.f    time2sec.f    trimlen.f     ungridb.f     \
+ungridi.f     upcase.f      wratt3.f      wrbndary.f    wrbuf3.f      \
+wrcustom.f    wrdict3.f     wrgrdded.f    wriddata.f    wrsmatrx.f    \
+wrtflag.f     xtbuf3.f      xtract3.f     year4.f       chkbuf3.f
+
+FSRC = \
+cbarnes1.F    cbarnesN.F    check3.F      crtfil3.F     crlf.F       \
+crtkf.F       currec.F      daymon.F      ddtvar3.F     ddtvar3v.F   \
+desc3.F       getdate.F     getdfile.F    getefile.F    getffile.F   \
+init3.F       initlog3.F    interp3.F     isdstime.F    jstep3.F     \
+julian.F      junit.F       kfread.F      kfwrite.F     m3abort.F    \
+m3err.F       m3exit.F      m3msg2.F      mmddyy.F      nextime.F    \
+open3.F       opnfil3.F     opnlog3.F     opnkf.F       rdgrnest.F   \
+rdprofil.F    rdvars.F      read3.F       read4d.F      secsdiff.F   \
+shut3.F       wkday.F       wrgrnest.F    write3.F      write4d.F    \
+wrpatch.F     wrprofil.F    wrvars.F      yr2day.F
+# ddtvar3v.F  interp3v.F    intpqv.F      updtvir3.F    single_thread.F
+
+MSRC = m3utilio.f
+
+M90SRC = modgctp.f90 m3atts.f90
+
+EXTS =\
+ATDSC3.EXT   CONST3.EXT   FDESC3.EXT   IODECL3.EXT  NETCDF.EXT  \
+NOTICE.EXT   PARMS3.EXT   STATE3.EXT
+
+hSRC=\
+attdsc3.h   fdesc3.h    iodecl3.h   parms3.h  state3.h
+
+fix_EXT = \
+${FIXDIR}/ATDSC3.EXT   ${FIXDIR}/CONST3.EXT  \
+${FIXDIR}/FDESC3.EXT   ${FIXDIR}/IODECL3.EXT \
+${FIXDIR}/NETCDF.EXT   ${FIXDIR}/NOTICE.EXT  \
+${FIXDIR}/PARMS3.EXT   ${FIXDIR}/STATE3.EXT
+
+LIB = libioapi.a
+
+MOBJ = $(MSRC:.f=.o)   $(M90SRC:.f90=.o)
+MODS = $(MSRC:.f=.mod) $(M90SRC:.f90=.mod)
+fOBJ = $(fSRC:.f=.o)
+FOBJ = $(FSRC:.F=.o)
+COBJ = $(CSRC:.c=.o)
+OOBJ = $(M4SRC:.m4=.o)
+OBJ  = $(fSRC:.f=.o) $(FSRC:.F=.o) $(CSRC:.c=.o) $(M4SRC:.m4=.o) ${MOBJ}
+
+
+######################################################################
+
+all: ${OBJDIR} ${LIB} ${MODS} # fixed_src
+
+mod:  ${MODS}
+
+clean:  ${OBJDIR}
+	cd ${OBJDIR}; rm $(fOBJ); rm $(FOBJ); rm $(MOBJ) $(COBJ) $(OOBJ); rm ${LIB} ${MODS}
+	cd ${SRCDIR}; rm *.o core*
+
+install: ${INSTDIR}
+	echo "Installing in ${INSTDIR}" ; cd ${OBJDIR}; cp ${LIB} ${INSTDIR}
+
+gtar:
+	cd ${BASEDIR}; make gtar
+
+bins:
+	make BIN=Linux2_x86_64
+	make BIN=Linux2_x86_64g95
+	make BIN=Linux2_x86_64sun
+	make BIN=Linux2_x86_64ifort
+	make BIN=Linux2_x86_64g95dbg
+	make BIN=Linux2_x86_64sundbg
+	make BIN=Linux2_x86_64ifortdbg
+
+binclean:
+	make BIN=Linux2_x86_64          clean
+	make BIN=Linux2_x86_64g95       clean
+	make BIN=Linux2_x86_64sun       clean
+	make BIN=Linux2_x86_64ifort     clean
+	make BIN=Linux2_x86_64g95dbg    clean
+	make BIN=Linux2_x86_64sundbg    clean
+	make BIN=Linux2_x86_64ifortdbg  clean
+
+fixed_src:  ${FIXDIR} $(fix_EXT)
+
+nametest: ${LIB} ${OBJDIR}/libnetcdff.a
+	${SRCDIR}/nm_test.csh ${OBJDIR}/${LIB} ${OBJDIR}/libnetcdff.a nf_open
+
+
+#  ---------------------------  Dependencies:  --------------------------
+
+%.o : %.mod        #  Disable "gmake"s obnoxious implicit Modula-2 rule !!
+%.f : %.F          #  Hack for some versions of  "gmake" + "gfortran"
+
+.c.o:  $(hSRC) ${IODIR}/Makeinclude.${BIN}
+	cd ${OBJDIR}; $(CC) -c $(CFLAGS) ${IODIR}/$<
+
+.m4.c:  $(hSRC) ${IODIR}/Makeinclude.${BIN}
+	$(M4) $(M4DEFFILE) $< > $(<:.m4=.c)
+
+.m4.o:  $(hSRC) ${IODIR}/Makeinclude.${BIN}
+	$(M4) $(M4DEFFILE) $< > $(<:.m4=.c)
+	cd ${OBJDIR}; $(CC) $(CFLAGS) -c ${IODIR}/$(<:.m4=.c) -o $(<:.m4=.o)
+	rm -f $(<:.m4=.c)
+
+.F.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+	cd ${OBJDIR}; $(FC) -c $(FPPFLAGS) $(FFLAGS) ${IODIR}/$<
+
+.f.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+	cd ${OBJDIR}; $(FC) -c $(FFLAGS) ${IODIR}/$<
+
+.f.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+	cd ${OBJDIR}; $(FC) -c $(FFLAGS) ${IODIR}/$<
+
+.f90.o:
+	cd ${OBJDIR};  ${FC} ${FFLAGS} -c ${IODIR}/$<
+
+.f90.mod:
+	cd ${OBJDIR};  ${FC} ${FFLAGS} -c ${IODIR}/$<
+
+.F90.o:
+	cd ${OBJDIR}; $(FC) $(FPPFLAGS) $(FFLAGS) -c ${IODIR}/$<
+
+
+# init3() needs the library-version:
+#  gctp requires "SAVE all variables" flag;
+#  crtfil3, m3atts and modgctp USE M3UTILIO
+
+init3.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+	echo $(VFLAG)
+	cd ${OBJDIR}; $(FC) -c $(FPPFLAGS) $(FFLAGS) $(VFLAG) ${IODIR}/init3.F -o $@
+
+gctp.o: ${IODIR}/gctp.f ${IODIR}/Makeinclude.${BIN}
+	cd ${OBJDIR}; $(FC) -c $(FSFLAGS) $(FFLAGS) ${IODIR}/gctp.f
+
+
+crtfil3.o:  m3utilio.mod m3atts.mod
+
+m3atts.o   m3atts.mod   :  m3utilio.mod
+modgctp.o  modgctp.mod  :  m3utilio.mod
+
+
+${LIB}: ${OBJ}
+	cd ${OBJDIR}; $(AR) $(ARFLAGS) ${LIB} ${OBJ} ; ranlib ${LIB}
+
+${OBJDIR}:
+	mkdir -p ${OBJDIR}
+
+#  "fixed-source" stuff for use with CMAQ "F90 132-column fixed-source"
+#  non-standard source code formatting:
+
+${FIXDIR}:
+	mkdir ${FIXDIR}
+
+${FIXDIR}/ATDSC3.EXT: ATDSC3.EXT
+	${IODIR}/fix_src.csh ATDSC3.EXT ${FIXDIR}/ATDSC3.EXT
+
+${FIXDIR}/CONST3.EXT: CONST3.EXT
+	${IODIR}/fix_src.csh CONST3.EXT ${FIXDIR}/CONST3.EXT
+
+${FIXDIR}/FDESC3.EXT: FDESC3.EXT
+	${IODIR}/fix_src.csh FDESC3.EXT ${FIXDIR}/FDESC3.EXT
+
+${FIXDIR}/IODECL3.EXT: IODECL3.EXT
+	${IODIR}/fix_src.csh IODECL3.EXT ${FIXDIR}/IODECL3.EXT
+
+${FIXDIR}/NETCDF.EXT: NETCDF.EXT
+	${IODIR}/fix_src.csh NETCDF.EXT ${FIXDIR}/NETCDF.EXT
+
+${FIXDIR}/NOTICE.EXT: NOTICE.EXT
+	${IODIR}/fix_src.csh NOTICE.EXT ${FIXDIR}/NOTICE.EXT
+
+${FIXDIR}/PARMS3.EXT: PARMS3.EXT
+	${IODIR}/fix_src.csh PARMS3.EXT ${FIXDIR}/PARMS3.EXT
+
+${FIXDIR}/STATE3.EXT: STATE3.EXT
+	${IODIR}/fix_src.csh STATE3.EXT ${FIXDIR}/STATE3.EXT
+

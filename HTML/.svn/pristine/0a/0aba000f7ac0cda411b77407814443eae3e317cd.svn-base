@@ -1,0 +1,124 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> NAMEVAL() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    NAMEVAL() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    SUBROUTINE NAMEVAL( LNAME, EQNAME )
+        CHARACTER*(*), INTENT(IN   ) :: LNAME   ! logical name to evaluate
+        CHARACTER*(*), INTENT(  OUT) :: EQNAME  ! value of LNAME from the environment
+</PRE><P>    
+
+<H2> NO C version: </H2>  
+    
+    !! just do the system call <VAR>getenv()</VAR> directly !!
+<P> 
+
+<H2> Summary: </H2>
+
+    This routine is a FORTRAN-callable shell around the 
+    <VAR>getenv()</VAR> system call:  find the value of 
+    <A HREF = "LOGICALS.html">  shell variable/logical name </A> 
+    LNAME in the <A HREF = "ENVIRONMENT.html"> environment </A> 
+    and return  it in EQNAME.  This is not only used within the 
+    I/O API internally (to deal with logical names of files) but
+    is also useful for retrieving the values of environment-variable
+    flags used to control the mode of operation of programs:  since
+    you can call NAMEVAL() from anywhere, you don't have to make
+    special provisions to pass the flags from the program-initialization 
+    module to the computational modules where they are actually used;
+    the computational modules can evalutate the flags directly.
+    <P> 
+
+    Returns EQNAME=LNAME in case of failure.
+    <P> 
+
+    Case-sensitive for UNIX (but insensitive for VMS, where
+    environment variable names themselves are case-insensitive).
+    <P> 
+
+    See also specialized routines 
+    <A HREF = "ENVDBLE.html" > <STRONG>ENVDBLE()</STRONG></A>,
+    <A HREF = "ENVINT.html" > <STRONG>ENVINT()</STRONG></A>,
+    <A HREF = "ENVREAL.html" > <STRONG>ENVREAL()</STRONG></A>,
+    <A HREF = "ENVSTR.html" > <STRONG>ENVSTR()</STRONG></A>, and
+    <A HREF = "ENVYN.html" > <STRONG>ENVYN()</STRONG></A>, for 
+    getting DOUBLE PRECISION, INTEGER, REAL, CHARACTER-STRING, or
+    LOGICAL values from the environment, respectively.
+    <P> 
+    
+    
+
+<H2> Preconditions: </H2>
+
+    EQNAME long enough to hold LNAME's value.  Values with lengths 
+    of up to 256 are supported.  (NOTE:  POSIX says that
+    environment variables may have lengths this long.)
+<P> 
+
+    
+<H2> Fortran Usage:  </H2>
+a program-control flag which has value &quot;ON&quot; when set
+and which defaults to FALSE:
+<PRE>
+    ...
+    CHARACTER*256  EQNAME
+    LOGICAL        FLAG
+    ...
+    CALL NAMEVAL( 'FOOFLAG', EQNAME ) ) THEN
+    IF ( EQNAME( 1:TRIMLEN( EQNAME ) ) .EQ. 'FOOFLAG' ) THEN
+C           ...NAMEVAL() failed, since EQNAME=LNAME.  
+            FLAG = .FALSE.
+    ELSE
+C           ...EQNAME contains value of environment variable &quot;FOO&quot;
+        CALL UPCASE( EQNAME )       !  makes it into ALLCAPS
+        IF ( EQNAME( 1:2 ) .EQ. 'ON' ) THEN
+C           ...foo-flag should be set
+            FLAG = .TRUE.
+        ELSE
+C           ...foo-flag should be turned off
+            FLAG = .FALSE.
+        END IF
+    END IF
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  
+    don't; use system call <VAR>getenv()</VAR> directly.
+    <P> 
+    
+        
+<HR>
+
+<A HREF = "M3WARN.html" >
+Previous:  <STRONG>M3WARN</STRONG>
+</A><P> 
+
+<A HREF = "POLY.html" >
+Next:  <STRONG>POLY</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,115 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GETMENU() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GETMENU() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION GETMENU( ITEMCNT, DEFAULT, PROMPT, CHOICES )
+        INTEGER      , INTENT(IN   ) :: ITEMCNT            ! number of choices
+        INTEGER      , INTENT(IN   ) :: DEFAULT            ! Default return value
+        CHARACTER*(*), INTENT(IN   ) :: PROMPT             ! Prompt for user
+        CHARACTER*(*), INTENT(IN   ) :: CHOICES( ITEMCNT ) ! array of menu choice strings
+</PRE><P>    
+
+<H2> NO C version: </H2>
+<P> 
+
+<H2> Summary: </H2>
+
+    Display a menu to the screen; then display <CODE>PROMPT</CODE>, get
+    the user's response, check that it is within range, and return it.
+    Return <CODE>DEFAULT</CODE> if the user hits &lt;RET&gt;. 
+    Reprompts on error for up to 5 attempts; exits in case of more than
+    5 entry errors. If <A HREF = "ENVIRONMENT.html">environment
+    variable <VAR>PROMPTFLAG</VAR></A> is set to &quot;N&quot;, returns
+    <CODE>DEFAULT</CODE> without prompting the user.  Logs the value
+    returned, for tracking and validation purposes.
+    <P>
+
+    The number for the default response is displayed in square
+    brackets at the end of the prompt <CODE>[LIKE THIS]</CODE>
+    <P> 
+
+    NOTE:  prompt and menu choice strings should have length
+    at most 72 characters.  Ideally, number of items should be
+    at most 18; should be at most 999, in any case.
+    <P>
+
+    See also <A HREF = "GETYN.html"> GETYN() </A>,
+    <A HREF = "GETNUM.html">  GETNUM()  </A>,
+    <A HREF = "GETREAL.html"> GETREAL() </A>,
+    <A HREF = "GETDBLE.html"> GETDBLE() </A>, and
+    <A HREF = "GETSTR.html"> GETSTR() </A>.
+<P> 
+
+        
+<H2> Preconditions </H2>
+
+    Number ITEMCNT of choices at least 1.
+<P> 
+
+    
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+ 
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A> or
+    <A HREF = "PRESZ.txt">PRESZ</A>
+    for additional usage examples.)
+
+<PRE>
+    ...
+    INTEGER        L
+    INTEGER        GETMENU
+    CHARACTER*72   CHOICES( 4 )
+    DATA           CHOICES
+ &amp;  / 'This is the first  choice',
+ &amp;    'This is the second choice',
+ &amp;    'This is the third  choice',
+ &amp;    'This is the last   choice'  /
+    ...
+    L = GETMENU( 4, 1, 'Choose one' )
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  don't
+<P>         
+
+
+<HR>
+
+<A HREF = "GETDBLE.html" >
+Previous:  <STRONG>GETDBLE</STRONG>
+</A><P> 
+
+<A HREF = "GETNUM.html" >
+Next:  <STRONG>GETNUM</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

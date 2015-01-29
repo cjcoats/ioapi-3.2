@@ -1,0 +1,147 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: JUL2GREG.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program JUL2GREG </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program JUL2GREG </H1>
+
+<H2> Usage </H2>
+<PRE>
+    jul2greg &lt;Julian date&gt;
+</PRE>
+or, alternately,
+<PRE>
+    jul2greg [ yesterday | today | tomorrow ]
+</PRE>
+or
+<PRE>
+    jul2greg --help
+</PRE>
+ 
+<H2> Summary </H2>
+
+    Convert Julian-style date <CODE>YYYYDDD</CODE> or
+    <CODE>yesterday</CODE>, <CODE>today</CODE>, or <CODE>tomorrow</CODE>
+    command line argument to Gregorian style date <CODE>YYYYMMDD</CODE>
+    and echo the result to standard output as a single 8-digit integer
+    formatted <CODE>YYYYMMDD</CODE>.
+    <P>
+    If <CODE>--help</CODE> is the argument, writes the USAGE screen
+    and exits.<P>
+    Not case sensitive.
+
+<H2> Examples </H2>
+
+Some sample executions of this program are as indicated below (where,
+for purposes of illustration, &quot;today&quot;, as I write, is
+January&nbsp;29, 2014).
+<P>
+(Note that in shell-scripting, the back-quote character means &quot;the
+result of evaluating the enclosed command&quot; so that the fourth
+example below sets shell variable <CODE>foo</CODE> to the result of
+executing the indicated <CODE>jul2greg</CODE> command.)
+
+<PRE>
+     % jul2greg 2014029
+     20140129
+
+     % jul2greg YESTERDAY
+     20140128
+
+     % jul2greg tomorrow
+     20140130
+
+     % set foo = `jul2greg 1997123`
+     % echo ${foo}
+     19970503
+
+     % jul2greg --help
+         %  jul2greg &lt;Julian date&gt;
+         or
+         %  set gdate = `jul2greg &lt;calendar date&gt;
+
+         Options for Julian date:
+              &lt;YYYYDDD&gt;,  e.g., 2010123
+              TODAY
+              YESTERDAY
+              TOMORROW
+              --HELP
+
+         Output format is 8-digit integer YYYYMMDD
+</PRE>
+
+
+
+<H2> See Also </H2>
+
+<BLOCKQUOTE>
+<A HREF = "AA.html#datestuff"> 
+EDSS/ Models-3 date-time manipulation routines </A>
+<BR> 
+
+<A HREF = "DATSHIFT.html" >
+<STRONG>datshift</STRONG></A>
+<BR>
+
+<A HREF = "GREGDATE.html" >
+<STRONG>gregdate</STRONG></A>
+<BR>
+
+<A HREF = "GREG2JUL.html" >
+<STRONG>greg2jul</STRONG></A>
+<BR>
+
+<A HREF = "JULDATE.html" >
+<STRONG>juldate</STRONG></A>
+<BR>
+
+<A HREF = "JUL2GREG.html" >
+<STRONG>jul2greg</STRONG></A>
+<BR>
+
+<A HREF = "JULDIFF.html" >
+<STRONG>juldiff</STRONG></A>
+<BR>
+
+<A HREF = "JULSHIFT.html" >
+<STRONG>julshift</STRONG></A>
+<BR>
+
+<A HREF = "TIMESHIFT.html" >
+<STRONG>timeshift</STRONG></A>
+<BR>
+</BLOCKQUOTE>
+
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "GREG2JUL.html" >
+Previous:  <STRONG>greg2jul</STRONG>
+</A><P> 
+
+<A HREF = "JULDIFF.html" >
+Next:  <STRONG>juldiff</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

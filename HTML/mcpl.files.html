@@ -1,0 +1,1259 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML> 
+<HEAD>
+<!-- @(#)$Header$ -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> 
+    MCPL():  Output Files and their Variables
+</TITLE>
+</HEAD>
+   
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+    <HR>
+
+
+<H1>
+    MCPL():  Output Files and their Variables
+</H1>
+
+    The list of file structures for both the &quot;standard&quot; and 
+    the non-standard (KF convective cloud event) MCPL() output files is
+    given below.  Each file structure corresponds to a particular sort 
+    of geometric structure (dot-point-gridded, cross-point-gridded, or
+    grid-boundary; and 2D, 3-D sigma-level, or 3-D pressure-level) 
+    and set of variables defined on that geometric structure.  To form 
+    the logical file name for a specific MCPL output grid, take the 
+    base-name (as given below), and append 
+    <CODE>_G&lt;output-grid-number - 1&gt;</CODE> to it.  (For example, if 
+    there are three output grids, the logical names for the
+    <CODE>GRID_CRO_2D</CODE>-files would be <CODE>GRID_CRO_2D_G0</CODE>,
+    <CODE>GRID_CRO_2D_G1</CODE>, and <CODE>GRID_CRO_2D_G2</CODE>.
+    (It is a historical accident, perhaps caused by the fact that the
+    developers of the EDSS model management framework were C programmers
+    rather than Fortran programmers, that this enumeration starts with 
+    zero instead of one.)  
+    <P>
+
+    The <A NAME = "files">file list is:</A>
+    <UL>  
+        <LI>  <STRONG><A HREF = "#gb2">GRID_BDY_2D</A></STRONG><BR>
+              2-dimensional time-independent grid-boundary variables
+
+        <LI>  <STRONG><A HREF = "#gb3">GRID_BDY_3D</A></STRONG><BR>  
+              3-dimensional time-independent grid-boundary variables
+              on MM5 sigma-surfaces
+
+        <LI>  <STRONG><A HREF = "#gc2">GRID_CRO_2D</A></STRONG><BR>  
+              2-dimensional time-independent cross-point grid variables
+
+        <LI>  <STRONG><A HREF = "#gc3">GRID_CRO_3D</A></STRONG><BR>  
+              3-dimensional time-independent cross-point grid variables
+              on MM5 sigma-surfaces
+
+        <LI>  <STRONG><A HREF = "#gd2">GRID_DOT_2D</A></STRONG><BR>  
+              2-dimensional time-independent dot-point grid variables
+
+        <LI>  <STRONG><A HREF = "#mb2">MET_BDY_2D</A></STRONG><BR>  
+              2-dimensional grid-boundary meteorology variables
+
+        <LI>  <STRONG><A HREF = "#mb3">MET_BDY_3D</A></STRONG><BR>  
+              3-dimensional grid-boundary meteorology variables
+              on MM5 sigma-surfaces
+
+        <LI>  <STRONG><A HREF = "#mc2">MET_CRO_2D</A></STRONG><BR>  
+              2-dimensional cross-point grid meteorology variables
+
+        <LI>  <STRONG><A HREF = "#mc3">MET_CRO_3D</A></STRONG><BR>  
+              3-dimensional cross-point grid meteorology variables
+              on MM5 sigma-surfaces
+
+        <LI>  <STRONG><A HREF = "#md3">MET_DOT_3D</A></STRONG><BR>  
+              3-dimensional dot-point grid meteorology variables
+              on MM5 sigma-surfaces
+
+        <LI>  <STRONG><A HREF = "#pc3">PRES_CRO_3D</A></STRONG><BR>  
+              3-dimensional cross-point grid meteorology variables
+              on standard pressure levels
+
+        <LI>  <STRONG><A HREF = "#pd3">PRES_DOT_3D</A></STRONG><BR>
+              3-dimensional dot-point grid meteorology variables
+              on standard pressure levels
+
+        <LI>  <STRONG><A HREF = "#mka">MET_KF_SCA</A></STRONG><BR>
+              cross-point scalar meteorology variables
+              at the inception of Kain-Fritsch convective cloud events.
+
+        <LI>  <STRONG><A HREF = "#mk1">MET_KF_1D</A></STRONG><BR>
+              <VAR>obsolete</VAR> cross-point scalar meteorology variables
+              at the inception of Kain-Fritsch convective cloud events.
+
+        <LI>  <STRONG><A HREF = "#mkp">MET_KF_PRO</A></STRONG><BR>
+              cross-point vertical profile meteorology variables
+              at the inception of Kain-Fritsch convective cloud events.
+
+        <LI>  <STRONG><A HREF = "#mk3">MET_KF_3D</A></STRONG><BR>
+              <VAR>obsolete</VAR>cross-point vertical profile meteorology 
+              variables at the inception of Kain-Fritsch convective cloud 
+              events.
+    </UL>
+
+<HR> <!----------------------------------------------------------------->
+
+    Here is the list of <STRONG>file definitions</STRONG>, giving a brief
+    description of the files, their 
+    <A HREF = "/products/ioapi/DATATYPES.html#struct">
+    data-structure types</A>, a list of all the potential variables for each, 
+    together with a text description and units specification for the 
+    variables:
+
+    <UL>  	 <!-- begin list of files and their variables -->
+        
+        <LI> <STRONG><A NAME = "gb2">GRID_BDY_2D</A></STRONG>,
+             time-independent 2-D AQM-boundary data.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#bndary">
+             grid-boundary</A>) with variables selected from the
+             following list of potential variables.  (The actual
+             selection of variables to be output is controlled by 
+             input text file <A HREF="mcpl.html#gb2v">GB2_VARS</A> as well
+             as grid and domain-geometry and MM5 physics considerations): 
+             <EM> Note:  Only  available on proper windows into the
+             MM5 domains </EM>
+
+             <UL>  
+                 <LI> <STRONG> LAT </STRONG> (<VAR> degrees </VAR>): 
+                      latitude of the grid node
+                      <CODE> -90 &lt;= LAT &lt;= 90 </CODE>
+                 <LI> <STRONG> LON </STRONG> (<VAR> degrees </VAR>): 
+                      longitude of the grid node
+                      <CODE> -180 &lt;= LON &lt;= 180 </CODE>
+                 <LI> <STRONG> MSFX </STRONG> (<VAR> none </VAR>): 
+                      inverse of the map factor at the grid node
+                 <LI> <STRONG> MSFX2 </STRONG> (<VAR> none </VAR>): 
+                      square of the map factor at the grid node
+                 <LI> <STRONG> HT </STRONG> (<VAR> meters </VAR>): 
+                      terrain height
+                 <LI> <STRONG> ZZERO </STRONG> (<VAR> meters </VAR>): 
+                      surface roughness
+                 <LI> <STRONG> PSTAR0 </STRONG> (<VAR> Pa </VAR>): 
+                      non-hydrostatic reference pressure difference
+                      <CODE> (P<SUB>surface</SUB> - P<SUB>top</SUB>) </CODE>
+                 <LI> <STRONG> TSFC0 </STRONG> (<VAR> K </VAR>): 
+                      reference-atmosphere temperature at terrain surface
+                 <LI> <STRONG> PSFC0 </STRONG> (<VAR> Pa </VAR>): 
+                      reference-atmosphere pressure at terrain surface
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME = "gb3">GRID_BDY_3D</A></STRONG>
+             time-independent 3-D AQM-boundary data on sigma levels.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#bndary">
+             grid-boundary</A>) with variables selected from the
+             following (controlled by <A HREF="mcpl.html#gb3v">GB3_VARS</A>):
+             <EM> Note:  Only  available on proper windows 
+             into the MM5 domains </EM>
+
+             <UL>  
+                 <LI> <STRONG> DENS0 </STRONG> (<VAR> kg/m<SUP>3</SUP></VAR>): 
+                      non-hydrostatic reference density
+                 <LI> <STRONG> ZH </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic mid-layer height above ground
+                 <LI> <STRONG> ZF </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic layer-top height above ground
+                 <LI> <STRONG> DZZ </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic layer thickness
+                 <LI> <STRONG> TH0 </STRONG> (<VAR> K </VAR>): 
+                      reference-atmosphere temperature at half-sigma
+                      levels
+                 <LI> <STRONG> TF0 </STRONG> (<VAR> K </VAR>): 
+                      reference-atmosphere temperature at full-sigma
+                      levels
+                 <LI> <STRONG> PRH0 </STRONG> (<VAR> Pa </VAR>): 
+                      reference-atmosphere pressure at half-sigma
+                      levels
+                 <LI> <STRONG> PRF0 </STRONG> (<VAR> Pa </VAR>): 
+                      reference-atmosphere pressure at full-sigma
+                      levels
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME = "gc2">GRID_CRO_2D</A></STRONG>,
+             time-independent 2-D cross-point-grid data.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#grdded">
+             gridded</A>) with variables selected from the
+             following (controlled by <A HREF="mcpl.html#gc2v">GC2_VARS</A>):
+
+             <UL>  
+                 <LI> <STRONG> LAT </STRONG> (<VAR> degrees </VAR>): 
+                      latitude of the grid node
+                      <CODE> -90 &lt;= LAT &lt;= 90 </CODE>
+                 <LI> <STRONG> LON </STRONG> (<VAR> degrees </VAR>): 
+                      longitude of the grid node
+                      <CODE> -180 &lt;= LON &lt;= 180 </CODE>
+                 <LI> <STRONG> MSFX </STRONG> (<VAR> none </VAR>): 
+                      inverse of the map factor at the grid node
+                 <LI> <STRONG> MSFX2 </STRONG> (<VAR> none </VAR>): 
+                      square of the map factor at the grid node
+                 <LI> <STRONG> HT </STRONG> (<VAR> meters </VAR>): 
+                      terrain height
+                 <LI> <STRONG> ZZERO </STRONG> (<VAR> meters </VAR>): 
+                      surface roughness
+                 <LI> <STRONG> PSTAR0 </STRONG> (<VAR> Pa </VAR>): 
+                      non-hydrostatic reference pressure difference
+                      <CODE> (P<SUB>surface</SUB> - P<SUB>top</SUB>) </CODE>
+                 <LI> <STRONG> ALB </STRONG> (<VAR> none </VAR>):
+                      background albedo fraction (time independent)
+                      <EM>MM5V3/ISOIL=2 variable
+                      <STRONG>ALBEDO</STRONG>; MM5
+                      variable<STRONG>ALB</STRONG> otherwise.</EM>                      
+                 <LI> <STRONG> CAPG </STRONG> (<VAR> J/(m^2K) </VAR>):
+                      thermal capacity of ground slab
+                 <LI> <STRONG> CSNROT </STRONG> (<VAR> none </VAR>):
+                      cosine of angle between Y axis and North
+                 <LI> <STRONG> EF </STRONG> (<VAR> 1/s </VAR>):
+                      component of Coriolis parameter
+                 <LI> <STRONG> EMISS </STRONG> (<VAR> ???? </VAR>):
+                      emissivity
+                 <LI> <STRONG> F </STRONG> (<VAR> 1/s </VAR>):
+                      Coriolis parameter
+                 <LI> <STRONG> MAVAIL </STRONG> (<VAR> none </VAR>):
+                      moisture availability
+                 <LI> <STRONG> SATBRT </STRONG> (<VAR> none </VAR>):
+                      dominant land use category
+                 <LI> <STRONG> SHC </STRONG> (<VAR> J/(m^3 K) </VAR>):
+                      dry soil heat capacity
+                 <LI> <STRONG> SNROT </STRONG> (<VAR> none</VAR>):
+                      sine of angle between Y axis and North 
+                 <LI> <STRONG> SNOWC </STRONG> (<VAR> none </VAR>):
+                      Snow cover data
+                 <LI> <STRONG> THC </STRONG> (<VAR> J/(m s K) </VAR>):
+                      thermal inertia of the ground slab
+                 <LI> <STRONG> TMN </STRONG> (<VAR> K </VAR>):
+                      constant temperature of infinite reservoir below slab
+                 <LI> <STRONG> TSFC0 </STRONG> (<VAR> K </VAR>): 
+                      reference-atmosphere tepmerature at terrain surface
+                 <LI> <STRONG> PSFC0 </STRONG> (<VAR> Pa </VAR>): 
+                      reference-atmosphere pressure at terrain surface
+                  <LI> <STRONG> JACOBS0 </STRONG> (<VAR> M </VAR>): 
+                      total Jacobian at surface for the
+                      <A HREF =                  
+                     "http://www.epa.gov/asmdnerl/models3/CMAQ/index.html">EPA
+                     CMAQ</A> air quality model.<BR>
+                     <EM>NOTE:  requires nonhydrostatic</EM>
+                     <CODE>INHYD&nbsp;=&nbsp;1</CODE>
+            </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME = "gc3">GRID_CRO_3D</A></STRONG>,
+             time-independent 3-D cross-point-grid data on sigma levels.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#grdded">
+             gridded</A>) with variables selected from the
+             following (controlled by <A HREF="mcpl.html#gc3v">GC3_VARS</A>):
+
+             <UL>  
+                 <LI> <STRONG> DENS0 </STRONG> (<VAR> kg/m<SUP>3</SUP></VAR>): 
+                      non-hydrostatic reference density
+                 <LI> <STRONG> ZH </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic mid-layer height above ground
+                 <LI> <STRONG> ZF </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic layer-top height above ground
+                 <LI> <STRONG> DZZ </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic layer thickness
+                 <LI> <STRONG> TH0 </STRONG> (<VAR> K </VAR>): 
+                      reference-atmosphere temperature at half-sigma
+                      levels
+                 <LI> <STRONG> TF0 </STRONG> (<VAR> K </VAR>): 
+                      reference-atmosphere temperature at full-sigma
+                      levels
+                 <LI> <STRONG> PRH0 </STRONG> (<VAR> Pa </VAR>): 
+                      reference-atmosphere pressure at half-sigma
+                      levels
+                 <LI> <STRONG> PRF0 </STRONG> (<VAR> Pa </VAR>): 
+                      reference-atmosphere pressure at full-sigma
+                      levels
+                 <LI> <STRONG> X3HT0M </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic mid-layer height above ground,
+                      renamed for the <A HREF =
+                     "http://www.epa.gov/asmdnerl/models3/CMAQ/index.html">EPA
+                     CMAQ</A> air quality model
+                 <LI> <STRONG> X3HT0F </STRONG> (<VAR> meters </VAR>): 
+                      non-hydrostatic layer-top height above ground,
+                      renamed for the <A HREF =
+                     "http://www.epa.gov/asmdnerl/models3/CMAQ/index.html">EPA
+                     CMAQ</A> air quality model
+                 <LI> <STRONG> TEMP0 </STRONG> (<VAR> K </VAR>): 
+                      reference-atmosphere temperature at half-sigma
+                      levels, renamed for the <A HREF =
+                     "http://www.epa.gov/asmdnerl/models3/CMAQ/index.html">EPA
+                     CMAQ</A> air quality model
+                 <LI> <STRONG> PRES0 </STRONG> (<VAR> Pa </VAR>): 
+                      reference-atmosphere pressure at full-sigma
+                      levels, renamed for the <A HREF =
+                     "http://www.epa.gov/asmdnerl/models3/CMAQ/index.html">EPA
+                     CMAQ</A> air quality model
+                  <LI> <STRONG> JACOB0M </STRONG> (<VAR> M </VAR>): 
+                      total Jacobian at <CODE>SIG_H</CODE> half level
+                      surfaces for the <A HREF =
+                     "http://www.epa.gov/asmdnerl/models3/CMAQ/index.html">EPA
+                     CMAQ</A> air quality model
+                  <LI> <STRONG> JACOB0M </STRONG> (<VAR> M </VAR>): 
+                      total Jacobian at <CODE>SIG_F</CODE> full level
+                      surfaces for the <A HREF =         
+                     "http://www.epa.gov/asmdnerl/models3/CMAQ/index.html">EPA
+                     CMAQ</A> air quality model
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME = "gd2">GRID_DOT_2D</A></STRONG>,
+             time-independent 2-D dot-point-grid data.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#grdded">
+             gridded</A>) with variables selected from the
+             following (controlled by <A HREF="mcpl.html#gd2v">GD2_VARS</A>):
+
+             <UL>  
+                 <LI> <STRONG> LAT </STRONG> (<VAR> degrees </VAR>): 
+                      latitude of the grid node
+                      <CODE> -90 &lt;= LAT &lt;= 90 </CODE>
+                 <LI> <STRONG> LON </STRONG> (<VAR> degrees </VAR>): 
+                      longitude of the grid node
+                      <CODE> -180 &lt;= LON &lt;= 180 </CODE>
+                 <LI> <STRONG> MSFD2 </STRONG> (<VAR> none </VAR>): 
+                      square of the map factor at the grid node
+                 <LI> <STRONG> MSFD </STRONG> (<VAR> none </VAR>): 
+                      inverse of the map factor at the grid node
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME = "mb2">MET_BDY_2D</A></STRONG>,
+             time-stepped 2-D AQM-boundary data. (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#bndary">
+             grid-boundary</A>) with variables selected from the
+             following (controlled by <A HREF="mcpl.html#mb2v">MB2_VARS</A>):
+
+             <UL>  
+                 <LI> <STRONG> PSTAR </STRONG> (<VAR> Pa </VAR>): 
+                      hydrostatic pressure difference 
+                      (P<SUB>surface</SUB>&nbsp;-&nbsp;P<SUB>top</SUB>)
+                 <LI> <STRONG> ZNT </STRONG> (<VAR> m </VAR>):
+                      roughness length
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+             <EM> Note:  Only  available on proper windows 
+             into the MM5 domains </EM>
+
+        <LI> <STRONG><A NAME = "mb3">MET_BDY_3D</A></STRONG>,
+             time-stepped 2-D AQM-boundary data on sigma levels.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#bndary">
+             grid-boundary</A>) with variables selected from the
+             following, and controlled by <A HREF="mcpl.html#mb3v">MB3_VARS</A>
+             <EM> Note:  Only  available on proper windows 
+             into the MM5 domains </EM>
+
+             <UL>  
+                 <LI> <STRONG> DENS </STRONG> (<VAR> kg/m<SUP>3</SUP></VAR>): 
+                      air density
+                 <LI> <STRONG> PRES </STRONG> (<VAR> Pa </VAR>): 
+                      pressure
+                 <LI> <STRONG> TV   </STRONG> (<VAR> K </VAR>): 
+                      virtual temperature
+                 <LI> <STRONG> RH </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, 2-phase water/ice formula
+                 <LI> <STRONG> RHLW </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, 1-phase water-only formula
+                 <LI> <STRONG> RHKF </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, mixed-phase water/ice formula
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+        
+        <LI> <STRONG><A NAME = "mc2">MET_CRO_2D</A></STRONG>
+             time-stepped 2-D cross-point gridded data.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#grdded">gridded</A>)
+             with variables selected from the following, and controlled
+             by <A HREF="mcpl.html#mc2v">MC2_VARS</A>
+
+             <UL>  
+
+                 <LI> <STRONG> QFLX   </STRONG> (<VAR>m/s kg/kg </VAR>): 
+                      kinematic (MAQSIP/Models3-units) latent heat flux
+                 <LI> <STRONG> HFLX   </STRONG> (<VAR> m K/s </VAR>): 
+                      kinematic (MAQSIP/Models3-units) sensible heat flux
+                 <LI> <STRONG> PBL   </STRONG> (<VAR> m </VAR>): 
+                      planetary boundary layer height
+                 <LI> <STRONG> RN    </STRONG> (<VAR> cm </VAR>): 
+                      cumulative non-convective rainfall
+                 <LI> <STRONG> RC    </STRONG> (<VAR> cm </VAR>): 
+                      cumulative convective rainfall
+                 <LI> <STRONG> PSTAR </STRONG> (<VAR> Pa </VAR>): 
+                      hydrostatic pressure difference
+                      (P<SUB>surface</SUB>&nbsp;-&nbsp;P<SUB>top</SUB>)
+                 <LI> <STRONG> TGD   </STRONG> (<VAR> K </VAR>): 
+                      ground temperature
+                 <LI> <STRONG> CFRACH  </STRONG> (<VAR> none </VAR>): 
+                      MM5 high-cloud fractional coverage
+                 <LI> <STRONG> CFRACM  </STRONG> (<VAR> none </VAR>): 
+                      MM5 mid-cloud fractional coverage
+                 <LI> <STRONG> CFRACL  </STRONG> (<VAR> none </VAR>): 
+                      MM5 low-cloud fractional coverage
+                 <LI> <STRONG> USTAR </STRONG> (<VAR> m/s </VAR>): 
+                      horizontal friction velocity
+                 <LI> <STRONG> MOL   </STRONG> (<VAR> 1/m </VAR>): 
+                      inverse Monin-Obukhov length
+                 <LI> <STRONG> RGRND </STRONG> (<VAR> w/m^2 </VAR>): 
+                      solar radiation at ground
+                 <LI> <STRONG> RNET </STRONG> (<VAR> w/m^2 </VAR>): 
+                      net radiation at ground
+                 <LI> <STRONG> FSOIL </STRONG> (<VAR> w/m^2 </VAR>): 
+                      heat flux in soil layers
+                 <LI> <STRONG> WSTAR </STRONG> (<VAR> m/s </VAR>): 
+                      vertical friction velocity
+                 <LI> <STRONG> TA </STRONG> (<VAR> K </VAR>): 
+                      layer 1 actual air temperature
+                 <LI> <STRONG> TV </STRONG> (<VAR> K </VAR>): 
+                      layer 1 virtual temperature
+                 <LI> <STRONG> QV </STRONG> (<VAR> g water / g air </VAR>): 
+                      layer 1 water vapor mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;1</CODE>
+                 <LI> <STRONG> QC </STRONG> (<VAR> g water / g air </VAR>): 
+                      layer 1 cloud water vapor mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;2</CODE>
+                 <LI> <STRONG> QR </STRONG> (<VAR> g water / g air </VAR>): 
+                      layer 1 rain water vapor mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;2</CODE>
+                 <LI> <STRONG> QI </STRONG> (<VAR> g water / g air </VAR>): 
+                      layer 1 cloud ice vapor mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;4</CODE>
+                 <LI> <STRONG> QNI </STRONG> (<VAR> g water / g air </VAR>): 
+                      layer 1 snow mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;4</CODE>
+                 <LI> <STRONG> QG </STRONG> (<VAR> g water / g air </VAR>): 
+                      layer 1 graupel mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;5</CODE>
+                 <LI> <STRONG> QNC </STRONG> (<VAR> g water / g air </VAR>): 
+                      layer 1 Ice number concentration<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;5</CODE>
+                 <LI> <STRONG> PRES</STRONG> (<VAR> Pa </VAR>): 
+                      layer 1 pressure
+                 <LI> <STRONG> DENS</STRONG> (<VAR> kg/m<SUP>3</SUP> </VAR>): 
+                      layer 1 air density
+                 <LI> <STRONG> UX </STRONG> (<VAR> m/s </VAR>): 
+                      layer 1  U (Easting) component of wind field,
+                      interpolated to cross points<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> VX </STRONG> (<VAR> m/s </VAR>): 
+                      layer 1  V (Northing) component of wind field,
+                      interpolated to cross points<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> WSPD </STRONG> (<VAR> m/s </VAR>): 
+                      layer 1 horizontal wind speed<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> DIV </STRONG> (<VAR> 1/s </VAR>):
+                      layer 1 horizontal wind divergence 
+                      <CODE>(du/dx&nbsp;+&nbsp;dv/dy)</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> AVOR </STRONG> (<VAR> 1/s </VAR>):
+                      layer 1 absolute horizontal wind vorticity
+                      <CODE>dv/dx&nbsp;-&nbsp;du/dy</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> VOR </STRONG> (<VAR> 1/s </VAR>):
+                      layer 1 relative horizontal wind vorticity
+                      <CODE>dv/dx&nbsp;-&nbsp;du/dy</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> RH </STRONG> (<VAR> % </VAR>): 
+                      layer 1 relative humidity, 2-phase water/ice formula
+                 <LI> <STRONG> RHLW </STRONG> (<VAR> % </VAR>): 
+                      layer 1 relative humidity, 1-phase water-only formula
+                 <LI> <STRONG> RHKF </STRONG> (<VAR> % </VAR>): 
+                      layer 1 relative humidity, mixed-phase water/ice formula
+                 <LI> <STRONG> RSD </STRONG> (<VAR> w/m<SUP>2</SUP>  </VAR>): 
+                      layer 1 shortwave downward radiation
+                 <LI> <STRONG> ALB </STRONG> (<VAR> none </VAR>);
+                 <LI> <STRONG>ALBEDO</STRONG> (<VAR> none </VAR>):
+                      albedo fraction.<BR>
+                      <EM><STRONG>NOTE:</STRONG>: Content varies
+                      according to model version and physics options
+                      chosen, according to the behavior of the MM5 code
+                      itself:
+                      <BLOCKQUOTE>
+                      <DL COMPACT>
+                          <DT>  MM5V3, <CODE>ISOIL=2</CODE>:
+                          <DD>  <STRONG><CODE>ALB</CODE></STRONG> is current
+                                time-dependent albedo fraction<BR>
+                          <DD>  <STRONG><CODE>ALBEDO</CODE></STRONG> is background
+                                time-independent albedo fraction
+                          <DT>  MM5V3, <CODE>ISOIL=3</CODE>:
+                          <DD>  <STRONG><CODE>ALBEDO</CODE></STRONG> is current
+                                time-dependent albedo fraction<BR>
+                          <DD>  <STRONG><CODE>ALB</CODE></STRONG> is background
+                                time-independent albedo fraction
+                          <DT>  Otherwise (MM5V2 or <CODE>ISOIL=1</CODE>)
+                          <DD>  <STRONG><CODE>ALB</CODE></STRONG> is background
+                                time-independent albedo fraction
+                      </DL></EM>
+                      </BLOCKQUOTE>
+                 <LI> <STRONG> CAPG </STRONG> (<VAR> J/(m^2K) </VAR>):
+                      thermal capacity of ground slab<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> CSNROT </STRONG> (<VAR> none </VAR>):
+                      cosine of angle between Y axis and North
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> EF </STRONG> (<VAR> 1/s </VAR>):
+                      component of Coriolis parameter<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> EMISS </STRONG> (<VAR> ???? </VAR>):
+                      emissivity<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> F </STRONG> (<VAR> 1/s </VAR>):
+                      Coriolis parameter<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> GLW </STRONG> (<VAR> W/m^2 </VAR>):
+                      Longwave radiation at ground
+                 <LI> <STRONG> GSW </STRONG> (<VAR> W/m^2 </VAR>):
+                      Shortwave radiation at ground
+                 <LI> <STRONG> HOL </STRONG> (<VAR> none </VAR>):
+                      PBL height / Monin-Obukhov length
+                 <LI> <STRONG> HT </STRONG> (<VAR> m^2/s^2 </VAR>):
+                      geopotential:  terrain height times gravity
+                 <LI> <STRONG> MSFX </STRONG> (<VAR> none </VAR>):
+                      inverse cross point map scale factor
+                 <LI> <STRONG> PRW </STRONG> (<VAR> cm </VAR>):
+                      precipitable water
+                 <LI> <STRONG> PSA </STRONG> (<VAR> cb </VAR>):
+                      P-star
+                 <LI> <STRONG> PSAINI </STRONG> (<VAR> cb </VAR>):
+                      Initial value for P-star
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> QFX   </STRONG> (<VAR> W/m<SUP>2</SUP> </VAR>): 
+                      MM5-units LV times latent heat flux
+                 <LI> <STRONG> HFX   </STRONG> (<VAR> W/m<SUP>2</SUP> </VAR>): 
+                      MM5-units sensible heat flux
+                 <LI> <STRONG> RAINC </STRONG> (<VAR> cm </VAR>):
+                      accumulated convective rain
+                 <LI> <STRONG> RAINN </STRONG> (<VAR> cm </VAR>):
+                      accumulated non-convective rain
+                 <LI> <STRONG> REGIME </STRONG> (<VAR> none </VAR>):
+                      PBL class:  
+                      <UL>
+                          <LI> 1  night-time stable, 
+                          <LI> 2  damped mechanical turbulence with 
+                               0.0&nbsp;&lt;&nbsp;bulk Richardson 
+                               number&nbsp;&lt;&nbsp;0.2
+                          <LI> 3  forced convective conditions when
+                               bulk Richardson  number&nbsp;&lt;&nbsp;0.0
+                               and HOL&nbsp;&lt;&nbsp;1.5
+                          <LI> 4  free convective conditions when
+                               bulk Richardson  number&nbsp;&lt;&nbsp;0.0
+                               and HOL&nbsp;&gt;&nbsp;&nbsp;1.5
+                      </UL>
+                 <LI> <STRONG> MAVAIL </STRONG> (<VAR> none </VAR>):
+                      moisture availability<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> SATBRT </STRONG> (<VAR> none </VAR>):
+                      dominant land use category<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> SHC </STRONG> (<VAR> J/(m^3 K) </VAR>):
+                      dry soil heat capacity<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> SNROT </STRONG> (<VAR> none</VAR>):
+                      sine of angle between Y axis and North 
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> SNOWC </STRONG> (<VAR> none </VAR>):
+                      Snow cover data<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> TGA </STRONG> (<VAR> K </VAR>):
+                      ground temperature
+                 <LI> <STRONG> THC </STRONG> (<VAR> J/(m s K) </VAR>):
+                      thermal inertia of slab<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> TMN </STRONG> (<VAR> K </VAR>):
+                      constant temperature of infinite reservoir below slab<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> UST </STRONG> (<VAR> m/s </VAR>):
+                      friction velocity
+                 <LI> <STRONG> XLAND </STRONG> (<VAR> deg </VAR>):
+                      grid point type of surface (1=land, 2=water<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> XLAT </STRONG> (<VAR> deg </VAR>):
+                      latitude<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> XLONG </STRONG> (<VAR> deg </VAR>):
+                      longitude<BR>
+                      <EM>NOTE:  time-independent, but option made for
+                      output here for OUTTAP compatibility</EM>
+                 <LI> <STRONG> ZNT </STRONG> (<VAR> m </VAR>):
+                      roughness length<BR>
+                      <EM>NOTE:  <STRONG>not</STRONG> time-independent
+                      over water </EM>
+                 <LI> <STRONG> SLPRS </STRONG> (<VAR> Pa </VAR>):
+                      Sea level pressure
+                 <LI> <STRONG> KFTOP </STRONG> (<VAR> M (above 
+                      ground-level)</VAR>):
+                      Convective cloud top (if there is a convective
+                      cloud active at the cell), or 0.0<BR>
+                      <EM> Note:  Only  available if the MCPL KF package 
+                      is incorporated.</EM>
+                 <LI> <STRONG> KFEXP </STRONG> (<VAR> s </VAR>):
+                      remaining lifetime for convective cloud (if active), 
+                      or 0.0<BR>
+                      <EM> Note:  Only  available if the MCPL KF package 
+                      is incorporated.</EM>
+                 <LI> <STRONG> DZ1000_850 </STRONG> (<VAR> M </VAR>):
+                      Thickness between 1000mB and 850mB surfaces
+                 <LI> <STRONG> DZ1000_500 </STRONG> (<VAR> M </VAR>):
+                      Thickness between 1000mB and 500mB surfaces
+                 <LI> <STRONG> DZ850_700 </STRONG> (<VAR> M </VAR>):
+                      Thickness between 850mB and 700mB surfaces
+                 <LI> <STRONG>QV2</STRONG> (<VAR> g-H2O/g-air </VAR>):
+                      2 meter mixing ratio<BR>
+                      <EM> Note:  only available with MRF PBL or special
+                      mods to other PBL schemes.</EM>
+                 <LI> <STRONG>TA2</STRONG> (<VAR> K </VAR>):
+                      2 meter air temperature<BR>
+                      <EM> Note:  only available with MRF PBL or special
+                      mods to other PBL schemes.</EM>
+                 <LI> <STRONG>UX10</STRONG> (<VAR> M/S </VAR>):
+                      10 meter Cartesian-Easting U wind component<BR>
+                      <EM> Note:  only available with MRF PBL or special
+                      mods to other PBL schemes, and on proper windows 
+                      into the MM5 domains</EM>
+                 <LI> <STRONG>VX10</STRONG> (<VAR> M/S </VAR>):
+                      10 meter Cartesian-Northing V wind component<BR>
+                      <EM> Note:  only available with MRF PBL or special
+                      mods to other PBL schemes, and on proper windows 
+                      into the MM5 domains.</EM>
+                 <LI> <STRONG>UE10</STRONG> (<VAR> M/S </VAR>):
+                      10 meter true-Easting U wind component<BR>
+                      <EM> Note:  only available with MRF PBL or special
+                      mods to other PBL schemes, and on proper windows 
+                      into the MM5 domains</EM>
+                 <LI> <STRONG>VN10</STRONG> (<VAR> M/S </VAR>):
+                      10 meter true-Northing V wind component<BR>
+                      <EM> Note:  only available with MRF PBL or special
+                      mods to other PBL schemes, and on proper windows 
+                      into the MM5 domains.</EM>
+                 <LI> <STRONG>WSPD10</STRONG> (<VAR> M/S </VAR>):
+                      10 meter wind speed<BR>
+                      <EM> Note:  only available with MRF PBL or special
+                      mods to other PBL schemes, and on proper windows 
+                      into the MM5 domains.</EM>
+                 <LI> <STRONG>MOLI</STRONG> (<VAR> M </VAR>):
+                      Inverse Pleim-Xiu Monin-Obukhov length from
+                      Pleim-Xiu land surface model<BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>RADNET</STRONG> (<VAR> W/M^2 </VAR>):
+                      net radiation at ground from Pleim-Xiu 
+                      land surface model<BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer ype </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>GRNFLX</STRONG> (<VAR> W/M^2 </VAR>):
+                      ground heat flux from Pleim-Xiu 
+                      land surface model<BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer ype </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>RA</STRONG> (<VAR> S/M </VAR>):
+                      Aerodynamic resistance from Pleim-Xiu 
+                      land surface model<BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>RS</STRONG> (<VAR>S/M  </VAR>):
+                      Surface resistance from Pleim-Xiu 
+                      land surface model<BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>TOB1</STRONG> (<VAR> K </VAR>):
+                      Surface observational temperature scaled to the 
+                      lowest model level, from Pleim-Xiu 
+                      land surface model<BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>RHOBS</STRONG> (<VAR> % </VAR>):
+                      Observational relative humidity
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>LAI</STRONG> (<VAR> M^2/M^2 </VAR>):
+                      Leaf area index
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>VEGFRC</STRONG> (<VAR> M^2/M^2 </VAR>):
+                      Vegetation coverage
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type </EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>ISLTYP</STRONG> (<VAR> none </VAR>):
+                      USDA soil texture type category
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with boundary layer type</EM>
+                      <CODE>IBLTYP&nbsp;=&nbsp;7</CODE>
+                 <LI> <STRONG>CANOM</STRONG> (<VAR> M </VAR>):
+                      canopy moisture
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with</EM> <CODE>ISOIL&nbsp;&gt;&nbsp;1</CODE>
+                 <LI> <STRONG>SOILT&lt;n&gt;</STRONG> (<VAR> K </VAR>):
+                      Soil temperature for soil layer <VAR>n</VAR><BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      where </EM><CODE>ISOIL&nbsp;=&nbsp;1,3</CODE>
+                 <LI> <STRONG>SOILT&lt;depth&gt;</STRONG> (<VAR> K </VAR>):
+                      Soil temperature for soil layer above the
+                      indicated depths of <CODE>010, 040, 100,</CODE>
+                       and <CODE>200</CODE> <VAR>(cm)</VAR><BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with the OSU Land Surface Model, where </EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;2</CODE>
+                 <LI> <STRONG>SOILM&lt;n&gt;</STRONG> (<VAR> M^3/M^3 </VAR>):
+                      Soil moisture fraction for soil layer <VAR>n</VAR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with</EM> <CODE>ISOIL&nbsp;&gt;&nbsp;1</CODE>
+                 <LI> <STRONG>SNOCVR</STRONG> (<VAR> M^2/M^2 </VAR>):
+                      Time-dependent snow coverage fraction
+                 <LI> <STRONG>TSEASFC</STRONG> (<VAR> K </VAR>):
+                      Sea surface temperature.<BR>
+                      <EM> Note:  only available for MM5 Version&nbsp;3</EM>
+                 <LI> <STRONG>SNODPT</STRONG> (<VAR> mm </VAR>):
+                      Water equivalent snow depth
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with</EM> <CODE>ISOIL&nbsp;=&nbsp;2</CODE>
+                 <LI> <STRONG>SEAICE</STRONG> (<VAR> M^2/M^2 </VAR>):
+                      Sea ice coverage fraction
+                      <EM> Note:  only available for MM5 Version&nbsp;3</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;2</CODE>
+                 <LI> <STRONG>SRNOFF</STRONG> (<VAR> M </VAR>):
+                      Surface runoff
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with</EM> <CODE>ISOIL&nbsp;=&nbsp;2</CODE>
+                 <LI> <STRONG>URNOFF</STRONG> (<VAR> M </VAR>):
+                      Underground runoff
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with</EM> <CODE>ISOIL&nbsp;=&nbsp;2</CODE>
+                 <LI> <STRONG>SLPRS</STRONG> (<VAR> mb </VAR>):
+                      Sea level pressure
+                 <LI> <STRONG>TEMPG</STRONG> (<VAR>  K </VAR>):
+                      Skin temperature, for CMAQ
+                 <LI> <STRONG>TEMP1P5</STRONG> (<VAR>  K </VAR>):
+                      Temperature at 1.5 meter observation level
+                 <LI> <STRONG>TEMP10</STRONG> (<VAR> K </VAR>):
+                      Temperature at 10 meter observation level
+                 <LI> <STRONG>SOIM1</STRONG> (<VAR>M**3/M**3  </VAR>):
+                      P-X volumetric soil moisture in top soil
+                      centimeter
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+                 <LI> <STRONG>SOIM2</STRONG> (<VAR> M**3/M**3 </VAR>):
+                      P-X volumetric soil moisture in top soil meter
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+                 <LI> <STRONG>SOIT1</STRONG> (<VAR> K </VAR>):
+                      P-X soil temperature in top soil centimeter.
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+                 <LI> <STRONG>SOIT2</STRONG> (<VAR> K </VAR>):
+                      P-X soil temperature in top soil meter
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+                 <LI> <STRONG>SLTYP</STRONG> (<VAR>  </VAR>):
+                      soil texture type by USDA category
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+                 <LI> <STRONG>RADYNI</STRONG> (<VAR> M/S </VAR>):
+                      inverse of aerodynaic resistance
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+                 <LI> <STRONG>RBNDYI</STRONG> (<VAR> M/S </VAR>):
+                      inverse of laminar BL resistance
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+                 <LI> <STRONG>RSTOMI</STRONG> (<VAR> M/S </VAR>):
+                      inverse of bulk stomatal resistanc
+                      <EM> Note:  only available for MM5 Version&nbsp;3
+                      with land surface model type</EM>
+                      <CODE>ISOIL&nbsp;=&nbsp;3</CODE>
+             </UL>	 	<!-- end variables in met_cro_2d  -->
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P> 
+        
+        <LI> <STRONG><A NAME = "mc3">MET_CRO_3D</A></STRONG>
+             time-stepped 3-D cross-point gridded data on sigma levels.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#grdded">gridded</A>)
+             with variables selected from the following, and controlled
+             by <A HREF="mcpl.html#mc3v">MC3_VARS</A>
+
+             <UL>  
+                 <LI> <STRONG> TA   </STRONG> (<VAR> K </VAR>): 
+                      actual temperature
+                 <LI> <STRONG> QV   </STRONG> (<VAR> g water / g air </VAR>): 
+                      water vapor mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;1</CODE>
+                 <LI> <STRONG> QC   </STRONG> (<VAR> g water / g air </VAR>): 
+                      cloud water mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;2</CODE>
+                 <LI> <STRONG> QR   </STRONG> (<VAR> g water / g air </VAR>): 
+                      rain water mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;2</CODE>
+                 <LI> <STRONG> QI   </STRONG> (<VAR> g water / g air </VAR>): 
+                      cloud ice mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;4</CODE>
+                 <LI> <STRONG> QNI  </STRONG> (<VAR> g water / g air </VAR>): 
+                      snow/ice mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;4</CODE>
+                 <LI> <STRONG> QG </STRONG> (<VAR> cb kg/kg </VAR>):
+                      graupel mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;5</CODE>
+                 <LI> <STRONG> QNC </STRONG> (<VAR> cb kg/kg </VAR>):
+                      ice number concentration<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;5</CODE>
+                 <LI> <STRONG> DENS </STRONG> (<VAR> kg/m<SUP>3</SUP> </VAR>): 
+                      air density
+                 <LI> <STRONG> PRES </STRONG> (<VAR> Pa </VAR>): 
+                      pressure
+                 <LI> <STRONG> TV   </STRONG> (<VAR> K </VAR>): 
+                      virtual temperature
+                 <LI> <STRONG> RH </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, 2-phase water/ice formula
+                 <LI> <STRONG> RHLW </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, 1-phase water-only formula
+                 <LI> <STRONG> RHKF </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, mixed-phase water/ice formula
+                 <LI> <STRONG> THETA </STRONG> (<VAR> K </VAR>): 
+                      potential temperature
+                 <LI> <STRONG> WWIND</STRONG> (<VAR> m/s </VAR>): 
+                      non-hydrostatic vertical wind component at SIGMAF's
+                 <LI> <STRONG> UX </STRONG> (<VAR> m/s </VAR>): 
+                      U (Cartesian-Easting) X component of wind field,
+                      interpolated to cross points<BR>
+                      <EM> Note:  Only  available on proper
+                      windows  into the MM5 domains </EM>
+                 <LI> <STRONG> VX </STRONG> (<VAR> m/s </VAR>): 
+                      V (Cartesian-Northing) Y component of wind field,
+                      interpolated to cross points<BR>
+                      <EM> Note:  Only  available on proper
+                      windows  into the MM5 domains </EM>
+                 <LI> <STRONG> UE </STRONG> (<VAR> m/s </VAR>): 
+                      U (true-Easting) X component of wind field,
+                      interpolated to cross points<BR>
+                      <EM> Note:  Only  available on proper
+                      windows  into the MM5 domains </EM>
+                 <LI> <STRONG> VN </STRONG> (<VAR> m/s </VAR>): 
+                      V (true-Northing) Y component of wind field,
+                      interpolated to cross points<BR>
+                      <EM> Note:  Only  available on proper
+                      windows  into the MM5 domains </EM>
+                 <LI> <STRONG> WSPD </STRONG> (<VAR> m/s </VAR>): 
+                      horizontal wind speed.<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> DIV </STRONG> (<VAR> 1/s </VAR>):
+                      horizontal wind divergence
+                      <CODE>(du/dx&nbsp;+&nbsp;dv/dy)</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> AVOR </STRONG> (<VAR> 1/s </VAR>):
+                      horizontal absolute wind vorticity 
+                      <CODE>dv/dx&nbsp;-&nbsp;du/dy</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> RVOR </STRONG> (<VAR> 1/s </VAR>):
+                      horizontal relative wind vorticity 
+                      <CODE>dv/dx&nbsp;-&nbsp;du/dy</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> QVA </STRONG> (<VAR> cb kg/kg </VAR>):
+                      pstar qv -- coupled water vapor mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;1</CODE>
+                 <LI> <STRONG> QCA </STRONG> (<VAR> cb kg/kg </VAR>):
+                      pstar qc -- coupled cloudwater mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;2</CODE>
+                 <LI> <STRONG> QRA </STRONG> (<VAR> cb kg/kg </VAR>):
+                      pstar qr -- coupled rainwater mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;2</CODE>
+                 <LI> <STRONG> QIA </STRONG> (<VAR> cb kg/kg </VAR>):
+                      pstar qi -- coupled cloud ice mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;4</CODE>
+                 <LI> <STRONG> QNIA </STRONG> (<VAR> cb kg/kg </VAR>):
+                      pstar qni -- coupled snow mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;4</CODE>
+                 <LI> <STRONG> QGA </STRONG> (<VAR> cb kg/kg </VAR>):
+                      pstar qv -- coupled graupel mixing ratio<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;5</CODE>
+                 <LI> <STRONG> QNCA </STRONG> (<VAR> cb kg/kg </VAR>):
+                      pstar qv -- coupled ice number concentration<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IMPHYS(NEST)&nbsp;&gt;&nbpsp;5</CODE>
+                 <LI> <STRONG> RTTEN </STRONG> (<VAR> K/day </VAR>):
+                      CCM2 temperature tendency due to radiation<BR>
+                      <EM>NOTE:  Requires</EM>
+                      <CODE>IFRAD&nbsp;=&nbpsp;3</CODE>
+
+             </UL>		 <!-- end variables in met_cro_3d  -->
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+        
+        <LI> <STRONG><A NAME = "md3">MET_DOT_3D</A></STRONG>
+             time-stepped 3-D dot-point gridded data on sigma levels.
+             (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#grdded">gridded</A>)
+             with variables selected from the following, and controlled
+             by <A HREF="mcpl.html#md3v">MD3_VARS</A>
+
+             <UL>  
+
+                 <LI> <STRONG> UWIND </STRONG> (<VAR> m/s </VAR>): 
+                      U (Easting) component of wind field.<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> VWIND </STRONG> (<VAR> m/s </VAR>): 
+                      V (Northing) component of wind field.<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> UA </STRONG> (<VAR> cb m/s </VAR>):
+                      pstar U -- coupled Easting wind component
+                 <LI> <STRONG> VA </STRONG> (<VAR> cb m/s </VAR>):
+                      pstar V -- coupled Northing wind component
+
+             </UL>	 <!-- end variables in met_dot_3d  -->
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME ="pc3">PRES_CRO_3D</A></STRONG>
+             contains time-stepped 3D decoupled cross-point variables, 
+             interpolated to the standard pressure surfaces.  Note that 
+             this file uses a pressure vertical coordinate instead of a 
+             sigma coordinate.  Output variables for this file are selected 
+             from the following, and controlled by 
+             <A HREF="mcpl.html#pc3v">PC3_VARS</A>
+             <UL>
+                 <LI> <STRONG> PDEX </STRONG> (<VAR> none, INTEGER </VAR>): 
+                      Index table for pressure-level interpolation<P>
+                      <STRONG> NOTE: </STRONG> Given 3-D sigma-H 
+                      vertical-gridded variable <VAR>FOO</VAR>
+                      in  standard I/O&nbsp;API order, interpolation to
+                      <VAR>FOOP</VAR> at pressure level <VAR>L</VAR> at 
+                      column and row <VAR>C,R</VAR> is performed as follows, 
+                      where <VAR>COEF</VAR> is one of <VAR>CLIN</VAR>
+                      (for linear-in-pressure interpolation), 
+                      <VAR>CLOG</VAR> (for <VAR>log(pressure)</VAR> 
+                      interpolation), or <VAR>CPOW</VAR> (for 
+                      <VAR>pressure<SUP>R/CP</SUP></VAR> 
+                      interpolation):
+                      <PRE>
+        K  = PDEX( C,R,L )
+        PP = COEF( C,R,L )
+        QQ = 1.0 - PP
+        FOOP( C,R,L ) = PP*FOO( C,R,K ) + QQ*( C,R,K+1 )
+                      </PRE> 
+                 <LI> <STRONG> CLIN </STRONG> (<VAR> none </VAR>): 
+                      Coefficient table for P-level linear interpolation
+                 <LI> <STRONG> CLOG </STRONG> (<VAR> none </VAR>): 
+                      Coefficient table for P-level log(P) interpolation
+                 <LI> <STRONG> CPOW </STRONG> (<VAR> none </VAR>): 
+                      Coefficient table for P-level P<SUP>R/CP</SUP> 
+                      interpolation
+                 <LI> <STRONG> Z   </STRONG> (<VAR> meters </VAR>): 
+                      Elevation above mean sea level
+                 <LI> <STRONG> QV   </STRONG> (<VAR> g water / g air </VAR>): 
+                      Water vapor mixing ratio <BR>
+                      <EM> Note:  Only  available for</EM>
+                      <CODE> IMPHYS(NEST)&nbsp;&gt;&nbsp;1</CODE>
+                 <LI> <STRONG> QC   </STRONG> (<VAR> g water / g air </VAR>): 
+                      Cloud water mixing ratio<BR>
+                      <EM> Note:  Only  available for</EM>
+                      <CODE> IMPHYS(NEST)&nbsp;&gt;&nbsp;2</CODE>
+                 <LI> <STRONG> QR   </STRONG> (<VAR> g water / g air </VAR>): 
+                      Rain water mixing ratio<BR>
+                      <EM> Note:  Only  available for</EM>
+                      <CODE> IMPHYS(NEST)&nbsp;&gt;&nbsp;2</CODE>
+                 <LI> <STRONG> QI   </STRONG> (<VAR> g water / g air </VAR>): 
+                      Cloud ice mixing ratio<BR>
+                      <EM> Note:  Only  available for</EM>
+                      <CODE> IMPHYS(NEST)&nbsp;&gt;&nbsp;4</CODE>
+                 <LI> <STRONG> QNI  </STRONG> (<VAR> g water / g air </VAR>): 
+                      Snow/ice mixing ratio<BR>
+                      <EM> Note:  Only  available for</EM>
+                      <CODE> IMPHYS(NEST)&nbsp;&gt;&nbsp;4</CODE>
+                  <LI> <STRONG> QG  </STRONG> (<VAR> g water / g air </VAR>): 
+                      Graupel mixing ratio<BR>
+                      <EM> Note:  Only  available for</EM>
+                      <CODE> IMPHYS(NEST)&nbsp;&gt;&nbsp;4</CODE>
+                  <LI> <STRONG> QNC  </STRONG> (<VAR> g water / g air </VAR>): 
+                      Ice number concentration<BR>
+                      <EM> Note:  Only  available for</EM>
+                      <CODE> IMPHYS(NEST)&nbsp;&gt;&nbsp;4</CODE>
+                <LI> <STRONG> TA   </STRONG> (<VAR> K </VAR>): 
+                      actual temperature
+                 <LI> <STRONG> DENS </STRONG> (<VAR> kg/m<SUP>3</SUP> </VAR>): 
+                      air density
+                 <LI> <STRONG> TV   </STRONG> (<VAR> K </VAR>): 
+                      virtual temperature
+                 <LI> <STRONG> RH </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, 2-phase water/ice formula
+                 <LI> <STRONG> RHLW </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, 1-phase water-only formula
+                 <LI> <STRONG> RHKF </STRONG> (<VAR> % </VAR>): 
+                      relative humidity, mixed-phase water/ice formula
+                 <LI> <STRONG> THETA </STRONG> (<VAR> K </VAR>): 
+                      potential temperature
+                 <LI> <STRONG> WWIND</STRONG> (<VAR> m/s </VAR>): 
+                      non-hydrostatic vertical wind component
+                 <LI> <STRONG> UWIND</STRONG> (<VAR> m/s </VAR>): 
+                      horizontal Easting wind component,
+                      interpolated to cross-points.<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> VWIND</STRONG> (<VAR> m/s </VAR>): 
+                      horizontal Northing wind component,
+                      interpolated to cross-points.<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> WSPD </STRONG> (<VAR> m/s </VAR>): 
+                      horizontal wind speed.<BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> DIV </STRONG> (<VAR> 1/s </VAR>):
+                      horizontal wind divergence
+                      <CODE>(du/dx&nbsp;+&nbsp;dv/dy)</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+                 <LI> <STRONG> VOR </STRONG> (<VAR> 1/s </VAR>):
+                      horizontal wind vorticity 
+                      <CODE>dv/dx&nbsp;-&nbsp;du/dy</CODE><BR>
+                      <EM> Note:  Only  available on proper windows 
+                      into the MM5 domains </EM>
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME = "pd3">PRES_DOT_3D</A></STRONG>
+             contains time-stepped 3D decoupled dot-point variables,
+             interpolated to the standard pressure surfaces.  Note that 
+             this file uses a pressure vertical coordinate instead of a 
+             sigma coordinate; decoupling of the winds requires that the
+             output window is a proper window of the MM5 domain (e.g., 
+             there is no value for PSTAR available at MM5 dot-point (1,1) ). 
+             Output variables for this file are selected from the following, 
+             and controlled by <A HREF="mcpl.html#pd3v">PD3_VARS</A>
+             <UL>
+                 <LI> <STRONG> PDEX </STRONG> (<VAR> none, INTEGER </VAR>): 
+                      Index table for pressure-level interpolation<P>
+                      <STRONG> NOTE: </STRONG> Given 3-D sigma-H 
+                      vertical-gridded variable <VAR>FOO</VAR>
+                      in  standard I/O&nbsp;API order, interpolation to
+                      pressure level <VAR>L</VAR> at column and row
+                      <VAR>C,R</VAR> is performed as follows, where
+                      <VAR>COEF</VAR> is one of <VAR>CLIN</VAR>, 
+                      <VAR>CLOG</VAR>, or <VAR>CPOW</VAR>):
+                      <PRE>
+        K  = PDEX( C,R,L )
+        PP = COEF( C,R,L )
+        QQ = 1.0 - PP
+        FOOP( C,R,L ) = PP*FOO( C,R,K ) + QQ*( C,R,K+1 )
+                      </PRE> 
+                 <LI> <STRONG> CLIN </STRONG> (<VAR> none </VAR>): 
+                      Coefficient table for P-level linear interpolation
+                 <LI> <STRONG> CLOG </STRONG> (<VAR> none </VAR>): 
+                      Coefficient table for P-level log(P) interpolation
+                 <LI> <STRONG> CPOW </STRONG> (<VAR> none </VAR>): 
+                      Coefficient table for P-level P<SUP>K</SUP> interpolation
+                 <LI> <STRONG> UWIND </STRONG> (<VAR> m/s </VAR>): 
+                      U (Easting) component of wind field,.
+                 <LI> <STRONG> VWIND </STRONG> (<VAR> m/s </VAR>): 
+                      V (Northing) component of wind field,.
+             </UL>
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+
+        <LI> <STRONG><A NAME = "mka">MET_KF_SCA</A></STRONG>
+             &quot;.scalar variable file&quot;  (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#kfevnt">KF-Event</A>)
+             used by the KF cloud scheme in the MAQSIP air quality model to
+             <OL>
+                 <LI>  emulate and Q/A cloud duration (via TADVEC,TCKF)
+                 <LI>  Q/A precipitation (via RAINKFCM,PRICEKFCM,NIC,TADVEC, 
+                       and TCKF); 
+                 <LI>  record cloud top for Q/A (via CLDTP);
+                 <LI>  record cloud expiration time for Q/A (via XTIME).
+             </OL>
+             with variables selected from the following:
+
+             <UL>  
+                 <LI> <STRONG> P300   </STRONG> (<VAR> Pa </VAR>): 
+                      pressure 300mb above the surface first-half 
+                      sigma-level pressure at cloud inception
+                 <LI> <STRONG> RAINKFCM </STRONG> (<VAR> cm </VAR>): 
+                      Precipitation originating as liquid water in cloud
+                 <LI> <STRONG> PRICEKFCM </STRONG> (<VAR> cm </VAR>): 
+                      Precipitation originating as ice water in cloud
+                 <LI> <STRONG> XTIME </STRONG> (<VAR> seconds </VAR>): 
+                      MM5 elapsed time since start of forecast
+                 <LI> <STRONG> TIMEC </STRONG> (<VAR> seconds </VAR>): 
+                      Cloud-event duration
+                 <LI> <STRONG> TADVEC </STRONG> (<VAR> seconds </VAR>): 
+                      transit time needed to advect cloud through cell
+                 <LI> <STRONG> NIC </STRONG> (<VAR> none </VAR>): 
+                      number of MM5 advection steps for TADVEC
+             </UL>		 <!-- end variables in met_kf_1d  -->
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+        
+        <LI> <STRONG><A NAME = "mk1">MET_KF_1D</A></STRONG>
+             <VAR>obsolete</VAR>
+             1-D KF cloud event inception data. (of file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#kfevnt">KF-Event</A>)
+             with variables selected from the following:
+
+             <UL>  
+                 <LI> <STRONG> PSB   </STRONG> (<VAR> cb </VAR>): 
+                      PSTAR at inception of KF cloud
+                 <LI> <STRONG> RAINKFCM </STRONG> (<VAR> cm </VAR>): 
+                      Precipitation originating as liquid water in cloud
+                 <LI> <STRONG> PRICEKFCM </STRONG> (<VAR> cm </VAR>): 
+                      Precipitation originating as ice water in cloud
+                 <LI> <STRONG> XTIME </STRONG> (<VAR> seconds </VAR>): 
+                      MM5 elapsed time since start of forecast
+                 <LI> <STRONG> TIMEC </STRONG> (<VAR> seconds </VAR>): 
+                      Cloud-event duration
+                 <LI> <STRONG> TADVEC </STRONG> (<VAR> seconds </VAR>): 
+                      transit time needed to advect cloud through cell
+                 <LI> <STRONG> NIC </STRONG> (<VAR> none </VAR>): 
+                      number of MM5 advection steps for TADVEC
+             </UL>		 <!-- end variables in met_kf_1d  -->
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+        
+        <LI> <STRONG><A NAME = "mkp">MET_KF_PRO</A></STRONG>
+             3-D (vertical profile KF cloud event inception data (of 
+             file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#kfevnt">KF-Event</A>)
+             with variables selected from the following:
+
+             <UL>  
+                 <LI> <STRONG> T0 </STRONG> (<VAR> K </VAR>): 
+                      Temperature profile at inception of KF cloud
+                 <LI> <STRONG> Q0 </STRONG> (<VAR> kg (water)/kg (air)</VAR>): 
+                      Water vapor profile at inception of KF cloud
+                 <LI> <STRONG> U0 </STRONG> (<VAR> m/s </VAR>): 
+                      U-component of wind velocity at inception of KF cloud
+                 <LI> <STRONG> V0 </STRONG> (<VAR> m/s </VAR>): 
+                      V-component of wind velocity at inception of KF cloud
+                 <LI> <STRONG> W0AVG </STRONG> (<VAR> m/s </VAR>): 
+                      Mean W-component of wind velocity at inception 
+                      of KF cloud
+                 <LI> <STRONG> P0 </STRONG> (<VAR> Pa </VAR>): 
+                      Environmental pressure at inception of KF cloud
+                 <LI> <STRONG> DZQ </STRONG> (<VAR> m </VAR>): 
+                      Full MM5 sigma-layer thickness
+                 <LI> <STRONG> DP </STRONG> (<VAR> Pa </VAR>): 
+                      Pressure depth of full sigma-layers at
+                      inception of KF cloud
+             </UL>		 <!-- end variables in met_kf_3d  -->
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+        
+        <LI> <STRONG><A NAME = "mk3">MET_KF_3D</A></STRONG>
+             3-D (vertical profile KF cloud event inception data (of 
+             file type 
+             <A HREF = "/products/ioapi/DATATYPES.html#kfevnt">KF-Event</A>)
+             with variables selected from the following:
+
+             <UL>  
+                 <LI> <STRONG> T0 </STRONG> (<VAR> C </VAR>): 
+                      Temperature profile at inception of KF cloud
+                 <LI> <STRONG> Q0 </STRONG> (<VAR> g/kg </VAR>): 
+                      Water vapor profile at inception of KF cloud
+                 <LI> <STRONG> U0 </STRONG> (<VAR> m/s </VAR>): 
+                      U-component of wind velocity at inception of KF cloud
+                 <LI> <STRONG> V0 </STRONG> (<VAR> m/s </VAR>): 
+                      V-component of wind velocity at inception of KF cloud
+                 <LI> <STRONG> W0AVG </STRONG> (<VAR> cm/s </VAR>): 
+                      Mean W-component of wind velocity at inception 
+                      of KF cloud
+                 <LI> <STRONG> PPB </STRONG> (<VAR> cb*Pa </VAR>): 
+                      Perturbation pressure coupled to PSTAR at 
+                      inception of KF cloud
+             </UL>		 <!-- end variables in met_kf_3d  -->
+             <A HREF = "#files">Back to <STRONG>File List</STRONG></A>
+             <P>
+        
+    </UL>		 <!-- end list of files  -->
+    
+
+<HR> <!----------------------------------------------------------------->
+
+Back to <A HREF = "MCPL.html#contents"><STRONG>MCPL Contents</STRONG></A>
+
+
+</BODY>      <!--end body  -->
+</HTML>      <!--end html  -->
+

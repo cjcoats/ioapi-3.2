@@ -1,0 +1,131 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GRIDOPS() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GRIDOPS() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    SUBROUTINE GRIDOPS( NCOL, NROW, NSPC, NLEV, A, B, C )
+    ENTRY      PICKOPS( OPNAME )
+    ENTRY      NAMEDOP( OPNAME, NCOL, NROW, NSPC, NLEV, A, B, C )
+        INTEGER, INTENT(IN   ) :: NCOL, NROW, NSPC, NLEV     !  dimensions
+        REAL   , INTENT(IN   ) :: A( NCOL*NROW*NSPC*NLEV )   !  first  input grid
+        REAL   , INTENT(IN   ) :: B( NCOL*NROW*NSPC*NLEV )   !  second input grid
+        REAL   , INTENT(  OUT) :: C( NCOL*NROW*NSPC*NLEV )   !  output grid
+        CHARACTER*16  OPNAME                     !  operation name (see below)
+</PRE><P>    
+
+<H2> NO C version: </H2>
+<P> 
+
+<H2> Summary: </H2>
+
+    Used by the <A HREF = "M3DIFF.html"> M3DIFF </A> program; useful
+    for QA and analysis programs generally.
+    <P> 
+    
+    main routine GRIDOPS generates C = A "op" B, where "op" is an
+    operation defined in terms of state variable DIFMODE (as specified
+    below).  This is most useful when you're always doing the same
+    operation to the data.
+    <P> 
+
+    Entry PICKOPS is used to set state variable DIFMODE, and returns the 
+    name of the corresponding operation.  Uses 
+    <A HREF = "GETMENU.html"> GETMENU() </A> to select the operation.
+    <P>
+    
+    Entry NAMEDOP takes an operation name (from PICKOPS), and a full
+    set of GRIDOPS arguments, selects the appropriate DIFMODE, and goes
+    the head of GRIDOPS.  This is useful when you alternating among a
+    set of operations you're applying to the data.  In this case, it is
+    useful to initialize a table of operations to be performed via
+    PICKOPS.
+    <P> 
+    
+    The <A NAME = "ops"> supported operations </A> are the following
+<PRE>
+ 1  (pointwise) difference                             A - B
+ 2  (pointwise) difference                             B - A
+ 3  (pointwise) ratio                                  A / B
+ 4  (pointwise) ratio                                  B / A
+ 5  (pointwise) absolute value of difference          |A - B|
+ 6  difference normalized by first grid               (A - B)/A
+ 7  difference normalized by second grid              (B - A)/B
+ 8  difference normalized by second grid              (A - B)/B
+ 9  absolute value of difference normalized by A      |A - B|/A
+10  absolute value of difference normalized by B      |A - B|/B
+11  difference normalized by pointwise mean          2(A - B)/(A + B)
+12  difference normalized by pointwise mean          2(B - A)/(A + B)
+13  difference normalized by joint root mean square   (A - B)/RMS(A&B)
+14  difference normalized by joint root mean square   (B - A)/RMS(A&B)
+15  (pointwise) sum                                    A + B
+16  (pointwise) maximum                                MAX( A,B )
+17  (pointwise) minimum                                min( A,B )
+18  value from grid A                                  A
+19  value from grid B                                  B
+</PRE>
+<P> 
+
+        
+<H2> Preconditions </H2>
+
+    Call entry PICKOPS before calling GRIDOPS
+    <P> 
+    
+    Valid OPNAME for NAMEDOP (e.g., a name obtained from PICKOPS).
+<P> 
+
+    
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    REAL           A( 50, 40, 10 )
+    REAL           B( 50, 40, 10 )
+    REAL           C( 50, 40, 10 )
+    CHARACTER*16   OPNAME
+    ...
+    CALL NAMEDOP( 'A - B', 50, 40, 1, 10, A, B, C )   !  now C = A - B
+    ...
+    CALL PICKOPS( OPNAME )  !  user selects operation
+    ...
+    CALL GRIDOPS( 'A - B', 50, 40, 1, 10, A, B, C )   !  now C = A op B
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  don't
+<P>         
+
+
+<HR>
+
+<A HREF = "GETYN.html" >
+Previous:  <STRONG>GETYN</STRONG>
+</A><P> 
+
+<A HREF = "INDEX1.html" >
+Next:  <STRONG>INDEX1</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

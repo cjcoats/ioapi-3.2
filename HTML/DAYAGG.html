@@ -1,0 +1,91 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: DAYAGG.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program DAYAGG </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program DAYAGG </H1>
+
+<H2> Summary </H2>
+
+    The <CODE>DAYAGG</CODE> program computes a &quot;standard day&quot;
+    file for  a set of selected variables from a set of input files, by
+    constructing the weighted average of the variables for each matching
+    date&amp;time, and write the result to a &quot;standard day&quot;
+    output file.
+    <P>
+
+    Source code for the program is available
+    <A HREF = "gpl.txt">under the GNU GPL License, Version 2</A>,
+    and can be downloaded <A HREF = "AVAIL.html">here</A>.
+    <P>
+
+
+<H2> Usage </H2>
+
+    <PRE>
+    setenv  OMP_NUM_THREADS  &lt;number of threads / processor cores&gt;
+    setenv  STTIME   <starting time (HHMMSS) for the output>
+    setenv  TSTEP    <time step (HHMMSS) for the output>
+    setenv  RUNLEN   <duration (HHMMSS) for the output>
+    setenv  AGGFILE  <output-file physical (path) name>
+    setenv  FILELIST <(comma-delimited) list of input file logical names>
+    setenv  WGTSLIST  <list of weighting factors>
+    setenv  VBLELIST <list of output variables>
+    setenv  DATELIST <list of starting dates>
+    setenv <logical name> <physical name>  for each input file
+    dayagg  
+    </PRE>
+    
+    All files must have the same grid structure and contain all
+    the requested output variables on the requested time step structure.
+    <P>
+    The requested variables must all be of type <CODE>REAL</CODE>.
+    <P>
+    
+<STRONG>See Also:</STRONG>
+<UL>
+    <LI>  <A HREF = "VERTIMEPROC.html">Program <VAR>VERTIMEPROC</VAR></A> 
+          for computing naive time-aggregated vertical-column totals
+          (which pretty-much only makes sense for  3-D time stepped
+          <VAR>smkmerge</VAR>-output emissions files).
+          <P>
+    <LI>  <A HREF = "VERTOT.html">Program <VAR>VERTOT</VAR></A> 
+          for computing naive vertical-column totals (<VAR>VERTOT</VAR>
+          is really more of a sample &quot;how do you do this&quot;
+          program than a useful tool, although it does make sense
+          for <VAR>smkmerge</VAR>-output emissions files also.).
+          <P>
+</UL>
+
+
+<HR>  <!--------------------------------------------------------------->
+
+<A HREF = "BCWNDW.html" >
+Previous:  <STRONG>BCWNDW</STRONG>
+</A><P> 
+
+<A HREF = "M3CPLE.html" >
+Next:  <STRONG>M3CPLE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

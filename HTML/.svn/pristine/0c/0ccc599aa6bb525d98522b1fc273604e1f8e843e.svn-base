@@ -1,0 +1,123 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> NEXTIME() and nextimec() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    NEXTIME() and nextimec() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    SUBROUTINE NEXTIME( JDATE, JTIME, DTIME )
+        INTEGER, INTENT(INOUT) :: JDATE     !  date (encoded YYYYDDD)
+        INTEGER, INTENT(INOUT) :: JTIME     !  time (encoded HHMMSS)
+        INTEGER, INTENT(IN   ) :: DTIME     !  time increment (encoded HHMMSS)
+</PRE><P> 
+
+<H2> C version: </H2>
+<PRE>
+    void nextimec( int  * jdate , 
+                   int  * jtime ,
+                   int    dtime ) 
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    Add <A HREF = "DATETIME.html"> time increment </A> DTIME to the 
+    <A HREF = "DATETIME.html"> date and time </A> JDATE:JTIME.
+    Output is fully normalized.
+    <P> 
+
+    DTIME may be positive, negative (to step <EM>backwards</EM> in time),
+    or zero (just normalizes the date and time -- e.g., to turn
+    1988100:730000 [day 100 plus 73 hours] into 1988103:010000).)
+    <P> 
+
+    Note that the hours field of DTIME may exceed 24 hours (for
+    example, to step by week, DTIME should be 1680000 = 7 * 24 * 100 * 100 ).
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+<H2> Preconditions: </H2>
+
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    JDATE, JTIME, and DTIME represents dates, times, and time
+    intervals  according to <A HREF = "DATETIME.html"> 
+    Models-3 conventions</A>:
+
+<PRE>
+    JDATE is  YYYYDDD = YEAR*1000  +  DAY
+    JTIME is  HHMMSS  = HOUR*10000 +  MINS*100  +  SECS
+    DTIME is  H*MMSS  = HOUR*10000 +  MINS*100  +  SECS
+</PRE>
+
+    where for DTIME, either all of HOUR,MINS,SECS are nonnegative
+    or all are nonpositive  (i.e., don't mix positives and negatives 
+    for DTIME; &quot;-3 hours + 5 minutes - 7 seconds&quot; is incorrect).
+
+
+<H2> Fortran Usage: </H2>
+        
+    (See <A HREF = "SAMPLE.html">sample</A> program
+    <A HREF = "SFCMET.txt">SFCMET</A> for additional usage example.)
+
+<PRE>
+    ...
+    INTEGER    JDATE, JTIME
+    ...
+    CALL NEXTIME( JDATE, JTIME, 10000 )
+C	    ==&gt; adds DTIME of one hour to JDATE:JTIME
+    ...
+    CALL NEXTIME( JDATE, JTIME, 720000 )
+C	    ==&gt; adds DTIME of 72 hours = 3 days to JDATE:JTIME
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    int  jdate, jtime
+    ...
+    nextimec( &amp;jdate, &amp;jtime, 10000 ) ;
+    /*  adds dtime of 1 hour to jdate:jtime  */
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "MMDDYY.html" >
+Previous:  <STRONG>MMDDYY</STRONG>
+</A><P> 
+
+<A HREF = "SEC2TIME.html" >
+Next:  <STRONG>SEC2TIME</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

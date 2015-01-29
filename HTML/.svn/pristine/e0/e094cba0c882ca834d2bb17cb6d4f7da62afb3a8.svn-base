@@ -1,0 +1,143 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GRIDDESC </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GRIDDESC </H1>
+    
+    <STRONG>GRIDDESC</STRONG> is the <A HREF = "LOGICALS.html"> 
+    logical name </A> for text files which store 
+    <A HREF = "GRIDS.html#horiz"> horizontal coordinate and 
+    grid descriptions,</A> and which is read by the 
+    <A HREF = "DSCGRID.html"> DSCGRID() and DSCOORD() </A> 
+    utility routines.  This file has two segments.  The first 
+    segment has a 1-line header that is always ignored (and which
+    by convention provides titles for the columns in the data records),
+    a sequence  of data records, and a terminal record with name field
+    blank 
+    (i.e.  <CODE>'                '</CODE>).
+    <P> 
+   
+    The first segment is the  <STRONG>coordinate-system-description 
+    segment</STRONG> and consists  of text records giving coordinate-system 
+    name and  descriptive parameters P_ALP, P_BET, P_GAM, XCENT, and YCENT.  
+    Note that the <STRONG>standard names for UTM</STRONG> coordinate 
+    systems are given in the form <VAR>UTM_&lt;nn&gt;</VAR>, where 
+    <VAR>nn</VAR> is the number for the UTM zone.  Most of the 
+    Eastern US would use coordinate system UTM_17, for example.
+    <P> 
+       
+    The second segment is the <STRONG>grid-description segment</STRONG>, and  
+    consists of text records giving grid name, related coordinate-system name 
+    and descriptive parameters  XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS, and 
+    NTHIK.  In the usual EDSS modeling situation, there will be both 
+    &quot;dot-point&quot; and &quot;cross-point&quot; grids present
+    (these grids are topological duals in the sense that the vertices
+    (corners) of one correspond to the cell-centers of the other.  The
+    interpretation of parameters XORIG, YORIG, XCELL, and YCELL for
+    a dot-point and cross-point pair of grids is indicated in the
+    accompanying diagram, available in <A HREF = "GRIDS.ps">Postscript</A>, 
+    <A HREF = "GRIDS.xbm">X bit-map</A>, 
+    <A HREF = "GRIDS.jpg">JPEG</A>, and 
+    <A HREF = "GRIDS.gif">GIF</A> image formats.  A similar diagram
+    showing the relationship between a cross-point grid and a general
+    (thickened) boundary structure is also available in 
+    <A HREF = "THKBDY.ps">Postscript</A>, 
+    <A HREF = "THKBDY.xbm">X bit-map</A>, 
+    <A HREF = "THKBDY.jpg">JPEG</A>, and 
+    <A HREF = "THKBDY.gif">GIF</A> image formats.
+    <P> 
+   
+    Each data record in these files consists of two or three
+    Fortran-style list-formatted  lines (i.e., items are  separated by
+    either blanks or commas).   Name fields are quoted strings, and
+    appear on the first of these lines.  Numeric fields are given in
+    double precision, and occur on either the second line or the second
+    and third (this allows you to organize the text so that it is
+    easily viewed in a text editor without running off-screen). The
+    records have the following organization, depending upon whether
+    they are in the first or second segments.
+    <PRE>    
+    COORD-NAME
+    COORDTYPE, P_ALP, P_BET, P_GAM
+    XCENT, YCENT
+    
+        or
+    
+    COORD-NAME
+    COORDTYPE, P_ALP, P_BET, P_GAM, XCENT, YCENT
+    
+        and
+    
+    GRID-NAME
+    COORD-NAME, XORIG, YORIG, XCELL, YCELL
+    NCOLS, NROWS, NTHIK
+    
+        or
+    
+    GRID-NAME
+    COORD-NAME, XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS, NTHIK
+    </PRE><P>
+
+    Peculiarities of this file-organization are partly due to the
+    characteristics of Fortran list-directed input formatting, so
+    that the &quot;guts&quot; of the <A HREF = "DSCGRID.html"><CODE>
+    DSCGRID()</CODE></A> routine does not have to be an elaborate
+    parser but may have a simple structure looking somewhat like
+    <BLOCKQUOTE><CODE>
+    ...<BR>
+    READ( GDEV,'(A)' ) HEADER<BR>
+    ...<BR>
+    READ(GDEV,*) NAME<BR>
+    IF ( NAME .NE. ' ' ) THEN<BR>
+    &nbsp;&nbsp;&nbsp;&nbsp;READ(GDEV,*)COORDTYPE,P_ALP,P_BET,P_GAM,XCENT,YCENT<BR>
+    &nbsp;&nbsp;&nbsp;&nbsp;...<BR>
+    </CODE></BLOCKQUOTE>
+
+    <P>
+    At most 32 coordinate systems and 256 grids may be listed in 
+    one of these files.  These files are small enough to be archived
+    easily with a study, and have a sufficiently simple format that new
+    ones can easily be constructed &quot;by hand.&quot;
+    <P>         
+
+    A <A HREF = "GRIDDESC.txt"><STRONG>sample GRIDDESC file</STRONG></A>
+    is available, describing the main computational grids for the SMRAQ
+    regional seasonal modeling effort (part of the Southern Oxidant
+    Study), the OTAG study, all of the standard ROM AQM computational 
+    grids, and all of the standard Urban Airshed Model computational grids.
+    <P>
+   
+    Logical function <A HREF = "DSCGRID.html"> <STRONG>DSCGRID()
+    </STRONG> </A> manages access to GRIDDESC (in fact, serves as an
+    operational definition of the GRIDDESC file format), and gets grid 
+    and  coordinate system descriptive parameters  COORDNAME, P_ALP, P_BET, 
+    P_GAM, XCENT, YCENT, XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS, and NTHIK 
+    for the specified grid name.  Returns TRUE iff the requested grid 
+    is found in the GRIDDESC file.   LOGICAL ENTRY <STRONG>DSCOORD()</STRONG> 
+    of DSCGRID() gets coordinate-system descriptive  parameters  
+    P_ALP, P_BET, P_GAM, XCENT, and YCENT for the specified coordinate 
+    system name (also returning TRUE iff the coordinate system is found
+    in the GRIDDESC file).
+<P>         
+
+<A HREF = "GRIDS.html">
+Next Section:  <STRONG>Grids and Coordinate Systems</STRONG>
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

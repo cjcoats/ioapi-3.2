@@ -1,0 +1,126 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: STR2S.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> STR2S() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    <VAR>STR2INT(), STR2REAL()</VAR>, and <VAR>STR2DBLE()</VAR></H1>
+
+<H2> Fortran version: </H2>
+
+<PRE>
+    SUBROUTINE SCANINT( STRING, VALUE, NCHARS, NDIGITS )
+    INTEGER FUNCTION STR2INT(  ASTRING )
+    REAL    FUNCTION STR2REAL( ASTRING )
+    REAL*8  FUNCTION STR2DBLE( ASTRING )
+        CHARACTER*(*), INTENT(IN   ) :: ASTRING  !  string to find effective length for
+</PRE><P>    
+
+<H2> NO C versions </H2>
+
+    use &quot;strtol()&quot; or &quot;strtod()&quot;
+    <P> 
+
+<H2> Summary: </H2>
+
+    Returns the <CODE>INTEGER</CODE>, <CODE>REAL</CODE>, or
+    <CODE>DOUBLE PRECISION</CODE> value decoded from
+    <CODE>ASTRING</CODE>, or <CODE>IMISS3</CODE> or <CODE>BADVAL3</CODE>
+    from  <CODE><A HREF = "INCLUDE.html#parms">PARMS3.EXT</A></CODE> (as
+    appropriate) for "missing" or badly-formatted inputs. Skips leading
+    whitespace (defined as ASCII characters less than or equal to the
+    BLANK/SPACE character; terminates input at the first nondigit or the
+    first non-exponent-designator, for <CODE>STR2REAL</CODE>.
+    <P>
+    <CODE>SCANINT()</CODE> returns the <CODE>INTEGER&nbsp;VALUE</CODE>
+    (equivalent to <CODE>VALUE=STR2INT(ASTRING)</CODE>, and also returns
+    the total number <CODE>NCHARS</CODE> of characters consumed
+    (including whitespace) and the number <CODE>NDIGITS</CODE> of digit
+    and/or leading sign characters.
+    <P> 
+
+        
+<H2> Preconditions: </H2>
+
+    ASCII collation order for strings; correctly formatted numeric
+    string for input.
+    <P> 
+
+    
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+ 
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A>, 
+    <A HREF = "PRESZ.txt">PRESZ</A>, or 
+    <A HREF = "SFCMET.txt">SFCMET</A> 
+    for additional usage examples.)
+
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    CHARACTER*256  ASTRING, BSTRING
+    INTEGER        L
+    REAL           R
+    ...
+    L = STR2INT( ASTRING )
+    IF ( L .EQ. IMISS3 ) THEN
+        WRITE (*,*) 'ASTRING: ", ASTRING, '" blank or not an integer'
+    ELSE
+        WRITE (*,*) 
+  &amp;  'INTEGER value stored in ASTRING is ', L
+    END IF
+    ...
+    R = STR2REAL( BSTRING )
+    IF ( R .LT. AMISS3 ) THEN
+        WRITE (*,*) 'BSTRING: ", BSTRING, '" blank or not a real'
+    ELSE
+        WRITE (*,*) 
+  &amp;  'REAL value stored in BSTRING is ', R
+    END IF
+    ...
+</PRE><P> 
+    
+<H2> C Usage: </H2>  
+
+    don't; use standard library functions &quot;strtol()&quot; or 
+    &quot;strtod&quot; instead.
+        
+<P>         
+
+
+<HR>
+
+<A HREF = "SORTI.html" >
+Previous:  <STRONG>SORTI</STRONG>
+</A><P> 
+
+<A HREF = "SYSTEMF.html" >
+Next:  <STRONG>SYSTEMF</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

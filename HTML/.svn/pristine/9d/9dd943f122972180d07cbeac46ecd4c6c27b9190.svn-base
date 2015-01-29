@@ -1,0 +1,123 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program M4FILTER </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program M4FILTER </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  &lt;infile&gt;     &lt;path name&gt;
+    m4filter
+</PRE>
+where <VAR>infile</VAR> is the <A HREF = "LOGICALS.html"> logical name </A> 
+of the input file.  
+<P> 
+
+<H2> Summary </H2>
+
+The program <VAR>m4filter</VAR> can be used to convert files from
+the previous version of the I/O API to the new version.  It has a
+in it both a copy of the old version and a new version (&quot;m4io&quot;)
+with the names of the routines changed so that the linker doesn't
+get confused.  To run it, you need to have assigned 
+<A HREF = "LOGICALS.html"> logical names </A> to the physical 
+file names of both the input and output files, according to 
+<A HREF = "ENVIRONMENT.html"> Models-3 conventions. </A>  You
+will be prompted for those attributes of the new (output) file
+which are not found in the header of the input file.  All of these
+attributes have to do either with the 
+<A HREF = "GRIDS.html#horiz"> horizontal  </A> or the 
+<A HREF = "GRIDS.html#vert"> vertical </A> grid and
+coordinate system description.  They are the following:
+    
+<DL>
+     <DT> <STRONG>P_ALPHA</STRONG>  First horizontal coordinate
+          system (map projection) descriptive angle parameter
+     <DT> <STRONG>P_BETA</STRONG>  Second horizontal coordinate
+          system (map projection) descriptive angle parameter
+     <DT> <STRONG>P_GAMMA</STRONG>  Third horizontal coordinate
+          system (map projection) descriptive angle parameter
+     <DT> <STRONG>XCENT</STRONG>  Longitude for the origin of the
+          Cartesian (X-Y) coordinate system (except for UTM, where
+          it is the standard-UTM location for the origin of
+          offset-UTM coordinate systems (in meters)).
+     <DT> <STRONG>YCENT</STRONG>  Latitude (or UTM) for the origin 
+          of the Cartesian (X-Y) coordinate system (At latitude YCENT,
+          longitude XCENT (or standard-UTM coordinates (XCENT,YCENT)), 
+          the Cartesian (X,Y) is (0,0).
+     <DT> <STRONG>VGTYPE</STRONG>  Vertical coordinate system type
+     <DT> <STRONG>VGTOP</STRONG>  Top of the model
+          (sigma-coordinates only)
+     <DT> <STRONG>VGLVS(0:NLAYS)</STRONG>  Array of level values
+          defining the full-levels.
+</DL>
+<P> 
+
+<STRONG>Versions of the program</STRONG> are available for each 
+<A HREF = "LIBS.html"> supported architecture </A>
+(workstation versions are currently in the directories 
+<VAR>/env/apps/(SunOS5 | IRIX5 | alphaOSF1)/bin</VAR>; Cray versions
+are in <VAR>/work/xcc/m3tools</VAR> on <VAR>sequoia</VAR>) and
+<VAR>/flyer/com/epa/coats/bin</VAR> or
+<VAR>/usr/local/edss/framework/EDSSv0.3pre/unicos9_TS/bin/OPTIMIZE</VAR>
+on <VAR>flyer</VAR>.
+<P> 
+
+<STRONG>Before you run the program,</STRONG> you need to assign a 
+<A HREF = "LOGICALS.html"> logical name </A> to the physical file
+name of the input file, according to Models-3 conventions, using 
+the operation 
+<PRE>
+    &quot;setenv <VAR>&lt;lname&gt; &lt;pname&gt;</VAR>&quot;
+</PRE>
+<STRONG>The program will prompt you</STRONG> for the logical name you
+have chosen for the input file, and then extensively for the options 
+to choose; the prompts will have default responses which can be 
+accepted by hitting &lt;RETURN&gt;.
+<P> 
+
+Note that the set of conversions which can be performed by one 
+execution of M4FILTER is quite complex, being dependent upon the 
+type of file being converted.  If you want to run this program in 
+<STRONG>batch mode</STRONG> (i.e., from a script), the recommended 
+way to develop the script is to run the program once interactively 
+while noting your pattern of responses to the prompts.  The pattern 
+of responses then becomes either a command-input file which is 
+redirected into the program's execution by the script, or becomes 
+a &quot;here-document&quot; fed into the execution.
+<P> 
+
+
+<HR>
+
+<A HREF = "M3FAKE.html" >
+Previous:  <STRONG>M3FAKE</STRONG>
+</A><P> 
+
+<A HREF = "MTXBLEND.html" >
+Next:  <STRONG>MTXBUILD</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

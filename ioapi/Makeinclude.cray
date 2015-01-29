@@ -1,0 +1,28 @@
+# VERSION "$Id: Makeinclude.cray 100 2015-01-16 16:52:16Z coats $"
+#
+#  Library flags severely hacked to satisfy Sun's broken
+#  compiler-linker system
+
+AR   = ar
+CC   = cc
+FC   = f90
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS    =  -dp -eZ rm
+
+OMPFLAGS  =
+OMPLIBS   =
+COPTFLAGS = -O2 -h aggress ${MFLAGS}
+FOPTFLAGS = -O3,aggress ${MFLAGS}
+FPPFLAGS  =  -F -DF90=1 
+FSFLAGS   = 
+ARCHFLAGS =  -DAUTO_ARRAYS=1 -DF90=1 -UIOAPICPL
+PARFLAGS  =
+ARCHLIB   = 
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

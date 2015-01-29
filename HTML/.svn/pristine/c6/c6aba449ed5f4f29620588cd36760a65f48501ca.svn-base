@@ -1,0 +1,204 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GRID2INDX </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1> Bilinear interpolation package:<BR> 
+     GRID2INDX, PNTS2INDX, and INDXMULT </H1>
+
+<H2> Fortran version: </H2>
+
+    &quot;Generic&quot; Fortran-90 routines <CODE>GRID2INDX</CODE>,
+    <CODE>PNTS2INDX</CODE> with optional <CODE>SPHER1</CODE>,
+    <CODE>SPHER2</CODE> spheroid arguments for computing bilinear
+    interpolation indices and coefficients; single-layer and multi-layer
+    OpenMP parallel bilinear-matrix multiplication routine 
+    <CODE>INDXMULT</CODE>:
+
+<PRE>
+    SUBROUTINE GRID2INDX( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,   &
+                          GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,   &
+                          NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,   &
+                          NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,   &
+                          IX2, PX2, PY2 )
+    SUBROUTINE GRID2INDX( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,  &
+                          GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2,  &
+                          NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,          &
+                          NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,          &
+                          IX2, PX2, PY2 )
+        INTEGER, INTENT(IN   ) :: GDTYP1, GDTYP2
+        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2
+        REAL*8 , INTENT(IN   ) :: SPHER1, SPHER2        !!  input, output spheres
+        REAL*8 , INTENT(IN   ) :: P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1
+        REAL*8 , INTENT(IN   ) :: P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2
+        REAL*8 , INTENT(IN   ) :: XORIG2, YORIG2, XCELL2, YCELL2
+        INTEGER, INTENT(  OUT) :: IX2( NPNTS2 )
+        REAL   , INTENT(  OUT) :: PX2( NPNTS2 )
+        REAL   , INTENT(  OUT) :: PY2( NPNTS2 )
+
+    SUBROUTINE PNTS2INDX( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                          GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,      &
+                          NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,      &
+                          NPNTS2, XPNTS2, YPNTS2,                              &
+                          IX2, PX2, PY2 )
+    SUBROUTINE PNTS2INDX( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,  &
+                          GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2,  &
+                          NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,          &
+                          NPNTS2, XPNTS2, YPNTS2,                                  &
+                          IX2, PX2, PY2 )
+        INTEGER, INTENT(IN   ) :: GDTYP1, GDTYP2
+        INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1, NPNTS2
+        REAL*8 , INTENT(IN   ) :: SPHER1, SPHER2        !!  input, output spheres
+        REAL*8 , INTENT(IN   ) :: P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1
+        REAL*8 , INTENT(IN   ) :: P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2
+        REAL*8 , INTENT(IN   ) :: XORIG1, YORIG1, XCELL1, YCELL1
+        REAL*8 , INTENT(IN   ) :: XPNTS2( NPNTS2 ),  YPNTS2( NPNTS2 ) YCENT2
+        REAL*8 , INTENT(IN   ) :: XORIG2, YORIG2, XCELL2, YCELL2
+        INTEGER, INTENT(  OUT) :: IX2( NPNTS2 )
+        REAL   , INTENT(  OUT) :: PX2( NPNTS2 )
+        REAL   , INTENT(  OUT) :: PY2( NPNTS2 )
+
+    SUBROUTINE INDXMULT( NSIZE1, NCOLS2, NROWS2,    &
+                         IX1, PX1, PY1, GR1, GR2 )
+    SUBROUTINE INDXMULT( NSIZE1, NLAYS, NCOLS2, NROWS2,    &
+                         IX1, PX1, PY1, GR3, GR4 )
+    SUBROUTINE INDXMULT( NCOLS1, NROWS1, NLAYS, NCOLS2, NROWS2,    &
+                         IX5, PX5, PY5, GR5, GR6 )
+        INTEGER, INTENT(IN   ) :: NSIZE1
+        INTEGER, INTENT(IN   ) :: NLAYS
+        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2
+        INTEGER, INTENT(IN   ) :: IX1( NSIZE1 )
+        REAL   , INTENT(IN   ) :: PX1( NSIZE1 )
+        REAL   , INTENT(IN   ) :: PY1( NSIZE1 )
+        INTEGER, INTENT(IN   ) :: IX5( NCOLS1*NROWS1 )
+        REAL   , INTENT(IN   ) :: PX5( NCOLS1*NROWS1 )
+        REAL   , INTENT(IN   ) :: PY5( NCOLS1*NROWS1 )
+        REAL   , INTENT(  OUT) :: GR1( NSIZE1 )                 !!  single-indexed 1-D or 2-D
+        REAL   , INTENT(IN   ) :: GR2( NCOLS2*NROWS2 )
+        REAL   , INTENT(  OUT) :: GR3( NSIZE1,NLAYS )
+        REAL   , INTENT(IN   ) :: GR4( NCOLS2*NROWS2,NLAYS )    !!  single-indexed layered
+        REAL   , INTENT(  OUT) :: GR5( NCOLS1,NROWS1,NLAYS )
+        REAL   , INTENT(IN   ) :: GR6( NCOLS2,NROWS2,NLAYS )    !!  double-indexed 3-D layered
+</PRE><P>
+
+    Compute single-indexed, single-indexed-layered,
+    double-indexed-layered (3-D-gridded) array subscript <CODE>IX</CODE>
+    and bilinear interpolation fractions <CODE>PX, PY</CODE> for GRID2
+    nodes or array of point-locations relative to GRID1 using USGS
+    GCTP-package routine <CODE>GTPZ0()</CODE>, and use them for bilinear
+    interpolation.
+    <P>
+    
+    Whenever the requested points lie outside the data-grid, the
+    interpolation will use the nearest boundary cell of the data-grid to
+    determine the output value (i.e., the interpolation uses
+    &quot;extend-by-constant&quot; outside GRID1.
+    <P>
+    
+    NOTE:  The GRID1-vs-GRID2 issue for <CODE>GRID2INDX()</CODE> and
+    <CODE>PNTS2INDX()</CODE> is &quot;backward&quot; to the naive
+    intuition:  to interpolate data-grids from GRID1 to GRID2, one needs
+    to compute the locations of GRID2-nodes relative to the GRID1 
+    coordinate-and-grid system&mdash;a coordinate transformation in the
+    reverse of the direction of the data-interpolation.    
+    <P>
+
+<H2> Summary: </H2>
+    For I/O&nbsp;API Version 3.2 or later, only:  module-routines
+    contained in <CODE>MODULE MODGCTP</CODE>..
+    <P>
+
+
+<H2> Preconditions </H2>
+
+    <CODE>USE MODGCTGP</CODE>
+    <P>
+
+
+<H2> Fortran Usage: </H2>
+ 
+    Interpolate <CODE></CODE> and <CODE></CODE> from GRID2 to GRID1,
+    as indicated below, or see <A HREF="M3CPLE.txt"><VAR>m3tools</VAR> program
+    <VAR>mcple</VAR></A> for a full-program example.
+    <PRE>
+    ...
+    INTEGER     GDTYP1      !!  parameters for output coordinate system
+    REAL*8      P_ALP1
+    REAL*8      P_BET1
+    REAL*8      P_GAM1
+    REAL*8      XCENT1
+    REAL*8      YCENT1
+    INTEGER     NCOLS1
+    INTEGER     NROWS1
+    INTEGER     NLAYS1
+    INTEGER     GDTYP2      !!  parameters for input grid and coord system
+    INTEGER     NCOLS2
+    INTEGER     NROWS2
+    INTEGER     NTHIK2
+    REAL*8      P_ALP2
+    REAL*8      P_BET2
+    REAL*8      P_GAM2
+    REAL*8      XCENT2
+    REAL*8      YCENT2
+    REAL*8      XORIG2
+    REAL*8      YORIG2
+    REAL*8      XCELL2
+    REAL*8      YCELL2
+    ...
+    INTEGER     IX2( NCOLS2*NROWS2 )
+    REAL*8      PX2( NCOLS2*NROWS2 )
+    REAL*8      PY2( NCOLS2*NROWS2 )
+    ...
+    REAL*8      TVALS1( NCOLS1*NROWS1 )
+    REAL*8      TVALS2( NCOLS2*NROWS2 )
+    REAL*8      ZVALS1( NCOLS1,NROWS1,NLAYS1 )
+    REAL*8      ZVALS2( NCOLS2,NROWS2,NLAYS1 )
+    ...
+    CALL GRID2INDX( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                    GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,      &
+                    NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,      &
+                    NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,      &
+                    IX2, PX2, PY2 )
+    ...
+    CALL INDXMULT( NCOLS1*NROWS1, NCOLS2, NROWS2, IX1, PX1, PY1, TVALS1, TVALS2 )
+    ...
+    CALL INDXMULT( NCOLS1, NROWS1, NLAYS1, NCOLS2, NROWS2, IX1, PX1, PY1, ZVALS1, ZVALS2 )
+    ...
+    </PRE>
+    <P>
+
+    <STRONG>See also</STRONG>:
+    <UL>
+        <LI> <A HREF = "GCTP.html"     >GCTP package from USGS</A><BR>
+        <LI> <A HREF = "GRID2XY.html"  >GRID2XY()</A><BR>
+        <LI> <A HREF = "XY2XY.html"    >XY2XY()</A><BR>
+    </UL>
+
+
+
+<HR> <!----------------------------------------------------------------->
+</A><P> 
+
+<A HREF = "MODGCTP.html" >
+Up:  <STRONG>MODULE MODGCTP</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#coordstuff"> 
+Up: <STRONG>Coordinate and Grid Related Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>

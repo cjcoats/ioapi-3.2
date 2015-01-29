@@ -1,0 +1,133 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program JULDATE </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program JULDATE </H1>
+
+<H2> Usage </H2>
+<PRE>
+    timeshift &lt;YYYYDDDe&gt;.&lt;HHMMSS&gt; &lt;HHMMSS&gt;
+</PRE>
+or
+<PRE>
+    timeshift --help
+</PRE>
+ 
+<H2> Summary </H2>
+
+    Increment Julian date &amp; time <CODE>YYYYDDD.HHMMSS</CODE> by
+    time interval <CODE>H*MMSS</CODE> and echothe result to standard
+    output (e.g., for use in scripting).
+    <P>
+    If <CODE>--help</CODE> is the first argument, writes the
+    &quot;USAGE&quot; screen and exits.
+    <P>
+
+<H2> Examples </H2>
+
+Some sample executions of this program are as indicated below.
+<P>
+Note that in shell-scripting, the back-quote character means &quot;the
+result of evaluating the enclosed command&quot; so that the third
+example below sets shell variable <CODE>foo</CODE> to the result of
+executing the indicated <CODE>timeshift</CODE> command.
+<PRE>
+     % timeshift 2014029.120000 183000
+     2014030.063000
+
+     % timeshift 2014031.120000 -480000
+     2014029
+
+     % @ ndays   = 365 * 240000
+     % set ndays = `timeshift 2014029 $ndays`
+     % echo $foo
+     2015029
+
+     % timeshift --help
+         DESCRIPTION:  increment date&time by time interval.
+
+         USAGE: timeshift &lt;YYYYDDD.HHMMSS&gt; &lt;HHMMSS&gt;
+                timeshift --help
+         or (using back-quotes)
+         %  set &lt;var&gt; = `timeshift &lt;juldate&gt; &lt;ndays&gt;`
+
+         EXAMPLE: shift by 24h 30m 0s
+            % set foo  = `timeshift 2011123.120000 243000
+              [${foo}  will be      2011124.123000]
+            % set date = $foo:r
+            % set time = $foo:e
+
+         yields ${date}==2011124 and ${time}==123000
+
+</PRE>
+<P>
+
+<H2> See Also </H2>
+<BLOCKQUOTE>
+<A HREF = "AA.html#datestuff"> 
+EDSS/ Models-3 date-time manipulation routines </a>
+<BR> 
+
+<A HREF = "DATSHIFT.html" >
+<STRONG>datshift</STRONG></A>
+<BR>
+
+<A HREF = "GREGDATE.html" >
+<STRONG>gregdate</STRONG></A>
+<BR>
+
+<A HREF = "GREG2JUL.html" >
+<STRONG>greg2jul</STRONG></A>
+<BR>
+
+<A HREF = "JULDATE.html" >
+<STRONG>juldate</STRONG></A>
+<BR>
+
+<A HREF = "JUL2GREG.html" >
+<STRONG>jul2greg</STRONG></A>
+<BR>
+
+<A HREF = "JULDIFF.html" >
+<STRONG>juldiff</STRONG></A>
+<BR>
+
+<A HREF = "JULSHIFT.html" >
+<STRONG>julshift</STRONG></A>
+<BR>
+</BLOCKQUOTE>
+
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "GREGDATE.html" >
+Previous:  <STRONG>GREGDATE</STRONG>
+</A><BR> 
+
+<A HREF = "UTMTOOL.html" >
+Next:  <STRONG>UTMTOOL</STRONG>
+</A><BR> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><BR>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><BR>
+
+    
+</BODY>
+</HTML>
+

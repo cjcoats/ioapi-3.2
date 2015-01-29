@@ -1,0 +1,147 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: JULDIFF.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program JULDiff </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program JULDiff </H1>
+
+<H2> Usage </H2>
+<PRE>
+    juldiff &lt;Julian date&gt; &lt; number of days&gt;
+</PRE>
+or, alternately,
+<PRE>
+    juldiff [ yesterday | today | tomorrow ] &lt; number of days&gt;
+</PRE>
+or
+<PRE>
+    juldiff --help
+</PRE>
+ 
+<H2> Summary </H2>
+
+    Takes two command line arguments <CODE>JDATE</CODE> and
+    <CODE>KDATE</CODE>, computes the (signed) number of days from
+    <CODE>JDATE</CODE> to <CODE>KDATE</CODE>, and echoes the result to
+    standard output (e.g., for use in scripting).
+    <P>
+    Options for the command line arguments are the following:
+    <BLOCKQUOTE><DL>
+        <DT>7-digit integer coded <CODE>YYYYDDD</CODE>
+        <DT><CODE>YESTERDAY</CODE>
+        <DT><CODE>TODAY</CODE>
+        <DT><CODE>TOMORROW</CODE>
+        <DT><CODE>--HELP</CODE>
+    </DL></BLOCKQUOTE>
+    <p>    
+    If <CODE>--help</CODE> is an argument, writes the &quot;USAGE&quot; screen
+    and exits.
+
+
+<H2> Examples </H2>
+
+Some sample executions of this program are as indicated below.
+<P>
+Note that in shell-scripting, the back-quote character means &quot;the
+result of evaluating the enclosed command&quot; so that the fourth
+example below sets shell variable <CODE>foo</CODE> to the result of
+executing the indicated <CODE>juldiff</CODE> command.
+<PRE>
+     % juldiff 2014029 2014031
+     2
+
+     % juldiff 2014029 2013028
+     -366
+
+     % juldiff today 2013031
+     2
+
+     % set ndays = `juldiff 2014029 2014129`
+     % echo ${foo}
+     100
+
+     % juldiff --help
+         %  juldiff  &lt;Julian date 1&gt;  &lt;Julian date 2&gt;
+         or
+         %  set ndays = `JULDIFF &lt;juldate1&gt;  &lt;juldate2&gt;
+
+         Options for Julian dates:
+              &lt;YYYYDDD&gt;,  e.g., 2010123
+              TODAY
+              YESTERDAY
+              TOMORROW
+              --HELP
+
+         Output format is integer number of days.
+</PRE>
+
+
+
+<H2> See Also </H2>
+
+<BLOCKQUOTE>
+<A HREF = "AA.html#datestuff"> 
+EDSS/ Models-3 date-time manipulation routines </A>
+<br> 
+
+<A HREF = "DATSHIFT.html" >
+<STRONG>datshift</STRONG></A>
+<br>
+
+<A HREF = "GREGDATE.html" >
+<STRONG>gregdate</STRONG></A>
+<br>
+
+<A HREF = "GREG2JUL.html" >
+<STRONG>greg2jul</STRONG></A>
+<br>
+
+<A HREF = "JULDATE.html" >
+<STRONG>juldate</STRONG></A>
+<br>
+
+<A HREF = "JUL2GREG.html" >
+<STRONG>jul2greg</STRONG></A>
+<br>
+
+<A HREF = "JULSHIFT.html" >
+<STRONG>julshift</STRONG></A>
+<br>
+
+<A HREF = "TIMESHIFT.html" >
+<STRONG>timeshift</STRONG></A>
+<br>
+</BLOCKQUOTE>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "GREGDATE.html" >
+Previous:  <STRONG>GREGDATE</STRONG>
+</A><P> 
+
+<A HREF = "UTMTOOL.html" >
+Next:  <STRONG>UTMTOOL</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+

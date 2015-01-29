@@ -1,0 +1,101 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: GET_ENDIAN.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GCD() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GET_ENDIAN() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION  GET_ENDIAN()
+</PRE><P> 
+
+<H2> C version:   </H2>
+<PRE>
+    int get_endian() ;
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    Returns byte-order token for the current platform, as defined
+    by token values in <A HREF="INCLUDE.html#parms"><VAR>PARMS3.EXT</VAR></A>
+    or system include-file <VAR>/usr/include/endian.h</VAR>:
+    <DL>
+        <DT><CODE>BIG_ENDIAN</CODE>
+        <DT><CODE>LITTLE_ENDIAN</CODE>
+        <DT><CODE>PDP_ENDIAN</CODE>
+    </DL>
+
+        
+<P> 
+
+
+<H2> Preconditions: </H2>
+
+    none
+<P> 
+
+
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    INCLUDE 'PARMS3.EXT'
+    ...
+    INTEGER   GET_ENDIAN
+    INTEGER   IBYTEORDER
+    ...
+    IBYTEORDER = GET_ENDIAN()
+    IF ( IBYTEORDER .EQ. LITTLE_ENDIAN ) THEN
+        ...  !!  processing for x86-style byte order
+    ELSE IF ( IBYTEORDER .EQ. BIG_ENDIAN ) THEN
+        ...  !!  processing for Sun/SGI-style byte order
+    ELSE IF ( IBYTEORDER .EQ. PDP_ENDIAN ) THEN
+        ...  !!  processing for PDP11-style byte order
+    ELSE
+        ...  !! something really scrambled:  call M3EXIT()?
+    END IF
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;                          
+    ...
+    int  i ;
+    ...
+    i = get_endian() ; /*  Now i is byte-order value... */
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "GCD.html" >
+Previous:  <STRONG>GCD</STRONG>
+</A><P> 
+
+<A HREF = "GETDBLE.html" >
+Next:  <STRONG>GETDBLE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

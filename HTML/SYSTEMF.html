@@ -1,0 +1,107 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: SYSTEMF.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> SYSTEMF() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    SYSTEMF() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION  SYSTEMF( COMMAND_STRING )
+        CHARACTER*(*), INTENT(IN   ) :: COMMAND_STRING
+</PRE><P> 
+
+<H2> C version:   use <EM>system()</EM> instead</H2>
+
+<H2> Summary: </H2>
+
+    SYSTEMF() is a Fortran wrapper around the <EM>system()</EM>
+    C-library routine:  it executes the specified command as though
+    it had been typed in a shell (specifically, <EM>ksh</EM>), and
+    returns the exit status of the command (0 for success; nonzero
+    for failure), or (-1) if it can't find a shell under which it
+    can execute the command.
+    <P>
+    Note that you can build up quite complex commands by the use of
+    semicolons, pipes, redirects, etc.
+    <P>
+
+
+<H2> Preconditions: </H2>
+
+    <CODE>LEN( COMMAND_STRING )</CODE> is at most 4095
+<P> 
+
+
+<H2> Fortran Usage: </H2>
+<PRE>
+    ...
+    INTEGER     SYSTEMF
+    EXTERNAL    SYSTEMF
+    ...
+    INTEGER     ISTAT
+    ...
+    !!  Command:  see if there are any files &quot;/tmp/foo/*.ncf&quot;
+    !!  change directory to /tmp/foo, then see if there are
+    !!  any files whose extension is &quot;.ncf&quot;
+    !!  (&quot;ls -1&quot; says list one per line, the semicolon strings
+    !!  the commands together into a compound command, and for &quot;grep&quot;, 
+    !!  we have to escape the period with a backslash (else it is a 
+    !!  wild-card), and $ means at-end-of-line.)
+
+    ISTAT = SYSTEMF( 'cd /tmp/foo ; ls -1 | grep &quot;\.ncf$&quot;' )
+
+    IF      ( ISTAT .EQ. -1 ) THEN      !  could not execute &quot;ksh&quot;:
+        WRITE( *,* ) 
+   &amp;    'Error finding &quot;ksh&quot; to execute command'
+    ELSE IF ( ISTAT .EQ. 0 ) THEN       !  &quot;grep&quot; found matches:
+        WRITE( *,* ) 
+   &amp;    'Matches for &quot;.ncf&quot; were found'
+    ELSE IF ( ISTAT .EQ. 1 ) THEN       !  &quot;grep&quot; did not find matches:
+        WRITE( *,* ) 
+   &amp;    'No matches for &quot;.ncf&quot; found'
+    ELSE                                !  &quot;grep&quot; had an I/O error:
+        WRITE( *,* ) 
+   &amp;    'I/O errror ', ISTAT, ' encountered'
+    END IF                              !  end nested IF's on values of ISTAT
+    ...
+
+</PRE><P> 
+
+<H2> C Usage: </H2>
+
+   <EM> use <STRONG>system()</STRONG></EM> instead.
+   <P> 
+
+
+<HR>  <!------------------------------------------------------------->
+
+<A HREF = "STR2S.html" >
+Previous:  <STRONG>STR2INT and STR2REAL</STRONG>
+</A><P> 
+
+<A HREF = "TRIMLEN.html" >
+Next:  <STRONG>TRIMLEN</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+</BODY>
+</HTML>
+

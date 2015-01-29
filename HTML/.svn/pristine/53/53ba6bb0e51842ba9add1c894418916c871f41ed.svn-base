@@ -1,0 +1,105 @@
+'
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> GETDBLE() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    GETDBLE() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    REAL*8 FUNCTION GETDBLE( LO , HI , DEFAULT , PROMPT )
+        REAL*8       , INTENT(IN   ) :: LO      ! Minimum allowed return value
+        REAL*8       , INTENT(IN   ) :: HI      ! Maximum allowed return value
+        REAL*8       , INTENT(IN   ) :: DEFAULT ! Default return value
+        CHARACTER*(*), INTENT(IN   ) :: PROMPT  ! Prompt for user
+</PRE><P>    
+
+<H2> NO C version: </H2>
+<P> 
+
+<H2> Summary: </H2>
+
+    Display the  <CODE>PROMPT</CODE>  to standard output for a double
+    precision number between  <CODE>LO</CODE>  and  <CODE>HI</CODE>,
+    get the user's response and check  that it is within range.  Return
+    <CODE>DEFAULT</CODE> if the user hits &lt;RET&gt;.   Reprompts on
+    error for up to 5 attempts; exits in case of more  than 5 entry
+    errors.  If <A HREF = "ENVIRONMENT.html">environment variable
+    PROMPTFLAG</A> is set to &quot;N&quot;, returns
+    <CODE>DEFAULT</CODE> without prompting the user.  Logs the value
+    returned, for tracking  and validation purposes.
+    <P>
+    
+    The default is displayed in square brackets at the end of the
+    prompt <CODE>[LIKE THIS]</CODE>
+    <P>  
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+    See also <A HREF = "GETREAL.html"> GETREAL() </A>,
+    <A HREF = "GETMENU.html"> GETMENU() </A>,
+    <A HREF = "GETNUM.html">  GETNUM()  </A>, 
+    <A HREF = "GETSTR.html"> GETSTR() </A>, and
+    <A HREF = "GETYN.html"> GETYN() </A>.
+<P> 
+
+        
+<H2> Preconditions:  none </H2>
+
+    
+<H2> Fortran Usage: </H2>
+ 
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A> or
+    <A HREF = "PRESZ.txt">PRESZ</A>
+    for additional usage examples.)
+
+<PRE>
+    ...
+    REAL*8           X
+    REAL*8           GETDBLE
+    ...
+    X = GETDBLE( 0.0D0, 10.0D0, 7.5D0, 
+ &amp;              'Give me a number between 0.0 and 10.0' )
+    ...
+</PRE><P> 
+    
+<H2> C Usage:  </H2> 
+Don't, unless you're already comfortable with mixed-language programming.
+<P>         
+
+
+<HR>
+
+<A HREF = "GET_ENDIAN.html" >
+Previous:  <STRONG>GETDATE</STRONG>
+</A><P> 
+
+<A HREF = "GETDFILE.html" >
+Next:  <STRONG>GETDFILE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P> 
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P> 
+
+
+</BODY>
+</HTML>
+

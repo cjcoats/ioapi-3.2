@@ -1,0 +1,105 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> TRIMLEN() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    TRIMLEN() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    INTEGER FUNCTION TRIMLEN( ASTRING )
+        CHARACTER*(*), INTENT(IN   ) :: ASTRING  !  string to find effective length for
+</PRE>
+<P>
+
+Note that this is equivalent to Fortran-90 intrinsic
+<CODE>LEN_TRIM()</CODE>; furthermore note that Fortran-90 added new
+intrinsics <CODE>TRIM()</CODE>, <CODE>ADJUSTL()</CODE>, and
+<CODE>ADJUSTR()</CODE> that frequently help in directly doing the tasks
+the programmer is really attempting.
+<P>
+
+<H2> NO C version: </H2>
+<P> 
+
+<H2> Summary: </H2>
+
+    Returns the effective length of the Fortran character string argument 
+    ASTRING, after trailing blanks have been trimmed.
+    <P> 
+
+    <STRONG>Deprecated as Fortran-77-only</STRONG>, since the new
+    Fortran-90 intrinsic <CODE>LEN_TRIM()</CODE> has exactly the same
+    meaning, and the additional new Fortran-90 intrinsic character
+    string function <CODE>LEN_TRIM()</CODE> that trims trailing blanks
+    can be used to replace expressions like
+    <CODE>ASTRING(&nbsp;1:LEN_TRIM(&nbsp;ASTRING&nbsp;)&nbsp;)</CODE>
+    with the much simpler <CODE>TRIM(&nbsp;ASTRING&nbsp;)</CODE>.
+    <P> 
+
+    See also <A HREF = "LBLANK.html"> LBLANK() </A> for trimming
+    <EM>leading</EM> blanks.
+<P> 
+
+        
+<H2> Preconditions: </H2>  none
+<P> 
+
+    
+<H2> Fortran Usage: </H2>
+ 
+    (See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "LATLON.txt">LATLON</A>, 
+    <A HREF = "PRESZ.txt">PRESZ</A>, or 
+    <A HREF = "SFCMET.txt">SFCMET</A> 
+    for additional usage examples.)
+
+<PRE>
+    ...
+    CHARACTER*256  ASTRING
+    INTEGER        L
+    INTEGER        TRIMLEN
+    ...
+    L = TRIMLEN( ASTRING )
+    WRITE (*,*) 
+  &amp;  'ASTRING-squared is &quot;', ASTRING( 1:L ) , ASTRING( 1:L ), '&quot;'
+    ...
+C   Better:   WRITE (*,*)    
+C  &amp;  'ASTRING-squared is &quot;', TRIM(ASTRING) , TRIM(ASTRING), '&quot;'
+</PRE><P> 
+    
+<H2> C Usage: </H2>  don't
+<P>         
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "SYSTEMF.html" >
+Previous:  <STRONG>SYSTEMF</STRONG>
+</A><P> 
+
+<A HREF = "UNGRIDB.html" >
+Next:  <STRONG>UNGRIDB</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#utility"> 
+Up: <STRONG>Utility Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

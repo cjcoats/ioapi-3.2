@@ -1,0 +1,272 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML> 
+<HEAD>
+<!-- "$Id: COUPLING.html 103 2015-01-16 16:55:45Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> 
+    PPP:  I/O&nbsp;API
+</TITLE>
+</HEAD>
+   
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<!--#include virtual="/INCLUDES/header.html" -->
+
+<H1>
+    PPP:  I/O&nbsp;API Extensions for Coupled Models
+</H1>
+    
+    <VAR>Under Construction!!</VAR>
+    
+    <UL>  
+        <LI>  <A HREF = "#paradigm">       I/O&nbsp;API:  Paradigm</A>
+        <LI>  <A HREF = "#concept">        Model Coupling:  Concept</A>
+        <LI>  <A HREF = "#examples">       Model Coupling:  Examples</A>
+        <LI>  <A HREF = "#implementation"> Model Coupling:
+                                           Implementation</A>
+        <LI>  <A HREF = "#footnotes">      Footnotes</A>
+    </UL>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2><A NAME = "paradigm"> 
+     I/O&nbsp;API:  Paradigm 
+</A></H2>
+
+    The <A HREF = "/products/ioapi/index.html">EDSS/Models-3 
+    I/O&nbsp;API</A> is a library of routines which provide 
+    selective direct access to modeling data in modeler-oriented 
+    terms.  For example, the <VAR>read-and-interpolate</VAR> 
+    operation is typified by the call
+    
+        <BLOCKQUOTE><CODE>
+        INTERP3( 'foo', 'bar', 1, 1988200, 120000, NCOLS*NROWS, BAR )
+        </CODE></BLOCKQUOTE>
+    
+    which says, in ordinary English,
+        
+        <BLOCKQUOTE>
+        Read the layer-1, year 1988, day 200, time 12:00:00 slice of 
+        the variable named &quot;bar&quot; from the file with logical
+        name<SUP><A HREF = "#f1">1</A></SUP> &quot;foo&quot; and 
+        put it into array <CODE>BAR</CODE> having extent
+        <CODE>NCOLS*NROWS</CODE> (extent being used for error checking
+        purposes).
+        <EM>NOTE:  INTERP3() optimizes disk-accesses and
+        double buffering behind the scenes at run-time.</EM>
+        </BLOCKQUOTE>
+
+    This paradigm of operation greatly reduces modeling complexity
+    (as compared to models built around sequential files), since a
+    model does not need to know the detailed structure of a file it
+    reads (e.g., the exact list of variables in the file, their order, 
+    nor even the precise time step structure).  What it does need to
+    know is the names, types, and dimensionality of the variables it
+    wants to read, and must deal with error-flags coming from requests
+    that cannot be fulfilled.  EPA'a Models-3 and NCSC's MAQSIP models 
+    take advantage of this flexibility in order to construct 
+    &quot;plug-compatible interchangeable-part&quot; modules 
+    implementing the various relevant atmospheric 
+    processes.<SUP><A HREF = "#f2">2</A></SUP>  Notice that this kind 
+    of selective direct-access I/O makes for models that are more robust, 
+    and less &quot;brittle&quot;as well:  if a new variable is added to a 
+    file, only those modules which write or read the new variable need
+    to change; all others are unaffected.
+    <P> 
+    
+
+<H2><A NAME = "concept">
+     Model Coupling:  Concept 
+</A></H2>
+
+    Just as a model's access to disk files should not demand intimately
+    detailed internal knowledge of the structure of the file or of its
+    writer, coupled models composed of cooperating concurrent processes
+    should not require that receivers possess intimately detailed
+    internal knowledge of senders (and vice versa).  Ideally, a model
+    should use the same facilities for disk I/O and for <STRONG>virtual
+    files</STRONG> used for model coupling,
+    and should not &quot;need&quot; to know whether its inputs are
+    coming from disk files or from other models coupled to it.
+    Synchronization and scheduling should be done on the basis of data
+    availability.
+    In order for this to work, the following properties
+    are required for model-coupling mode of the I/O&nbsp;API, and of
+    the models that use it:
+    <UL>  
+        <LI>  OPEN3() for virtual input files block until (i.e., the
+              operating system puts the calling process to sleep until)
+              some process opens them for writing, thus making the
+              file-description available for the reader.
+
+        <LI>  Virtual-file reads (READ3(), INTERP3(), and XTRACT3()) 
+              block until the data they request becomes available.
+
+        <LI>  If any virtual files are open, SHUT3() waits until all
+              processes with open virtual files are ready to exit, and
+              then cleans up the mailboxes for all of its process's
+              virtual output files. 
+
+        <LI>  Models must be structured so as to avoid deadlock (i.e.,
+              so that two cooperating processes never get into the
+              situation of both requesting data the other hasn't
+              produced yet).  One set of rules for avoiding deadlocks
+              is the following:
+              <UL>  
+                  <LI>  Open all output virtual files before opening
+                        any input virtual files; and
+                  <LI>  Write all output for a time step before
+                        requesting any input for the next time step.
+                  <LI>  Don't skip any time steps.
+              </UL>               
+
+        <LI>  Coupling must be two-way:  processes writing virtual files 
+              must get some feedback from at least one reader, to prevent 
+              them from racing ahead and exhausting all available buffer
+              space.  (In the most extreme case of a single writer and a
+              single reader, the reader might artificially produce a 
+              single-cell-sized synchronization file which the writer
+              reads, to keep the writer from racing far ahead of the reader).
+    </UL>
+    <P>
+
+<H2><A NAME = "examples">
+     Model Coupling:  Examples 
+</A></H2>
+
+    the models that use it:
+    <UL>  
+        <LI>  The <A HREF="/projects/SECMEP/">MCNC real time air quality
+              forecast system</A> uses coupling mode to tie together
+              the (monolithic single-program but multiple-grid) MM5
+              meteorology model, the (multi-program-per-grid) SMOKE
+              emissions model, and the (single-program-per-grid)
+              MAQSIP-RT atmospheric chemistry and transport model. 
+              Note that it is necessary to introduce an artificial
+              2-hour-lagged feedback from each MAQSIP-RT to MM5, in
+              order to prevent MM5 from racing ahead of the MAQSIPs.
+              <P>
+        <LI>  The <A HREF="/projects/SECMEP/">data assimilating
+              hydrological/meteorological model</A> uses I/O&nbsp;API
+              coupling mode to tie together the MM5 meteorology model
+              and the TOPLATS land surface/hydrology model at the MM5
+              advection time scale.  In this model, MM5 provides ambient
+              meteorology to TOPLATS, which then provides very accurate
+              surface fluxes back to MM5.
+              <P>
+        <LI>  The <A HREF="DECOMP_AQM.html">Distributed/Decomposed-AQM
+              Modeling System</A> is an example of another kind of
+              application for the I/O API coupling mode.  In it, the 
+              horizontal domain of the air quality model is decomposed
+              into a set of rectangular subdomains (that overlap by one
+              cell on interior edges, to preserve the order of the
+              advection algorithm).  A &quot;normal&quot; single-grid
+              air quality model is run on each subdomain, with input and
+              output time step equal to the required model advection step.
+              Then at each advection step, the <CODE>AQMMASTER</CODE>
+              program assembles the subdomain concentrations into a
+              full-domain field, writes the full-grid concentration file
+              if appropriate, and extracts and writes advection-step
+              chemical boundary files for each of the subdomains (the
+              whole system being tied together/scheduled by Coupling
+              Mode virtual files).  The <CODE>METSERVER</CODE> program
+              is used in this system to provide subdomain meteorology
+              files to each subdomain air quality model.
+              <P> 
+    
+    </UL>
+    <P>
+
+<H2><A NAME = "implementation"> 
+     Model Coupling:  Implementation 
+</A></H2>
+
+    Our implementation is built on top of &quot;mailboxes&quot; in
+    PVM 3.4.  There is a new library, <CODE>libclp.a</CODE>, that fits
+    in front of <CODE>libioapi.a</CODE> in the compile-and-link command
+    line for producing programs, and which then over-rides the standard
+    file-oriented OPEN3(), READ3(), etc., with the new polymorphic 
+    versions which can deal with both physical files  and virtual files.
+    <P>
+    
+    At run-time, the new OPEN3() looks at the value of its 
+    logical-name<SUP><A HREF = "#f1">1</A></SUP> argument to see 
+    whether the request is for a virtual file, or for a physical
+    file (and in that case, what physical path-name the file has).
+    For virtual files opened for writing, it then creates a PVM
+    mailbox containing both the virtual file's description (number,
+    names and types of variables, dimensionality, grid description, 
+    etc.)
+    <P> 
+    
+    For a virtual file, WRITE3() allocates a buffer for the requested 
+    time step of the requested variable in the file's mailbox, puts
+    the data into the buffer and labels it by variable-name, date, and
+    time, and then cleans up any outstanding buffers for that variable
+    that are more than (a default) 2 time steps old.
+    <P> 
+    
+    For a virtual file, READ3(), INTERP3(), and XTRACT3() make up a label 
+    with the requested variable-name, date, and time, and requests a copy
+    of the corresponding buffer from the file's mailbox.  If a buffer with
+    the corresponding label exists, PVM copies it into the requester's
+    output argument; otherwise, PVM puts the requesting process to sleep
+    until such a labelled buffer is written by some other process.
+    <P> 
+
+    If any virtual files are open, all calls to SHUT3() wait on a
+    barrier that ensures virtual files are not destroyed prematurely.
+    SHUT3() then cleans up the mailboxes for all of the virtual output
+    files its process had opened (corresponding to SHUT3()'s using
+    <CODE>ncclose()</CODE> to flush and close any disk files that
+    were opened by that process).
+    <P> 
+    
+
+<HR> <!----------------------------------------------------------------->
+    
+<H2><A NAME = "footnotes">
+    Footnotes
+</A></H2>    
+<OL>      
+    <LI>  <A NAME = "f1"> I/O&nbsp;API files </A> are referred to by
+          environment-variable &quot;logical names&quot; that are
+          properties of the calling program.  The user sets the
+          values of these to the path-name for the files by doing 
+          a <VAR>csh</VAR> command,
+          <BLOCKQUOTE><CODE>
+          setenv &lt;logical-name&gt; &lt;path&gt;
+          </CODE></BLOCKQUOTE>
+          before executing the program, for each file the program
+          accesses (probably in the run-script for the model being
+          run).  To say that a logical name refers to a
+          &quot;virtual&quot; file used to couple models together,
+          the corresponding command is 
+          <BLOCKQUOTE><CODE>
+          setenv &lt;logical-name&gt; &quot;VIRTUAL &lt;file-name&gt;&quot;
+          </CODE></BLOCKQUOTE>
+          
+    <LI>  <A NAME = "f2"> Consider, </A>
+          for example, that modules implementing Kain-Fritsch convective 
+          cloud pollutant chemistry and transport at a grid-scale of 
+          12-36 km. need rather different input meteorology variables
+          than do Kuo cloud modules at 50-120 km.
+
+    <LI>  <A NAME = "f3"> placeholder </A>
+
+</OL>
+
+<HR> <!----------------------------------------------------------------->
+
+    <P><A HREF = "index.html#contents">Back to 
+       <STRONG>PPP Contents</STRONG></A>
+
+<!--#include virtual="/INCLUDES/footer.html" -->
+        
+</BODY>      <!--end body  -->
+</HTML>      <!--end html  -->
+

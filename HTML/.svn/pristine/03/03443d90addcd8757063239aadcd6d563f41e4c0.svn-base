@@ -1,0 +1,139 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> DESC3() and desc3c() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    DESC3() and desc3c() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    LOGICAL FUNCTION  DESC3( FNAME )
+        CHARACTER*(*), INTENT(IN   ) :: FNAME   !  file name for query
+</PRE><P> 
+
+<H2> C version: </H2>  
+<BLOCKQUOTE>
+    desc3c() is a C wrapper calling the Fortran DESC3()
+</BLOCKQUOTE><P> 
+<PRE>
+    int desc3c( const char    * fname,
+                IOAPI_Bdesc3  * bdesc ,
+                IOAPI_Cdesc3  * cdesc ) ;
+</PRE><P> 
+
+<H2> Summary: </H2>
+    DESC3() puts the description of the file with 
+    <A HREF = "LOGICALS.html"> logical name </A>
+    FNAME into file description commons found in include file
+    <A HREF = "INCLUDE.html#fdesc"> FDESC3.EXT </A>; 
+    desc3c() returns the file description in the 
+    structs at arguments &quot;bdesc&quot; and &quot;cdesc&quot;
+    (defined in <A HREF = "INCLUDE.html#fdesc"> fdesc3.h </A>).
+    Returns .TRUE. or 1, respectively, on success, and .FALSE. or 0
+    on failure.
+    <P> 
+
+    If FNAME is invalid, writes an error message indicating the 
+    nature of the problem to the log and returns a .FALSE. (or 0).
+    <P>
+
+<H2> Preconditions: </H2>
+
+    <CODE><A HREF = "M3UTILIO.html">USE M3UTILIO</A></CODE> or
+    <A HREF = "INCLUDE.html#iodecl"> 
+    <CODE>INCLUDE 'IODECL3.EXT'</CODE></A> 
+    and 
+    <A HREF = "INCLUDE.html#fdesc"> 
+    <CODE>INCLUDE 'FDESC3.EXT'</CODE> </A> 
+    for Fortran, or 
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> and 
+    <CODE>#include &quot;fdesc3.h&quot;</CODE> for C.
+    <P> 
+
+    FNAME must have length at most 16.
+    <P> 
+
+    FNAME must already have been opened by 
+    <A HREF = "OPEN3.html"> OPEN3() or open3c() </A>
+    (and the I/O API must have been initialized with 
+    <A HREF = "INIT3.html"> INIT3() or init3c() ). </A>
+
+<H2> See Also: </H2>
+
+    The following <CODE>*ATT*()</CODE> routines deal with reading
+    and writing attributes (possibly in addition to the standard
+    ones) to or from netCDF-based I/O&nbsp;API files:
+    <UL>
+        <LI>  <A HREF = "INQATT3.html">INQATT3()</A>
+        <LI>  <A HREF = "RDATT3.html" >RDATT3() and RDATTC()</A>
+        <LI>  <A HREF = "WRATT3.html" >WRATT3() and WRATTC()</A>
+        <LI>  <A HREF = "OPEN3.html" >OPEN3()</A>
+    </UL>
+    <P>
+
+
+<H2> Fortran Usage: </H2>
+        
+    See <A HREF = "SAMPLE.html">sample</A> programs
+    <A HREF = "M3CPLE.txt">M3CPLE</A>,
+    <A HREF = "PRESZ.txt">PRESZ</A>, and
+    <A HREF = "VERTINTEGRAL.txt">VERTINTEGRAL</A> 
+    for additional usage examples.
+
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    ...
+    IF ( DESC3( 'MYFILE' ) ) THEN
+C              Commons BDESC, CDESC from INCLUDE-file FDESC3.EXT
+C              contain description of the file with logical name MYFILE.
+        ...
+    END IF
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    if ( desc3c( &quot;MYFILE&quot;, bdesc, cdesc ) )
+        {
+            /*  Structs *bdesc and *cdesc contain description
+                of the file with logical name MYFILE.  */
+        ...
+        }
+    ...
+</PRE><P> 
+
+<HR>
+
+<A HREF = "DDTVAR3.html" >
+Previous:  <STRONG>DDTVAR3</STRONG>
+</A><P> 
+
+<A HREF = "INIT3.html" >
+Next:  <STRONG>INIT3</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#ioapi"> 
+Up: <STRONG>Public I/O Routines </STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

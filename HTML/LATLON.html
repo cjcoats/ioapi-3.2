@@ -1,0 +1,77 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: LATLON.html 117 2015-01-19 16:50:41Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program LATLON </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program LATLON </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  GRIDDESC      &lt;path name&gt;
+    setenv  &lt;gridfile&gt;    &lt;path name&gt;
+    setenv  &lt;bndyfile&gt;    &lt;path name&gt;
+    
+    latlon <EM>&lt;and respond to the prompts&gt;</EM>
+</PRE>
+
+<P> 
+
+<H2> Summary </H2>
+
+Construct matching time independent one-layer GRIDDED and BOUNDARY files
+with variables <CODE>LAT</CODE> and <CODE>LON</CODE> containing the latitude
+and longitude at cell centers, for a user specified coordinate system and grid.
+Specifications for this grid may either come from a <VAR>GRIDDESC</VAR> file
+or may be entered interactively.
+<P>
+
+Currently, only Lat-lon, Lambert, UTM, Mercator, Stereographic, and Albers
+Equal-Area coordinate systems for interactive input, and boundaries with 
+<CODE>NTHIK&nbsp;&gt;&nbsp;0</CODE> are supported.  You may turn off either
+output file (GRIDDED or BOUNDARY) by responding &quot;NONE&quot; to the prompt
+for its name.
+<P>
+
+<EM>The program's <STRONG>source code</STRONG> is
+<A HREF="LATLON.txt">available here.</A></EM>
+<P>
+
+
+<STRONG>See Also:</STRONG>
+<UL>
+    <LI>  <A HREF = "PRESZ.html">Program <VAR>PRESZ</VAR></A> 
+          for computing a MM5-style hydrostatic reference atmosphere
+          and writing it to a 3-D GRIDDED I/O&nbsp;API output file.
+          <P>
+</UL>
+
+<HR>  <!--------------------------------------------------------------->
+
+<A HREF = "DAYAGG.html" >
+Previous:  <STRONG>DAYAGG</STRONG>
+</A><P> 
+
+<A HREF = "M3CPLE.html" >
+Next:  <STRONG>M3CPLE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>

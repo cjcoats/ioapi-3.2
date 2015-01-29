@@ -1,0 +1,149 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: RDATT3.html 120 2015-01-20 22:24:03Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> RDATT3() and RDATTC() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    RDATT3() and RDATTC() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    LOGICAL FUNCTION   RDATT3( FNAME, VNAME, ANAME, ATYPE, AMAX,
+ &amp;                             ASIZE, AVAL )
+    LOGICAL ENTRY      RDATTC( FNAME, VNAME, ANAME, CVAL )
+    
+        CHARACTER*(*), INTENT(IN   ) :: FNAME         !  logical file name
+        CHARACTER*(*), INTENT(IN   ) :: VNAME         !  variable name, or ALLVARS3
+        CHARACTER*(*), INTENT(IN   ) :: ANAME         !  attribute name
+        INTEGER      , INTENT(IN   ) :: ATYPE         !  attribute type (M3REAL, M3INT, M3DBLE)
+        INTEGER      , INTENT(IN   ) :: AMAX          !  attribute dimensionality
+        INTEGER      , INTENT(  OUT) :: ASIZE         !  attribute actual size
+        REAL         , INTENT(  OUT) :: AVAL( AMAX )  !  attribute value (numeric)
+        CHARACTER*(*), INTENT(  OUT) :: CVAL          !  attribute value (character-string)
+</PRE><P> 
+
+<H2> C version: </H2>
+
+    <CODE>rdatt3c()</CODE> is a C wrapper calling the Fortran 
+    <CODE>RDATT3()</CODE> and <CODE>RDATTC()</CODE>:
+<PRE>
+    integer rdatt3c( const char          * fname ,
+                     const char          * vname ,
+                     const char          * aname ,
+                     int                   atype ,
+                     int                   amax ,
+                     int                 * asize ,
+                     void                * aval )
+</PRE><P> 
+
+<H2> Summary: </H2>
+
+    <CODE>RDATT3()</CODE> reads the numeric (<CODE>INTEGER, REAL, or
+    DOUBLE</CODE> attribute named <CODE>ANAME</CODE> for the variable
+    <CODE>VNAME</CODE> in the file with
+    <A HREF = "LOGICALS.html">logical name</A> <CODE>FNAME</CODE>
+    into the array <CODE>AVAL(AMAX)</CODE>; <CODE>RDATTC()</CODE> reads
+    the <CODE>CHARACTER</CODE> string valued attribute into string
+    <CODE>CVAL</CODE>.
+    <P>
+    
+    Returns  <CODE>.TRUE.</CODE> (or 1) if the operation succeeds,
+    <CODE>.FALSE.</CODE> (or 0) if it fails.  For failure, writes
+    a log message indicating the nature of the failure.
+    <P>
+
+    For Fortran-90 declarations:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+
+<H2> Preconditions: </H2>
+
+    <A HREF = "INCLUDE.html#iodecl"> 
+    <CODE>INCLUDE&nbsp;'IODECL3.EXT'</CODE> </A> for Fortran, or 
+    <CODE>#include&nbsp;&quot;iodecl3.h&quot;</CODE> and 
+    <CODE>#include&nbsp;&quot;fdesc3.h&quot;</CODE> for C.
+    <P> 
+
+    I/O API must already be initialized by a call to
+    <A HREF = "INIT3.html"><CODE>INIT3()</CODE></A>.
+    <P> 
+    
+    Names <CODE>FNAME</CODE> and <CODE>VNAME</CODE> must have length
+    at most 16, exclusive of trailing blanks.
+    <P> 
+
+    File <CODE>FNAME</CODE> must must be netCDF-based rather than 
+    &quot;buffered&quot; or &quot;virtual&quot;; it must already have
+    been opened by  <A HREF = "OPEN3.html"><CODE>OPEN3()</CODE> or
+    <CODE>open3c()</CODE></A>.
+    <P> 
+        
+    Actual on-file value of the attribute must have at most
+    <CODE>AMAX</CODE> array elements, or must be a string of 
+    length at most <CODE>LEN(CVAL)</CODE>.
+    <P>
+
+
+<H2> See Also: </H2>
+
+    <UL>
+        <LI>  <A HREF = "INQATT3.html">INQATT3()</A>
+        <LI>  <A HREF = "WRATT3.html" >WRATT3() and WRATTC()</A>
+        <LI>  <A HREF = "DESC3.html"  >DESC3()</A>
+        <LI>  <A HREF = "OPEN3.html"  >OPEN3()</A>
+        <LI>  <A HREF = "M3ATTS.html" >MODULE&nbsp;M3ATTS</A>
+    </UL>
+    <P>
+
+
+<H2> Fortran Usage: </H2>
+
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    &lt;under construction&gt;
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    &lt;under construction&gt;
+    ...
+</PRE><P> 
+
+
+<HR>
+
+<A HREF = "INQATT3.html" >
+Previous:  <STRONG>INQATT3</STRONG>
+</A><P> 
+
+<A HREF = "WRATT3.html" >
+Next:  <STRONG>WRATT3 and WRATTC()</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#ioapi"> 
+Up: <STRONG>I/O API:  Public Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+

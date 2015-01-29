@@ -1,0 +1,114 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id$" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> DT2STR()  and  dt2strc() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1> DT2STR()     and  dt2strc() </H1>
+
+<H2> Fortran version: </H2>
+<PRE>
+    CHARACTER*24  DT2STR( JDATE, JTIME )
+        INTEGER, INTENT(IN   ) :: JDATE   ! date, YYYDDD = 1000*year  + day(1...365,6)
+        INTEGER, INTENT(IN   ) :: JTIME   ! time, HHMMSS = 10000*hour + 100*min + sec
+</PRE><P> 
+
+<H2> C version: </H2>
+<PRE>
+    void dt2strc( int  jdate , 
+                  int  jtime ,
+                  char buffer[ 25 ] )
+</PRE><P> 
+
+<H2> Summary: </H2>
+    Format and return the <A HREF = "DATETIME.html"> date and time </A> 
+    JDATE:JTIME as a character string &quot;HH:MM:SS Month DD, YYYY&quot;
+    <P> 
+
+    See also subroutines
+    <A HREF = "ISDSTIME.html"> ISDSTIME()</A>,
+    <A HREF = "JULIAN.html"> JULIAN()</A> ,
+    <A HREF = "DAYMON.html"> DAYMON()</A> , 
+    <A HREF = "WKDAY.html">  WKDAY()</A>  , 
+    <A HREF = "HHMMSS.html"> HHMMSS()</A> , and
+    <A HREF = "MMDDYY.html"> MMDDYY() </A>
+    as well as EDSS/ Models-3 date-time manipulation programs
+    <A HREF = "GREGDATE.html"> <STRONG>gregdate</STRONG></A> and
+    <A HREF = "JULDATE.html">  <STRONG> juldate</STRONG></A>.
+
+<P>         
+
+<H2> Preconditions: </H2>
+    <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
+    <P> 
+
+    JDATE:JTIME represents a <A HREF = "DATETIME.html"> date and time </A> 
+    according to Models-3 conventions.
+<PRE>
+    DATEs are   YYYYDDD = YEAR*1000  +  DAY
+    TIMEs are   HHMMSS  = HOUR*10000 +  MINS*100  +  SECS
+</PRE><P> 
+
+<H2> Fortran Usage: </H2>
+
+    For Fortran-90 declarations and interface checking:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
+<PRE>
+    ...
+    CHARACTER*24  DT2STR
+    ...
+    CHARACTER*24  BUFFER
+    ...
+    BUFFER = DT2STR( 1988060, 123456 )
+C	    ==&gt; BUFFER now holds &quot;12:34:45 March 1, 1988&quot;
+    ...
+    WRITE( *,* ) 'Date and time ', DT2STR( 1995001, 0 )
+C	    ==&gt; writes &quot;Date and time 00:00:00 Jan. 1, 1995&quot;
+    ...
+</PRE><P> 
+
+<H2> C Usage: </H2>
+<PRE>
+    ...
+    #include &quot;iodecl3.h&quot;
+    ...
+    char  buffer[ 25 ] ;
+    ...
+    dt2strc( 1995001, 10000, buffer ) ;
+    /*  buffer now holds &quot;1:00:00 Jan. 1, 1995&quot;
+    ...
+</PRE><P> 
+
+
+<HR> <!----------------------------------------------------------------->
+
+<A HREF = "DAYMON.html" >
+Previous:  <STRONG>DAYMON</STRONG>
+</A><P> 
+
+<A HREF = "GETDATE.html" >
+Next:  <STRONG>GETDATE</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+</BODY>
+</HTML>
+
