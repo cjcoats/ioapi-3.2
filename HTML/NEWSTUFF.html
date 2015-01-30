@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML> 
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 132 2015-01-26 19:18:10Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 143 2015-01-29 22:44:58Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> 
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 132 2015-01-26 19:18:10Z coats $
+    $Id: NEWSTUFF.html 143 2015-01-29 22:44:58Z coats $
     </EM>
     <HR>
 
@@ -537,8 +537,13 @@
         <LI>  Many <VAR>ioapi</VAR> routines and <VAR>m3tools</VAR> programs
               are now OpenMP parallel.
               <P>
-        <LI>  <A HREF="http://cfconventions.org/">CF geosapatial
-              metadata compliant</A> <VAR>ioapi</VAR> file-creation option.
+        <LI>  <A HREF="http://cfconventions.org/">CF-compliant
+              geosapatial metadata</A> <VAR>ioapi</VAR> file-creation
+              option, turned on by environment variable
+              <CODE>IOAPI_CFMETA</CODE>:<BR>
+              <BLOCKQUOTE>
+              <VAR>setenv IOAPI_CFMETA Y</VAR>
+              </BLOCKQUOTE>
               <P>
         <LI>  New <A HREF="MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>
               with all the coordinate-transform related routines and
@@ -590,14 +595,23 @@
                            <LI>  <CODE>ENDMTXATT()</CODE>
                        </UL>
                   <LI> <A HREF="http://cfconventions.org/">CF-convention</A>
-                       geospatial-metadata routines:
+                       geospatial-metadata routines make newly-created
+                       files CF compliant (hopefully, subject to further
+                       testing...):
                        <UL>
                            <LI>  <CODE>INITCF()</CODE>
                            <LI>  <CODE>SETCF()</CODE>
                            <LI>  <CODE>ENDCF()</CODE>
                        </UL>
-                  <LI> Place-holders for &quot;standard&quot; CMAQ and SMOKE metadata
-                       routines (what this metadata contains needs to be determined...)
+                  <LI> Place-holders for &quot;standard&quot; CMAQ and
+                       SMOKE metadata routines (what this metadata
+                       contains needs to be determined...), turned on
+                       by environment variables <CODE>IOAPI_CMAQMETA,
+                       IOAPI_SMOKEMETA</CODE>:<BR>
+                       <BLOCKQUOTE>
+                        <VAR>setenv IOAPI_CMAQMETA Y</VAR><BR>
+                        <VAR>setenv IOAPI_SMOKEMETA Y</VAR>
+                       </BLOCKQUOTE>
                        <UL>
                            <LI>  <CODE>INITCMAQ()</CODE>
                            <LI>  <CODE>GETCMAQ()</CODE>
@@ -648,13 +662,14 @@
                        </UL>
                   <LI>  Many source files have been converted to Fortran-90
                         &quot;free&quot; source format.
-                  <LI>  Rather than using a fail-immediately, make a best-effort
+                  <LI>  Rather than using a fail-immediately error
+                        management strategy, make a best-effort
                         attempt at fulfilling the run-specifications, while
                         logging errors as they occur and keeping track of final
                         error-status.
                   <LI>  Program <VAR>mtxcalc</VAR> adds option for
-                        output-scaling/units-conversion
-                        via new environment variable
+                        output-scaling/units-conversion (e.g.,
+                        Kg-to-Ton) via new environment variable
                         <CODE>SCALEFAC</CODE>.
                   <LI>  Program <VAR>presz</VAR> adds environment-variable
                         configuration option for its MM5-reference
@@ -662,9 +677,46 @@
                         temperature <CODE>TA</CODE> (<VAR>K</VAR>)
               </UL>
               <P>
+        <LI>  Updated and error-checked documentation (including docs
+              for all the &quot;new stuff&quot; above).
+              <P>
+        <LI>  All codes and HTML pages have Subversion IDs in their header
+              comments.<BR>
+              Use <VAR>ident</VAR> to see these IDs in object
+              (<VAR>.o</VAR>), library (<VAR>.a</VAR>) and executable
+              files.
+              <P>
+        <LI>  Default <VAR>Makefile</VAR> now builds for  <VAR>nocpl</VAR>.
+              <P>
     </UL>
     <P>
+    
+<H3><U>To-Do List:</U></H3>
 
+    <UL>
+        <LI> Define standard <VAR>CMAQ</VAR> and <VAR>SMOKE</VAR>
+             metadata and finish the relevant routines in 
+             <A HREF="M3ATTS.html"><CODE>MODULE&nbsp;M3ATTS<CODE></A>
+             accordingly.
+             <P>
+        <LI> Do overloaded <CODE>LL2LAM()</CODE> routines, to support
+             both single-precision and double-precision operation?
+             <P>
+        <LI> Python and Java APIs?
+             <P>
+        <LI> Parallel I/O?
+             <P>
+        <LI> Tension-spline interpolation module and tools-programs?
+             <P>
+        <LI> <VAR>m3tools</VAR> development&mdash;standardized,
+             overfloow-proof interfaces, free-format F90,
+             OpenMP-parallel where reasonable?
+             <P>
+        <LI> <VAR>Tutorial</VAR> development?&nbsp;&mdash;new stuff, best
+             practices...
+             <P>
+    </UL>
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -1759,12 +1811,13 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
     It turns out that the WMO has invented a &quot;standard&quot; that
     conflicts with ISO Standard 6709 (and centuries of common usage), by
-    which longitudes should be always positive, and North America has
-    longitude range something like +200 to +300. We have encountered
-    (obscure, hard-to-expect, hard-to-diagnose) problems dealing with
-    data following these conventions, and have therefore implemented
-    heuristics to deal with this in <CODE>m3tools</CODE> programs
-    <CODE>M3CPLE</CODE> <CODE>MTXCALC</CODE>.    
+    which&mdash;according to WMO&mdash;longitudes should be always
+    positive, and North America has longitude range something like +200
+    to +300. We have encountered (obscure, hard-to-expect,
+    hard-to-diagnose) problems dealing with data following these
+    conventions, and have therefore implemented heuristics to deal with
+    this in <CODE>m3tools</CODE> programs <CODE>M3CPLE</CODE>
+    <CODE>MTXCALC</CODE>.    
     <P>
     </BLOCKQUOTE>
     
@@ -5179,7 +5232,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 132 2015-01-26 19:18:10Z coats $
+    $Id: NEWSTUFF.html 143 2015-01-29 22:44:58Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

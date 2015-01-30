@@ -1,6 +1,6 @@
 
 !.........................................................................
-! Version "$Id: IODECL3.EXT 100 2015-01-16 16:52:16Z coats $"
+! Version "$Id: IODECL3.EXT 139 2015-01-28 18:13:59Z coats $"
 !    EDSS/Models-3 I/O API.
 !   Copyright (C) 1992-2002 MCNC,
 !   (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -90,7 +90,7 @@
         END INTERFACE
 
         INTERFACE           ! check file type and dimensions
-            LOGICAL FUNCTION FILCHK3( FNAME,
+            LOGICAL FUNCTION FILCHK3( FNAME,                                    &
      &                       FTYPE, NCOLS, NROWS, NLAYS, NTHIK )
                 CHARACTER*(*), INTENT(IN   ) :: FNAME   !  logical file name
                 INTEGER      , INTENT(IN   ) :: FTYPE   !  user's queried file type
@@ -110,7 +110,7 @@
         END INTERFACE
 
         INTERFACE           !    inquire attributes in M3 file
-            LOGICAL FUNCTION INQATT3( FNAME, VNAME, MXATTS,
+            LOGICAL FUNCTION INQATT3( FNAME, VNAME, MXATTS,                     &
      &                                NATTS, ANAMES, ATYPES, ASIZES )
                 CHARACTER*(*), INTENT(IN   ) :: FNAME             !  logical file name
                 CHARACTER*(*), INTENT(IN   ) :: VNAME             !  vble name, or ALLVARS3

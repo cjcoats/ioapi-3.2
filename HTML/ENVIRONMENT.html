@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVIRONMENT.html 137 2015-01-27 21:43:37Z coats $" -->
+<!-- "$Id: ENVIRONMENT.html 143 2015-01-29 22:44:58Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> Environment Variables for the I/O&nbsp;API </TITLE>
 </HEAD>
@@ -16,9 +16,17 @@
 
 <H2>Standard I/O&nbsp;API environment variables</H2>
 
-The following are standard environment variables supported or used
-by the I/O&nbsp;API.  These should be set using <VAR>setenv</VAR>,
-for example, if you are using <VAR>csh</VAR>).
+The following are standard environment variables supported or used by
+the I/O&nbsp;API.  These should be set using <VAR>setenv</VAR>, for
+example, if you are using <VAR>csh</VAR>). Note  that for environment
+variables with multi-word values (i.e., values containing blanks), you
+will need to quote the value in order for <VAR>setenv</VAR> to handle it
+correctly&mdash;for example:
+    <PRE>
+        setenv  EXECUTION_ID  'This run will pling the Inghams'
+        setenv  MYLIST        '1, 2, 3, 4, 5, 6, 7'
+    </PRE>
+
 <UL>
     <LI>  <STRONG>LOGFILE</STRONG>  is the physical pathname for
           the program log.   If this logical name is present, the
@@ -41,6 +49,12 @@ for example, if you are using <VAR>csh</VAR>).
           <A HREF = "INCLUDE.html#parms"> <CODE>MXDLIN3=80.</CODE></A>
           <P>
 
+    <LI>  <STRONG>GRIDDESC</STRONG> is the logical name for the ASCII
+          <A HREF = "GRIDS.html#horiz">horizontal coordinate and grid
+          description</A> files used by utility  routines
+          <A HREF = "DSCGRID.html"><CODE>DSCGRID()</CODE> and
+          <CODE>DSCOORD()</CODE>.</A>
+
     <LI>  <STRONG>EXECUTION_ID</STRONG> is provided for use in
           tracking the system ID of the current execution, and if
           present, it is  copied into the &quot;execution
@@ -51,25 +65,28 @@ for example, if you are using <VAR>csh</VAR>).
           <CODE>CMISS3=&quot;????????????????&quot;</CODE>
           <P>
 
-    <LI>  <STRONG>IOAPI_ISPH</STRONG>  tells the system to
-          use the default GRS 1980 geodetic spheroid:  see
-          <A HREF="MODGCTP.HTML">MODULE&nbsp;MONGCTP</A> and
-          <A HREF="SETSPHERE.HTML">SETSPHERE, INITSPHERES, and
-          SPHEREDAT</A>,  This environment variable is also used
-          by a number of <VAR>m3tools</VAR> programs.
+    <LI>  <STRONG>IOAPI_ISPH</STRONG> (<CODE>REAL*8</CODE> value) tells
+          the system which GCTP-sphere to use (the default is the GRS
+          1980 geodetic spheroid):  see <CODE>STDSPHERES</CODE>
+          and  <CODE>SPHERENAMES</CODE> in
+          <A HREF="MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>
+          and routines <A HREF="SETSPHERE.html"><CODE>SETSPHERE,
+          INITSPHERES,</CODE> and <CODE>SPHEREDAT</CODE></A>,  This
+          environment variable is also used by a number of
+          <VAR>m3tools</VAR> programs that call these routines.
           <P>
 
-    <LI>  <STRONG>IOAPI_CHECK_HEADERS</STRONG> controls whether
-          consistency and validity checks are turned on for files
-          being created (value begins with 'Y' or 'y'), or not.
-          The default value is 'N', indicating that the check will not
-          take place.
+    <LI>  <STRONG>IOAPI_CHECK_HEADERS</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>)
+          controls whether consistency and validity checks are
+          turned on for files being created (value begins with 'Y' or
+          'y'), or not. The default value is 'N', indicating that the
+          check will not take place.
           <P>
 
-    <LI>  <STRONG>IOAPI_OFFSET_64</STRONG> controls a netCDF limitation:
-          by default, netCDF cannot handle output time steps larger than
-          2 GB.  If this is turned on
-          (<CODE>setenv&nbsp;IOAPI_OFFSET_64&nbsp;YES</CODE>), then
+    <LI>  <STRONG>IOAPI_OFFSET_64</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>)
+          controls a netCDF limitation: by default, netCDF cannot
+          handle output time steps larger than 2 GB.  If this is turned
+          on (<CODE>setenv&nbsp;IOAPI_OFFSET_64&nbsp;YES</CODE>), then
           netCDF is told to create files that can have timesteps larger
           than 2 GB.   Note that <CODE>MXVARS3=2048</CODE> variables on
           a 100&times;100&times;25 grid (or 21 variables on a
@@ -84,58 +101,66 @@ for example, if you are using <VAR>csh</VAR>).
           compilers.
           <P>
 
-    <LI>  <STRONG>IOAPI_LOG_WRITE</STRONG> controls whether
-          a log message is written for each successful WRITE3()
-          operation (messages are always written for failures).
+    <LI>  <STRONG>IOAPI_LOG_WRITE</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>)
+          controls whether a log message is written for each successful
+          WRITE3() operation (messages are always written for failures).
           The default value is 'Y', indicating that the log messages
           will be generated.
           <P>
 
-    <LI>  <STRONG>IOAPI_KEEP_NSTEPS</STRONG> controls how
-          many time steps of data will be kept in active PVM
-          mailboxes for <A HREF="BUFFERED.html#pvm">I/O&nbsp;API
-          coupling-mode virtual files</A>, with a default value of 2.
+    <LI>  <STRONG>IOAPI_KEEP_NSTEPS</STRONG> (<CODE>INTEGER</CODE> value
+          with default 2) controls how many time steps of data will be
+          kept in active PVM mailboxes for
+          <A HREF="BUFFERED.html#pvm">I/O&nbsp;API coupling-mode virtual
+          files</A>
           <P>
 
-</UL>
-
-The following environment variable is used by grid-description and
-grid manipulation utility routines such as DSCGRID() and DSCOORD().
-<UL>
-    <LI>  <STRONG>GRIDDESC</STRONG> is the logical name for the ASCII
-          <A HREF = "GRIDS.html#horiz">horizontal coordinate and grid
-          description</A> files used by utility  routines
-          <A HREF = "DSCGRID.html"><CODE>DSCGRID()</CODE> and
-          <CODE>DSCOORD()</CODE>.</A>
-</UL>
-<P>
-
-The following environment variable controls whether
-routines <A HREF = "GETDBLE.html">GETDBLE()</A>,
-<A HREF = "GETMENU.html">GETMENU()</A>,
-<A HREF = "GETNUM.html">GETNUM()</A>,
-<A HREF = "GETREAL.html">GETREAL()</A>,
-<A HREF = "GETSTR.html">GETSTR()</A>,
-<A HREF = "GETYN.html">GETYN()</A>,
-<A HREF = "PROMPTFFILE.html">PROMPTFFILE()</A>, and
-<A HREF = "PROMPTMFILE.html">PROMPTMFILE()</A>, prompt the user for
-the value requested, or not.  Setting PROMPTFLAG to &quot;N&quot;
-can be used, in conjunction with the selection of &quot;smart&quot;
-defaults within programs, to make it easier to write scripts for
-running various programs.
-<UL>
-    <LI>  <STRONG>PROMPTFLAG</STRONG>
+    <LI>  <STRONG>PROMPTFLAG</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>,
+          with default <CODE>N</CODE>) controls whether
+          routines <A HREF = "GETDBLE.html">GETDBLE()</A>,
+          <A HREF = "GETMENU.html">GETMENU()</A>,
+          <A HREF = "GETNUM.html">GETNUM()</A>,
+          <A HREF = "GETREAL.html">GETREAL()</A>,
+          <A HREF = "GETSTR.html">GETSTR()</A>,
+          <A HREF = "GETYN.html">GETYN()</A>,
+          <A HREF = "PROMPTFFILE.html">PROMPTFFILE()</A>, and
+          <A HREF = "PROMPTMFILE.html">PROMPTMFILE()</A>, prompt the user for
+          the value requested, or not.  Setting PROMPTFLAG to &quot;N&quot;
+          can be used, in conjunction with the selection of &quot;smart&quot;
+          defaults within programs, to make it easier to write scripts for
+          running various programs.
+          <P>
 </UL>
 <P>
 
-<EM>Note</EM> that for environment variables with multi-word values
-(i.e., values containing blanks), you will need to quote the value
-in order for <VAR>setenv</VAR> to handle it correctly&mdash;for
-examaple:
-    <PRE>
-    setenv  EXECUTION_ID  'This run will pling the Inghams'
-    setenv  MYLIST        '1, 2, 3, 4, 5, 6, 7'
-    </PRE>
+The following environment variables are for <STRONG>I/O&nbsp;API-3.2 or
+later only</STRONG>:
+<UL>
+
+    <LI>  <STRONG>IOAPI_CFMETA</STRONG>
+          controls whether CF compliant metadata will be written
+          to the headers of newly-created files.
+          <P>
+
+    <LI>  <STRONG>IOAPI_CMAQMETA</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>,
+          with default <CODE>N</CODE>)
+          controls whether CF compliant metadata will be written
+          to the headers of newly-created files.
+          <P>
+
+    <LI>  <STRONG>IOAPI_CMAQMETA</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>,
+          with default <CODE>N</CODE>)
+          controls whether CMAQ-standard metadata will be written
+          to the headers of newly-created files.
+          <P>
+
+    <LI>  <STRONG>IOAPI_SMOKEMETA</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>,
+          with default <CODE>N</CODE>)
+          controls whether SMOKE-standard metadata will be written
+          to the headers of newly-created files.
+          <P>
+</UL>
+<P>
 
 <H2>OpenMP Parallel Control</H2>
 
@@ -153,12 +178,12 @@ Sept.&nbsp;12, 2014.
 
 <H2>I/O&nbsp;API Environment-Variable Routines</H2>
 
-For single-valued environment variables of various types. <A HREF =
-"ENVDBLE.html"><CODE>ENVDBLE()</CODE></A> ,  <A HREF =
-"ENVINT.html"><CODE>ENVINT()</CODE></A> ,  <A HREF =
-"ENVREAL.html"><CODE>ENVREAL()</CODE></A> ,  <A HREF =
-"ENVSTR.html"><CODE>ENVSTR()</CODE></A>, and <A HREF =
-"ENVYN.html"><CODE>ENVYN()</CODE></A> can be used from programs to find
+For single-valued environment variables of various types.
+<A HREF = "ENVDBLE.html"><CODE>ENVDBLE()</CODE></A>,
+<A HREF = "ENVINT.html"><CODE>ENVINT()</CODE></A>,
+<A HREF = "ENVREAL.html"><CODE>ENVREAL()</CODE></A> ,
+<A HREF = "ENVSTR.html"><CODE>ENVSTR()</CODE></A>,
+and <A HREF = "ENVYN.html"><CODE>ENVYN()</CODE></A> can be used from programs to find
 values of types <CODE>DOUBLE PRECISION, INTEGER, REAL, CHARACTER</CODE>
 string, or <CODE>LOGICAL</CODE>; <A HREF = "ENVGETS.html"><CODE>ENVGET()</CODE></A>
 is a generic routine for single-value environment variables of any of these types.
