@@ -2,7 +2,7 @@
 PROGRAM M3TOTXT
 
     !!***************************************************************
-    !!  Version "$Id: m3totxt.f90 101 2015-01-16 16:52:50Z coats $"
+    !!  Version "$Id: m3totxt.f90 145 2015-02-02 16:59:34Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
     !!   (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -121,7 +121,7 @@ PROGRAM M3TOTXT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3totxt.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: m3totxt.f90 145 2015-02-02 16:59:34Z coats $',&
 ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -244,7 +244,7 @@ PROGRAM M3TOTXT
     DO V = 1, NVARS
 
         IF ( NVARS .GT. 1 )  WRITE( RDEV, '( 1X, A )' ) BAR
-        WRITE( RDEV, '( /, 5X, 3 A, /, 5X, A, / )' )    &
+        WRITE( RDEV, '( /, 5X, 5 A, /, 5X, A, / )' )    &
             'Variable "', TRIM( VNAMES( V ) ), '" (',   &
             TRIM( VUNITS( V ) ), ')', TRIM( VDESCS( V ) )
 

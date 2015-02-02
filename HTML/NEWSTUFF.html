@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML> 
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 143 2015-01-29 22:44:58Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 146 2015-02-02 17:04:47Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> 
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 143 2015-01-29 22:44:58Z coats $
+    $Id: NEWSTUFF.html 146 2015-02-02 17:04:47Z coats $
     </EM>
     <HR>
 
@@ -485,8 +485,15 @@
     <P>
     Version&nbsp;3.2 of the I/O&nbsp;API library code is
     <A HREF = "../download/ioapi-3.2.tar.gz">available here for download</A>
-    in source code form.
-    <P>
+    in <VAR>gzip</VAR>ped-<VAR>tar</VAR> source code form from the CMAS Center
+    web-site, or is available on GitHub from
+    <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
+    To install a distribution-copy from GitHub, go to the directory under
+    which do the installation, and then do the command
+    <PRE>
+    git clone https://github.com/cjcoats/ioapi-3.2
+    </PRE>
+
     Note that some minor changes in calling code are required (mostly in
     <CODE>USE</CODE> statements, generally because of new
     <CODE>INTERFACE</CODE>s, or interfaces that moved from
@@ -571,9 +578,9 @@
                   <LI>  <CODE>GTPZ0()</CODE>-argument initialization procedure
                         <CODE>M3TOGTPZ()</CODE>
                   <LI>  Scattered-point-array generic coordinate-transform
-                        procedure<CODE>XY2XY()</CODE>
+                        procedure <CODE>XY2XY()</CODE>
                   <LI>  Grid-node-array generic coordinate-transform
-                        procedure <CODE>GRID2XY()<CODE>
+                        procedure <CODE>GRID2XY()</CODE>
                   <LI>  High-performance OpenMP-Parallel generic bilinear
                         interpolation package <CODE>GRID2INDX(), PNTS2INDX(),
                         INDXMULT()</CODE>
@@ -626,9 +633,14 @@
               <P>
         <LI>  Updates to <VAR>m3tools</VAR> programs:
               <UL>
-                  <LI> New programs <A HREF="DAYAGG.html"><VAR>dayagg</VAR></A>,
-                       <A HREF="VERTINTEGRAL.html"><VAR>vertintegral</VAR></A>
-                  <LI> These programs <CODE>USE&nbsp;M3ATTS</CODE> for matrix-file attributes:
+                  <LI> New programs:
+                       <UL>
+                           <LI>  <A HREF="DAYAGG.html"><VAR>dayagg</VAR></A>,
+                           <LI>  <A HREF="M3PROBE.html"><VAR>m3probe</VAR></A>,
+                           <LI>  <A HREF="M3TOTXT.html"><VAR>m3totxt</VAR></A>, and
+                           <LI>  <A HREF="VERTINTEGRAL.html"><VAR>vertintegral</VAR></A>.
+                       </UL>
+                  <LI> These programs now <CODE>USE&nbsp;M3ATTS</CODE> for matrix-file attributes:
                        <UL>
                            <LI>  <VAR>mtxbuild</VAR>
                            <LI>  <VAR>mtxcalc</VAR>
@@ -643,7 +655,7 @@
                            <LI>  <VAR>mtxcalc</VAR>
                            <LI>  <VAR>projtool</VAR>
                        </UL>
-                  <LI> These programs are OpenMP parallel:
+                  <LI> These programs are now OpenMP parallel:
                        <UL>
                            <LI>  <VAR>bcwndw</VAR>
                            <LI>  <VAR>dayagg</VAR>
@@ -5232,7 +5244,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 143 2015-01-29 22:44:58Z coats $
+    $Id: NEWSTUFF.html 146 2015-02-02 17:04:47Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

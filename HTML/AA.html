@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 120 2015-01-20 22:24:03Z coats $" -->
+<!-- "$Id: AA.html 146 2015-02-02 17:04:47Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -1011,9 +1011,20 @@ Changes from I/O&nbsp;API Version&nbsp;1
     analysis and data manipulation tasks on I/O&nbsp;API files. The
     source code for these programs is available <A HREF =
     "gpl.txt">under the GNU GPL License, Version 2</A>, and can be
-    downloaded as part of the I/O API tar-ball <A HREF =
-    "AVAIL.html">from this page</A>.
+    downloaded as part of the I/O API tar-ball from
+    <A HREF = "AVAIL.html">from this page</A>.
     <P>
+
+    With the exception of programs designed specifically for
+    manipulating dates and times in scripts (<VAR>greg2jul, jul2greg,
+    juldiff, julshift, timeshift</VAR>), these programs begin by
+    displaying a &quot;splash screen&quot; displaying the name, usage,
+    and version for the program, and then promt the user for the
+    sepcifications for the program-run.  Most of these prompts have
+    default values computed from the metadata in input-file headers;
+    defaults may be accepted by hitting the <CODE>RETURN</CODE> key.
+    <P>
+
     <BLOCKQUOTE><DL>
         <DT> <A HREF = "SAMPLE.html" >
              <STRONG>Some Sample Programs</STRONG></A> (together with their source
@@ -1100,10 +1111,22 @@ Changes from I/O&nbsp;API Version&nbsp;1
              build ASCII file of paired values for two variables from
              two files, within a user-selected window into the grid,
              according to user specifications,
+        <DT> <A HREF = "M3PROBE.html" >
+             <STRONG>m3probe</STRONG>:
+             </A>
+             build ASCII time series file for a selected set of points
+             for a selected variable from a GRIDDED, BOUNDARY, or CUSTOM
+             file.
         <DT> <A HREF = "M3STAT.html" >
              <STRONG>m3stat</STRONG>:
              </A>
              compute statistics for variables in a file
+        <DT> <A HREF = "M3TOTXT.html" >
+             <STRONG>m3totxt</STRONG>:
+             </A>
+             Extract selected variables for a specified
+             window and time period into a GRIDDED M3IO file
+             and write to an ASCII report file.
         <DT> <A HREF = "M3TPROC.html" >
              <STRONG>m3tproc</STRONG>:
              </A>
@@ -1367,7 +1390,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 120 2015-01-20 22:24:03Z coats $
+    $Id: AA.html 146 2015-02-02 17:04:47Z coats $
     </PRE>
 
 </BODY>

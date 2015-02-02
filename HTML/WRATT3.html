@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: WRATT3.html 120 2015-01-20 22:24:03Z coats $" -->
+<!-- "$Id: WRATT3.html 144 2015-01-31 15:50:42Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> WRATT3() and WRATTC() </TITLE>
 </HEAD>
@@ -56,16 +56,22 @@
     a log message indicating the nature of the failure.
     <P>
 
+    For Fortran-90 declarations:    
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE><P>
+
 
 <H2> Preconditions: </H2>
 
-    <A HREF = "INCLUDE.html#iodecl"> 
-    <CODE>INCLUDE&nbsp;'IODECL3.EXT'</CODE> </A> for Fortran, or 
+    <A HREF = "M3UTIOLIO.html"> <CODE>USE&nbsp;M3UTILIO</CODE></A>
+    or <A HREF = "INCLUDE.html#iodecl"><CODE>INCLUDE&nbsp;'IODECL3.EXT'</CODE></A>
+    for Fortran, or 
     <CODE>#include&nbsp;&quot;iodecl3.h&quot;</CODE> and 
     <CODE>#include&nbsp;&quot;fdesc3.h&quot;</CODE> for C.
     <P> 
 
-    I/O API must already be initialized by a call to
+    I/O&nbsp;API must already be initialized by a call to
     <A HREF = "INIT3.html"><CODE>INIT3()</CODE></A>.
     <P> 
     

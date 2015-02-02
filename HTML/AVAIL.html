@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 132 2015-01-26 19:18:10Z coats $" -->
+<!-- "$Id: AVAIL.html 144 2015-01-31 15:50:42Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -562,9 +562,17 @@ m3stat:
 <H3> <A NAME="v32">I/O&nbsp;API Version&nbsp;3.2-<VAR>beta</VAR> Availability</A></H3>
 
     <A HREF="NEWSTUFF.html#jan2015">NOTE, January 15, 2015:</A>
-    Version&nbsp;3.2-<VAR>beta</VAR> of the I/O&nbsp;API library source code is
-    <A HREF = "../../../download/ioapi-3.2.tar.gz">available here for download</A>
-    in <VAR>tar-gzip</VAR>ped form.
+    Version&nbsp;3.2-<VAR>beta</VAR> of the I/O&nbsp;API library source
+    code is available from the CMASA Center web site for download in
+    <VAR>tar-gzip</VAR>ped form
+    <A HREF = "../../../download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
+    or is available on GitHub from 
+    <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;<VAR></A>.
+    To install it from GitHub, go to the directory under which do the
+    installation, and then do the command
+    <PRE>
+    git clone https://github.com/cjcoats/ioapi-3.2
+    </PRE>
     <P>
 
     Due to <CODE>INTERFACE</CODE> changes in
@@ -573,7 +581,7 @@ m3stat:
     <CODE>MODULE&nbsp;M3ATTS</CODE> (which replaces
     <CODE>MODULE&nbsp;MATXATTS</CODE>), there will be minor source-code
     changes in programs that use it; re-compilation and re-linking will
-    be required.
+    be required:  see <A HREF="NEWSTUFF.html#ver32">here for more details.</A>
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -1193,7 +1201,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 132 2015-01-26 19:18:10Z coats $
+    $Id: AVAIL.html 144 2015-01-31 15:50:42Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

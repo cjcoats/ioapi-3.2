@@ -1,0 +1,198 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: M3PROBE.html 144 2015-01-31 15:50:42Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program M3PROBE </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program M3PROBE </H1>
+
+<H2> Summary </H2>
+
+    The <VAR>m3probe</VAR> program <STRONG>writes contents of a
+    specified 1-layer window into a GRIDDED M3IO file for specified
+    variables for a specified time period to a (human-readable)
+    formatted-ASCII REPORT-file.</STRONG>
+
+    Source code for program <CODE>m3probe</CODE> is available
+    <A HREF = "gpl.txt">under the GNU GPL License, Version 2</A>,
+    and can be downloaded as part of the I/O&nbsp;API distribution tar-ball 
+    <A HREF = "AVAIL.html">from this page</A>.
+
+<H2> Usage </H2>
+
+<PRE>
+    setenv  INFILE    &lt;path name&gt;
+    setenv  REPORT;   &lt;path name&gt;
+    setenv  VARLIST   &lt;comma-list of variable names&gt;
+    m3totxt [and answer the prompts]
+</PRE>
+    where  <VAR>INFILE</VAR> is the <A HREF = "LOGICALS.html"> logical
+    name </A>  of the input file, and <VAR>REPORT</VAR> is the logical
+    name of the  report file to which the ASCII report is printed.  
+    <STRONG>The program will prompt you</STRONG> for  the starting and
+    ending date time and the time step for the report period, the  layer
+    and the starting and ending columns and rows for the window to be
+    extracted.  Default values for the time period are computed from the
+    metadata in the <VAR>INFILE</VAR> header, and may be accepted by
+    hitting the <CODE>RETURN</CODE> key.
+    <P> 
+
+    If you want to run this program in <STRONG>batch mode</STRONG> 
+    (from a script), the recommended way to develop the script is to 
+    run the program once interactively noting the pattern of responses 
+    to prompts which generate the particular analysis you want.  The 
+    pattern of responses then becomes either a command-input file which 
+    is redirected into the program in the script, or becomes a 
+    &quot;here-document&quot; fed into the execution.
+    <P>
+<PRE>
+    ...
+    setenv INFILE ${data}/MET_CRO_2D.MICHIE_900.1979002.ncf 
+    setenv REPORT ${data}/MET_CRO_2D.MICHIE_900.1979002.txt
+    setenv VARLIST "TA2,QV2"
+    set    UI  = /tmp/m3totxt.$$
+
+    echo "Yes           " >&! ${UI}     #  Yes, continue with program
+    echo "1979003       " >>  ${UI}     #  starting date for run
+    echo "120000        " >>  ${UI}     #  starting time
+    echo "              " >>  ${UI}     #  default time step
+    echo "1979003       " >>  ${UI}     #  ending date
+    echo "15000         " >>  ${UI}     #  ending time
+    echo "6             " >>  ${UI}     #  starting col
+    echo "12            " >>  ${UI}     #  ending   col
+    echo "11            " >>  ${UI}     #  starting row
+    echo "15            " >>  ${UI}     #  ending   row
+    echo "1             " >>  ${UI}     #  layer
+    
+    m3probe < ${UI}
+    set foo = ${status}
+    if ( ${foo} != 0 )  then
+        rm ${UI}
+        echo "### ERROR ${foo} in program M3PROBE"
+    endif
+    exit ( ${foo} )
+</PRE>
+The output-file for this two-variable/three-hour run looks like the
+following:
+<PRE>
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-         
+
+     Variable "TA2" (K)
+     2 meter air temperature
+
+     Variable "TA2"  Date&Time    1979003:120000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         2.6416599E+02  2.6419287E+02  2.6422000E+02  2.6424728E+02  2.6427545E+02  2.6430389E+02  2.6433243E+02
+    12         2.6415234E+02  2.6417877E+02  2.6420538E+02  2.6423215E+02  2.6425912E+02  2.6428629E+02  2.6431363E+02
+    13         2.6413852E+02  2.6416446E+02  2.6419061E+02  2.6421689E+02  2.6424338E+02  2.6427005E+02  2.6429691E+02
+    14         2.6412451E+02  2.6414996E+02  2.6417563E+02  2.6420145E+02  2.6422742E+02  2.6425363E+02  2.6428000E+02
+    15         2.6411032E+02  2.6413531E+02  2.6416043E+02  2.6418579E+02  2.6421133E+02  2.6423700E+02  2.6426294E+02
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+     Variable "TA2"  Date&Time    1979003:130000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         2.6461111E+02  2.6463654E+02  2.6466220E+02  2.6468808E+02  2.6471481E+02  2.6474173E+02  2.6476883E+02
+    12         2.6459622E+02  2.6462109E+02  2.6464615E+02  2.6467145E+02  2.6469699E+02  2.6472275E+02  2.6474869E+02
+    13         2.6458112E+02  2.6460541E+02  2.6462991E+02  2.6465463E+02  2.6467957E+02  2.6470474E+02  2.6473013E+02
+    14         2.6456583E+02  2.6458954E+02  2.6461346E+02  2.6463760E+02  2.6466196E+02  2.6468655E+02  2.6471133E+02
+    15         2.6455029E+02  2.6457343E+02  2.6459674E+02  2.6462030E+02  2.6464410E+02  2.6466809E+02  2.6469232E+02
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+     Variable "TA2"  Date&Time    1979003:140000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         2.6506168E+02  2.6508414E+02  2.6510684E+02  2.6512973E+02  2.6515341E+02  2.6517734E+02  2.6520142E+02
+    12         2.6504510E+02  2.6506708E+02  2.6508923E+02  2.6511157E+02  2.6513412E+02  2.6515692E+02  2.6517987E+02
+    13         2.6502835E+02  2.6504977E+02  2.6507141E+02  2.6509320E+02  2.6511523E+02  2.6513748E+02  2.6515991E+02
+    14         2.6501138E+02  2.6503229E+02  2.6505338E+02  2.6507468E+02  2.6509613E+02  2.6511786E+02  2.6513977E+02
+    15         2.6499423E+02  2.6501459E+02  2.6503516E+02  2.6505591E+02  2.6507687E+02  2.6509802E+02  2.6511942E+02
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+     Variable "TA2"  Date&Time    1979003:150000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         2.6551437E+02  2.6553470E+02  2.6555524E+02  2.6557599E+02  2.6559735E+02  2.6561896E+02  2.6564078E+02
+    12         2.6549612E+02  2.6551593E+02  2.6553592E+02  2.6555612E+02  2.6557654E+02  2.6559717E+02  2.6561798E+02
+    13         2.6547766E+02  2.6549692E+02  2.6551642E+02  2.6553607E+02  2.6555594E+02  2.6557602E+02  2.6559631E+02
+    14         2.6545898E+02  2.6547775E+02  2.6549670E+02  2.6551581E+02  2.6553516E+02  2.6555472E+02  2.6557446E+02
+    15         2.6544016E+02  2.6545834E+02  2.6547675E+02  2.6549536E+02  2.6551416E+02  2.6553317E+02  2.6555243E+02
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-         
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-         
+
+     Variable "QV2" (g-H2O/g-air)
+     2 meter water vapor mixing ratio
+
+     Variable "QV2"  Date&Time    1979003:120000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         9.0335793E-04  9.0465182E-04  9.0595899E-04  9.0727885E-04  9.0861548E-04  9.0997026E-04  9.1134175E-04
+    12         9.0158090E-04  9.0284192E-04  9.0411596E-04  9.0540177E-04  9.0670108E-04  9.0801343E-04  9.0933766E-04
+    13         8.9978991E-04  9.0101844E-04  9.0225961E-04  9.0351322E-04  9.0477912E-04  9.0605789E-04  9.0734969E-04
+    14         8.9798809E-04  8.9918368E-04  9.0039161E-04  9.0161193E-04  9.0284512E-04  9.0409146E-04  9.0534950E-04
+    15         8.9617301E-04  8.9733541E-04  8.9851022E-04  8.9969853E-04  9.0089929E-04  9.0211187E-04  9.0333773E-04
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+     Variable "QV2"  Date&Time    1979003:130000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         8.8590092E-04  8.8698108E-04  8.8807440E-04  8.8918052E-04  8.9031644E-04  8.9147128E-04  8.9264289E-04
+    12         8.8421564E-04  8.8526297E-04  8.8632305E-04  8.8739523E-04  8.8848069E-04  8.8957918E-04  8.9068961E-04
+    13         8.8251673E-04  8.8353135E-04  8.8455848E-04  8.8559848E-04  8.8665041E-04  8.8771543E-04  8.8879326E-04
+    14         8.8080659E-04  8.8178832E-04  8.8278233E-04  8.8378886E-04  8.8480825E-04  8.8584062E-04  8.8688493E-04
+    15         8.7908329E-04  8.8003185E-04  8.8099285E-04  8.8196713E-04  8.8295399E-04  8.8395283E-04  8.8496465E-04
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+     Variable "QV2"  Date&Time    1979003:140000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         8.6815807E-04  8.6901995E-04  8.6989469E-04  8.7078242E-04  8.7171310E-04  8.7266340E-04  8.7363040E-04
+    12         8.6658983E-04  8.6741871E-04  8.6826045E-04  8.6911430E-04  8.6998130E-04  8.7086123E-04  8.7175326E-04
+    13         8.6500810E-04  8.6580432E-04  8.6661294E-04  8.6743454E-04  8.6826808E-04  8.6911459E-04  8.6997391E-04
+    14         8.6341513E-04  8.6417829E-04  8.6495385E-04  8.6574187E-04  8.6654286E-04  8.6735660E-04  8.6818257E-04
+    15         8.6180889E-04  8.6253893E-04  8.6328143E-04  8.6403725E-04  8.6480548E-04  8.6558593E-04  8.6637912E-04
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+     Variable "QV2"  Date&Time    1979003:150000
+ ROW\COL:         6              7              8              9             10             11             12
+    11         8.5060112E-04  8.5124921E-04  8.5191015E-04  8.5258402E-04  8.5331418E-04  8.5406442E-04  8.5483148E-04
+    12         8.4912468E-04  8.4973988E-04  8.5036765E-04  8.5100764E-04  8.5166097E-04  8.5232698E-04  8.5300516E-04
+    13         8.4763486E-04  8.4821717E-04  8.4881193E-04  8.4941968E-04  8.5003930E-04  8.5067208E-04  8.5131748E-04
+    14         8.4613363E-04  8.4668293E-04  8.4724452E-04  8.4781868E-04  8.4840588E-04  8.4900577E-04  8.4961788E-04
+    15         8.4461918E-04  8.4513542E-04  8.4566395E-04  8.4620580E-04  8.4676017E-04  8.4732677E-04  8.4790617E-04
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-   
+</PRE>
+
+
+<HR>
+
+<A HREF = "
+        For what fraction of the grid does OZONE in this file 
+        exceed 0.120?
+        </EM>" >
+Previous:  <STRONG>M3STAT</STRONG>
+</A><P> 
+
+<A HREF = "M3TPROC.html" >
+Next:  <STRONG>M3TPROC</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+
