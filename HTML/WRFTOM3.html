@@ -1,0 +1,76 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: CAMXTOM3.html 117 2015-01-19 16:50:41Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE> Program camxtom3 </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+<H1>    Program <VAR>wrftom3</VAR> </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  GRIDDESC    &lt;path name&gt;
+    setenv  OUTGRID     &lt;GRIDDESC-name for the output-grid&gt;
+    setenv  WRFFILE     &lt;path name&gt;
+    setenv  OUTFILE     &lt;path name&gt;
+    setenv  CONFIG      &lt;path name&gt;
+
+    wrftom3 <EM>&lt;and respond to the prompts&gt;</EM>
+</PRE>
+<P>
+
+<H2> Summary </H2>
+
+    Program <VAR>wrftom3</VAR> will read and optionally window a set of
+    variables from a <VAR>WRF</VAR> netCDF file, and write the results 
+    to an I/O&nbsp;API file, as specified by the ASCII configuration-file
+    <CODE>${CONFIG}</CODE>:
+    <DL>
+        <DT><CODE>${CONFIG}</CODE> is list-formatted (names are quoted strings),
+        with one variable per line, for the variables to be
+        extracted/windowed.  Each line has two fields as follows:
+        <PRE>
+        &lt;(input) WRF name&gt;   &lt;(output) M3IO name&gt;
+        </PRE>
+        <DT>WRF names have length at most 32; M3IO names have length at most 16.
+        <DT>All variables listed in a single ${CONFIG} have the same
+        &quot;stagger&quot; and vertical structure.
+        <DT>All variables listed in a single ${CONFIG} must be of type
+        <CODE>DOUBLE&nsp;PRECISION, REAL,</CODE> or <CODE>INTEGER</CODE>.
+    </DL>
+    <P>
+    Use <CODE>${OUTGRID} = &quot;&nbsp;&quot;</CODE> (i.e., <CODE>BLANK</CODE>)
+    to use the native WRF grid as the output grid.
+    <P>
+    <STRONG>The program will prompt you</STRONG> for starting date time,
+    time step, and number of time steps to process.
+    <P>
+
+<HR>  <!------------------------------ --------------------------------->
+
+<A HREF = "WRFGRIDDESC.html" >
+Previous:  <STRONG>WRFGRIDDESC</STRONG>
+</A><P>
+
+<A HREF = "LATLON.html" >
+Next:  <STRONG>LATLON</STRONG>
+</A><P>
+
+<A HREF = "AA.html#tools">
+Up: <STRONG>Related Programs</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
+</A><P>
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,3636 @@
+
+MODULE MODATTS3
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !! Version "$Id: modatts3.F90 266 2015-11-20 16:59:47Z coats $"
+    !! Copyright (c) 2014-2015 UNC Institute for the Environment
+    !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
+    !! See file "LGPL.txt" for conditions of use.
+    !!...................................................................
+    !!  DESCRIPTION:
+    !!      Extra-attribute routines and data structures for
+    !!      coordinate-transform matrices, extra CMAQ metadata, and 
+    !!      extra SMOKE metadata.
+    !!
+    !!  DO NOT EDIT !!!!
+    !!
+    !!        The EDSS/Models-3 I/O API depends in an essential manner
+    !!        upon the contents of this MODULE file.  ANY CHANGES are
+    !!        likely to result in very obscure, difficult-to-diagnose
+    !!        bugs caused by an inconsistency between standard "libioapi.a"
+    !!        object-libraries and whatever code is compiled with the
+    !!        resulting modified MODULE-file.
+    !!
+    !!        By making any changes to this MODULE file, the user
+    !!        explicitly agrees that in the case any assistance is
+    !!        required of MCNC or of the I/O API author, Carlie J. Coats, Jr.
+    !!        THE USER AND/OR HIS PROJECT OR CONTRACT AGREES TO REIMBURSE
+    !!        UNC AND/OR THE I/O API AUTHOR, CARLIE J. COATS, JR., AT A
+    !!        RATE TRIPLE THE NORMAL CONTRACT RATE FOR THE SERVICES
+    !!        REQUIRED.
+    !!
+    !!  PRECONDITIONS:
+    !!      Use these routines after calling INIT3() and before
+    !!      calling OPEN3() on files to contain these extra attributes
+    !!
+    !!  REVISION  HISTORY:
+    !!      Adapted 12/2014 by Carlie J. Coats, Jr., from I/O API 3.1
+    !!      "matxatts.f" and other sources.
+    !!
+    !!      Modified 10/2015 by CJC for I/O API 3.2: use NF_*()
+    !!      instead of NC*(), for netCDF-Fortran 4.x compatibility;
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+    USE M3UTILIO
+    USE MODNCFIO
+
+    IMPLICIT NONE
+
+    !!........  PUBLIC Routines:
+
+    PUBLIC  CMETA_T, SMETA_T,  INITCF, SETCF, ENDCF,                    &
+            INITMTXATT, GETMTXATT, SETMTXATT, CHKMTXATT, ENDMTXATT,     &
+            INITCMAQ,    GETCMAQ,   LOGCMAQ,  SETCMAQ,   ENDCMAQ,       &
+            INITSMOKE,   GETSMOKE,  SETSMOKE,  ENDSMOKE
+
+
+    !!........  Flags for "this type of metadata is active"
+
+    LOGICAL, PUBLIC, PROTECTED, SAVE :: MATXMETA  = .FALSE.
+    LOGICAL, PUBLIC, PROTECTED, SAVE :: CMAQMETA  = .FALSE.
+    LOGICAL, PUBLIC, PROTECTED, SAVE :: SMOKEMETA = .FALSE.
+    LOGICAL, PUBLIC, PROTECTED, SAVE :: CFMETA    = .FALSE.
+    
+
+    !!........  Derived types for standard CMAQ, SMOKE metadata
+
+    TYPE CMETA_T
+        INTEGER :: VERSION
+    END TYPE CMETA_T
+
+    TYPE SMETA_T
+        INTEGER :: VERSION
+    END TYPE SMETA_T
+
+
+    !!........  Contents of current  standard CMAQ, SMOKE metadata
+
+    TYPE( CMETA_T ), PUBLIC, PROTECTED, SAVE ::  CMAQ_MDATA
+    TYPE( SMETA_T ), PUBLIC, PROTECTED, SAVE :: SMOKE_MDATA
+
+    INTEGER, PUBLIC, PARAMETER ::  INGRD3  = 1  !! this is an  input grid-spec for mtx metadata
+    INTEGER, PUBLIC, PARAMETER ::  OUTGRD3 = 2  !! this is an output-grid...
+
+
+    !!........  INTERFACE blocks for generic routines:
+
+    INTERFACE GETMTXATT
+        MODULE PROCEDURE  GETMTXATT1, GETMTXATT2
+    END INTERFACE
+
+    INTERFACE SETMTXATT
+        MODULE PROCEDURE  SETMTXATT1, SETMTXATT2, SETMTXATT3
+    END INTERFACE
+
+    INTERFACE CHKMTXATT
+        MODULE PROCEDURE  CHKMTXATT1, CHKMTXATT2, CHKMTXATT3
+    END INTERFACE
+
+    INTERFACE INITCMAQ
+        MODULE PROCEDURE  INITCMAQA, INITCMAQT
+    END INTERFACE
+
+    INTERFACE INITSMOKE
+        MODULE PROCEDURE  INITSMOKEA, INITSMOKET
+    END INTERFACE
+
+    INTERFACE GETCMAQ
+        MODULE PROCEDURE  GETCMAQT, GETCMAQF
+    END INTERFACE
+
+    INTERFACE GETSMOKE
+        MODULE PROCEDURE  GETSMOKET, GETSMOKEF
+    END INTERFACE
+
+    INTERFACE LOGCMAQ
+        MODULE PROCEDURE  LOGCMAQ1, LOGCMAQF, LOGCMAQM, LOGCMAQFM
+    END INTERFACE
+
+    INTERFACE SETCF
+        MODULE PROCEDURE  SETCFF, SETCF1
+    END INTERFACE
+
+    INTERFACE SETCMAQ
+        MODULE PROCEDURE  SETCMAQT, SETCMAQC, SETCMAQ1
+    END INTERFACE
+
+    INTERFACE SETSMOKE
+        MODULE PROCEDURE  SETSMOKEA, SETSMOKEC, SETSMOKE1
+    END INTERFACE
+
+
+    PRIVATE     !!  everything else
+
+
+    !!........  EXTERNAL FUNCTION:  logical name to I/O API file-ID
+
+    INTEGER, EXTERNAL :: NAME2FID
+
+    !!........  PRIVATE PARAMETERs
+
+    CHARACTER(LEN=5), PARAMETER :: GDNAMSTR = 'GDNAM'
+    CHARACTER(LEN=5), PARAMETER :: GDTYPSTR = 'GDTYP'
+    CHARACTER(LEN=5), PARAMETER :: P_ALPSTR = 'P_ALP'
+    CHARACTER(LEN=5), PARAMETER :: P_BETSTR = 'P_BET'
+    CHARACTER(LEN=5), PARAMETER :: P_GAMSTR = 'P_GAM'
+    CHARACTER(LEN=5), PARAMETER :: XCENTSTR = 'XCENT'
+    CHARACTER(LEN=5), PARAMETER :: YCENTSTR = 'YCENT'
+    CHARACTER(LEN=5), PARAMETER :: XORIGSTR = 'XORIG'
+    CHARACTER(LEN=5), PARAMETER :: YORIGSTR = 'YORIG'
+    CHARACTER(LEN=5), PARAMETER :: XCELLSTR = 'XCELL'
+    CHARACTER(LEN=5), PARAMETER :: YCELLSTR = 'YCELL'
+    CHARACTER(LEN=5), PARAMETER :: NCOLSSTR = 'NCOLS'
+    CHARACTER(LEN=5), PARAMETER :: NROWSSTR = 'NROWS'
+
+    CHARACTER(LEN=4), PARAMETER :: MODENAME( 2 ) = (/ '_IN ' , '_OUT' /)
+
+    !!.......   LOCAL VARIABLES and their descriptions:
+    !!.......   state variables for the extra-attributes module
+    !!.......   First:  matrix attributes and att-name tables
+
+    CHARACTER(NAMLEN3), SAVE :: GDNAM_IN, GDNAM_OUT
+
+    REAL*8 , SAVE :: P_ALP_IN = BADVAL3     !! first, second, third map
+    REAL*8 , SAVE :: P_BET_IN = BADVAL3     !! projection descriptive
+    REAL*8 , SAVE :: P_GAM_IN = BADVAL3     !! parameters.
+    REAL*8 , SAVE :: XCENT_IN = BADVAL3     !! lon for coord-system X=0
+    REAL*8 , SAVE :: YCENT_IN = BADVAL3     !! lat for coord-system Y=0
+    REAL*8 , SAVE :: XORIG_IN = BADVAL3     !! X-coordinate origin of grid (map units)
+    REAL*8 , SAVE :: YORIG_IN = BADVAL3     !! Y-coordinate origin of grid
+    REAL*8 , SAVE :: XCELL_IN = BADVAL3     !! X-coordinate cell dimension
+    REAL*8 , SAVE :: YCELL_IN = BADVAL3     !! Y-coordinate cell dimension
+    INTEGER, SAVE :: GDTYP_IN = IMISS3      !! number of grid columns
+    INTEGER, SAVE :: NCOLS_IN = IMISS3      !! number of grid columns
+    INTEGER, SAVE :: NROWS_IN = IMISS3      !! number of grid rows
+
+    REAL*8 , SAVE :: P_ALP_OUT = BADVAL3    !! first, second, third map
+    REAL*8 , SAVE :: P_BET_OUT = BADVAL3    !! projection descriptive
+    REAL*8 , SAVE :: P_GAM_OUT = BADVAL3    !! parameters.
+    REAL*8 , SAVE :: XCENT_OUT = BADVAL3    !! lon for coord-system X=0
+    REAL*8 , SAVE :: YCENT_OUT = BADVAL3    !! lat for coord-system Y=0
+    REAL*8 , SAVE :: XORIG_OUT = BADVAL3    !! X-coordinate origin of grid (map units)
+    REAL*8 , SAVE :: YORIG_OUT = BADVAL3    !! Y-coordinate origin of grid
+    REAL*8 , SAVE :: XCELL_OUT = BADVAL3    !! X-coordinate cell dimension
+    REAL*8 , SAVE :: YCELL_OUT = BADVAL3    !! Y-coordinate cell dimension
+    INTEGER, SAVE :: GDTYP_OUT = IMISS3     !! number of grid columns
+    INTEGER, SAVE :: NCOLS_OUT = IMISS3     !! number of grid columns
+    INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
+
+    CHARACTER*80, SAVE :: SVN_ID =  &
+'$Id:: modatts3.F90 266 2015-11-20 16:59:47Z coats                              $'
+
+
+CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  INITMTXATT(                                             &
+            GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
+                    XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,     &
+            GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &
+                    XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT( IN ) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT( IN ) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT( IN ) :: P_BET1, P_BET2
+        REAL*8            , INTENT( IN ) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT( IN ) :: XCENT1, XCENT2
+        REAL*8            , INTENT( IN ) :: YCENT1, YCENT2
+        REAL*8            , INTENT( IN ) :: XORIG1, XORIG2
+        REAL*8            , INTENT( IN ) :: YORIG1, YORIG2
+        REAL*8            , INTENT( IN ) :: XCELL1, XCELL2
+        REAL*8            , INTENT( IN ) :: YCELL1, YCELL2
+        INTEGER           , INTENT( IN ) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT( IN ) :: NROWS1, NROWS2
+
+        !!........  body  .........................................
+
+        GDNAM_IN = GDNAM1
+        GDTYP_IN = GDTYP1
+        P_ALP_IN = P_ALP1
+        P_BET_IN = P_BET1
+        P_GAM_IN = P_GAM1
+        XCENT_IN = XCENT1
+        YCENT_IN = YCENT1
+        XORIG_IN = XORIG1
+        YORIG_IN = YORIG1
+        XCELL_IN = XCELL1
+        YCELL_IN = YCELL1
+        NCOLS_IN = NCOLS1
+        NROWS_IN = NROWS1
+
+        GDNAM_OUT = GDNAM2
+        GDTYP_OUT = GDTYP2
+        P_ALP_OUT = P_ALP2
+        P_BET_OUT = P_BET2
+        P_GAM_OUT = P_GAM2
+        XCENT_OUT = XCENT2
+        YCENT_OUT = YCENT2
+        XORIG_OUT = XORIG2
+        YORIG_OUT = YORIG2
+        XCELL_OUT = XCELL2
+        YCELL_OUT = YCELL2
+        NCOLS_OUT = NCOLS2
+        NROWS_OUT = NROWS2
+
+        MATXMETA = .TRUE.
+        RETURN
+
+    END SUBROUTINE  INITMTXATT
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  SETMTXATT1( FNAME, IMODE, GDNAM,              &
+                    GDTYP, P_ALP, P_BET, P_GAM, XCENT, YCENT,       &
+                    XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS )
+
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'      !! I/O API internal state
+
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ):: FNAME
+        INTEGER           , INTENT( IN ):: IMODE
+        CHARACTER( LEN=* ), INTENT( IN ):: GDNAM
+        INTEGER           , INTENT( IN ):: GDTYP
+        REAL*8            , INTENT( IN ):: P_ALP
+        REAL*8            , INTENT( IN ):: P_BET
+        REAL*8            , INTENT( IN ):: P_GAM
+        REAL*8            , INTENT( IN ):: XCENT
+        REAL*8            , INTENT( IN ):: YCENT
+        REAL*8            , INTENT( IN ):: XORIG
+        REAL*8            , INTENT( IN ):: YORIG
+        REAL*8            , INTENT( IN ):: XCELL
+        REAL*8            , INTENT( IN ):: YCELL
+        INTEGER           , INTENT( IN ):: NCOLS
+        INTEGER           , INTENT( IN ):: NROWS
+
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETMTXATT'
+
+
+        !!........  External function:  logical name to I/O API file ID
+
+        INTEGER     NAME2FID
+        EXTERNAL    NAME2FID
+
+
+        !!........  Local Variables:
+
+        INTEGER             FID
+        LOGICAL             EFLAG
+        CHARACTER*16        ANAME, GNAME
+        CHARACTER*256       MESG
+
+
+        !!........  body  ..............................................
+
+        EFLAG = .FALSE.
+
+        IF ( IMODE .NE. INGRD3 .AND. IMODE .NE. OUTGRD3 ) THEN
+            WRITE( MESG, '(A, I10)' ) 'Unrecognized IMODE =', IMODE
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETMTXATT1 = .FALSE.
+            RETURN
+        END IF
+
+        !!  Get I/O API file id, etc.
+
+        FID = NAME2FID( FNAME )
+
+        IF ( FID .LE. 0 ) THEN
+
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETMTXATT1 = .FALSE.
+            RETURN
+
+        ELSE IF ( CDFID3( FID ) .LT. 0 ) THEN
+
+            MESG = 'File "' // TRIM( FNAME ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETMTXATT1 = .FALSE.
+            RETURN
+
+        END IF
+
+        ANAME = GDNAMSTR // MODENAME( IMODE )
+        GNAME = GDNAM
+        IF ( .NOT.WRATTC( FNAME, ALLVAR3, ANAME, GNAME ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = GDTYPSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, GDTYP ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+            CALL M3WARN( PNAME, 0, 0, MESG )
+        END IF
+
+        ANAME = P_ALPSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, P_ALP ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = P_BETSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, P_BET ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = P_GAMSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, P_GAM ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = XCENTSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, XCENT ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = YCENTSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, YCENT ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = XORIGSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, XORIG ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = YORIGSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, YORIG ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = XCELLSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, XCELL ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = YCELLSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, YCELL ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = NCOLSSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, NCOLS ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        ANAME = NROWSSTR // MODENAME( IMODE )
+        IF ( .NOT.WRATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, NROWS ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not write attribute "' //TRIM( ANAME )// '" to ' // FNAME 
+            CALL M3MESG( MESG )
+        END IF
+
+        IF ( EFLAG ) THEN
+            SETMTXATT1 = .FALSE.
+        ELSE IF ( IMODE .EQ. INGRD3 ) THEN
+            GDNAM_IN = GDNAM
+            GDTYP_IN = GDTYP
+            P_ALP_IN = P_ALP
+            P_BET_IN = P_BET
+            P_GAM_IN = P_GAM
+            XCENT_IN = XCENT
+            YCENT_IN = YCENT
+            XORIG_IN = XORIG
+            YORIG_IN = YORIG
+            XCELL_IN = XCELL
+            YCELL_IN = YCELL
+            NCOLS_IN = NCOLS
+            NROWS_IN = NROWS
+            MATXMETA = ( NCOLS_IN .GT. 0 .AND. NCOLS_OUT .GT. 0 )
+            SETMTXATT1 = .TRUE.
+        ELSE IF ( IMODE .EQ. OUTGRD3 ) THEN
+            GDNAM_OUT = GDNAM
+            GDTYP_OUT = GDTYP
+            P_ALP_OUT = P_ALP
+            P_BET_OUT = P_BET
+            P_GAM_OUT = P_GAM
+            XCENT_OUT = XCENT
+            YCENT_OUT = YCENT
+            XORIG_OUT = XORIG
+            YORIG_OUT = YORIG
+            XCELL_OUT = XCELL
+            YCELL_OUT = YCELL
+            NCOLS_OUT = NCOLS
+            NROWS_OUT = NROWS
+            MATXMETA = ( NCOLS_IN .GT. 0 .AND. NCOLS_OUT .GT. 0 )
+            SETMTXATT1 = .TRUE.
+        END IF
+
+
+        SETMTXATT1 = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION  SETMTXATT1
+
+
+    !! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  SETMTXATT2( FNAME,                                &
+            GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
+                    XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,     &
+            GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &
+                    XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+        CHARACTER( LEN=* ), INTENT( IN ) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT( IN ) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT( IN ) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT( IN ) :: P_BET1, P_BET2
+        REAL*8            , INTENT( IN ) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT( IN ) :: XCENT1, XCENT2
+        REAL*8            , INTENT( IN ) :: YCENT1, YCENT2
+        REAL*8            , INTENT( IN ) :: XORIG1, XORIG2
+        REAL*8            , INTENT( IN ) :: YORIG1, YORIG2
+        REAL*8            , INTENT( IN ) :: XCELL1, XCELL2
+        REAL*8            , INTENT( IN ) :: YCELL1, YCELL2
+        INTEGER           , INTENT( IN ) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT( IN ) :: NROWS1, NROWS2
+
+        !!........  body  .........................................
+
+        SETMTXATT2 = ( SETMTXATT1( FNAME, INGRD3, GDNAM1,                           &
+                                   GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,  &
+                                   XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1 ) &
+                       .AND.                                                        &
+                       SETMTXATT1( FNAME, OUTGRD3, GDNAM2,                          &
+                                 GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,    &
+                                 XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 ) )
+
+        RETURN
+
+
+    END FUNCTION  SETMTXATT2
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  SETMTXATT3( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETMTXATT3'
+
+        !!........  Local Variables:
+
+        INTEGER         FID
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        SETMTXATT3 = ( SETMTXATT1( FNAME, INGRD3, GDNAM_IN,                     &
+                                   GDTYP_IN, P_ALP_IN, P_BET_IN, P_GAM_IN,      &
+                                   XCENT_IN, YCENT_IN, XORIG_IN, YORIG_IN,      &
+                                   XCELL_IN, YCELL_IN, NCOLS_IN, NROWS_IN )     &
+                       .AND.                                                    &
+                       SETMTXATT1( FNAME, OUTGRD3, GDNAM_OUT,                   &
+                                  GDTYP_OUT, P_ALP_OUT, P_BET_OUT, P_GAM_OUT,   &
+                                  XCENT_OUT, YCENT_OUT, XORIG_OUT, YORIG_OUT,   &
+                                  XCELL_OUT, YCELL_OUT, NCOLS_OUT, NROWS_OUT ) )
+
+        RETURN
+
+    END FUNCTION  SETMTXATT3
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  GETMTXATT1( FNAME, IMODE, GDNAM, GDTYP,               &
+                                  P_ALP, P_BET, P_GAM, XCENT, YCENT,        &
+                                  XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS )
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+        INTEGER           , INTENT(IN   ) :: IMODE      !!  ingrid or outgrid
+
+        CHARACTER( LEN=* ), INTENT(  OUT) :: GDNAM
+        INTEGER           , INTENT(  OUT) :: GDTYP
+        REAL*8            , INTENT(  OUT) :: P_ALP
+        REAL*8            , INTENT(  OUT) :: P_BET
+        REAL*8            , INTENT(  OUT) :: P_GAM
+        REAL*8            , INTENT(  OUT) :: XCENT
+        REAL*8            , INTENT(  OUT) :: YCENT
+        REAL*8            , INTENT(  OUT) :: XORIG
+        REAL*8            , INTENT(  OUT) :: YORIG
+        REAL*8            , INTENT(  OUT) :: XCELL
+        REAL*8            , INTENT(  OUT) :: YCELL
+        INTEGER           , INTENT(  OUT) :: NCOLS
+        INTEGER           , INTENT(  OUT) :: NROWS
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/GETMTXATT1'
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'      !! I/O API state
+
+        !!........  Local Variables:
+
+        INTEGER             FID, ASIZE
+        LOGICAL             EFLAG
+        CHARACTER*16        ANAME, GNAME
+        CHARACTER*256       MESG
+
+        !!........  body  .........................................
+
+        EFLAG = .FALSE.
+
+        !!  Get I/O API file id. etc.
+
+        FID = NAME2FID( FNAME )
+
+        IF ( FID .LE. 0 ) THEN
+
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            GETMTXATT1 = .FALSE.
+            RETURN
+
+        ELSE IF ( CDFID3( FID ) .LT. 0 ) THEN
+
+            MESG = 'File "' // TRIM( FNAME ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            GETMTXATT1 = .FALSE.
+            RETURN
+
+        END IF
+
+        IF ( IMODE .EQ. INGRD3 ) THEN
+
+            ANAME = GDNAMSTR // '_IN'
+            IF ( .NOT.RDATTC( FLIST3(FID), ALLVAR3, ANAME, GDNAM ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = GDTYPSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, GDTYP ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = P_ALPSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_ALP ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = P_BETSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_BET ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = P_GAMSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_GAM ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = XCENTSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCENT ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = YCENTSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCENT ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = XORIGSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XORIG ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = YORIGSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YORIG ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = XCELLSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCELL ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = YCELLSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCELL ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = NCOLSSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NCOLS ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = NROWSSTR // '_IN'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NROWS ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+        ELSE IF ( IMODE .EQ. OUTGRD3 ) THEN
+
+            ANAME = GDNAMSTR // '_OUT'
+            IF ( .NOT.RDATTC( FLIST3(FID), ALLVAR3, ANAME, GDNAM ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = GDTYPSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, GDTYP ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = P_ALPSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_ALP ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = P_BETSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_BET ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = P_GAMSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_GAM ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = XCENTSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCENT ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = YCENTSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCENT ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = XORIGSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XORIG ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = YORIGSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YORIG ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = XCELLSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCELL ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = YCELLSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCELL ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = NCOLSSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NCOLS ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+            ANAME = NROWSSTR // '_OUT'
+            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NROWS ) ) THEN
+                EFLAG = .TRUE.
+                MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
+                CALL M3MESG( MESG )
+            END IF
+
+        ELSE
+
+            WRITE( MESG, '( A, I9 )' ) 'Unrecognized mode', IMODE
+            CALL M3MESG( MESG )
+            EFLAG =.TRUE.
+
+        END IF
+
+        GETMTXATT1 = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION  GETMTXATT1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  GETMTXATT2( FNAME,                                &
+            GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
+                    XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,     &
+            GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &
+                    XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+        CHARACTER( LEN=* ), INTENT(  OUT) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT(  OUT) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT(  OUT) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT(  OUT) :: P_BET1, P_BET2
+        REAL*8            , INTENT(  OUT) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT(  OUT) :: XCENT1, XCENT2
+        REAL*8            , INTENT(  OUT) :: YCENT1, YCENT2
+        REAL*8            , INTENT(  OUT) :: XORIG1, XORIG2
+        REAL*8            , INTENT(  OUT) :: YORIG1, YORIG2
+        REAL*8            , INTENT(  OUT) :: XCELL1, XCELL2
+        REAL*8            , INTENT(  OUT) :: YCELL1, YCELL2
+        INTEGER           , INTENT(  OUT) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT(  OUT) :: NROWS1, NROWS2
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/GETMTXATT2'
+
+        !!........  body  .........................................
+
+        GETMTXATT2 = ( GETMTXATT1( FNAME, INGRD3, GDNAM1,                           &
+                                   GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,  &
+                                   XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1 ) &
+                      .AND.                                                         &
+                      GETMTXATT1( FNAME, OUTGRD3, GDNAM2,                           &
+                                  GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,   &
+                                  XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 ) )
+        RETURN
+
+    END FUNCTION  GETMTXATT2
+
+
+    !! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  CHKMTXATT1( FNAME, IMODE, GDNAM,                          &
+                                  GDTYP, P_ALP, P_BET, P_GAM, XCENT, YCENT,     &
+                                  XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ):: FNAME
+        INTEGER           , INTENT( IN ):: IMODE    !!  INGRID or OUTGRID
+        CHARACTER( LEN=* ), INTENT( IN ):: GDNAM
+        INTEGER           , INTENT( IN ):: GDTYP
+        REAL*8            , INTENT( IN ):: P_ALP
+        REAL*8            , INTENT( IN ):: P_BET
+        REAL*8            , INTENT( IN ):: P_GAM
+        REAL*8            , INTENT( IN ):: XCENT
+        REAL*8            , INTENT( IN ):: YCENT
+        REAL*8            , INTENT( IN ):: XORIG
+        REAL*8            , INTENT( IN ):: YORIG
+        REAL*8            , INTENT( IN ):: XCELL
+        REAL*8            , INTENT( IN ):: YCELL
+        INTEGER           , INTENT( IN ):: NCOLS
+        INTEGER           , INTENT( IN ):: NROWS
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/CHKMTXATT'
+
+
+        !!........  Local Variables:
+
+        CHARACTER( LEN=NAMLEN3 ):: GDNAM1
+        INTEGER                 :: GDTYP1
+        REAL*8                  :: P_ALP1
+        REAL*8                  :: P_BET1
+        REAL*8                  :: P_GAM1
+        REAL*8                  :: XCENT1
+        REAL*8                  :: YCENT1
+        REAL*8                  :: XORIG1
+        REAL*8                  :: YORIG1
+        REAL*8                  :: XCELL1
+        REAL*8                  :: YCELL1
+        INTEGER                 :: NCOLS1
+        INTEGER                 :: NROWS1
+
+        LOGICAL                 :: EFLAG
+        CHARACTER*256           :: MESG
+
+
+        !!........  body ..................................................
+
+        EFLAG = .FALSE.
+
+        IF ( IMODE .NE. INGRD3 .AND. IMODE .NE. OUTGRD3 ) THEN
+            WRITE( MESG, '(A, I10)' ) 'Unrecognized IMODE =', IMODE
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            CHKMTXATT1 = .FALSE.
+            RETURN
+        END IF
+
+        IF ( .NOT.GETMTXATT( FNAME, IMODE, GDNAM1,              &
+                             GDTYP1, P_ALP1, P_BET1, P_GAM1,    &
+                             XCENT1, YCENT1, XORIG1, YORIG1,    &
+                             XCELL1, YCELL1, NCOLS1, NROWS1 ) ) THEN
+            MESG = 'Could not get attributes for checking'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            CHKMTXATT1 = .FALSE.
+            RETURN
+        END IF
+
+        IF ( GDNAM .NE. GDNAM1 ) THEN
+            MESG = 'GDNAM mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+        END IF
+
+        IF ( GDTYP .NE. GDTYP1 ) THEN
+            MESG = 'GDTYP mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( NCOLS .NE. NCOLS1 ) THEN
+            MESG = 'NCOLS mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( NROWS .NE. NROWS1 ) THEN
+            MESG = 'NROWS mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( P_ALP, P_ALP1 ) ) THEN
+            MESG = 'P_ALP mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( P_BET, P_BET1 ) ) THEN
+            MESG = 'P_BET mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( P_GAM, P_GAM1 ) ) THEN
+            MESG = 'P_GAM mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( XCENT, XCENT1 ) ) THEN
+            MESG = 'XCENT mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( YCENT, YCENT1 ) ) THEN
+            MESG = 'YCENT mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( XORIG, XORIG1 ) ) THEN
+            MESG = 'XORIG mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( YORIG, YORIG1 ) ) THEN
+            MESG = 'YORIG mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( XCELL, XCELL1 ) ) THEN
+            MESG = 'XCELL mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+        IF ( DBLERR( YCELL, YCELL1 ) ) THEN
+            MESG = 'YCELL mismatch, file ' // FNAME
+            CALL M3MSG2( MESG )
+            EFLAG = .TRUE.
+        END IF
+
+
+        CHKMTXATT1 = ( .NOT.EFLAG )
+        RETURN
+
+
+    END FUNCTION  CHKMTXATT1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  CHKMTXATT2( FNAME,                            &
+           GDNAM1, GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,  &
+                   XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1,  &
+           GDNAM2, GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,  &
+                   XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 )
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+        CHARACTER( LEN=* ), INTENT(IN   ) :: GDNAM1, GDNAM2
+        INTEGER           , INTENT(IN   ) :: GDTYP1, GDTYP2
+        REAL*8            , INTENT(IN   ) :: P_ALP1, P_ALP2
+        REAL*8            , INTENT(IN   ) :: P_BET1, P_BET2
+        REAL*8            , INTENT(IN   ) :: P_GAM1, P_GAM2
+        REAL*8            , INTENT(IN   ) :: XCENT1, XCENT2
+        REAL*8            , INTENT(IN   ) :: YCENT1, YCENT2
+        REAL*8            , INTENT(IN   ) :: XORIG1, XORIG2
+        REAL*8            , INTENT(IN   ) :: YORIG1, YORIG2
+        REAL*8            , INTENT(IN   ) :: XCELL1, XCELL2
+        REAL*8            , INTENT(IN   ) :: YCELL1, YCELL2
+        INTEGER           , INTENT(IN   ) :: NCOLS1, NCOLS2
+        INTEGER           , INTENT(IN   ) :: NROWS1, NROWS2
+
+        !!........  body  .........................................
+
+
+        CHKMTXATT2 =  ( CHKMTXATT1( FNAME, INGRD3, GDNAM1,                              &
+                                    GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
+                                    XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1 )    &
+                       .AND.                                                            &
+                       CHKMTXATT1( FNAME, OUTGRD3, GDNAM2,                              &
+                                   GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,      &
+                                   XORIG2, YORIG2, XCELL2, YCELL2, NCOLS2, NROWS2 ) )
+        RETURN
+
+
+    END FUNCTION  CHKMTXATT2
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  CHKMTXATT3( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ):: FNAME
+
+        !!........  body  .........................................
+
+
+        CHKMTXATT3 = ( CHKMTXATT1( FNAME, INGRD3, GDNAM_IN,                         &
+                                   GDTYP_IN, P_ALP_IN, P_BET_IN, P_GAM_IN,          &
+                                   XCENT_IN, YCENT_IN, XORIG_IN, YORIG_IN,          &
+                                   XCELL_IN, YCELL_IN, NCOLS_IN, NROWS_IN )         &
+                       .AND.                                                        &
+                       CHKMTXATT1( FNAME, OUTGRD3, GDNAM_OUT,                       &
+                                   GDTYP_OUT, P_ALP_OUT, P_BET_OUT, P_GAM_OUT,      &
+                                   XCENT_OUT, YCENT_OUT, XORIG_OUT, YORIG_OUT,      &
+                                   XCELL_OUT, YCELL_OUT, NCOLS_OUT, NROWS_OUT ) )
+        RETURN
+
+
+    END FUNCTION  CHKMTXATT3
+
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  ENDMTXATT()
+
+        MATXMETA = .FALSE.
+        RETURN
+
+    END SUBROUTINE  ENDMTXATT
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!      CMAQ Attributes:
+    !!      INITCMAQA:  initialize from 
+    !!      INITCMAQT:  initialize from TYPE(CMETA_T) argument
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  INITCMAQA( )
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/INITCMAQ'
+
+        !!........  Local Variables:
+
+        INTEGER     MDEV                !  
+
+        CHARACTER*256   MESG
+        CHARACTER*512   NAMBUF          !  scratch buffer to upcase EQNAME in.
+
+        !!........  body  .........................................
+
+        IF ( CMAQMETA ) THEN
+            INITCMAQA = .TRUE.
+            RETURN
+        END IF
+        
+        MDEV = GETEFILE( 'IOAPI_CMAQMETA', .TRUE., .TRUE., PNAME )
+        IF ( MDEV .LT. 0 ) THEN
+            CALL M3MESG( 'Could not open CMAQ metadata file "IOAPI_CMAQMETA"' )
+            INITCMAQA = .FALSE.
+            RETURN
+        END IF
+
+        CLOSE( MDEV )
+
+        CALL M3MESG( 'CMAQ metadata not yet implemented' )
+        INITCMAQA = .FALSE.
+        RETURN
+
+    END FUNCTION  INITCMAQA
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  INITCMAQT( MDATA )
+
+        !!........  Arguments:
+
+       TYPE(CMETA_T) , INTENT( IN ) :: MDATA
+
+        !!........  body  .........................................
+
+        CMAQ_MDATA =  MDATA
+        CMAQMETA   = .TRUE.
+        INITCMAQT  = .TRUE.
+        RETURN
+
+    END FUNCTION  INITCMAQT
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION GETCMAQF( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+
+        !!........  body  .........................................
+
+        IF (  GETCMAQT( FNAME, CMAQ_MDATA ) ) THEN
+            CMAQMETA = .TRUE.
+            GETCMAQF = .TRUE.
+        ELSE
+            GETCMAQF = .FALSE.
+        END IF
+        RETURN 
+
+    END FUNCTION  GETCMAQF
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION GETCMAQT( FNAME, MDATA )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+        TYPE( CMETA_T )   , INTENT(  OUT) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/GETCMAQ'
+
+        !!........  Local Variables:
+
+        INTEGER         FID
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FID = NAME2FID( FNAME )
+
+        IF ( FID .LE. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            GETCMAQT = .FALSE.
+        ELSE IF ( CDFID3( FID ) .LT. 0 ) THEN
+            MESG = 'File "' // TRIM( FLIST3(FID) ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            GETCMAQT = .FALSE.
+        ELSE IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+            GETCMAQT = PN_GETCMAQ( FID, MDATA )
+        ELSE
+            GETCMAQT = GETCMAQ1( FID, MDATA )
+        END IF
+
+        RETURN 
+
+    END FUNCTION  GETCMAQT
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION GETCMAQ1( FID, MDATA )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT(IN   ) :: FID
+        TYPE( CMETA_T ), INTENT(  OUT) :: MDATA
+
+        !!........  Include files:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/GETCMAQ'
+
+        !!........  Local Variables:
+
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        CALL M3MESG( 'CMAQ metadata not yet implemented' )
+        MDATA     = CMAQ_MDATA
+        GETCMAQ1 = .FALSE.
+        RETURN 
+
+    END FUNCTION  GETCMAQ1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION PN_GETCMAQ( FID, MDATA )
+
+        !!***********************************************************************
+        !! Version "$Id: modatts3.F90 266 2015-11-20 16:59:47Z coats $"
+        !! EDSS/Models-3 I/O API.
+        !! Copyright (C) 2014-2015 UNC Institute for the Environment.
+        !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
+        !! See file "LGPL.txt" for conditions of use.
+        !!.........................................................................
+        !!  function body starts at line  98
+        !!
+        !!  FUNCTION:
+        !!
+        !!  PRECONDITIONS REQUIRED:
+        !!       File FLIST3( FID ) already exists.
+        !!
+        !!  SUBROUTINES AND FUNCTIONS CALLED:
+        !!
+        !!  REVISION  HISTORY:
+        !!      Adapted 8/2015  by CJC from I/O API-3.2 "modatts3.f90" subroutine
+        !!      GETCF1()
+        !!***********************************************************************
+
+        USE MODPDATA
+        USE MODNCFIO
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FID
+        TYPE( CMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  Parameters:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/PN_GETCMAQ'
+
+
+#ifdef  IOAPI_PNCF
+
+        !!........  Include files:
+
+        INCLUDE 'mpif.h'
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Local Variables:
+
+
+        !!........  body  .........................................
+
+        CALL M3WARN( PNAME, 0, 0, 'Error:  not yet implemented.' )
+        PN_GETCMAQ = .FALSE.
+
+
+#endif
+#ifndef IOAPI_PNCF
+
+        CALL M3WARN( PNAME, 0, 0, 'Error:  PnetCDF Mode not active.' )
+        PN_GETCMAQ = .FALSE.
+
+#endif
+
+        RETURN
+
+    END FUNCTION  PN_GETCMAQ
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION LOGCMAQ1( )
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  body  .........................................
+
+        LOGCMAQ1 = LOGCMAQDM( LOGDEV, CMAQ_MDATA )
+
+        RETURN
+
+    END FUNCTION  LOGCMAQ1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION LOGCMAQM( MDATA )
+
+        !!........  Arguments:
+
+        TYPE( CMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  body  .........................................
+
+        LOGCMAQM = LOGCMAQDM( LOGDEV, MDATA )
+
+        RETURN
+
+    END FUNCTION  LOGCMAQM
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION LOGCMAQF( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+
+        !!........  body  .........................................
+
+        LOGCMAQF = LOGCMAQFM( FNAME, CMAQ_MDATA )
+
+        RETURN
+
+    END FUNCTION  LOGCMAQF
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION LOGCMAQFM( FNAME, MDATA )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+        TYPE( CMETA_T )   , INTENT( IN ) :: MDATA
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/LOGCMAQ'
+
+        !!........  Local Variables:
+        
+        INTEGER     FDEV
+
+        !!........  body  .........................................
+
+        IF ( .NOT. CMAQMETA ) THEN
+            CALL M3WARN( PNAME, 0,0, 'Error:  CMAQ metadata not active' )
+            LOGCMAQFM = .FALSE.
+            RETURN
+        END IF
+
+        FDEV = GETEFILE( FNAME, .FALSE., .TRUE., PNAME )
+
+        IF ( FDEV .LT. 0 ) THEN
+            CALL M3WARN( PNAME, 0,0, 'Error:  could not open "' // TRIM( FNAME ) // '"' )
+            LOGCMAQFM = .FALSE.
+        ELSE
+            LOGCMAQFM = LOGCMAQDM( FDEV, MDATA )
+        END IF
+
+        RETURN
+
+    END FUNCTION  LOGCMAQFM
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION LOGCMAQDM( FDEV, MDATA )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FDEV
+        TYPE( CMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/LOGCMAQ'
+
+        !!........  Local Variables:
+
+        !!........  body  .........................................
+
+        CALL M3WARN( PNAME, 0, 0, 'Error:  LOGCMAQ() not yet implemented.' )
+        LOGCMAQDM = .FALSE.
+
+        RETURN
+
+    END FUNCTION  LOGCMAQDM
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETCMAQC( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETCMAQ'
+
+        !!........  Local Variables:
+
+        !!........  body  .........................................
+
+        IF ( .NOT. CMAQMETA ) THEN
+            CALL M3WARN( PNAME, 0,0, 'Error:  CMAQ metadata not active' )
+            SETCMAQC = .FALSE.
+        ELSE
+            SETCMAQC = SETCMAQT( FNAME, CMAQ_MDATA )
+        END IF
+
+        RETURN
+
+    END FUNCTION  SETCMAQC
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETCMAQT( FNAME, MDATA )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+        TYPE( CMETA_T )   , INTENT( IN ) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETCMAQT'
+
+        !!........  Local Variables:
+
+        INTEGER         FID
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FID = NAME2FID( FNAME )
+
+        IF ( FID .LE. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETCMAQT = .FALSE.
+        ELSE IF ( CDFID3( FID ) .LT. 0 ) THEN
+            MESG = 'File "' // TRIM( FLIST3(FID) ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETCMAQT = .FALSE.
+        ELSE
+            SETCMAQT = SETCMAQ2( FID, MDATA )
+        END IF
+
+        RETURN
+
+    END FUNCTION  SETCMAQT
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETCMAQ1( FID )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FID
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'       !! I/O API state
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETCMAQ1'
+
+        !!........  Local Variables:
+
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        
+        IF ( .NOT. CMAQMETA ) THEN
+            CALL M3WARN( PNAME, 0,0, 'Error:  CMAQ metadata not active' )
+            SETCMAQ1 = .FALSE.
+        ELSE
+            SETCMAQ1 = SETCMAQ2( FID, CMAQ_MDATA )
+        END IF
+
+        RETURN
+
+    END FUNCTION  SETCMAQ1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETCMAQ2( FID, MDATA )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FID
+        TYPE( CMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'       !! I/O API state
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETCMAQ1'
+
+        !!........  Local Variables:
+
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+            SETCMAQ2 = PN_SETCMAQ( FID, MDATA )
+        ELSE
+            CALL M3MESG( 'CMAQ metadata not yet implemented' )
+            SETCMAQ2 = .FALSE.
+        END IF
+        RETURN
+
+    END FUNCTION  SETCMAQ2
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION PN_SETCMAQ( FID, MDATA )
+
+        !!***********************************************************************
+        !! Version "$Id: modatts3.F90 266 2015-11-20 16:59:47Z coats $"
+        !! EDSS/Models-3 I/O API.
+        !! Copyright (C) 2014-2015 UNC Institute for the Environment.
+        !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
+        !! See file "LGPL.txt" for conditions of use.
+        !!.........................................................................
+        !!  function body starts at line  98
+        !!
+        !!  FUNCTION:
+        !!
+        !!  PRECONDITIONS REQUIRED:
+        !!       File FLIST3( FID ) already exists.
+        !!
+        !!  SUBROUTINES AND FUNCTIONS CALLED:
+        !!
+        !!  REVISION  HISTORY:
+        !!      Adapted 8/2015  by CJC from I/O API-3.2 "modatts3.f90" subroutine
+        !!      SETCF1()
+        !!***********************************************************************
+
+        USE MODPDATA
+        USE MODNCFIO
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FID
+        TYPE( CMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  Parameters:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/PN_SETCMAQ'
+
+
+#ifdef  IOAPI_PNCF
+
+        !!........  Include files:
+
+        INCLUDE 'mpif.h'
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Local Variables:
+
+
+        !!........  body  .........................................
+
+        CALL M3WARN( PNAME, 0, 0, 'Error:  not yet implemented.' )
+        PN_SETCMAQ = .FALSE.
+
+
+#endif
+#ifndef IOAPI_PNCF
+
+        CALL M3WARN( PNAME, 0, 0, 'Error:  PnetCDF Mode not active.' )
+        PN_SETCMAQ = .FALSE.
+
+#endif
+
+        RETURN
+
+    END FUNCTION  PN_SETCMAQ
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  ENDCMAQ()
+
+        CMAQMETA = .FALSE.
+        RETURN
+
+    END SUBROUTINE  ENDCMAQ
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!      SMOKE Attributes
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  INITSMOKEA( )
+
+        INITSMOKEA = INITSMOKET( SMOKE_MDATA )
+        RETURN
+
+    END FUNCTION  INITSMOKEA
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  INITSMOKET( META )
+
+        !!........  Arguments:
+
+        TYPE( SMETA_T ), INTENT( IN ) :: META
+
+        !!........  body  .........................................
+
+        CALL M3MESG( 'SMOKE metadata not yet implemented' )
+        SMOKEMETA  = .FALSE.
+        INITSMOKET = .FALSE.
+        RETURN
+
+    END FUNCTION  INITSMOKET
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION GETSMOKEF( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+
+        !!........  body  .........................................
+
+        IF (  GETSMOKET( FNAME, SMOKE_MDATA ) ) THEN
+            SMOKEMETA = .TRUE.
+            GETSMOKEF = .TRUE.
+        ELSE
+            GETSMOKEF = .FALSE.
+        END IF
+        RETURN 
+
+    END FUNCTION  GETSMOKEF
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION GETSMOKET( FNAME, MDATA )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+        TYPE( SMETA_T )   , INTENT(  OUT) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/GETSMOKE'
+
+        !!........  Local Variables:
+
+        INTEGER         FID
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FID = NAME2FID( FNAME )
+
+        IF ( FID .LE. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            GETSMOKET = .FALSE.
+        ELSE IF ( CDFID3( FID ) .LT. 0 ) THEN
+            MESG = 'File "' // TRIM( FLIST3(FID) ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            GETSMOKET = .FALSE.
+        ELSE IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+            MESG = 'Unsupported call for PnetCDF file "' // TRIM( FLIST3(FID) ) //'"'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            GETSMOKET = .FALSE.
+        ELSE
+            GETSMOKET = GETSMOKE1( FID, MDATA )
+        END IF
+
+        RETURN 
+
+    END FUNCTION  GETSMOKET
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION GETSMOKE1( FID, MDATA )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT(IN   ) :: FID
+        TYPE( SMETA_T ), INTENT(  OUT) :: MDATA
+
+        !!........  Include files:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/GETSMOKE'
+
+        !!........  Local Variables:
+
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        CALL M3MESG( 'SMOKE metadata not yet implemented' )
+        MDATA     = SMOKE_MDATA
+        GETSMOKE1 = .FALSE.
+        RETURN 
+
+    END FUNCTION  GETSMOKE1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETSMOKEC( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+
+        !!........  body  .........................................
+
+        SETSMOKEC = SETSMOKEA( FNAME, SMOKE_MDATA )
+
+        RETURN
+
+    END FUNCTION  SETSMOKEC
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETSMOKEA( FNAME, MDATA )
+
+        !!........  Arguments:
+
+        CHARACTER(LEN=*), INTENT( IN ) :: FNAME
+        TYPE( SMETA_T ) , INTENT( IN ) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETSMOKEA'
+
+        !!........  Local Variables:
+
+        INTEGER         FID
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FID = NAME2FID( FNAME )
+
+        IF ( FID .LE. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETSMOKEA = .FALSE.
+        ELSE IF ( CDFID3( FID ) .LT. 0 ) THEN
+            MESG = 'File "' // TRIM( FLIST3(FID) ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETSMOKEA = .FALSE.
+        ELSE
+            SETSMOKEA = SETSMOKE2( FID, MDATA )
+        END IF
+
+        RETURN
+
+    END FUNCTION  SETSMOKEA
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETSMOKE1( FID )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FID
+
+        !!........  body  .........................................
+
+        SETSMOKE1 = SETSMOKE2( FID, SMOKE_MDATA )
+        RETURN
+
+    END FUNCTION  SETSMOKE1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETSMOKE2( FID, MDATA )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FID
+        TYPE( SMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'       !! I/O API state
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETSMOKE1'
+
+        !!........  Local Variables:
+
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+
+        CALL M3MESG( 'SMOKE metadata not yet implemented' )
+        SETSMOKE2 = .FALSE.
+        RETURN
+
+    END FUNCTION  SETSMOKE2
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  ENDSMOKE()
+
+        SMOKEMETA = .FALSE.
+        RETURN
+
+    END SUBROUTINE  ENDSMOKE
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!      CF Attributes
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  INITCF()
+
+        CFMETA = .TRUE.
+        RETURN
+
+    END SUBROUTINE  INITCF
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETCFF( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETCFC'
+
+        !!........  Local Variables:
+
+        INTEGER         FID
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FID = NAME2FID( FNAME )
+
+        IF ( FID .LE. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            SETCFF = .FALSE.
+        ELSE IF ( CDFID3( FID ) .LT. 0 ) THEN
+            MESG = 'File "' // TRIM( FLIST3(FID) ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )    
+            SETCFF = .FALSE.  
+        ELSE
+            SETCFF = SETCF1( FID )
+        END IF
+
+        RETURN
+
+    END FUNCTION  SETCFF
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION SETCF1( FID )
+
+        !!........  Arguments:
+
+        INTEGER, INTENT( IN ) :: FID
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameters:
+
+        CHARACTER*72, PARAMETER :: PRJNAMES( 0:TRMGRD3+1 ) = &    !!  map-projection names
+                 (/  'unknown_cartesian                 ',   &
+                     'geographic                        ',   &
+                     'lambert_conformal_conic           ',   &
+                     'general_mercator                  ',   &
+                     'general_steereographic            ',   &
+                     'transverse_mercator               ',   &
+                     'polar_stereographic               ',   &
+                     'mercator                          ',   &
+                     'transverse_mercator               ',   &
+                     'unknown_cartesian                 '   /)
+
+        INTEGER,      PARAMETER :: MXDIM = 16384
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/SETCF'
+
+        !!........  Local Variables:
+
+        CHARACTER*16    ANAME, XNAME, YNAME, ZNAME
+        CHARACTER*16    XUNIT, YUNIT, ZUNIT
+        CHARACTER*80    XDESC, YDESC, ZDESC
+        CHARACTER*80    XLONG, YLONG, ZLONG
+        CHARACTER*80    DSCBUF          !!  scratch buffer for descriptions
+        CHARACTER*80    DSCBU2          !!  scratch buffer for descriptions
+        CHARACTER*80    MNAME
+        CHARACTER*256   MESG            !!  scratch buffer
+
+        INTEGER         DIMS( 5 )       !!  array of dims for NF_DEF_VAR()
+        INTEGER         DELS( 5 )       !!  array of dims for NF_DEF_VAR()
+        INTEGER         C, R, L
+        INTEGER         MID, CID, RID, LID, IERR
+        INTEGER         NDIMS, CDIM, RDIM, LDIM, EDIM
+        INTEGER         FNUM
+        LOGICAL         EFLAG
+        REAL*8          DARGS( MXDIM ), X0, XC
+
+
+        !!........  body  .........................................
+
+        EFLAG = .FALSE.      
+        IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+            SETCF1 = PN_SETCF1( FID )
+            RETURN
+        END IF
+
+        IF ( NF_REDEF( FNUM ) .NE. NF_NOERR ) THEN
+            WRITE( MESG, '( A, I10, 2X, 3 A )' )                    &
+                'Error', IERR, 'putting file "', FLIST3(FID) ,      &
+                '" into define mode'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF
+
+        XLONG  = 'projection_x_coordinate'
+        YLONG  = 'projection_y_coordinate'
+        ZLONG  = 'projection_x_coordinate'
+
+        DSCBUF = 'CF-1.0'
+        L = LEN_TRIM( DSCBUF )
+        IERR = NF_PUT_ATT_TEXT( FNUM, NF_GLOBAL, 'Conventions', L, DSCBUF( 1:L ) )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBU2 = 'Error creating netCDF file attribute  "Conventions"'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !!  ierr nonzero:  operation failed
+
+        L     = MAX( 0, MIN( TRMGRD3+1, GDTYP3(FID) ) )
+        MNAME = PRJNAMES( L )
+        IERR  = NF_DEF_VAR( FNUM, MNAME, NF_CHAR, 0, DIMS, MID )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR,            &
+                'Error creating netCDF variable "Coords"' )
+             EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        DIMS( 1 ) = EDIM
+        DIMS( 2 ) = CDIM
+        DIMS( 3 ) = RDIM
+        NDIMS = 3
+
+        XNAME = 'COL'
+        YNAME = 'ROW'
+
+        IF ( GDTYP3(FID) .EQ. LATGRD3 ) THEN
+
+            XDESC = 'longitude'
+            YDESC = 'latitude'
+            XUNIT = 'degrees_east'
+            YUNIT = 'degrees_north'
+
+            DSCBUF = 'geographic'
+            L = LEN_TRIM( DSCBUF )
+            IERR = NF_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', L, DSCBUF( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. LAMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'lambert_conformal_conic'
+            L      = LEN_TRIM( DSCBUF )
+            IERR = NF_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', L, DSCBUF( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'standard_parallel'
+            DARGS( 1 ) = P_ALP3(FID)
+            DARGS( 2 ) = P_BET3(FID)
+
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 2, DARGS )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "standard_parallel"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'longitude_of_central_meridian'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'latitude_of_projection_origin'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'longitude_of_projection_origin'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "longitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_easting'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_northing'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. MERGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            CALL M3MESG( 'CF metadata not supported for MERCATOR' )
+
+        ELSE IF ( GDTYP3(FID) .EQ. STEGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            CALL M3MESG( 'CF metadata not supported for STEREO' )
+
+        ELSE IF ( GDTYP3(FID) .EQ. UTMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'transverse_mercator'
+            L      = LEN_TRIM( DSCBUF )
+            IERR = NF_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', L, DSCBUF( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'longitude_of_central_meridian'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 6.0D0*P_ALP3D-183.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute  "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'scale_factor_at_central_meridian'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 0.9996D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "scale_factor_at_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'latitude_of_projection_origin'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_easting'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1,XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_northing'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. POLGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'polar_stereographic'
+            L      = LEN_TRIM( DSCBUF )
+            IERR = NF_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', L, DSCBUF( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'straight_vertical_longitude_from_pole'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "straight_vertical_longitude_from_pole"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'standard_parallel'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, P_BET3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "standard_parallel"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'latitude_of_projection_origin'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 90.0D0*P_ALP3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_easting'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_northing'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. EQMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'mercator'
+            L      = LEN_TRIM( DSCBUF )
+            IERR = NF_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', L, DSCBUF( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'standard_parallel'
+            DARGS( 1 ) =  P_ALP3(FID)
+            DARGS( 2 ) = -P_ALP3(FID)
+
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 2, DARGS )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "standard_parallel"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'longitude_of_central_meridian'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'latitude_of_projection_origin'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'longitude_of_projection_origin'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "longitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_easting'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_northing'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. TRMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'transverse_mercator'
+            L      = LEN_TRIM( DSCBUF )
+            IERR = NF_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', L, DSCBUF( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'longitude_of_central_meridian'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'scale_factor_at_central_meridian'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, P_BET3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "scale_factor_at_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'latitude_of_projection_origin'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, P_ALP3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_easting'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DSCBUF = 'false_northing'
+            IERR = NF_PUT_ATT_DOUBLE( FNUM, MID, DSCBUF, NF_DOUBLE, 1, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating netCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        END IF              !!  if gdtyp3(FID)==latgrd3, lamgrd3, ...
+
+
+        IF ( NLAYS3(FID) .GT. 1 ) THEN
+
+            IERR = NF_INQ_DIMID( FNUM, 'LAY', LDIM )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error inquiring for dimension "LAY"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF
+
+            ZNAME = 'LAY'
+
+            DIMS( 1 ) = LDIM
+            IERR = NF_DEF_VAR( FNUM, ZNAME, NF_DOUBLE, 1,DIMS, LID )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating netCDF variable LAY'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'axis', 1, 'Z' )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating att AXIS for vble LVL'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+        END IF          !!  if nlays3(FID) > 1
+
+        IF ( NLAYS3(FID) .LE. 1 ) THEN
+
+            CONTINUE        !!  do nothing: no vertical CF metadata
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGSGPH3 ) THEN
+
+            ZDESC = 'atmosphere_sigma_coordinate'
+            ZUNIT = ' '
+            L     = LEN_TRIM( ZDESC )
+
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGSGPN3 ) THEN
+
+            ZDESC = 'atmosphere_sigma_coordinate'
+            ZUNIT = ' '
+            L     = LEN_TRIM( ZDESC )
+
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGSIGZ3 ) THEN
+
+            ZDESC = 'atmosphere_sigma_coordinate'
+            ZUNIT = ' '
+            L     = LEN_TRIM( ZDESC )
+
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGPRES3 ) THEN
+
+            ZDESC = 'pres'
+            L     = LEN_TRIM( ZDESC )
+            ZUNIT = 'Pa'
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            L     = LEN_TRIM( ZUNIT )
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'units', L, ZUNIT( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "units" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGZVAL3 ) THEN
+
+            ZDESC = 'height_above_terrain'
+            ZUNIT = 'm'
+
+            L     = LEN_TRIM( ZDESC )
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            L     = LEN_TRIM( ZUNIT )
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'units', L, ZUNIT( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "units" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGHVAL3 ) THEN
+
+            ZDESC = 'height_above_MSL'
+            ZUNIT = 'm'
+
+            L     = LEN_TRIM( ZDESC )
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            L     = LEN_TRIM( ZUNIT )
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'units', L, ZUNIT( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "units" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGWRFEM ) THEN
+
+            ZDESC = 'atmosphere_hybrid_coordinate'
+            ZUNIT = ' '
+
+            L     = LEN_TRIM( ZDESC )
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGWRFNM ) THEN
+
+            ZDESC = 'atmosphere_hybrid_coordinate'
+            ZUNIT = ' '
+
+            L     = LEN_TRIM( ZDESC )
+            IERR = NF_PUT_ATT_TEXT( FNUM, LID, 'standard_name', L, ZDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating netCDF file attribute "standard_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        END IF              !!  if nlays=1, or if vgtyp3(FID)==vgsgph3, ...
+
+        IF ( FTYPE3(FID) .EQ. GRDDED3 ) THEN
+
+            IERR = NF_INQ_DIMID( FNUM, 'COL', CDIM )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error inquiring for dimension "COL"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF
+
+            IERR = NF_INQ_DIMID( FNUM, 'ROW', RDIM )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error inquiring for dimension "ROW"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF
+
+            NDIMS = 1
+            DIMS( 1 ) = CDIM
+            IERR = NF_DEF_VAR( FNUM, XNAME, NF_DOUBLE, 1, DIMS, CID )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error creating netCDF variable COL' )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+!!          "long_name" attribute already done by CRTFIL3()
+!!
+!!          L = LEN_TRIM( XDESC )
+!!          IERR = NF_PUT_ATT_TEXT( FNUM, CID, 'long_name', L, XDESC( 1:L ) )
+!!          IF ( IERR .NE. 0 ) THEN
+!!              DSCBUF = 'Error creating attribute LONG_NAME for vble COL'
+!!              CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+!!              EFLAG = .TRUE.
+!!              GO TO 999
+!!          END IF              !!  ierr nonzero:  operation failed
+
+            IERR = NF_PUT_ATT_TEXT( FNUM, CID, 'axis', 1, 'X' )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating attribute AXIS for vble COL'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            L = LEN_TRIM( XLONG )
+            IERR = NF_PUT_ATT_TEXT( FNUM, CID, 'standard_name', L, XLONG( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating att STANDARD_NAME for vble COL'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            L = LEN_TRIM( XUNIT )
+            IERR = NF_PUT_ATT_TEXT( FNUM, CID, 'units', L, XUNIT( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating attribute UNITS for variable COL'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            L = LEN_TRIM( MNAME )
+            IERR = NF_PUT_ATT_TEXT( FNUM, CID, 'grid_mapping', L, MNAME( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                MESG = 'Error creating netCDF attribute "grid_mapping" for vble COL'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, MESG )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+
+            NDIMS = 1
+            DIMS( 1 ) = RDIM
+            IERR = NF_DEF_VAR( FNUM, YNAME, NF_DOUBLE, 1, DIMS, RID )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error creating netCDF variable ROW' )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            IERR = NF_PUT_ATT_TEXT( FNUM, RID, 'axis', 1, 'Y' )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating attribute AXIS for vble ROW'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            L = LEN_TRIM( YDESC )
+            IERR = NF_PUT_ATT_TEXT( FNUM, RID, 'long_name', L, YDESC( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating  attribute LONG_NAME for vble ROW'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            L = LEN_TRIM( YLONG )
+            IERR = NF_PUT_ATT_TEXT( FNUM, RID, 'standard_name', L, YLONG( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating atte STANDARD_NAME for vble ROW'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            L = LEN_TRIM( YUNIT )
+            IERR = NF_PUT_ATT_TEXT( FNUM, RID, 'units', L, YUNIT( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating  attribute UNITS for variable ROW'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            L = LEN_TRIM( MNAME )
+            IERR = NF_PUT_ATT_TEXT( FNUM, RID, 'grid_mapping', L, MNAME( 1:L ) )
+            IF ( IERR .NE. 0 ) THEN
+                MESG = 'Error creating netCDF attribute "grid_mapping" for vble ROW'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, MESG )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+        END IF              !!  if GRIDDED file
+
+
+        !!...........   Put FNUM back into data mode:  attributes and variables now defined.
+
+        IERR = NF_ENDDEF( FNUM )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error putting netCDF file into data mode.' )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !!  ierr nonzero:  operation failed
+
+
+        IF ( CFMETA .AND. FTYPE3(FID) .EQ. GRDDED3 ) THEN
+
+            X0 = XORIG3(FID)
+            XC = XCELL3(FID)
+            DO C = 1, MIN( NCOLS3(FID), MXDIM )
+                DARGS( C ) = X0 + XC * ( DBLE( C ) - 0.5D0 )
+            END DO
+
+            DIMS( 1 ) = 1
+            DELS( 1 ) = MIN( NCOLS3(FID), MXDIM )
+
+            IERR = NF_PUT_VARA_DOUBLE( FNUM, CID, DIMS, DELS, DARGS )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error initializing cfmeta "COL"' )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            X0 = YORIG3(FID)
+            XC = YCELL3(FID)
+            DO C = 1, MIN( NROWS3(FID), MXDIM )
+                DARGS( C ) = X0 + XC * ( DBLE( C ) - 0.5D0 )
+            END DO
+
+            DIMS( 1 ) = 1
+            DELS( 1 ) = MIN( NROWS3(FID), MXDIM )
+
+            IERR = NF_PUT_VARA_DOUBLE( FNUM, RID, DIMS, DELS, DARGS )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error initializing cfmeta "ROW"' )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IF ( NLAYS3(FID) .GT. 1 ) THEN
+
+                DO C = 1, MIN( NLAYS3(FID), MXDIM )
+                    DARGS( C ) = 0.5D0 * ( VGLVS3(   L,FID ) + VGLVS3( L+1,FID ) )
+                END DO
+
+                DIMS( 1 ) = 1
+                DELS( 1 ) = MIN( NLAYS3(FID), MXDIM )
+
+                IERR = NF_PUT_VARA_DOUBLE( FNUM, LID, DIMS, DELS, DARGS )
+                IF ( IERR .NE. 0 ) THEN
+                    CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error initializing cfmeta "LAY"' )
+                    EFLAG = .TRUE.
+                    GO TO 999
+                END IF          !!  ierr nonzero:  operation failed
+
+            END IF      !!  if nlays3(FID) > 1
+
+        END IF          !!  if cmfeta and gridded...
+
+999     SETCF1 = ( .NOT. EFLAG )
+        RETURN
+
+    END FUNCTION  SETCF1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION PN_SETCF1( FID )
+
+        USE MODPDATA
+        USE MODNCFIO
+
+        !!........  Arguments:
+
+        INTEGER, INTENT( IN ) :: FID
+
+#ifdef  IOAPI_PNCF
+
+        !!........  Include files:
+
+        INCLUDE 'mpif.h'
+        INCLUDE 'PARMS3.EXT'
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameters:
+
+        CHARACTER*80, PARAMETER :: PRJNAMES( 0:TRMGRD3+1 ) = &    !!  map-projection names
+                 (/  'unknown_cartesian                 ',   &
+                     'geographic                        ',   &
+                     'lambert_conformal_conic           ',   &
+                     'general_mercator                  ',   &
+                     'general_steereographic            ',   &
+                     'transverse_mercator               ',   &
+                     'polar_stereographic               ',   &
+                     'mercator                          ',   &
+                     'transverse_mercator               ',   &
+                     'unknown_cartesian                 '   /)
+
+        INTEGER,      PARAMETER :: MXDIM = 16384
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/PN_SETCF1'
+
+        !!........  Local Variables:
+
+        CHARACTER*16    ANAME, XNAME, YNAME, ZNAME
+        CHARACTER*16    XUNIT, YUNIT, ZUNIT
+        CHARACTER*80    XDESC, YDESC, ZDESC
+        CHARACTER*80    XLONG, YLONG, ZLONG
+        CHARACTER*80    DSCBUF          !!  scratch buffer for descriptions
+        CHARACTER*80    DSCBU2          !!  scratch buffer for descriptions
+        CHARACTER*80    MNAME
+        CHARACTER*256   MESG            !!  scratch buffer
+
+        INTEGER         C, R, L
+        INTEGER         MID, CID, RID, LID, IERR
+        INTEGER         NDIMS, CDIM, RDIM, LDIM, EDIM
+        INTEGER         FNUM
+        LOGICAL         EFLAG
+        REAL*8          DARGS( MXDIM ), X0, XC
+
+        INTEGER( MPI_OFFSET_KIND ) :: DIMS( 5 )       !!  array of dims for NCVDEF()
+        INTEGER( MPI_OFFSET_KIND ) :: DELS( 5 )       !!  array of dims for NCVPT()
+        INTEGER( MPI_OFFSET_KIND ) :: PNSIZE
+
+
+        !!........  body  .........................................
+
+        EFLAG = .FALSE.
+
+        IF ( .NOT. PN_IO_PE ) THEN
+            PN_SETCF1 = .TRUE.
+            RETURN
+        END IF
+
+        IF ( NFMPI_REDEF( FNUM ) .NE. NF_NOERR ) THEN
+            WRITE( MESG, '( A, I10, 2X, 3 A )' )                    &
+                'Error', IERR, 'putting file "', FLIST3(FID) ,      &
+                '" into define mode'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF
+
+        XLONG  = 'projection_x_coordinate'
+        YLONG  = 'projection_y_coordinate'
+        ZLONG  = 'projection_x_coordinate'
+
+        ANAME = 'CF-1.0'
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, NF_GLOBAL, 'Conventions', NF_CHAR, PN_NAMLEN, ANAME )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBU2 = 'Error creating PnetCDF file attribute  "Conventions"'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !!  ierr nonzero:  operation failed
+
+        L     = MAX( 0, MIN( TRMGRD3+1, GDTYP3(FID) ) )
+        MNAME = PRJNAMES( L )
+        IERR = NFMPI_DEF_VAR( FNUM, MNAME, NF_CHAR, 0, DIMS, MID )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error creating PnetCDF variable "Coords"' )
+             EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        DIMS( 1 ) = EDIM
+        DIMS( 2 ) = CDIM
+        DIMS( 3 ) = RDIM
+        NDIMS = 3
+
+        XNAME = 'COL'
+        YNAME = 'ROW'
+
+        IF ( GDTYP3(FID) .EQ. LATGRD3 ) THEN
+
+            XDESC = 'longitude'
+            YDESC = 'latitude'
+            XUNIT = 'degrees_east'
+            YUNIT = 'degrees_north'
+
+            DSCBUF = 'geographic'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', PN_MXDLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. LAMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'lambert_conformal_conic'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', PN_MXDLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DARGS( 1 ) = P_ALP3(FID)
+            DARGS( 2 ) = P_BET3(FID)
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'standard_parallel', NF_DOUBLE, PN_TWO, DARGS )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "standard_parallel"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID,  'longitude_of_central_meridian', NF_DOUBLE, PN_ONE, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'latitude_of_projection_origin', NF_DOUBLE, PN_ONE, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'longitude_of_projection_origin', NF_DOUBLE, PN_ONE, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "longitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_easting', NF_DOUBLE, PN_ONE, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_northing', NF_DOUBLE, PN_ONE, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. MERGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            CALL M3MESG( 'CF metadata not supported for MERCATOR' )
+
+        ELSE IF ( GDTYP3(FID) .EQ. STEGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            CALL M3MESG( 'CF metadata not supported for GENERAL STEREOGRAPHIC' )
+
+        ELSE IF ( GDTYP3(FID) .EQ. UTMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'transverse_mercator'
+            IERR   = NFMPI_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', PN_MXDLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'longitude_of_central_meridian', NF_DOUBLE, PN_ONE, 6.0D0*P_ALP3D-183.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute  "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'scale_factor_at_central_meridian', NF_DOUBLE, PN_ONE, 0.9996D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "scale_factor_at_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'latitude_of_projection_origin', NF_DOUBLE, PN_ONE, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_easting', NF_DOUBLE, PN_ONE, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_northing', NF_DOUBLE, PN_ONE, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM,DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. POLGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'polar_stereographic'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', PN_MXDLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'straight_vertical_longitude_from_pole', NF_DOUBLE, PN_ONE, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "straight_vertical_longitude_from_pole"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'standard_parallel', NF_DOUBLE, PN_ONE, P_BET3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "standard_parallel"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'latitude_of_projection_origin', NF_DOUBLE, PN_ONE, 90.0D0*P_ALP3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_easting', NF_DOUBLE, PN_ONE, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_northing', NF_DOUBLE, PN_ONE, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. EQMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'mercator'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', PN_MXDLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            DARGS( 1 ) =  P_ALP3(FID)
+            DARGS( 2 ) = -P_ALP3(FID)
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'standard_parallel', NF_DOUBLE, PN_TWO, DARGS )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "standard_parallel"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'longitude_of_central_meridian', NF_DOUBLE, PN_ONE, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'latitude_of_projection_origin', NF_DOUBLE, PN_ONE, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'longitude_of_projection_origin', NF_DOUBLE, PN_ONE, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "longitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_easting', NF_DOUBLE, PN_ONE, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_northing', NF_DOUBLE, PN_ONE, 0.0D0 )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( GDTYP3(FID) .EQ. TRMGRD3 ) THEN
+
+            XDESC = 'X coordinate of projection'
+            YDESC = 'Y coordinate of projection'
+            XUNIT = 'm'
+            YUNIT = 'm'
+
+            DSCBUF = 'transverse_mercator'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, MID, 'grid_mapping_name', PN_MXDLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "grid_mapping_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'longitude_of_central_meridian', NF_DOUBLE, PN_ONE, P_GAM3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "longitude_of_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'scale_factor_at_central_meridian', NF_DOUBLE, PN_ONE, P_BET3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "scale_factor_at_central_meridian"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'latitude_of_projection_origin', NF_DOUBLE, PN_ONE, P_ALP3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "latitude_of_projection_origin"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_easting', NF_DOUBLE, PN_ONE, XCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_easting"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_DOUBLE( FNUM, MID, 'false_northing', NF_DOUBLE, PN_ONE, YCENT3(FID) )
+            IF ( IERR .NE. 0 ) THEN
+                 DSCBU2 = 'Error creating PnetCDF file attribute "false_northing"'
+                 CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                 EFLAG = .TRUE.
+                 GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        END IF              !!  if gdtyp3(FID)==latgrd3, lamgrd3, ...
+
+
+        IF ( NLAYS3(FID) .GT. 1 ) THEN
+
+            IERR = NFMPI_INQ_DIMID( FNUM, 'LAY', LDIM )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error inquiring for dimension "LAY"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF
+
+            DIMS( 1 ) = LDIM
+            IERR = NFMPI_DEF_VAR( FNUM, 'LAY', NF_DOUBLE, PN_ONE, DIMS, LID )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating PnetCDF variable LAY'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'axis', PN_ONE, 'Z' )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBUF = 'Error creating att AXIS for vble LVL'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF              !!  ierr nonzero:  operation failed
+
+        END IF          !!  if nlays3(FID) > 1
+
+        IF ( NLAYS3(FID) .LE. 1 ) THEN
+
+            CONTINUE        !!  do nothing: no vertical CF metadata
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGSGPH3 ) THEN
+
+            ZDESC = 'atmosphere_sigma_coordinate'
+            ZUNIT = ' '
+
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGSGPN3 ) THEN
+
+            ZDESC = 'atmosphere_sigma_coordinate'
+            ZUNIT = ' '
+
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGSIGZ3 ) THEN
+
+            ZDESC = 'atmosphere_sigma_coordinate'
+            ZUNIT = ' '
+
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGPRES3 ) THEN
+
+            ZDESC = 'pres'
+            ZUNIT = 'Pa'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGZVAL3 ) THEN
+
+            ZDESC = 'height_above_terrain'
+            ZUNIT = 'm'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGHVAL3 ) THEN
+
+            ZDESC = 'height_above_MSL'
+            ZUNIT = 'm'
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGWRFEM ) THEN
+
+            ZDESC = 'atmosphere_hybrid_coordinate'
+            ZUNIT = ' '
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        ELSE IF ( VGTYP3(FID) .EQ. VGWRFNM ) THEN
+
+            ZDESC = 'atmosphere_hybrid_coordinate'
+            ZUNIT = ' '
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'standard_name', PN_MXDLEN, ZDESC )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "standard_name"'
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        END IF              !!  if nlays=1, or if vgtyp3(FID)==vgsgph3, ...
+
+        IF ( NLAYS3(FID) .GT. 1 ) THEN
+
+            IERR = NFMPI_PUT_ATT_TEXT( FNUM, LID, 'units', PN_NAMLEN, ZUNIT )
+            IF ( IERR .NE. 0 ) THEN
+                DSCBU2 = 'Error creating PnetCDF file attribute "units" for ' // ZNAME
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        END IF              !!  if nlays=1, or if vgtyp3(FID)==vgsgph3, ...
+
+
+        IERR = NF_INQ_DIMID( FNUM, 'COL', CDIM )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBU2 = 'Error inquiring for dimension "COL"'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF
+
+        IERR = NF_INQ_DIMID( FNUM, 'ROW', RDIM )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBU2 = 'Error inquiring for dimension "ROW"'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBU2 )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF
+
+        NDIMS = 1
+        DIMS( 1 ) = CDIM
+        IERR = NF_DEF_VAR( FNUM, XNAME, NF_DOUBLE, 1, DIMS, CID )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error creating PnetCDF variable COL' )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, CID, 'long_name', PN_NAMLEN, XDESC )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating attribute LONG_NAME for vble COL'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, CID, 'axis', PN_ONE, 'X' )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating attribute AXIS for vble COL'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, CID, 'standard_name', PN_MXDLEN, XLONG )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating att STANDARD_NAME for vble COL'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, CID, 'units', PN_MXDLEN, XUNIT )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating attribute UNITS for variable COL'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, CID, 'grid_mapping', PN_MXDLEN, MNAME )
+        IF ( IERR .NE. 0 ) THEN
+            MESG = 'Error creating PnetCDF attribute "grid_mapping" for vble COL'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+
+        NDIMS = 1
+        DIMS( 1 ) = RDIM
+        IERR = NF_DEF_VAR( FNUM, YNAME, NF_DOUBLE, 1, DIMS, RID )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error creating PnetCDF variable ROW' )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, RID, 'axis', PN_ONE, 'Y' )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating attribute AXIS for vble ROW'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, RID, 'long_name', PN_MXDLEN, YDESC )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating  attribute LONG_NAME for vble ROW'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, RID, 'standard_name', PN_MXDLEN, YLONG )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating atte STANDARD_NAME for vble ROW'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, RID, 'units',PN_MXDLEN, YUNIT )
+        IF ( IERR .NE. 0 ) THEN
+            DSCBUF = 'Error creating  attribute UNITS for variable ROW'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FNUM, RID, 'grid_mapping', PN_MXDLEN, MNAME )
+        IF ( IERR .NE. 0 ) THEN
+            MESG = 'Error creating PnetCDF attribute "grid_mapping" for vble ROW'
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF              !!  ierr nonzero:  operation failed
+
+
+        !!...........   Put FNUM back into data mode:  attributes and variables now defined.
+
+        IERR = NFMPI_ENDDEF( FNUM )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error putting PnetCDF file into data mode.' )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !!  ierr nonzero:  operation failed
+
+
+        X0 = XORIG3(FID)
+        XC = XCELL3(FID)
+        DO C = 1, MIN( NCOLS3(FID), MXDIM )
+            DARGS( C ) = X0 + XC * ( DBLE( C ) - 0.5D0 )
+        END DO
+
+        DIMS( 1 ) = 1
+        DELS( 1 ) = MIN( NCOLS3(FID), MXDIM )
+
+        IERR = NFMPI_PUT_VARA_DOUBLE_ALL( FNUM, CID, DIMS, DELS, DARGS )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error initializing cfmeta "COL"' )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !!  ierr nonzero:  operation failed
+
+        X0 = YORIG3(FID)
+        XC = YCELL3(FID)
+        DO C = 1, MIN( NROWS3(FID), MXDIM )
+            DARGS( C ) = X0 + XC * ( DBLE( C ) - 0.5D0 )
+        END DO
+
+        DIMS( 1 ) = 1
+        DELS( 1 ) = MIN( NROWS3(FID), MXDIM )
+
+        IERR = NFMPI_PUT_VARA_DOUBLE_ALL( FNUM, RID, DIMS, DELS, DARGS )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error initializing cfmeta "ROW"' )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !!  ierr nonzero:  operation failed
+
+        IF ( NLAYS3(FID) .GT. 1 ) THEN
+
+            DO C = 1, MIN( NLAYS3(FID), MXDIM )
+                DARGS( C ) = 0.5D0 * ( VGLVS3(   L,FID ) + VGLVS3( L+1,FID ) )
+            END DO
+
+            DIMS( 1 ) = 1
+            DELS( 1 ) = MIN( NLAYS3(FID), MXDIM )
+
+            IERR = NFMPI_PUT_VARA_DOUBLE_ALL( FNUM, LID, DIMS, DELS, DARGS )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error initializing cfmeta "LAY"' )
+                EFLAG = .TRUE.
+                GO TO 999
+            END IF          !!  ierr nonzero:  operation failed
+
+        END IF      !!  if nlays3(FID) > 1
+
+999     PN_SETCF1 = ( .NOT. EFLAG )
+
+#endif
+#ifndef IOAPI_PNCF
+
+        CALL M3MESG( 'PN_SETCF1 error:  PnetCDF Mode not active.' )
+        PN_SETCF1 = .FALSE.
+
+#endif
+
+        RETURN
+
+    END FUNCTION  PN_SETCF1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  ENDCF()
+
+        CFMETA = .FALSE.
+        RETURN
+
+    END SUBROUTINE  ENDCF
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION DBLERR( P, Q )
+
+        REAL*8, INTENT(IN   ) :: P, Q
+
+        DBLERR = ( (P - Q)**2  .GT.  1.0E-10*(P*P + Q*Q + 1.0E-5) )
+
+        RETURN
+
+    END FUNCTION DBLERR
+
+
+END MODULE MODATTS3

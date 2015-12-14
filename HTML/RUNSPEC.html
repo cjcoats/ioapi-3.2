@@ -1,0 +1,157 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: RUNSPEC.html 177 2015-03-02 16:20:58Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> RUNSPEC() </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    RUNSPEC() </H1>
+
+<H2> Fortran version: </H2>
+
+<PRE>
+    SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
+        CHARACTER(LEN=*), INTENT(IN   ) :: FNAME        !!  input file
+        LOGICAL,          INTENT(IN   ) :: USEENV       !!  input file
+        INTEGER,          INTENT(  OUT) :: SDATE        !!  starting date YYYYDDD
+        INTEGER,          INTENT(  OUT) :: STIME        !!  starting time  H*MMSS
+        INTEGER,          INTENT(  OUT) :: TSTEP        !!  time step      H*MMSS
+        INTEGER,          INTENT(  OUT) :: NRECS        !!  Number of records
+
+</PRE>
+
+<H2> NO C version</H2>
+<P>
+   
+<H2> Summary: </H2>
+
+    <BLOCKQUOTE>
+    Return time step sequence <CODE>SDATE:STIME:TSTEP:NRECS</CODE>
+    consistent with (and with default values from) file
+    <CODE>FNAME</CODE>.
+    <P>
+    If  <CODE>FNAME</CODE> is blank, defaults are from the current
+    wall-clock date&amp;time.<BR>
+    If  <CODE>FNAME</CODE> is time independent,
+    <CODE>SDATE=STIME=TSTEP=0; NRECS=1</CODE><BR>
+    If <CODE>USEENV</CODE>, get values from environment variables
+    <CODE>SDATE, STIME, TSTEP, EDATE, ETIME</CODE> and use them to
+    determine the results; else prompt the user for those values.
+    <P>
+    <EM><STRONG>NOTE:</STRONG> does <U>not</U> assume that
+    <CODE>FNAME</CODE> is already completed (it would be an error
+    to do so within some modeling workflows).</EM>
+    <P>
+
+    <EM>I/O&nbsp;API-3.2 or later, only.</EM>
+    <P>
+
+    For Fortran-90 declarations and interface checking:
+    <PRE>
+    <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
+    </PRE>
+
+    See also
+    <A HREF = "CURREC.html">CURREC()</A>,
+    <A HREF = "GETDATE.html">GETDATE()</A>,
+    <A HREF = "GETDTTIME.html">GETDTTIME()</A>,
+    <A HREF = "ENVINT.html">ENVINT()</A>,
+    <A HREF = "GETNUM.html">GETNUM()</A>,
+    <A HREF = "JSTEP3.html">JSTEP3()</A>.
+    <P>
+    </BLOCKQUOTE>
+
+<H2> Preconditions: </H2>
+
+    <BLOCKQUOTE>
+    If  <CODE>USEENV</CODE>:
+    <PRE>
+    setenv SDATE &lt;starting date (YYYYDDD)&gt;
+    setenv STIME &lt;starting time  (HHMMSS)&gt;
+    setenv TSTEP &lt;time step      (H*MMSS)&gt;
+    setenv EDATE &lt;ending date   (YYYYDDD)&gt;
+    setenv ETIME &lt;ending date    (HHMMSS)&gt;
+    </PRE>
+    </BLOCKQUOTE>
+
+<H2> Fortran Usage: </H2>
+
+    <BLOCKQUOTE>
+    The following example will prompt the user for <CODE>SDATE, STIME,
+    TSTEP, EDATE, ETIME</CODE> (since argument
+    <CODE>USEENV=.FALSE.</CODE>), and then run accordingly:
+    </BLOCKQUOTE>
+
+<PRE>
+    ...
+    USE M3UTILIO
+    ...
+    CHARACTER, PARAMETER :: FNAME = 'METCRO2D'
+    ...
+    INTEGER     SDATE, STIME, TSTEP, NRECS
+    INTEGER     JDATE, JTIME, N
+    ...
+    IF ( OPEN3( FNAME...
+    ...
+    CALL RUNSPEC( FNAME, .FALSE., SDATE, STIME, TSTEP, NRECS )
+    ...
+    JDATE = SDATE
+    JTIME = STIME
+    DO N = 1, NRECS     !!  main loop on time steps
+        ...
+        CALL NEXTIME( JDATE, JTIME, TSTEP )
+    END DO              !!  end loop on timesteps
+    ...
+</PRE><P> 
+
+        
+<H2> C Usage: </H2>
+
+    <BLOCKQUOTE>
+    Don't, unless you're already very comfortable with mixed-language
+    programming.
+    </BLOCKQUOTE>
+    <P>
+
+<HR> 
+
+<A HREF = "NEXTIME.html" >
+Previous:  <STRONG>NEXTIME</STRONG>
+</A><P> 
+
+<A HREF = "CLOSE3.html" >
+Previous:  <STRONG>READ4D</STRONG>
+</A><P>
+
+<A HREF = "SEC2TIME.html" >
+Next:  <STRONG>SEC2TIME</STRONG>
+</A><P>
+
+<A HREF = "CLOSE3.html" >
+Next:  <STRONG>WRITE4D</STRONG>
+</A><P>  
+
+<A HREF = "AA.html#datestuff"> 
+Up: <STRONG>Date-Time Manipulation Routines</STRONG> 
+</A><P>
+
+<A HREF = "AA.html#ioapi"> 
+Up: <STRONG>Public I/O Routines </STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+        
+</BODY>
+</HTML>
+

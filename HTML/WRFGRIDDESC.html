@@ -1,0 +1,61 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: CAMXTOM3.html 117 2015-01-19 16:50:41Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE> Program camxtom3 </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+<H1>    Program <VAR>wrftom3</VAR> </H1>
+
+<H2> Usage </H2>
+<PRE>
+    setenv  WRFFILE     &lt;path name for input WRF-netcdf file&gt;
+    setenv  OUTDESC     &lt;path name for output GRIDDESC file&gt;
+    setenv CRDNAME      &lt;GRIDDESC name for WRF coordinate system&gt;
+    setenv CROGRID      &lt;GRIDDESC name for     cross-point grid&gt;
+    setenv DOTGRID      &lt;GRIDDESC name for       dot-point grid&gt;
+    setenv STXGRID      &lt;GRIDDESC name for X-stagger-point grid&gt;
+    setenv STYGRID      &lt;GRIDDESC name for Y-stagger-point grid&gt;
+    
+    wrfgriddesc
+</PRE>
+<P>
+
+<H2> Summary </H2>
+
+    Program <VAR>wrftom3</VAR> will read the header-data from a
+    WRF-netCDF output file and create a <CODE>GRIDDESC</CODE>
+    file for the grids used by the WRF file.  You will need to
+    specify the <CODE>GRIDDESC</CODE>-names for the map projection
+    and for all four grids (cross-point, dot-point, X-staggered,
+    Y-staggered) used by the WRF file, as described above.
+    <P>
+
+<HR>  <!------------------------------ --------------------------------->
+
+<A HREF = "VERTOT.html" >
+Previous:  <STRONG>VERTOT</STRONG>
+</A><P>
+
+<A HREF = "WRFTOM3.html" >
+Next:  <STRONG>WRFTOM3</STRONG>
+</A><P>
+
+<A HREF = "AA.html#tools">
+Up: <STRONG>Related Programs</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
+</A><P>
+
+
+</BODY>
+</HTML>

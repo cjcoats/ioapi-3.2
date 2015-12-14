@@ -1,0 +1,107 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: GRIDPROBE.html 272 2015-11-28 16:55:07Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program GRIDPROBE </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+
+<H1>    Program GRIDPROBE </H1>
+
+<H2> Summary </H2>
+<BLOCKQUOTE>
+
+    The <VAR>gridprobe</VAR> program <STRONG>interpolates/extracts the
+    time series</STRONG> for a specified variable for a specified set of
+    points from a GRIDDED input file <CODE>INFILE</CODE>, and writes the
+    resulting time series as columns to a (human-readable) ASCII
+    <CODE>REPORT</CODE>-file. Points to be extracted are specified in
+    terms of Lat-Lon coordinates taken from an ASCII <CODE>POINTS</CODE>
+    file.
+    <P>
+
+    Source code for program <CODE>m3probe</CODE> is available
+    <A HREF = "gpl.txt">under the GNU GPL License, Version 2</A>, and
+    can be downloaded from the CMAS web site as part of the I/O&nbsp;API
+    distribution tar-ball <A HREF = "AVAIL.html">from this page</A>.
+    <P>
+</BLOCKQUOTE>
+
+<H2> Usage </H2>
+<BLOCKQUOTE>
+
+<PRE>
+    setenv  INFILE    &lt;path name&gt;
+    setenv  POINTS    &lt;path name&gt;
+    setenv  REPORT    &lt;path name&gt;
+    setenv  HEADER    &lt;ASCII header on ${REPORT}? (Y/N) [N]&gt;
+    m3probe [and answer the prompts]
+</PRE>
+    where <VAR>INFILE</VAR> is the <A HREF = "LOGICALS.html"> logical
+    name </A>  of the input data file,  <VAR>POINTS</VAR> is the logical
+    name of the ASCII points-file, and <VAR>REPORT</VAR> is the logical
+    name of the  report file to which the ASCII time series report is
+    printed.    <VAR>INFILE</VAR> must be of type <CODE>GRDDED3</CODE>.
+    <VAR>POINTS</VAR> is a list-formatted (blank or comma delimited)
+    ASCII file with up to 256 lines giving the latitude and longitude
+    for the interpolation-points, with one point per line. <STRONG>The
+    program will prompt you</STRONG> for the starting and ending date
+    and time and the time step for the report period, the variable to be
+    reported.  Default values for the time period are computed from the
+    metadata in the <VAR>INFILE</VAR> header, and may be accepted by
+    hitting the <CODE>RETURN</CODE> key.
+    <P> 
+
+    The program will log both the input Lat-Lon coordinates and the
+    grid-normal coordinates
+    <BLOCKQUOTE><CODE>
+    X<SUB>grid</SUB> = ( X - XORIG ) / XCELL<BR>
+    Y<SUB>grid</SUB> = ( Y - YORIG ) / YCELL
+    </CODE></BLOCKQUOTE>
+    of the input points, and also write that information to the 
+    <CODE>REPORT</CODE>-file.
+    <P> 
+
+    If you want to run this program in <STRONG>batch mode</STRONG> 
+    (from a script), the recommended way to develop the script is to 
+    run the program once interactively noting the pattern of responses 
+    to prompts which generate the particular analysis you want.  The 
+    pattern of responses then becomes either a command-input file which 
+    is redirected into the program in the script, or becomes a 
+    &quot;here-document&quot; fed into the execution.
+    <P>
+</BLOCKQUOTE>
+
+<HR>
+
+<A HREF = "M3PROBE.html" >
+See Also: <STRONG>program M3PROBE</STRONG>
+</A><P> 
+
+<A HREF = "DAYAGG.html" >
+Previous:  <STRONG>DAYAGG</STRONG>
+</A><P> 
+
+<A HREF = "INSERTGRID.html" >
+Next:  <STRONG>INSERTGRID</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+
