@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64 100 2015-01-16 16:52:16Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64 196 2015-06-18 13:50:15Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -36,4 +36,4 @@ PARFLAGS  =
 ARCHLIB   = -dynamic -L/usr/lib64 -lm -lpthread -lc
 
 M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
-PVMLIBS   = -lpvm3
+PVMLIBS   = # -lpvm3

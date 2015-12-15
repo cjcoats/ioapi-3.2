@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: UNGRIDB.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: UNGRIDB.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> UNGRIDB() and UNGRIDI()</TITLE>
 </HEAD>
@@ -17,11 +17,22 @@
 
 <H2> Fortran version: </H2>
 
-For I/O&nbsp;API Version&nbsp;3.2:  these are generic routines with optionally 1-D or
-2-D <CODE>REAL</CODE> or <CODE>REAL*8</CODE> location-arguments, with
-<CODE>INTERFACE</CODE>s defined in <CODE>MODULE M3UTILIO</CODE>.  For
-previous I/O&nbsp;API versions, <CODE>UNGRIDB()</CODE> is the same as
-I/O&nbsp;API Version&nbsp;3.2 <CODE>UNGRIDBS1()</CODE>.
+
+    <BLOCKQUOTE>
+    For I/O&nbsp;API Version&nbsp;3.2:   <VAR>UNGRIDB()</VAR> and
+    <VAR>UNGRIDI()</VAR> are Fortran-90 generic routines with optionally
+    1-D or 2-D <CODE>REAL</CODE> or <CODE>REAL*8</CODE>
+    location-arguments, with <CODE>INTERFACE</CODE>s defined in
+    <CODE>MODULE M3UTILIO</CODE>.
+    <P>
+
+    For previous I/O&nbsp;API versions, <CODE>UNGRIDB()</CODE> has the
+    same argument list as I/O&nbsp;API Version&nbsp;3.2
+    <CODE>UNGRIDBS1()</CODE>, and <CODE>UNGRIDI()</CODE> is the same as
+    I/O&nbsp;API Version&nbsp;3.2 <CODE>UNGRIDIS1()</CODE>, but do not
+    have <CODE>INTERFACE</CODE>s (hence Fortran-77 style argument
+    behavior).
+    </BLOCKQUOTE>
 <PRE>
     SUBROUTINE UNGRIDB( NCOLS, NROWS, XORIG, YORIG, XCELL, YCELL, ..., NU, CU ):
 

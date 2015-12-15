@@ -2,14 +2,16 @@
         LOGICAL FUNCTION WRBUF3( FID, VID, JDATE, JTIME, STEP, BUFFER )
 
 C***********************************************************************
-C Version "$Id: wrbuf3.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: wrbuf3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  81
+C  function body starts at line  85
 C
 C  FUNCTION:  writes all the data from BUFFER() for timestep JDATE:JTIME
 C             (formatted YYYYDDD and HHMMSS) to the Models-3 BUFFERED
@@ -120,7 +122,7 @@ C   begin body of function  WRBUF3
 
                 END IF
 
-            ELSE IF ( NDATE3( VID,FID ) .EQ. ADATE  .AND.  
+            ELSE IF ( NDATE3( VID,FID ) .EQ. ADATE  .AND.
      &                NTIME3( VID,FID ) .EQ. ATIME ) THEN ! advance 1 time step
 
                 IF ( JSTEP .NE. 0 ) THEN
@@ -141,16 +143,16 @@ C   begin body of function  WRBUF3
 
                 END IF
 
-            ELSE IF ( LDATE3( VID,FID ) .EQ. ZDATE  .AND.  
+            ELSE IF ( LDATE3( VID,FID ) .EQ. ZDATE  .AND.
      &                LTIME3( VID,FID ) .EQ. ZTIME ) THEN  ! retreat 1 time step
 
-                ILAST3( VID,FID ) = 1 - IDUM            !  case _must_ be 
+                ILAST3( VID,FID ) = 1 - IDUM            !  case _must_ be
                 NDATE3( VID,FID ) = LDATE3( VID,FID )
                 NTIME3( VID,FID ) = LTIME3( VID,FID )
                 LDATE3( VID,FID ) = JDATE               !  time-dependent
                 LTIME3( VID,FID ) = JTIME
 
-            ELSE IF ( NDATE3( VID,FID ) .EQ. IMISS3 ) THEN  ! second call, 
+            ELSE IF ( NDATE3( VID,FID ) .EQ. IMISS3 ) THEN  ! second call,
                                                             ! time dependent case
 
                 IF  ( LDATE3( VID,FID ) .EQ. ADATE  .AND.
@@ -170,18 +172,18 @@ C   begin body of function  WRBUF3
 
                 END IF
 
-            ELSE IF ( ( JDATE .NE. LDATE3( VID,FID ) .OR.  
-     &                  JTIME .NE. LTIME3( VID,FID ) ) 
+            ELSE IF ( ( JDATE .NE. LDATE3( VID,FID ) .OR.
+     &                  JTIME .NE. LTIME3( VID,FID ) )
      &                .AND.
-     &                ( JDATE .NE. NDATE3( VID,FID ) .OR.  
+     &                ( JDATE .NE. NDATE3( VID,FID ) .OR.
      &                  JTIME .NE. NTIME3( VID,FID ) ) ) THEN
 
                 WRITE( MESG, 93020 )
-     &              'Date/time being written to BUFFERED file ' // 
+     &              'Date/time being written to BUFFERED file ' //
      &              FLIST3( FID ) // ':', JDATE, JTIME
                 CALL M3MSG2( MESG )
                 WRITE( MESG, 93020 )
-     &              'Last date/time  written:', 
+     &              'Last date/time  written:',
      &              LDATE3( VID,FID ), LTIME3( VID,FID )
                 CALL M3MSG2( MESG )
                 MESG = 'Out-of-order write to BUFFERED file '
@@ -195,7 +197,7 @@ C   begin body of function  WRBUF3
             IF ( VTYPE3( VID,FID ) .EQ. M3REAL ) THEN
                 WRBUF3 = ( 0 .NE. BUFPUT3 ( FID, VID,
      &                                      SIZE, IDUM, TSTEP,
-     &                                      BUFFER ) ) 
+     &                                      BUFFER ) )
             ELSE IF ( VTYPE3( VID,FID ) .EQ. M3INT ) THEN
                 WRBUF3 = ( 0 .NE. BUFPUT3I( FID, VID,
      &                                      SIZE, IDUM, TSTEP,
@@ -213,7 +215,7 @@ C   begin body of function  WRBUF3
             DO  99  V = 1, NVARS3( FID )
 
                 IF ( VTYPE3( V,FID ) .NE. M3REAL ) THEN
-                    
+
                     MESG = 'ALLVAR3 non-REAL types not supported'
                     CALL M3WARN( 'WRITE3/WRBUF3', JDATE, JTIME, MESG )
                     WRBUF3 = .FALSE.
@@ -237,7 +239,7 @@ C   begin body of function  WRBUF3
 
                     END IF
 
-                ELSE IF ( NDATE3( V,FID ) .EQ. ADATE  .AND.  
+                ELSE IF ( NDATE3( V,FID ) .EQ. ADATE  .AND.
      &                    NTIME3( V,FID ) .EQ. ATIME ) THEN ! advance 1 timestep
 
                     WFLAG = ( 0 .NE. BUFPUT3( FID, V, SIZE,
@@ -261,7 +263,7 @@ C   begin body of function  WRBUF3
 
                     END IF
 
-                ELSE IF ( LDATE3( V,FID ) .EQ. ZDATE  .AND.  
+                ELSE IF ( LDATE3( V,FID ) .EQ. ZDATE  .AND.
      &                    LTIME3( V,FID ) .EQ. ZTIME ) THEN  ! retreat 1 time step
 
                     WFLAG = ( 0 .NE. BUFPUT3( FID, V, SIZE,
@@ -294,18 +296,18 @@ C   begin body of function  WRBUF3
 
                     END IF
 
-                ELSE IF ( ( JDATE .NE. LDATE3( V,FID ) .OR.  
-     &                      JTIME .NE. LTIME3( V,FID ) ) 
+                ELSE IF ( ( JDATE .NE. LDATE3( V,FID ) .OR.
+     &                      JTIME .NE. LTIME3( V,FID ) )
      &                    .AND.
-     &                    ( JDATE .NE. NDATE3( V,FID ) .OR.  
+     &                    ( JDATE .NE. NDATE3( V,FID ) .OR.
      &                      JTIME .NE. NTIME3( V,FID ) ) ) THEN
 
                     WRITE( MESG, 93020 )
-     &              'Date/time being written to BUFFERED file ' // 
+     &              'Date/time being written to BUFFERED file ' //
      &              FLIST3( FID ) // ':', JDATE, JTIME
                     CALL M3MSG2( MESG )
                     WRITE( MESG, 93020 )
-     &              'Last date/time  written:', 
+     &              'Last date/time  written:',
      &              LDATE3( VID,FID ), LTIME3( VID,FID )
                     CALL M3MSG2( MESG )
                     MESG = 'Out-of-order write to BUFFERED file '
@@ -316,14 +318,14 @@ C   begin body of function  WRBUF3
 
                 END IF!  if "advance 1", "retreat 1", or not "last" or "next"
 
-                WFLAG = ( 0 .NE. BUFPUT3( FID, V, SIZE, IDUM, 
+                WFLAG = ( 0 .NE. BUFPUT3( FID, V, SIZE, IDUM,
      &                                    TSTEP3( FID ), BUFFER( I ) ) )
 
                 I = I + SIZE    !  set up for next variable's slice of buffer()
 
                 IF( .NOT. WFLAG ) THEN
 
-                    MESG = 'Failure writing ' // VLIST3( V,FID ) // 
+                    MESG = 'Failure writing ' // VLIST3( V,FID ) //
      &                     ' to ' // FLIST3( FID )
                     CALL M3WARN( 'WRITE3/WRBUF3', JDATE, JTIME, MESG )
                     WRBUF3 = .FALSE.
@@ -344,8 +346,6 @@ C   begin body of function  WRBUF3
 C******************  FORMAT  STATEMENTS   ******************************
 
 C...........   Internal buffering formats..... 93xxx
-
-93010   FORMAT ( 5 ( A, :, I9, :, 2X ) )
 
 93020   FORMAT ( A, :, I9, ':', I6.6, :, A, :, 2X, I6.6 )
 

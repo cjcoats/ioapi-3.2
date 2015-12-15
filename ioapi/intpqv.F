@@ -1,8 +1,10 @@
 C.........................................................................
-C Version "$Id: intpqv.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: intpqv.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2004 Baron Advanced Meteorological Systems
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -28,35 +30,36 @@ C       driver to initialize "bufint3.c" buffers, and then do calls
 C       to BUFINT*() from there instead of redundantly from here.
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO; INTENT
 C.........................................................................
 
 #ifdef IOAPICPL
 
       LOGICAL FUNCTION INTPQV( FID, VID, JDATE, JTIME, P, Q )
+     &                 RESULT( INTFLAG )
 
-      IMPLICIT NONE
+        USE M3UTILIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
-      INCLUDE 'PARMS3.EXT'
       INCLUDE 'STATE3.EXT'
       INCLUDE 'STATE3V.EXT'
 
 
 C...........   ARGUMENTS and their descriptions:
 
-      INTEGER       FID         !  file subscript for STATE3 arrays
-      INTEGER       VID         !  variable subscript for STATE3 arrays
-      INTEGER       JDATE       !  date, formatted YYYYDDD
-      INTEGER       JTIME       !  time, formatted HHMMSS
-      REAL          P, Q        !  fractions used for interpolation.
+      INTEGER, INTENT(IN   ) :: FID         !  file subscript for STATE3 arrays
+      INTEGER, INTENT(IN   ) :: VID         !  variable subscript for STATE3 arrays
+      INTEGER, INTENT(IN   ) :: JDATE       !  date, formatted YYYYDDD
+      INTEGER, INTENT(IN   ) :: JTIME       !  time, formatted HHMMSS
+      REAL   , INTENT(IN   ) :: P, Q        !  fractions used for interpolation.
 
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-      LOGICAL, EXTERNAL :: CURRSTEP    !  finds start of timestep
-      INTEGER, EXTERNAL :: SECSDIFF    !  computes date&time differences
-      INTEGER, EXTERNAL :: TIME2SEC    !  converts time to seconds
       INTEGER, EXTERNAL :: VIR2BUF
 
 
@@ -77,7 +80,7 @@ C   begin body of function  INTERP3
      &                     SDATE3( FID ), STIME3( FID ), TSTEP,
      &                     PDATE, PTIME ) ) THEN
           CALL M3WARN('INTPQV', JDATE, JTIME, 'CURRSTEP ERROR')
-          INTPQV = .FALSE.
+          INTFLAG = .FALSE.
           RETURN
       END IF
 
@@ -114,7 +117,7 @@ C   begin body of function  INTERP3
      $        (PL .AND. FL) .OR. (PN .AND. FN) ) THEN
             CALL M3WARN('INTPQV', JDATE, JTIME,
      $           'Inconsistent LDATE3/LTIME3 or NDATE3/NTIME3 ERROR')
-            INTPQV = .FALSE.
+            INTFLAG = .FALSE.
             RETURN
          ENDIF
 
@@ -156,12 +159,12 @@ C   begin body of function  INTERP3
       IF ( 0 .EQ.IRET ) THEN
 
           CALL M3WARN('INTERP3/INTPQV', JDATE, JTIME, 'vir2buf ERROR')
-          INTPQV = .FALSE.
+          INTFLAG = .FALSE.
 
       ELSE
 
           ILAST3(VID,FID) = IP
-          INTPQV = .TRUE.
+          INTFLAG = .TRUE.
 
       END IF            !  if 0 = iret
 
@@ -179,23 +182,23 @@ C*********************************************************************
         !!    update LDATE:LTIME and NDATE:NTIME
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+        USE M3UTILIO
+
         IMPLICIT NONE
 
 C...........   INCLUDES:
 
-        INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
         INCLUDE 'STATE3V.EXT'
 
 
 C...........   ARGUMENTS and their descriptions:
 
-        INTEGER         FID, VID, IP, KDATE, KTIME
+        INTEGER, INTENT(IN   ) :: FID, VID, IP, KDATE, KTIME
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        INTEGER         BUFVRD3, BUFVRD3D
-        EXTERNAL        BUFVRD3, BUFVRD3D
+        INTEGER, EXTERNAL :: BUFVRD3, BUFVRD3D
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEXTIME.html 137 2015-01-27 21:43:37Z coats $" -->
+<!-- "$Id: NEXTIME.html 156 2015-02-12 22:04:24Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> NEXTIME() and nextimec() </TITLE>
 </HEAD>
@@ -53,6 +53,12 @@
     for time periods exceeding approximately 24.5 years.</EM>
     <P>
 
+    <STRONG>See also: </STRONG>
+    <A HREF = "CURRSTEP.html">CURRSTEP()</A>,
+    <A HREF = "JSTEP3.html">JSTEP3()</A>, and
+    <A HREF = "LASTTIME.html">LASTTIME()</A>
+    <P>
+
     For Fortran-90 declarations and interface checking:    
     <PRE>
     <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
@@ -63,9 +69,9 @@
     <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
     <P> 
 
-    JDATE, JTIME, and DTIME represents dates, times, and time
-    intervals  according to <A HREF = "DATETIME.html"> 
-    Models-3 conventions</A>:
+    <CODE>JDATE</CODE>, <CODE>JTIME</CODE>, and <CODE>DTIME</CODE>
+    represents dates, times, and time intervals  according to
+    <A HREF = "DATETIME.html">Models-3 conventions</A>:
 
 <PRE>
     JDATE is  YYYYDDD = YEAR*1000  +  DAY

@@ -2,7 +2,7 @@
         PROGRAM MTXBUILD
 
 C***********************************************************************
-C Version "$Id: mtxbuild.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: mtxbuild.f 158 2015-02-16 19:51:12Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -39,14 +39,14 @@ C       Prototype 9/2000 by Carlie J. Coats, Jr.,
 C       MCNC Environmental Programs
 C       Version 11/2001 by CJC for I/O API Version 2.1
 C       Version  11/2005 by CJC:  eliminate unused vbles
-C       Version   8/2008 by CJC:  USE M3UTILIO, M3ATTS to put
+C       Version   8/2008 by CJC:  USE M3UTILIO, MODATTS3 to put
 C       grid-attributes into matrix.
 C       Version  02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C***********************************************************************
 
       USE M3UTILIO
-      USE M3ATTS
+      USE MODATTS3
 
       IMPLICIT NONE
 
@@ -142,7 +142,7 @@ C   begin body of program MTXBUILD
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: mtxbuild.f 101 2015-01-16 16:52:50Z coats               $',
+     &'$Id:: mtxbuild.f 158 2015-02-16 19:51:12Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN

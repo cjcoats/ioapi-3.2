@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BMATVEC.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: BMATVEC.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> BILIN() and BMATVEC() </TITLE>
 </HEAD>
@@ -16,12 +16,18 @@
 
 <H2> Fortran version: </H2>
 
-For I/O&nbsp;API Version&nbsp;3.2:  these are generic routines, with
-<CODE>INTERFACE</CODE>s defined in <CODE>MODULE M3UTILIO</CODE>. The
-prior versions, for I/O&nbsp;API Versions&nbsp;3.1 and before, look like 
-<CODE>BILIN11L()</CODE> and <CODE>BMATVEC11()</CODE> below, and rely
-upon single-indexing and F77/&quot;C-void pointer&quot; argument
-passing to achieve the required polymorphism.
+    <BLOCKQUOTE>
+    For I/O&nbsp;API Version&nbsp;3.2:  <VAR>BILIN()</VAR> and 
+    <VAR>BMATVEC()</VAR> are Fortran-90 generic routines, with
+    <CODE>INTERFACE</CODE>s defined in <CODE>MODULE M3UTILIO</CODE>. The
+    prior versions.
+    <P>
+    For I/O&nbsp;API Versions&nbsp;3.1 and before,  <VAR>BILIN()</VAR> and 
+    <VAR>BMATVEC()</VAR> look like  <CODE>BILIN11L()</CODE> and
+    <CODE>BMATVEC11()</CODE> below, and rely upon single-indexing and
+    F77/&quot;C-void pointer&quot; argument passing to achieve the required
+    polymorphism.
+    </BLOCKQUOTE>
 
 <PRE>
     INTERFACE BILIN( IX, AX, ... )

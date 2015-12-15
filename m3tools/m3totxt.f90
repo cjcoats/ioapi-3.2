@@ -2,7 +2,7 @@
 PROGRAM M3TOTXT
 
     !!***************************************************************
-    !!  Version "$Id: m3totxt.f90 145 2015-02-02 16:59:34Z coats $"
+    !!  Version "$Id: m3totxt.f90 176 2015-03-02 16:20:06Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
     !!   (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -11,7 +11,7 @@ PROGRAM M3TOTXT
     !!   Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!   See file "GPL.txt" for conditions of use.
     !!..............................................................
-    !!  program body starts at line  87
+    !!  program body starts at line  84
     !!
     !!  DESCRIPTION:
     !!      See splash screen
@@ -25,8 +25,9 @@ PROGRAM M3TOTXT
     !!      Prototype  04/2011 by CJC
     !!      Version    01/2013 by CJC:   Use LASTTIME to compute EDATE:ETIME
     !!      Version    01/2015 by CJC for I/O API-3.2:  Fortran90 "free"
-    !!      source-format, generic ENVLIST(); support for INTEGER and REAL*8
-    !!      variables using CONTAINed routines *GRID2ASC()
+    !!      source-format, generic ENVLIST(); support for INTEGER, INTEGER*8,
+    !!      and REAL*8 variables using CONTAINed routines *GRID2ASC()
+    !!      call RUNSPEC() to get SDATE:STIME:TSTEP:NRECS
     !!***************************************************************
 
     USE M3UTILIO
@@ -66,6 +67,7 @@ PROGRAM M3TOTXT
     INTEGER         NCOLS2
     INTEGER         NROWS2
     INTEGER         NLAYS2
+    INTEGER         TSTEP2
     REAL*8          P_ALP2
     REAL*8          P_BET2
     REAL*8          P_GAM2
@@ -75,11 +77,6 @@ PROGRAM M3TOTXT
     REAL*8          YORIG2
     REAL*8          XCELL2
     REAL*8          YCELL2
-    INTEGER         SDATE2
-    INTEGER         STIME2
-    INTEGER         TSTEP2
-    INTEGER         EDATE2
-    INTEGER         ETIME2
 
     !!--------------------------------------------------------------
     !!   begin body of program M3TOTXT
@@ -121,7 +118,7 @@ PROGRAM M3TOTXT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3totxt.f90 145 2015-02-02 16:59:34Z coats $',&
+'$Id: m3totxt.f90 176 2015-03-02 16:20:06Z coats $',&
 ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -157,12 +154,7 @@ PROGRAM M3TOTXT
         YORIG2 = YORIG3D
         XCELL2 = XCELL3D
         YCELL2 = YCELL3D
-
-        SDATE2 = SDATE3D
-        STIME2 = STIME3D
         TSTEP2 = TSTEP3D
-
-        CALL LASTTIME( SDATE2, STIME2, TSTEP2, MXREC3D, EDATE2, ETIME2 )
 
     END IF              !  if not.open3(INFILE...); else...
 
@@ -213,19 +205,7 @@ PROGRAM M3TOTXT
 
     !!...............  Get date&time, grid-window specs:
 
-    IF ( TSTEP2 .GT. 0 ) THEN
-        SDATE = GETNUM( SDATE2, EDATE2, SDATE2, 'Enter starting date  for ${REPORT}' )
-        STIME = GETNUM(      0, 999999, STIME2, 'Enter starting time  for ${REPORT}' )
-        EDATE = GETNUM( SDATE , EDATE2, EDATE2, 'Enter ending   date  for ${REPORT}' )
-        ETIME = GETNUM(      0, 999999, ETIME2, 'Enter ending   time  for ${REPORT}' )
-        TSTEP = GETNUM( TSTEP2, 999999, TSTEP2, 'Enter     time step  for ${REPORT}'     )
-        NRECS = CURREC( EDATE, ETIME, SDATE, STIME, TSTEP2, JDATE, JTIME )
-    ELSE
-        SDATE = 0
-        STIME = 0
-        TSTEP = 0
-        NRECS = 1
-    END IF
+    CALL RUNSPEC( 'INFILE', .FALSE., SDATE, STIME, TSTEP, NRECS )
 
     COL0 = GETNUM(    1, NCOLS2, NCOLS2/2, 'Enter starting column for ${REPORT}' )
     COL1 = GETNUM( COL0, NCOLS2, COL0+1,   'Enter final    column for ${REPORT}' )
@@ -264,6 +244,10 @@ PROGRAM M3TOTXT
             ELSE IF ( VTYPES(V) .EQ. M3REAL ) THEN
 
                 CALL RGRID2ASC( VNAMES(V), ILAY, JDATE, JTIME )
+
+            ELSE IF ( VTYPES(V) .EQ. M3INT8 ) THEN
+
+                CALL LGRID2ASC( VNAMES(V), ILAY, JDATE, JTIME )
 
             END IF
 
@@ -363,6 +347,45 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         RETURN
 
     END SUBROUTINE  IGRID2ASC
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  LGRID2ASC( VNAME, LAYER, JDATE, JTIME )
+
+        CHARACTER*(*), INTENT(IN   ) :: VNAME
+        INTEGER      , INTENT(IN   ) :: LAYER, JDATE, JTIME
+
+        INTEGER     C, R
+        INTEGER*8   IBUF( NCOLS2,NROWS2 )
+
+        !!...............   body  ......................................
+
+        IF ( .NOT.READ3( 'INFILE', VNAME, LAYER, JDATE, JTIME, IBUF ) ) THEN
+            EFLAG = .TRUE.
+            RETURN
+        END IF
+
+        IF ( TSTEP2 .GT. 0 ) THEN
+            WRITE( RDEV, '( 5X, 3A, 2X, I9.7, A, I6.6 )' )                  &
+                '# Variable "', TRIM( VNAMES( V ) ), '"  Date&Time', JDATE, ':', JTIME
+        ELSE
+            WRITE( RDEV, '( 5X, 3 A )' ) 'Variable "', TRIM( VNAMES( V ) ), '"'
+        END IF
+        WRITE( RDEV, '( 1X, A, T15, 99999( I5, :, 15X ) )' )                &
+            '# ROW\COL:', ( C, C = COL0, COL1 )
+
+        DO R = ROW0, ROW1
+            WRITE( RDEV, '( 1X, I5, T15, 99999( I19, :, 1X ) )' )           &
+                R, ( IBUF( C,R ), C = COL0, COL1 )
+        END DO
+
+        IF ( N .LT. NRECS )  WRITE( RDEV, '( 1X, A, / )' ) DASH
+
+        RETURN
+
+    END SUBROUTINE  LGRID2ASC
 
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

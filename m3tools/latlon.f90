@@ -39,8 +39,8 @@ PROGRAM LATLON
     !!      Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
     !!      USE M3UTILIO, and related changes.
     !!      Version 12/2013 by CJC:  PARAMETER  CMENU(:), CTYPE(:)
-    !!      Version 01/2015 by CJC for I/O API-v3.2:  USE MODGCTP;
-    !!      Fortran-90 "free" source format
+    !!      Version 02/2015 by CJC for I/O API-v3.2:  USE MODGCTP;
+    !!      Fortran-90 "free" source format; use generics for "GET*()"
     !!***********************************************************************
 
     USE M3UTILIO
@@ -118,10 +118,10 @@ PROGRAM LATLON
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: latlon.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: latlon.f90 174 2015-02-26 21:23:12Z coats $',&
 ''
 
-    IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
+    IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Program ended at user request', 0 )
     END IF
 
@@ -179,7 +179,7 @@ PROGRAM LATLON
     !!
     !!  for which the (I,J) cell is {(C,R): I-1 <= C <I, J-1 <= R <J }
 
-    IF ( GETYN( 'Specify grid by name from GRIDDESC file?', .TRUE. ) ) THEN
+    IF ( GETVAL( 'Specify grid by name from GRIDDESC file?', .TRUE. ) ) THEN
 
         CALL GETSTR( 'Enter grid name', 'SMRAQ54_50X48', GDNAM3D )
         IF ( .NOT. DSCGRID( GDNAM3D, ANAME  , GDTYP3D,          &
@@ -196,7 +196,7 @@ PROGRAM LATLON
     ELSE        !  enter grid specs interactively
 
         CALL GETSTR( 'Enter grid name', 'SMRAQ54_48X50', GDNAM3D )
-        GDTYP3D = CTYPE( GETMENU( 6, 2, 'Enter number for horizontal coordinate system type', CMENU ) )
+        GDTYP3D = CTYPE( GETVAL( 6, 2, 'Enter number for horizontal coordinate system type', CMENU ) )
 
         IF ( GDTYP3D .EQ. LATGRD3 ) THEN !  lat-lon:  no P_ALP, ...
 
@@ -209,19 +209,19 @@ PROGRAM LATLON
         ELSE IF ( GDTYP3D .EQ. LAMGRD3  .OR.    &
                   GDTYP3D .EQ. ALBGRD3  ) THEN !  Lambert or Albers conic projection
 
-            P_ALP3D = GETDBLE( -90.0D0, 90.0D0, 30.0D0, 'Enter secant angle     P_ALP' )
-            P_BET3D = GETDBLE( P_ALP3D, 90.0D0, 60.0D0, 'Enter secant angle     P_BET' )
-            P_GAM3D = GETDBLE( -180.0D0, 180.0D0, -90.0D0, 'Enter central meridian P_GAM' )
-            XCENT3D = GETDBLE( -180.0D0, 180.0D0, P_GAM3D, 'Enter X coord origin   XCENT' )
-            YCENT3D = GETDBLE(  -90.0D0,  90.0D0, 40.0D0, 'Enter Y coord origin   YCENT' )
+            P_ALP3D = GETVAL( -90.0D0, 90.0D0, 30.0D0, 'Enter secant angle     P_ALP' )
+            P_BET3D = GETVAL( P_ALP3D, 90.0D0, 60.0D0, 'Enter secant angle     P_BET' )
+            P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter central meridian P_GAM' )
+            XCENT3D = GETVAL( -180.0D0, 180.0D0, P_GAM3D, 'Enter X coord origin   XCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0, 40.0D0, 'Enter Y coord origin   YCENT' )
 
         ELSE IF ( GDTYP3D .EQ. UTMGRD3 ) THEN !  UTM projection
 
-            P_ALP3D = DBLE( GETNUM( 1, 60, 17, 'Enter UTM zone' ) )
+            P_ALP3D = DBLE( GETVAL( 1, 60, 17, 'Enter UTM zone' ) )
             P_BET3D = 0.0D0
             P_GAM3D = 0.0D0
-            XCENT3D = GETDBLE( -999999999.0D0, 999999999.0D0, 0.0D0, 'Enter UTM offset XCENT' )
-            YCENT3D = GETDBLE( -999999999.0D0, 999999999.0D0, 0.0D0, 'Enter UTM offset YCENT' )
+            XCENT3D = GETVAL( -999999999.0D0, 999999999.0D0, 0.0D0, 'Enter UTM offset XCENT' )
+            YCENT3D = GETVAL( -999999999.0D0, 999999999.0D0, 0.0D0, 'Enter UTM offset YCENT' )
 
         ELSE
 
@@ -229,15 +229,15 @@ PROGRAM LATLON
 
         END IF  !  if descriptive angles relevant for this type
 
-        NCOLS3D = GETNUM( 1, 999999999, 48, 'Enter number NCOLS of grid columns' )
-        NROWS3D = GETNUM( 1, 999999999, 50, 'Enter number NROWS of grid rows' )
-        NTHIK3D = GETNUM( 1, 999999999, 1, 'Enter bdy thickness NTHIK (cells)' )
+        NCOLS3D = GETVAL( 1, 999999999, 48, 'Enter number NCOLS of grid columns' )
+        NROWS3D = GETVAL( 1, 999999999, 50, 'Enter number NROWS of grid rows' )
+        NTHIK3D = GETVAL( 1, 999999999, 1, 'Enter bdy thickness NTHIK (cells)' )
 
-        XCELL3D = GETDBLE( 0.0D0, 9.0D36, 54000.0D0, 'Enter X cell size XCELL (meters)' )
-        YCELL3D = GETDBLE( 0.0D0, 9.0D36, XCELL3D, 'Enter Y cell size YCELL (meters)' )
-        XORIG3D = GETDBLE( -9.0D36, 9.0D36, XCELL3D*( DBLE( NCOLS3D ) - 0.5D0 ),    &
+        XCELL3D = GETVAL( 0.0D0, 9.0D36, 54000.0D0, 'Enter X cell size XCELL (meters)' )
+        YCELL3D = GETVAL( 0.0D0, 9.0D36, XCELL3D, 'Enter Y cell size YCELL (meters)' )
+        XORIG3D = GETVAL( -9.0D36, 9.0D36, XCELL3D*( DBLE( NCOLS3D ) - 0.5D0 ),    &
                      'Enter SW corner X coord for (1,1)-cell' )
-        YORIG3D = GETDBLE( -9.0D36, 9.0D36, YCELL3D*( DBLE( NROWS3D ) - 0.5D0 ),    &
+        YORIG3D = GETVAL( -9.0D36, 9.0D36, YCELL3D*( DBLE( NROWS3D ) - 0.5D0 ),    &
                      'Enter SW corner Y coord for (1,1)-cell' )
 
     END IF      !  if specify horizontal grid by name, or interactively

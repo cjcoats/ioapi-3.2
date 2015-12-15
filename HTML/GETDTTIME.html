@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GETDTTIME.html 120 2015-01-20 22:24:03Z coats $" -->
+<!-- "$Id: GETDTTIME.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> GETDTTIME() </TITLE>
 </HEAD>
@@ -30,23 +30,27 @@
 
 <H2> Summary: </H2>
 
+    <BLOCKQUOTE>
     Get current date and time from system using UNIX system call 
     <VAR>time()</VAR>  and put it into standard Models-3-convention
-    <A HREF = "DATETIME.html"> date and time representation.</A>. 
+    <A HREF = "DATETIME.html"> date and time representation</A>. 
 
     For Fortran-90 declarations and interface checking:    
     <PRE>
     <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
     </PRE><P>
+    </BLOCKQUOTE>
 
 <H2> Preconditions: </H2>
 
+    <BLOCKQUOTE>
     <CODE>#include &quot;iodecl3.h&quot;</CODE> if called from C.
     <P> 
 
     Current date is <STRONG>before 2038</STRONG>, when the UNIX 
     <VAR>time()</VAR>  system call fails due to integer overflow 
     on 32-bit machines.
+    </BLOCKQUOTE>
 
 <H2> Fortran Usage: </H2>
 <PRE>        

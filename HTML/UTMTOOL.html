@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: UTMTOOL.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: UTMTOOL.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program UTMTOOL </TITLE>
 </HEAD>
@@ -16,7 +16,9 @@
 <H1>    Program UTMTOOL </H1>
 
 <STRONG><EM>Superseded by 
-<A HREF = "PROJTOOL.html"><CODE>projtool</CODE></A></EM></STRONG>
+<A HREF = "PROJTOOL.html"><CODE>projtool</CODE></A></EM></STRONG>.<BR>
+<EM>Removed for I/O&nbsp;API-3.2 and later.</EM>
+<P>
 
 <H2> Usage </H2>
 <STRONG><PRE>
@@ -54,7 +56,7 @@ gives you)
     <P>
     
     <STRONG>NOTE: </STRONG> according to the standard, UTM coordinates
-    should be specified in _meters_ instead of the UAM/EPS bastardized
+    should be specified in <U>meters</U> instead of the UAM/EPS bastardized
     system which claims to be UTM but in fact uses 
     <STRONG>kilo</STRONG>meters; the latter is a distinct
     (partially-supported) system, also. <P>
@@ -73,7 +75,7 @@ gives you)
     <P>
     
     The menu is:
-    <OL>
+    <BLOCKQUOTE><OL>
         <LI><CODE> Initialize new LAMBERT projection  by name</CODE>
         <LI><CODE> Initialize new POLar Stereographic by name (POL)</CODE>
         <LI><CODE> Initialize new TRansverse Mercator by name (TRM)</CODE>
@@ -118,14 +120,15 @@ gives you)
         <LI><CODE> Get LAT-LON grid corners from LAMBERT specs</CODE>
         <LI><CODE> Get LAMBERT grid corners from LAT-LON specs</CODE>
         <LI><CODE> Quit the program</CODE>
-    </OL>
+    </OL></BLOCKQUOTE>
     <P> 
 
 
 <H2> See Also </H2>
 
-
+<BLOCKQUOTE>
 <A HREF = "PROJTOOL.html"><CODE>projtool</CODE></A>
+<P> 
 
 <A HREF = "GRIDS.html#horiz"> 
 EDSS/Models-3 horizontal coordinate and grid conventions</A>
@@ -147,6 +150,7 @@ Coordinate manipulation routine <CODE>LAMBERT</CODE></A>
 <A HREF = "GCTP.html" >
 US Geological Survey General Coordinate Transformation Package (GCTP)</A>
 <P> 
+</BLOCKQUOTE>
 
 
 <HR> <!----------------------------------------------------------------->

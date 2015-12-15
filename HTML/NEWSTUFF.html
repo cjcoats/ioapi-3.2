@@ -1,22 +1,22 @@
 
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<HTML> 
+<HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 146 2015-02-02 17:04:47Z coats $" -->
-<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
-<TITLE> 
+<!-- "$Id: NEWSTUFF.html 277 2015-12-03 18:49:20Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE>
     What's New with the I/O&nbsp;API
 </TITLE>
 </HEAD>
-   
+
 <BODY BGCOLOR="#FFFFFF"
-      TOPMARGIN="15" 
-      MARGINHEIGHT="15" 
-      LEFTMARGIN="15" 
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 146 2015-02-02 17:04:47Z coats $
+    $Id: NEWSTUFF.html 277 2015-12-03 18:49:20Z coats $
     </EM>
     <HR>
 
@@ -32,7 +32,7 @@
     <BLOCKQUOTE>
     <STRONG>
     Starting with I/O&nbsp;API Version&nbsp;3.1, the
-    <VAR>Makefile</VAR>s are configured to use netCDF Version 4, which 
+    <VAR>Makefile</VAR>s are configured to use netCDF Version 4, which
     separates the Fortran library <VAR>libnetcdff.a</VAR> from the
     C&nbsp;library <VAR>libnetcdf.a</VAR>.  To match this, the
     <CODE>LIBS</CODE> in the <VAR>m3tools/Makefile</VAR> uses
@@ -50,8 +50,35 @@
 </A></H2>
 
     <UL>
+         <LI>  <A HREF = "#dec032015">
+               New <CODE>DBLLIST()</CODE>; bug-fixes and support for
+               blank-delimited lists in <CODE>*LIST()</CODE> routines
+         <LI>  <A HREF = "#nov202015">
+               I/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
+               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>
+         <LI>  <A HREF = "#nov112015">
+               I/O&nbsp;API v3.2 support for 365-day (no leap-year)
+               climate modeling year
+         <LI>  <A HREF = "#nov062015">
+               I/O&nbsp;API v3.2 <CODE>Makefile</CODE>s</A>
+         <LI>  <A HREF = "#oct302015">
+               I/O&nbsp;API v3.2 Major Update</A>
+         <LI>  <A HREF = "#jul082015">
+               Fix for bug in <VAR>ckfile3.f</VAR></A>, reported by Mogesh
+               Naidoo.
+         <LI>  <A HREF = "#jun182015">
+               Fix in <CODE>GCTP()</CODE>for Intel <VAR>ifort</VAR> v-11 and later.</A>
+         <LI>  <A HREF = "#may052015">
+               More <VAR>gfortran</VAR> hacks; <CODE>SINUGRD3</CODE>
+               map projection</A>
+         <LI>  <A HREF = "#mar0232015">
+               New routine RUNSPEC()</A>
+         <LI>  <A HREF = "#feb232015">
+               Standards-violation fixes in <VAR>getyn(), getstr(),
+               getreal(), getnum(), getmenu(), getdble(), promptmfile(),
+               promptffile(), year4(), skipl()</VAR> </A>
          <LI>  <A HREF = "#ver32">
-               <STRONG>I/O API Version 3.2-<VAR>beta</VAR></STRONG></A>
+               <STRONG>I/O&nbsp;API Version 3.2-<VAR>beta</VAR></STRONG></A>
          <LI>  <A HREF = "#jan222015">
                Bugfixes in <VAR>m3tools/projtool</VAR> </A>
          <LI>  <A HREF = "#aug2814">
@@ -99,7 +126,7 @@
                Version&nbsp;3.1 <VAR>m3tools/Makefile.*</VAR> now assume netCDF Version&gt;4.1
                Library Changes</A>
          <LI>  <A HREF = "#aug3111">
-               Bug-fixes in <VAR>m3tools</VAR> program <CODE>VERTINTEGRAL</CODE>
+               Bug-fixes in <VAR>m3tools</VAR> progrNew <CODE>DBLLIST()</CODE>; am <CODE>VERTINTEGRAL</CODE>
                </A>
          <LI>  <A HREF = "#aug2911">
                Bug-fixes in <CODE>SUBROUTINE CURREC</CODE>
@@ -117,7 +144,7 @@
                <CODE>PROJTOOL</CODE>
                </A>
          <LI>  <A HREF = "#apr2511">
-               Add interface-block for <CODE>CRLF()</CODE> to 
+               Add interface-block for <CODE>CRLF()</CODE> to
                <CODE>MODULE M3UTILIO</CODE>
                </A>
          <LI>  <A HREF = "#apr1911">
@@ -217,13 +244,13 @@
                </A>
          <LI>  <A HREF = "#may3007">
                Linux x86_64 <VAR>Makeinclude</VAR> support for PGI
-               compilers from  Prakash Doraiswamy and Winston Hao, 
+               compilers from  Prakash Doraiswamy and Winston Hao,
                NYDEC.
                </A>
          <LI>  <A HREF = "#may1607">
                Bug-fix/enhancement from Bonyoung Koo, Environ, to
                <VAR>m3tools</VAR> program <VAR>M3COMBO</VAR>; fix to
-               <VAR>CKDESC3()</VAR> for boundary files; 
+               <VAR>CKDESC3()</VAR> for boundary files;
                </A>
          <LI>  <A HREF = "#feb2107">
                Fixes to <VAR>m3tools</VAR> programs <VAR>M3COMBO</VAR>
@@ -246,10 +273,10 @@
                in <VAR>m3tools</VAR> program <VAR>MTXCALC</VAR>
                </A>
          <LI>  <A HREF = "#oct0506">Corrected splash-screen bug
-               in <VAR>INIT3()</VAR> 
+               in <VAR>INIT3()</VAR>
                </A>
-         <LI>  <A HREF = "#sep1306">Corrected 
-               <CODE>Makeinclude.Linux2_x86pg_gcc_mp</CODE> and 
+         <LI>  <A HREF = "#sep1306">Corrected
+               <CODE>Makeinclude.Linux2_x86pg_gcc_mp</CODE> and
                <CODE>Makeinclude.Linux2_x86pg_gcc_nomp</CODE>
                </A>
          <LI>  <A HREF = "#sep0706">Enhancement to <VAR>m3tools</VAR> program
@@ -260,8 +287,8 @@
                </A>
          <LI>  <A HREF = "#jun1106">Format-fix
                in <VAR>CKDESC3()</VAR></A>
-         <LI>  <A HREF = "#jun0706">Added WRF vertical coordinate 
-               support to worker routine <VAR>CKFILE3()</VAR> 
+         <LI>  <A HREF = "#jun0706">Added WRF vertical coordinate
+               support to worker routine <VAR>CKFILE3()</VAR>
                </A>
          <LI>  <A HREF = "#may1606">Added <CODE>INTERFACE</CODE>
                block for <VAR>GTPZ0()</VAR> in <CODE>m3utilio.f</CODE>;
@@ -270,7 +297,7 @@
          <LI>  <A HREF = "#may0806">Support for
                <CODE>VGTYP=VGWRFEM</CODE> in <VAR>CKDESC3()</VAR>
                </A>
-         <LI>  <A HREF = "#apr2606">New multi-file version of <VAR>m3tools</VAR> 
+         <LI>  <A HREF = "#apr2606">New multi-file version of <VAR>m3tools</VAR>
                program <VAR>M3COMBO</VAR>; bug-fix in <VAR>M3DIFF</VAR>
                </A>
          <LI>  <A HREF = "#mar3106">Fix <VAR>state3.h</VAR> storage-order
@@ -303,13 +330,14 @@
          <LI>  <A HREF = "#jun172005">AIX Build changes</A>
          <LI>  <A HREF = "#jun102005">Build Enhancements</A>
          <LI>  <A HREF = "#jun022005">Bugfix in programs
-               <CODE>M3CPLE</CODE>, <CODE>M3INTERP</CODE>,
+               <CODE>M3CPLE</CODE>, <CODE>M3INTERP</CODE>,I/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
+               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>
                <CODE>MTXBLEND</CODE>, and <CODE>MTXCPLE</CODE></A>
-         <LI>  <A HREF = "#may252005">Bugfixes in 
+         <LI>  <A HREF = "#may252005">Bugfixes in
                 <CODE>NEXTIME()</CODE> and <CODE>CURREC()</CODE></A>
-         <LI>  <A HREF = "#may192005">Bugfix in 
+         <LI>  <A HREF = "#may192005">Bugfix in
                 <CODE>NEXTIME()</CODE></A>
-         <LI>  <A HREF = "#apr1105">Bugfix from David WoBonyoung Koo, Environng, in 
+         <LI>  <A HREF = "#apr1105">Bugfix from David WoBonyoung Koo, Environng, in
                 <CODE>ENVYN()</CODE></A>
           <LI>  <A HREF = "#apr0605"><CODE>Makefile.nocpl</CODE>
                issue:  <CODE>ddtvar3v.F</CODE> and <CODE>interp3v.F</CODE></A>
@@ -319,10 +347,10 @@
          <LI>  <A HREF = "#mar2305">Build system enhancements,
                Bugfix for CBARNES gridding routines
                </A>
-         <LI>  <A HREF = "#feb2205">Bugfix</A>  in 
-               <A HREF="READ4D.html"><CODE>READ4D()</CODE></A> and 
+         <LI>  <A HREF = "#feb2205">Bugfix</A>  in
+               <A HREF="READ4D.html"><CODE>READ4D()</CODE></A> and
                <A HREF="WRITE4D.html"><CODE>WRITE4D()</CODE></A>;
-               new <VAR>m3utilio.f</VAR>containing 
+               new <VAR>m3utilio.f</VAR>containing
                <CODE>MODULE&nbsp;M3UTILIO</CODE> with explicit
                interfaces, as an alternative for the<CODE>INCLUDE</CODE>
                files.
@@ -352,7 +380,14 @@
                                    program <CODE>M3TPROC</CODE></A>
         <LI>  <A HREF = "#oct1504">Bug fix; version in  <CODE>CRTFIL3</CODE></A>
         <LI>  <A HREF = "#sep072004">Bug fixes; virtual-mode <CODE>INTERP3</CODE></A>
-        <LI>  <A HREF = "#sep032004">Bug fixes; program <CODE>m3interp</CODE></A>
+        <LI>  <A HREF = "#sep032004">Bug fixes; program <CODE>m3interp<I/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
+               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>
+               and finite-element data in a way upwardly compatible with
+               the existing API and its library.
+        <LI>  <A HREF = "#check3">Bug-fix in <CODE>&nbsp;CHECK3()</CODE>,
+              <VAR>Makefile</VAR></A>
+        <LI>  <A HREF = "#mercs"> More I/O&nbsp;API map projection
+                                  support</A>/CODE></A>
         <LI>  <A HREF = "#aug042004">Bug fix in <CODE>currstepc()</CODE></A>
         <LI>  <A HREF = "#jul302004">Bug fix in <CODE>M3COMBO</CODE></A>
         <LI>  <A HREF = "#jul262004">Bug fixes in <CODE>M3MSG2</CODE>
@@ -392,7 +427,7 @@
               IRIX&nbsp;F90 Version&nbsp;7.4</A>
         <LI>  <A HREF = "#jun052003">Enhancements</A>:  for IRIX&nbsp;F90
         <LI>  <A HREF = "#may192003">Minor BugFixes/Enhancements</A>: there
-              were errors in treatment of buffered files; fixes from 
+              were errors in treatment of buffered files; fixes from
               David Wong, US EPA.
         <LI>  <A HREF = "#may152003">Minor BugFixes/Enhancements</A>: the
               wrong directory path was used to construct the tar-file;
@@ -409,7 +444,8 @@
               compatibility.
         <LI>  <A HREF = "#apr142003">Bugfix</A> for  <CODE>SETTRM()</CODE>;
               and new spheroid-selection routines <CODE>SETSPHERE()</CODE>,
-              <CODE>INITSPHERES()</CODE>, and <CODE>SPHEREDAT()</CODE>.
+              <CODE>INITSPHERES()</CODI/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
+               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>E>, and <CODE>SPHEREDAT()</CODE>.
          <LI> <A HREF = "#feb03b">Bugfixes</A> for I/O&nbsp;API Version&nbsp;2.2
               Cray versions of routines <CODE>rdatt3c()</CODE>
               and <CODE>wratt3c()</CODE>, and for &quot;worker
@@ -447,10 +483,10 @@
               bugfixes; Intel Linux support; <CODE>INTLIST()</CODE>,
               <CODE>REALLIST()</CODE>, and <CODE>STRLIST()</CODE>,
               more tools-programs:  <EM>December 5, 2001</EM>
-        <LI>  <A HREF = "gefile.html"><EM>Under Development:</EM> 
+        <LI>  <A HREF = "gefile.html"><EM>Under Development:</EM>
                Geo-Element File Type</A> that supports both geospatial
                and finite-element data in a way upwardly compatible with
-               the existing API and its library. 
+               the existing API and its library.
         <LI>  <A HREF = "#check3">Bug-fix in <CODE>&nbsp;CHECK3()</CODE>,
               <VAR>Makefile</VAR></A>
         <LI>  <A HREF = "#mercs"> More I/O&nbsp;API map projection
@@ -468,23 +504,378 @@
         <LI>  <A HREF = "#addl" > Additional supported platforms </A>
         <LI>  <A HREF = "#mcpl" > MCPL:  an I/O&nbsp;API output
                                   module for MM5 </A>
+        <P>
+        <LI>  <A HREF = "CHANGES.html">Changes from I/O&nbsp;API Version&nbsp;1</A>
     </UL>
     <P>
     Go to the <STRONG><EM><A HREF = "AVAIL.html">I/O&nbsp;API
     Availability/Download/Installation page</A></EM></STRONG>
     <P>
-   
 
-<HR> <!----------------------------------------------------------------->  
-    
-<H2> <A NAME = "ver32">
-    I/O API Version 3.2-<VAR>beta</VAR>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "dec032015">
+    New <CODE>DBLLIST()</CODE>; bug-fixes and support for blank-delimited lists
+    in <A HREF="LISTS.html"><CODE>*LIST()</CODE></A> routines
 </A></H2>
-   
+
+    Add new routine <CODE>DBLLIST()</CODE> for <CODE>REAL*8</CODE>
+    valued lists, with support as part of the <CODE>ENVLIST()</CODE> 
+    generic.
+    <P>
+
+    Support for lists requiring more than 512 columns had a bug.
+    Now fixed.  These routines also now support blank-delimited
+    lists.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "nov202015">
+    I/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
+    <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>
+</A></H2>
+
+    <VAR>m3tools</VAR> program
+    <A HREF = "WRFGRIDDESC.html"><VAR>wrfgriddesc</VAR></A> creates a
+    <VAR>GRIDDESC</VAR> file from the header-data in a WRF-format netCDF
+    file.
+    <P>
+
+    <VAR>m3tools</VAR> program 
+    <A HREF = "WRFTOM3.html"><VAR>wrftom3</VAR></A>
+    converts/extracts/windows variables from WRF-format netCDF files to
+    GRIDDED I/O&nbsp;API files.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "nov112015">
+    I/O&nbsp;API v3.2 support for 360/365-day (no leap-year)
+               climate modeling years
+</A></H2>
+
+    I/O&nbsp;API 3.2 has optional support for climate modeling with a
+    365-day/no-leap-year calendar with &quot;normal&quot; months, and
+    weeks aligned so that Jan.&nbsp;1, 1900 is a Monday.  To build this
+    version of the library, customize your <VAR>ioapi/Makefile</VAR> by
+    adding <CODE>-DIO_365=1</CODE> to the <CODE>DEFINEFLAGS</CODE>
+    <VAR>make</VAR>-variable in it.
+    <P>
+
+    Note that since I/O&nbsp;API 3.0 in 2002, the I/O&nbsp;API has had
+    optional support for climate modeling with a 360-day/30-day-month
+    calendar, with weeks also aligned so that Jan.&nbsp;1, 1900 is
+    a Monday.  To build this version of the library, customize your
+    <VAR>ioapi/Makefile</VAR> by adding <CODE>-DIO_360=1</CODE> to its
+    <CODE>DEFINEFLAGS</CODE>.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "nov062015">
+    I/O&nbsp;API v3.2 <CODE>Makefile</CODE>s
+</A></H2>
+
+    Note that  <CODE>Makefile</CODE>s always need to be customized
+    for your system (installation-directory <CODE>BASEDIR</CODE>,
+    etc.).<P>
+    Starting with this release, these <CODE>Makefile</CODE>s 
+    will not be included in the release <VAR>ioapi-3.2.tar.gz</VAR>;
+    for both of the directories <VAR>ioapi</VAR> and <VAR>m3tools</VAR>
+    you will need to copy one of the <CODE>Makefile.* </CODE> templates
+    to  <CODE>Makefile</CODE> and customize it.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "nov062015">
+    I/O&nbsp;API v3.2 <CODE>Makefile</CODE>s
+</A></H2>
+
+    Note that  <CODE>Makefile</CODE>s always need to be customized
+    for your system (installation-directory <CODE>BASEDIR</CODE>,
+    etc.).<P>
+    Starting with this release, these <CODE>Makefile</CODE>s 
+    will not be included in the release <VAR>ioapi-3.2.tar.gz</VAR>;
+    for both of the directories <VAR>ioapi</VAR> and <VAR>m3tools</VAR>
+    you will need to copy one of the <CODE>Makefile.* </CODE> templates
+    to  <CODE>Makefile</CODE> and customize it.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "oct302015">
+    I/O&nbsp;API v3.2-<EM>beta</EM>: Major Update.
+</A></H2>
+
+    Many thanks to George Delic, Ph.D., HiPERiSM Consulting LLC
+    &lt;<A HREF="http://www.hiperism.com/">http://www.hiperism.com/</A>&gt;
+    for help getting a cleanly-working release out.
+    <P>
+    There are major changes for this release, some of which are
+    <A HREF = "#ver32">documented elsewhere below</A>.
+    There are a number of additional changes, especially
+    for CMAQ-5.1, netCDF-4, and for MS-Windows:
+    <DL>
+        <DT><STRONG><VAR>PnetCDF</VAR> for CMAQ-5.1</STRONG></DT>
+        <DD>CMAQ-5.1 uses
+        <A HREF="https://trac.mcs.anl.gov/projects/parallel-netcdf"><VAR>PnetCDF</VAR></A>
+        for distributed-parallel I/O.  Note that this is for gridded
+        files only, with the fixed data-distribution specified for CMAQ.
+        To activate <VAR>pnetCDF</VAR> distributed I/O for a particular
+        file, you need the following kind of <CODE>setenv</CODE> statement in
+        your run-script.
+        <BLOCKQUOTE><CODE>
+        setenv &lt;logical name&gt; MPI:&lt;path (physical) name&gt;
+        </CODE></BLOCKQUOTE>
+        The <VAR>ioapi/Makefile.pncf</VAR> and
+        <VAR>m3tools/Makefile.pncf</VAR> may be used to create
+        I/O&nbsp;API libraries with PnetCDF activated, or this feature
+        may be turned on by un-commenting the compile-flag
+        <CODE>-DIOAPI_PNCF=1</CODE> in the <VAR>Makefile</VAR>s.
+        <P>
+        Related data- and processor-distribution state and
+        routines are found in new <CODE>MODULE&nbsp;MODPDATA</CODE>.
+        See <A HREF="BUFFERED.html#pncf">this section on environment
+        variables needed for using distributed-parallel I/O</A>.
+        </DD>
+        <P>
+
+        <DT><STRONG>Changes for <VAR>netCDF-4</VAR></STRONG></DT>
+        <DD>The I/O&nbsp;API was originally implemented in the early
+        1990's, using the netCDF-2 <CODE>NC*()</CODE> Fortran
+        interfaces.  As noted elsewhere, netCDF-4 split apart the
+        C interfaces, the Fortran interfaces, and the C++ interfaces
+        into separate libraries (which each have their own versioning).
+        Recent (post-4.4) versions of netCDF-Fortran have dropped the
+        <CODE>NC*()</CODE> interfaces used; a major and tedious re-write
+        was necessary to re-cast all 800+ <CODE>NC*()</CODE> calls in
+        terms of netCDF-3-style <CODE>NF_*()</CODE> interfaces.
+        <P>
+        At the same time, support was added for 64-bit-integer variables
+        (type <CODE>M3INT8&nbsp;=&nbsp;10</CODE>, provided that you are
+        using netCDF-4 libraries.  This feature may be turned on by
+        un-commenting <CODE>-DIOAPI_NCF4=1</CODE> in the
+        <VAR>Makefile</VAR>s.
+        </DD>
+        <P>
+
+        <DT><STRONG><VAR>Cygwin</VAR> under MS-Windows</STRONG></DT>
+        <DD>The following <VAR>Makeinclude</VAR> files are now
+        available, to build the I/O&nbsp;API using <VAR>gcc</VAR>
+        and <VAR>gfortran</VAR> for MS-Windows under
+        <A HREF="https://cygwin.com/index.html">Cygwin</A>:
+        <DL>
+            <DT><VAR>Makeinclude.WIN_x86gfort</VAR>
+            <DD>32-bit library/executables using Cygwin <VAR>gcc</VAR>
+                and <VAR>gfortran</VAR></DD>
+            <DT><VAR>Makeinclude.WIN_x86_64mingw64</VAR>
+            <DD>64-bit library/executables using MingW-64  <VAR>gcc</VAR>
+                and <VAR>gfortran</VAR></DD>
+        </DL>
+        </DD>
+        <P>
+    </DL>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jul222015">
+    I/O&nbsp;API v3.2-<EM>beta</EM>:  dependency-fixes; new <VAR>m3tools</VAR>
+               program <VAR>insertgrid</VAR>
+</A></H2>
+
+    July&nbsp;22, 2015:
+    <P>
+    For various C-language call reasons, there need to be standalone
+    versions of <A HREF="LAMBERT.html"><CODE>LAMBERT()</CODE></A>
+    and <A HREF="LASTTIME.html"><CODE>LASTTIME()</CODE></A>
+    <P>
+    New <VAR>m3tools</VAR> program
+    <A HREF="INSERTGRID.html"><VAR>insertgrid</VAR></A> replaces the
+    REAL variable-values from GRIDDED file <VAR>FILE1</VAR> by
+    values from GRIDDED file <VAR>FILE2</VAR> for those
+    <VAR>FILE1</VAR>-cells completely covered by <VAR>FILE2</VAR>, with
+    re-scaling option. Default scaling assumes (non-MKS SMOKE:  e.g.,
+    G/S/grid-cell) emissions units rather than (properly-mathematical
+    MKS) flux units (e.g., <VAR>W/m^2</VAR>).
+    <P>
+    For I/O&nbsp;API version3.2-<EM>beta</EM>.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jul082015">
+    Bug fix in <VAR>ckfile3()</VAR>
+</A></H2>
+
+    July&nbsp;8, 2015:
+    <P>
+    Mogesh Naidoo reports failure of  <VAR>ckfile3()</VAR> to support
+    Equatorial Mercator projection (<CODE>GDTYP3=EQMGRD3</CODE>).  This
+    bug is also present for <CODE>GDTYP3=TRMGRD3, ALBGRD3, LEQGRD3,
+    SINUGRD3</CODE>
+    <P>
+    Now corrected in all I/O&nbsp;API versions (3.0, 3.1, 3.2-<EM>beta</EM>).
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jun182015">
+    Fix in <CODE>GCTP()</CODE>for Intel <VAR>ifort</VAR> v-11 and later.
+</A></H2>
+
+    June&nbsp;18, 2015:
+    <P>
+
+    Introduce new scratch variables in <A HREF="GCTP.html">gctp.f</A>
+    so that <CODE>INTENT</CODE> works correctly for Intel
+    <VAR>ifort</VAR> version 11 and later.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "may052015">
+    More <VAR>gfortran</VAR> hacks; <CODE>SINUGRD3</CODE>
+               map projection
+</A></H2>
+
+    May&nbsp;5, 2015:
+    <P>
+    Recent <VAR>gfortran</VAR> wasn't allowing certain
+    <CODE>USE&nbsp;M3UTILIO</CODE> statements internally.  Hacked the
+    source to get it to where it will still work.
+    <P>
+
+    <STRONG>Added new parameter  <CODE>SINUGRD3</CODE></STRONG> for
+    Sinusoidal Equal Area map projection to  <VAR>PARMS3.EXT</VAR>
+    for I/O&nbsp;API versions 3.1 and 3.2.,
+    together with support for it in I/O&nbsp;API-3.2  <CODE>MODULE&nbsp;MODGCTP</CODE>
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "mar022015">
+    New routine RUNSPEC()
+</A></H2>
+
+    March&nbsp;2, 2015:<BR>
+    March&nbsp;4, 2015:
+    <P>
+    <A HREF="RUNSPEC.html"><CODE>SUBROUTINE&nbsp;RUNSPEC(
+    FNAME,&nbsp;USEENV,&nbsp;SDATE,&nbsp;STIME,&nbsp;TSTEP,&nbsp;NRECS&nbsp;)</CODE></A>
+    returns a time step sequence compatible with use of <CODE>FNAME</CODE>
+    as an input file:
+    <BLOCKQUOTE>
+    If <CODE>FNAME</CODE> is blank, default <CODE>SDATE:STIME</CODE> are
+    from the wall-clock, and default <CODE>TSTEP</CODE> is 1 hour.
+    <P>
+    If <CODE>FNAME</CODE> is time independent, return <CODE>SDATE=STIME=TSTEP=0,
+    NRECS=1</CODE>.
+    <P>
+    Else if  <CODE>USEENV</CODE>, get <CODE>SDATE, STIME, TSTEP, EDATE,
+    ETIME</CODE> from the environment and use them to calculate NRECS.
+    <P>
+    Else prompt the user for <CODE>SDATE, STIME, TSTEP,
+    EDATE, ETIME</CODE> and use them to calculate NRECS.
+    </BLOCKQUOTE>
+    <P>
+
+    <STRONG>Added March&nbsp;4, 2015:</STRONG>  Abhishek Bhat, PhD, EPI,
+    of Trinity Consultants, points out a <VAR>Makefile</VAR>-bug:  there
+    needs to be a dependency line <VAR>runspec.o:&nbsp;m3utilio.mod</VAR>
+    in the  <VAR>Makefile</VAR>, similar to the already-present
+    <VAR>matxatts.o:&nbsp;m3utilio.mod</VAR> dependency line.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "feb232015">
+    Standards-violation fixes in <VAR>getyn(), getstr(), getreal(),
+    getnum(), getmenu(), getdble(), promptmfile(), promptffile(),
+    year4(), skipl()</VAR>
+</A></H2>
+
+    Feb&nbsp;23, 2015:
+    <P>
+    The Models-3 coding standards state:
+    <OL>
+        <LI> You <STRONG>will check status of systems-calls</STRONG>
+             and other calls that may fail (e.g., netCDF and MPI calls)
+             and return success/failure status; and
+        <LI> You <STRONG>will write meaningful log messages</STRONG>
+             adequate to locate and diagnose the error for the above,
+             in cases of failures.
+    </OL>
+    In <STRONG>all</STRONG> of the above I/O&nbsp;API routines,
+    Marc&nbsp;Houyoux had written code which was in violation of those
+    coding standards.
+    <P>
+    Now corrected.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "ver32">
+    I/O&nbsp;API Version 3.2-<VAR>beta</VAR>
+</A></H2>
+
     January 9, 2015 <EM>et seq</EM>:
     <P>
     Version&nbsp;3.2 of the I/O&nbsp;API library code is
-    <A HREF = "../download/ioapi-3.2.tar.gz">available here for download</A>
+    <A HREF = "../../../download/ioapi-3.2.tar.gz">available here for download</A>
     in <VAR>gzip</VAR>ped-<VAR>tar</VAR> source code form from the CMAS Center
     web-site, or is available on GitHub from
     <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
@@ -500,7 +891,7 @@
     <CODE>MODULE&nbsp;M3UTILIO</CODE> to new
     <CODE>MODULE&nbsp;MODGCTP</CODE> or from version 3.1 and earlier
     <CODE>MODULE&nbsp;MATXATTS</CODE> to  Version 3.2
-    <CODE>MODULE&nbsp;M3ATTS</CODE>.
+    <CODE>MODULE&nbsp;MODATTS3</CODE>.
     <P>
     <UL>
         <LI>  New &quot;bounded&quot; <A HREF="ENVGETS.html">environment-value
@@ -508,7 +899,7 @@
               with three <CODE>MINVAL, MAXVAL, DEFAULT</CODE> arguments
               corresponding to the simple <CODE>DEFAULT</CODE> argument
               of <CODE>ENVINT(), ENVDBLE(), ENVREAL()</CODE>
-        <LI>  New generic <CODE>INTERFACE</CODE>s in 
+        <LI>  New generic <CODE>INTERFACE</CODE>s in
               <A HREF="M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>:
               <UL>
                   <LI>  <A HREF="BMATVEC.html"><CODE>BILIN()</CODE></A>:
@@ -523,8 +914,7 @@
                   <LI>  <A HREF="ENVGETS.html"><CODE>ENVGET()</CODE></A>
                         generic get-environment-variable routine
                         encapsulating <CODE>BENVINT(), BENVDBLE(),
-                        BENVREAL(),ENVINT(), ENVDBLE(), ENVREAL(), ENVSTR(),
-                        ENVYN() </CODE>
+                        BENVREAL(),ENVINT(), ENVDBLE(), ENVREAL(), ENVYN() </CODE>
                   <LI>  <A HREF="UNGRIDB.html"><CODE>UNGRIDB()</CODE></A>
                   <LI>  <A HREF="PMATVEC.html"><CODE>PMATVEC()</CODE></A>
                         Apply incidence matrices from <CODE>UNGRIDB()</CODE>,
@@ -557,7 +947,7 @@
               <CODE>INTERFACE</CODE>s:<BR>
               <EM>Old but modified:</EM> (moved from <CODE>MODULE&nbsp;M3UTILIO</CODE>)
               <UL>
-                  <LI>  <CODE>INTERFACE</CODE> for 
+                  <LI>  <CODE>INTERFACE</CODE> for
                         <A HREF="GCTP.html"><CODE>GTPZ0()</CODE></A>
                   <LI>  <CODE>INTERFACE</CODE>s and new implementations for
                         <CODE>GTPZ0()</CODE>-spheroid initialization procedures
@@ -565,8 +955,8 @@
                         SPHEREDAT()</CODE></A>
                   <LI>  <CODE>INTERFACE</CODE>s and new implementations for
                         single-precision/single-point/specific-projection
-                        coordinate-transform functions 
-                        <A HREF="LAMBERT.html"><CODE>INITPROJ(), ..., 
+                        coordinate-transform functions
+                        <A HREF="LAMBERT.html"><CODE>INITPROJ(), ...,
                         LAMBERT(), ..., ALB2EQM()</CODE></A>
                         <P>
               </UL>
@@ -576,20 +966,21 @@
                         and <CODE>SPHERENAMES(0:21)</CODE> for GCTP spheroid
                         names and indices;
                   <LI>  <CODE>GTPZ0()</CODE>-argument initialization procedure
-                        <CODE>M3TOGTPZ()</CODE>
+                        <A HREF="M3TOGTPZ.html"><CODE>M3TOGTPZ()</CODE></A>
                   <LI>  Scattered-point-array generic coordinate-transform
-                        procedure <CODE>XY2XY()</CODE>
+                        procedure <A HREF="XY2XY.html"><CODE>XY2XY()</CODE></A>
                   <LI>  Grid-node-array generic coordinate-transform
-                        procedure <CODE>GRID2XY()</CODE>
+                        procedure <A HREF="GRID2XY.html"><CODE>GRID2XY()</CODE></A>
                   <LI>  High-performance OpenMP-Parallel generic bilinear
-                        interpolation package <CODE>GRID2INDX(), PNTS2INDX(),
-                        INDXMULT()</CODE>
+                        interpolation package
+                        <A HREF="GRID2INDX.html"><CODE>GRID2INDX(), PNTS2INDX(),
+                        INDXMULT()</CODE></A>
               </UL>
               <P>
-        <LI>  New <A HREF="M3ATTS.html"><CODE>MODULE&nbsp;M3ATTS</CODE></A>
+        <LI>  New <A HREF="MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A>
               replaces <CODE>MODULE&nbsp;MATXATTS</CODE> (so that all
               <CODE>USE&nbsp;MATXATTS</CODE> statements need to become
-              <CODE>USE&nbsp;M3ATTS</CODE> in your codes):
+              <CODE>USE&nbsp;MODATTS3</CODE> in your codes):
               <UL>
                   <LI> Matrix-attribute routines (add extra <VAR>netCDF</VAR>
                        file attributes to describe input and output grids
@@ -616,20 +1007,24 @@
                        by environment variables <CODE>IOAPI_CMAQMETA,
                        IOAPI_SMOKEMETA</CODE>:<BR>
                        <BLOCKQUOTE>
-                        <VAR>setenv IOAPI_CMAQMETA Y</VAR><BR>
-                        <VAR>setenv IOAPI_SMOKEMETA Y</VAR>
+                        <VAR>setenv IOAPI_CMAQMETA &lt;path&gt; or
+                        <CODE>NONE</CODE></VAR><BR>
+                        <VAR>setenv IOAPI_SMOKEMETA &lt;path&gt; or
+                        <CODE>NONE</CODE></VAR>
                        </BLOCKQUOTE>
                        <UL>
                            <LI>  <CODE>INITCMAQ()</CODE>
                            <LI>  <CODE>GETCMAQ()</CODE>
+                           <LI>  <CODE>LOGCMAQ()</CODE>
                            <LI>  <CODE>SETCMAQ()</CODE>
                            <LI>  <CODE>ENDCMAQ()</CODE>
                            <LI>  <CODE>INITSMOKE()</CODE>
                            <LI>  <CODE>GETSMOKE()</CODE>
+                           <LI>  <CODE>LOGSMOKE()</CODE>
                            <LI>  <CODE>SETSMOKE()</CODE>
                            <LI>  <CODE>ENDSMOKE()</CODE>
                        </UL>
-              </UL> 
+              </UL>
               <P>
         <LI>  Updates to <VAR>m3tools</VAR> programs:
               <UL>
@@ -640,7 +1035,7 @@
                            <LI>  <A HREF="M3TOTXT.html"><VAR>m3totxt</VAR></A>, and
                            <LI>  <A HREF="VERTINTEGRAL.html"><VAR>vertintegral</VAR></A>.
                        </UL>
-                  <LI> These programs now <CODE>USE&nbsp;M3ATTS</CODE> for matrix-file attributes:
+                  <LI> These programs now <CODE>USE&nbsp;MODATTS3</CODE> for matrix-file attributes:
                        <UL>
                            <LI>  <VAR>mtxbuild</VAR>
                            <LI>  <VAR>mtxcalc</VAR>
@@ -702,13 +1097,13 @@
               <P>
     </UL>
     <P>
-    
+
 <H3><U>To-Do List:</U></H3>
 
     <UL>
         <LI> Define standard <VAR>CMAQ</VAR> and <VAR>SMOKE</VAR>
-             metadata and finish the relevant routines in 
-             <A HREF="M3ATTS.html"><CODE>MODULE&nbsp;M3ATTS<CODE></A>
+             metadata and finish the relevant routines in
+             <A HREF="MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A>
              accordingly.
              <P>
         <LI> Do overloaded <CODE>LL2LAM()</CODE> routines, to support
@@ -716,12 +1111,13 @@
              <P>
         <LI> Python and Java APIs?
              <P>
-        <LI> Parallel I/O?
+        <LI> <A HREF="oct302015">Parallel I/O for CMAQ-5.1</A> (now in
+             place)
              <P>
         <LI> Tension-spline interpolation module and tools-programs?
              <P>
         <LI> <VAR>m3tools</VAR> development&mdash;standardized,
-             overfloow-proof interfaces, free-format F90,
+             overflow-proof interfaces, free-format F90,
              OpenMP-parallel where reasonable?
              <P>
         <LI> <VAR>Tutorial</VAR> development?&nbsp;&mdash;new stuff, best
@@ -732,14 +1128,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan222015">
     Bug-Fixes in <VAR>m3tools/projtool</VAR>
 </A></H2>
-   
+
     Jan&nbsp;15, 2015:<BR>
     Jan&nbsp;22, 2015:
     <P>
@@ -756,14 +1152,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec192014">
     Bug-Fix in <VAR>m3tools/projtool</VAR>
 </A></H2>
-   
+
     Dec&nbsp;19, 2014:
     <P>
     Bug-fix in <A HREF="PROJTOOL.html"><VAR>m3tools</VAR> program
@@ -773,14 +1169,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
 
-<HR> <!----------------------------------------------------------------->  
-    
+
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "aug2814">
     Enhanced <VAR>m3tools/m3diff</VAR>
 </A></H2>
-   
+
     August&nbsp;28, 2014:
     <P>
     New version of <A HREF="M3DIFF.html"><VAR>m3tools</VAR> program
@@ -788,19 +1184,19 @@
     with variable-format spacing as needed.  This will be useful for
     comparing SMOKE vector-files (which use degenerate grids with
     <CODE>NCOLS=NLAYS=1</CODE> and <CODE>NROWS=&lt;number of
-    sources&gt;</CODE>) that have large (>99,999) numbers of sources.
+    sources&gt;</CODE>) that have large (&gt;99,999) numbers of sources.
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
 
-<HR> <!----------------------------------------------------------------->  
-    
+
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "aug1414">
     Bug-fix in <VAR>m3tools/projtool</VAR>:  defining projections by angles.
 </A></H2>
-   
+
     August&nbsp;14, 2014:
     <P>
     John McHenry, BAMS, found a bug in the algorithm that
@@ -812,17 +1208,17 @@
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
-<HR> <!----------------------------------------------------------------->  
-    
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "aug0614">
     <CODE>INTEGER(8)</CODE>-key search and sort routines.
 </A></H2>
-   
+
     August&nbsp;6, 2014:
     <P>
     New <CODE>INTEGER*8</CODE>-keytuple search and sort routines
     <A HREF="FINDS.html"><CODE>FINDL1(), FINDL2(), FINDL3(), FINDL4()</CODE></A>,
-    <A HREF="LOCATS.html"><CODE>LOCATS.html">LOCATL1(), LOCATL2(), LOCATL3(), LOCATL4()</CODE></A>,
+    <A HREF="LOCATS.html"><CODE>LOCATL1(), LOCATL2(), LOCATL3(), LOCATL4()</CODE></A>,
     and
     <A HREF="SORTI.html"><CODE>SORTL1(), SORTL2(), SORTL3(), SORTL4()</CODE>
     and their C counterparts <CODE>qsortl1(), qsortl2(), qsortl3(), and
@@ -835,12 +1231,12 @@
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
-<HR> <!----------------------------------------------------------------->  
-    
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "jul0914">
     Bugfix in <VAR>m3tools</VAR> program  <VAR>m3diff</VAR>
 </A></H2>
-   
+
     July&nbsp;9, 2014:
     <P>
     Mohammad Omary, UNC IE, turned up a bug in using <VAR>m3tools</VAR> program
@@ -854,11 +1250,11 @@
 
 <HR> <!----------------------------------------------------------------->
 
-    
+
 <H2> <A NAME = "jun1214">
     Additional <CODE>SORTI*C*</CODE> routines
 </A></H2>
-   
+
     June&nbsp;12, 2014:
     <P>
     There are now the following additional sort-by-string-table
@@ -868,14 +1264,14 @@
         <DT><CODE>SORTINC4( N, M, INDX(N), CTABLE(N) )</CODE>
         <DD>arguments <CODE>INTEGER N, M, INDX(N); CHARACTER(*) CTABLE(N)</CODE><BR>
         Indirect-sort by <CODE>CTABLE</CODE>, assuming that only the
-        first <CODE>M</CODE> characters in each table-entry 
+        first <CODE>M</CODE> characters in each table-entry
         are significant.
         <P>
         <DT><CODE>SORTINC8( N8, M8, INDX8(N8), CTABLE(N8) )</CODE>
         <DD>arguments <CODE>INTEGER(8) N8, M8, INDX8(N8); CHARACTER(*)
         CTABLE(N8)</CODE><BR>
         Indirect-sort by CTABLE, assuming that only the
-        first <CODE>M8</CODE> characters in each table-entry 
+        first <CODE>M8</CODE> characters in each table-entry
         are significant.
         <P>
     </DL>
@@ -883,14 +1279,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mar1914">
     Generic <CODE>INTERFACE</CODE>s in <CODE>MODULE M3UTILIO</CODE>
 </A></H2>
-   
+
     March&nbsp;19, 2014:
     <P>
     Environment-buffer maximum size expanded to 64K-1 (=65535) for
@@ -904,11 +1300,11 @@
         <DD><CODE>INTLIST, REALIST, STRLIST</CODE>
         <P>
         <DT><CODE>FINDKEY</CODE>
-        <DD><CODE>FINDC, FIND1, FIND2, FIND3, FIND4, 
+        <DD><CODE>FINDC, FIND1, FIND2, FIND3, FIND4,
                   FINDR1, FINDR2, FINDR3, FINDR4</CODE>
         <P>
         <DT><CODE>LOCATE</CODE>
-        <DD><CODE>LOCAT1, LOCAT2, LOCAT3, LOCAT4, LOCATC, LOCATR1, 
+        <DD><CODE>LOCAT1, LOCAT2, LOCAT3, LOCAT4, LOCATC, LOCATR1,
                   LOCATR2, LOCATR3, LOCATR4</CODE>
         <P>
         <DT><CODE>SORTI</CODE>
@@ -930,21 +1326,21 @@
         <LI> <A HREF = "JULSHIFT.html" ><VAR>julshift</VAR></A>:
         Add/subtract number of days from a Julian date
         <LI> <A HREF = "TIMESHIFT.html"><VAR>timeshift</VAR></A>:
-        Add/subtract time <CODE>HHMMSS</CODE> to a Julian 
+        Add/subtract time <CODE>HHMMSS</CODE> to a Julian
         date-and-time <CODE>YYYYDDD.HHMMSS</CODE>.
     </UL>
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan1714">
     Bugfix in <VAR>m3tools</VAR> program  <VAR>m3merge</VAR>
 </A></H2>
-   
+
     January&nbsp;17, 2014:
     <P>
     John N. McHenry, BAMS, turned up a bug in using <VAR>m3tools</VAR> program
@@ -954,14 +1350,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec1813">
     Changes to deal with  <VAR>gfortran</VAR>  standards-incompatibilities.
 </A></H2>
-   
+
     December&nbsp;18, 2013:
     <P>
     Recent versions of  <VAR>gfortran</VAR> insist on breaking compatibility
@@ -982,14 +1378,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov2113">
     OpenMP parallel for programs <CODE>M3AGMASK, M3AGMAX, M3COMBO, M3TPROC</CODE>
 </A></H2>
-   
+
     November&nbsp;21, 2013:
     <P>
     In addition to the previously OpenMP parallel program
@@ -1006,22 +1402,22 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov0513">
     New <CODE>SUBROUTINE LASTTIME()</CODE> and its use for applications
     in <VAR>m3tools</VAR>; larger environment-buffer size
 </A></H2>
-   
+
     November&nbsp;5, 2013:
     <P>
     New routine <A HREF="LASTTIME.html"><CODE>LASTTIME(SDATE,STIME,TSTEP,NSTEPS,EDATE,ETIME)</CODE></A>
     returns the ending date&amp;time for time step sequence
     <CODE>SDATE:STIME:TSTEP:NSTEPS</CODE>.  Safe for very long
     time step sequences (even multi-century!).  Now used in new
-    versions of <VAR>m3tools</VAR> programs <VAR>m3combo</VAR>, 
+    versions of <VAR>m3tools</VAR> programs <VAR>m3combo</VAR>,
     <VAR>m3cple</VAR>, <VAR>m3interp</VAR>, <VAR>m3tproc</VAR>,
     <VAR>mtxblend</VAR>, and  <VAR>mtxcple</VAR>.
     <P>
@@ -1034,14 +1430,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec1312">
    Bug-fix for <VAR>m3tools/m3combo</VAR> from Bonyoung Koo, Environ.
 </A></H2>
-   
+
     December&nbsp;13, 2012:
     <P>
     Bonyoung Koo, Environ, found a set of bugs in
@@ -1052,14 +1448,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov1512">
    Bug-fix for <VAR>m3tools/m3xtract</VAR> and <VAR>m3tools/vertintegral</VAR>.
 </A></H2>
-   
+
     November&nbsp;15, 2012:
     <P>
     Sarika Kulkarni, California ARB, found bugs in programs
@@ -1071,14 +1467,14 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct3012">
    Enhancement and bug-fix for <CODE>m3tools/projtool</CODE>.
 </A></H2>
-   
+
     October&nbsp;30, 2012:
     <P>
     For operation-cases 10, 11 (display input-grid corners or centers relative to
@@ -1091,33 +1487,33 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-      
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct0212">
    Bug-fix for <CODE>INQATT3()</CODE>.
 </A></H2>
-   
+
     October&nbsp;2, 2012:
     <P>
     Title says it... This was a long standing bug, which (I guess)
     shows how no one is using extra M3IO attributes ;-(
     <P>
-    
+
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "sep1812">
    Bug-fix from Sarika Kulkarni, CA ARB, in
                <VAR>m3xtract</VAR>; new address info
                for <CODE>m3tools</CODE> programs.
 </A></H2>
-   
+
     September&nbsp;18, 2012:
     <P>
     Sarika Kulkarni, CA ARB, provided a bug-fix to the I/O&nbsp;API
@@ -1135,22 +1531,22 @@
     This new address is now incorporated into <CODE>m3tools</CODE>
     splash screens, replacing the older one(s).
     <P>
-    
+
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct2611">
    <VAR>relocation error</VAR> link issues for <VAR>x86_64</VAR>, and
    new <STRONG><CODE>BIN=Linux2_x86_64ifort_medium</CODE></STRONG>
 </A></H2>
-   
+
     October&nbsp;26, 2011:
     <P>
-    There are issues with huge arrays and COMMON blocks on 
+    There are issues with huge arrays and COMMON blocks on
     <VAR>x86_64</VAR> Linux (and other) platforms; these show up at link
     time with error messages talking about <CODE>relocation&nbsp;error</CODE>s.
     New <CODE>BIN=Linux2_x86_64ifort_medium</CODE> is designed to deal
@@ -1160,40 +1556,40 @@
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-     
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct2111">
    Version&nbsp;3.1 <VAR>m3tools/Makefile</VAR>s now assume netCDF Version&gt;4.1
    Library Changes
 </A></H2>
-   
+
     October&nbsp;21, 2011:
     <P>
     <BLOCKQUOTE>
     Starting with netCDF Version&nbsp;4.1, linking with netCDF now requires
     additional libraries.  As of today's downloads, I/O&nbsp;API Version&nbsp;3.1
-    <VAR>m3tools/Makefile</VAR>s now assume at least the minimal set. 
+    <VAR>m3tools/Makefile</VAR>s now assume at least the minimal set.
     See <A HREF="AVAIL.html#ncf4">this note about netCDF.</A>
     <P>
     <STRONG>Note that this incompatibility from netCDF will also
     <EM>affect all other model-builds</EM> using netCDF Version&nbsp;4.1
     or later.</STRONG>
-    <P>    
+    <P>
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
- 
-   
+
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "aug3111">
    Bug-fix in <VAR>m3tools</VAR> program <CODE>VERTINTEGRAL</CODE>
 </A></H2>
-   
+
     August&nbsp;31, 2011:
     <P>
     <BLOCKQUOTE>
@@ -1202,18 +1598,18 @@
     HREF="VERTINTEGRAL.html">VERTINTEGRAL</A></CODE>.  Now fixed in both
     the Version&nbsp;3.0 and 3.1 tarballs.
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "aug2911">
    Bug-fixes in <CODE>SUBROUTINE CURREC()</CODE>
 </A></H2>
-   
+
     August&nbsp;29, 2011:
     <P>
     <BLOCKQUOTE>
@@ -1223,21 +1619,21 @@
     code, it turns out that a bug-fix suggested by Christian Hogrefe
     was dropped from this version.  Both are now fixed.
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
-  
+
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun0811">
-   Fixes from Christian Hogrefe</A> in programs <CODE>JULDATE</CODE> and 
+   Fixes from Christian Hogrefe</A> in programs <CODE>JULDATE</CODE> and
    <CODE>M3XTRACT</CODE>
 </H2>
-   
+
     June&nbsp;8, 2011:
     <P>
     <BLOCKQUOTE>
@@ -1247,90 +1643,90 @@
     <CODE><A HREF="JULDATE.html">PROGRAM JULDATE</A></CODE>
     needs to be modified accordingly
     <P>
-    
+
     He also found a bug in <CODE><A HREF="M3XTRACT.html">PROGRAM M3XTRACT</A></CODE>
     and provided a fix.
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
-    
+
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2>
     <A NAME = "may2611">Bug-fix for file type <CODE>CUSTOM3</CODE></A>
     in <CODE><A HREF="M3STAT.html">PROGRAM M3STAT</A></CODE>
 </H2>
-   
+
     May&nbsp;26, 2011:
     <P>
     <BLOCKQUOTE>
     There was a problem for single-variable analysis of multi-layer
     files of type  <CODE>CUSTOM3</CODE>, now fixed.
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
 
 
-    
+
+
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may0511">
 Bug-fixes and format improvements in <VAR>m3tools</VAR> program <CODE>PROJTOOL</CODE>
 </A></H2>
-   
+
     May&nbsp;5, 2011:
     <P>
     <BLOCKQUOTE>
     There were menu-problems and format-readability problems, now fixed.
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr2511">
-Add interface-block for <CODE>CRLF()</CODE> to 
+Add interface-block for <CODE>CRLF()</CODE> to
 <CODE>MODULE M3UTILIO</CODE>
 </A></H2>
-   
+
     April&nbsp;25, 2011:
     <P>
     <BLOCKQUOTE>
     At the request of US&nbsp;EPA, an interface block for routine
-    <CODE>CRLF()</CODE> was added to 
+    <CODE>CRLF()</CODE> was added to
     <CODE><A HREF="M3UTILIO.html">MODULE M3UTILIO</A></CODE>
     for use in the upcoming version of CMAQ.  This may necessitate
     code changes for codes that already <CODE>USE&nbsp;M3UTILIO</CODE>
     and that use that routine (just delete the declaration and the
     <CODE>EXTERNAL</CODE> statement that accompanies it).
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr1911">
 Code re-organization to support full strength <VAR>DESC3()</VAR>
 for <CODE>BUFFERED</CODE> files
 </A></H2>
-   
+
     April&nbsp;19, 2011:
     <P>
     <BLOCKQUOTE>
@@ -1340,42 +1736,42 @@ for <CODE>BUFFERED</CODE> files
     code-version, <CODE>IF(.NOT.<A HREF="">CHKBUF3()</A>)&nbsp;STOP </CODE>:
     you get a link-failure with previous editions of the library.
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr1511">
 Bug-fix in error-formats from Matthew Turner,
 University of Colorado at Boulder.
 </A></H2>
-   
+
     April&nbsp;15, 2011:
     <P>
     <BLOCKQUOTE>
     Matthew Turner of UC-Boulder points out that error formats in functions
-    <CODE>CKDESC3()</CODE> and <CODE>CKFILE3()</CODE> have too narrow a 
+    <CODE>CKDESC3()</CODE> and <CODE>CKFILE3()</CODE> have too narrow a
     field for the variable-count which may occur.  This is now fixed in
     both Versions&nbsp;3.0 and 3.1.
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "aug1010">
 I/O&nbsp;API Version&nbsp;3.1:  64-bit record support;
 <VAR>gfortran</VAR> support
 </A></H2>
-   
+
     August&nbsp;10, 2010:
     <P>
     <BLOCKQUOTE>
@@ -1412,14 +1808,14 @@ I/O&nbsp;API Version&nbsp;3.1:  64-bit record support;
               distribution/installation specific.
     </UL>
     <P>
-    
+
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "ver31">
 I/O&nbsp;API Version&nbsp;3.1 <EM>Beta</EM>&nbsp;1
 </A></H2>
@@ -1440,7 +1836,7 @@ I/O&nbsp;API Version&nbsp;3.1 <EM>Beta</EM>&nbsp;1
              nor object files between the two versions.</STRONG>
         <DT> Because of data-structure-dimension changes, new and old
              versions are not link compatible.  You will
-             need to re-build programs that use the I/O API.
+             need to re-build programs that use the I/O&nbsp;API.
              <P>
         <DT> Files written with previous versions should still
              be readable by programs built with the new version.
@@ -1454,14 +1850,14 @@ I/O&nbsp;API Version&nbsp;3.1 <EM>Beta</EM>&nbsp;1
     Changes for Version&nbsp;3.1 are:
     <UL>
         <LI> Library and <VAR>m3tools</VAR> codes are now strictly
-             Fortran-90 or later.  
+             Fortran-90 or later.
              <P>
         <LI> Hacks and Fortran-extensions used to manage dynamic arrays
              with Cray pointers have been removed, in favor of language
              standard <CODE>ALLOCATABLE</CODE> and dynamic arrays.
              <P>
         <LI> Dimension <CODE>MXVARS3</CODE> for maximum number of
-             variables in an I/O&nbsp;API file is now 2048. 
+             variables in an I/O&nbsp;API file is now 2048.
              <EM>Consequently, new files with more than the old limit of
              120 variables may not be readable by pre-3.1 I/O&nbsp;API
              programs.</EM>
@@ -1502,23 +1898,23 @@ I/O&nbsp;API Version&nbsp;3.1 <EM>Beta</EM>&nbsp;1
         <LI> Function  <VAR>TRIMLEN()</VAR> is deprecated in favor of
              new Fortran-90 intrinsic routines  <VAR>LEN_TRIM()</VAR>,
              which has exactly the same meaning as <VAR>TRIMLEN()</VAR>),
-             and <VAR>TRIM()</VAR>, which allows simplification of 
-             common character-string expressions from 
+             and <VAR>TRIM()</VAR>, which allows simplification of
+             common character-string expressions from
              <CODE>FOO(1:TRIMLEN(FOO))</CODE> to <CODE>TRIM(FOO)</CODE>.
              <P>
-        <LI> 
+        <LI>
              <P>
     </UL>
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
-   
+
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb1910">
 Bug fix:  Transverse and Equatorial Mercator output projections in
 <VAR>m3tools</VAR>program <VAR>MTXCALC</VAR>
@@ -1537,12 +1933,12 @@ Bug fix:  Transverse and Equatorial Mercator output projections in
     Now fixed.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb0910">
 Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
 </A></H2>
@@ -1558,13 +1954,13 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     Now fixed.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct2809">NetCDF flag-changes from Martin Otte, US EPA,
                for netCDF4 compatibility; bug fix in <VAR>m3tools</VAR> program
                <VAR>PROJTOOL</VAR>.
@@ -1586,13 +1982,13 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     UTM-coordinate case.  Now fixed.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct2609">New program <VAR>VERTINTEGRAL</VAR> for computing
                CONC-file species vertical column totals; various fixes.
 </A></H2>
@@ -1613,17 +2009,17 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     Also there are a variety of minor enhancements to I/O&nbsp;API
     routines <VAR>STR2DBLE()</VAR>, <VAR>CHECK3()</VAR>, <VAR>INQATT3()</VAR>, and
     <VAR>READ3()</VAR>, a bug-fix to <VAR>CURREC()</VAR> affecting time
-    periods longer than five years, and minor enhancements to various 
+    periods longer than five years, and minor enhancements to various
     <VAR>m3tools</VAR> programs.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jul0109">Bug-fixes in <VAR>MATXATTS()</VAR> and <VAR>M3CPLE</VAR>
 </A></H2>
 
@@ -1638,13 +2034,13 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     <P>
     Both are now fixed.
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may1509">Bug-fix in function <VAR>STR2DBLE()</VAR>
 </A></H2>
 
@@ -1658,13 +2054,13 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     Now fixed.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr3009">Bug-fix in subroutine <VAR>INQATT3()</VAR>
 </A></H2>
 
@@ -1676,13 +2072,13 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     <A HREF="INQATT3.html">subroutine <VAR>INQATT3()</VAR></A>
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mar0909">Bug-fix in <VAR>M3COMBO</VAR>
 </A></H2>
 
@@ -1691,18 +2087,18 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     <BLOCKQUOTE>
 
     Dr. M. Talat Odman, of the School of Civil & Environmental Engineering
-    at Georgia Institute of Technology points out a bug in the 
+    at Georgia Institute of Technology points out a bug in the
     consistency-checking code for <A HREF = "M3COMBO.html"><VAR>m3tools</VAR>
     program <VAR>M3COMBO</VAR></A>.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb2409"><VAR>pgf90/gcc</VAR> issues
 </A></H2>
 
@@ -1711,19 +2107,19 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     <BLOCKQUOTE>
 
     Current versions of the <VAR>gcc</VAR> compiler system have changed
-    the Fortran name-mangling style, and I've changed the 
+    the Fortran name-mangling style, and I've changed the
     <VAR>Makeinclude.Linux*pg_gcc*</VAR> files to match.  The
     old-version flags are present but commented out in these files
     if you need the older behavior.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec2908"><VAR>Makefile</VAR> issues
 </A></H2>
 
@@ -1736,15 +2132,15 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     and validation.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec2308">
-New <VAR>MODULE MTXATTS</VAR>; <CODE>Makefile</CODE>s now default to 
+New <VAR>MODULE MTXATTS</VAR>; <CODE>Makefile</CODE>s now default to
 compiling with a <VAR>f90</VAR> compiler.
 </A></H2>
 
@@ -1792,11 +2188,11 @@ compiling with a <VAR>f90</VAR> compiler.
     library.  That means the default builds require a Fortran-90
     compliant compiler (which is needed for the most common
     I/O&nbsp;API clients, CMAQ, SMOKE, and MCIP, anyway).  For those
-    requiring a FORTRAN-77-only build, the old <CODE>Makefile</CODE>s 
+    requiring a FORTRAN-77-only build, the old <CODE>Makefile</CODE>s
     have been renamed with a <CODE>.f77only</CODE> suffix; just copy
     the required variant to <CODE>Makefile</CODE> and proceed as before.
     <P>
-    
+
     <CODE>Makeinclude.${BIN}</CODE> files have <EM>not</EM> been
     changed for reasons of maintaining compatibility with existing
     directory-setups, etc.  This means, for example, you can expect
@@ -1804,15 +2200,15 @@ compiling with a <VAR>f90</VAR> compiler.
     machine/compiler types that assume a FORTRAN-77-only such
     as the <VAR>g77</VAR> assumed by <CODE>${BIN}=Linux2_x86</CODE>.
     <P>
-    
+
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov2808">Fix for WMO-screwup Longitude conventions
 in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 </A></H2>
@@ -1829,16 +2225,16 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     hard-to-diagnose) problems dealing with data following these
     conventions, and have therefore implemented heuristics to deal with
     this in <CODE>m3tools</CODE> programs <CODE>M3CPLE</CODE>
-    <CODE>MTXCALC</CODE>.    
+    <CODE>MTXCALC</CODE>.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jul2908">Add support for new map projections in
 <VAR>ckdesc3()</VAR>
 </A></H2>
@@ -1858,13 +2254,13 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     <CODE>ALBGRD3, LEQGRD3</CODE>.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jul2108">Bug-Fix in <VAR>m3tools/Makefile.nocpl</VAR>
 </A></H2>
 
@@ -1876,13 +2272,13 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     together with the required fix.  Now implemented.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jul1008">Bug-Fixes for Albers
 </A></H2>
 
@@ -1895,13 +2291,13 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     map-projection parameters were not being maintained correctly.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
-   
+
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun1608">
    Experimental Albers Equal-Area Conic map projection support<BR>
    MM5 and WRF spheres added to <CODE>GCTP()</CODE> and
@@ -1951,7 +2347,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     of 0), in order for repeated applications to work.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
@@ -1959,7 +2355,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may0908">
    Bug-fix to <CODE>m3combo</CODE>, from Bonyoung Koo,
    ENVIRON International Corporation.
@@ -1978,7 +2374,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     coordinate transformations.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
@@ -1986,7 +2382,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb1508">
    Multi-decade support; some Mac OS10 support; netCDF 3.6.2 warning.
 </A></H2>
@@ -2031,14 +2427,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     should be OK (but maybe slow) for even multi-millenium runs.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec1907">
  Bug-fix in <VAR>ISDSTIME()</VAR>
 </A></H2>
@@ -2055,14 +2451,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     Fortran).
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov2907">
  Bug-fix in worker routine <VAR>chkfil3()</VAR>
 </A></H2>
@@ -2077,14 +2473,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     lists have the same order.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov1507">
  <CODE>Makeinclude</CODE> improvements
 </A></H2>
@@ -2094,7 +2490,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
     <BLOCKQUOTE>
     Improvements to <CODE>Makeinclude</CODE> files for
-    <VAR>Linux2_x86ifcdbg</VAR>, <VAR>Linux2_x86_64ifortdbg</VAR>, 
+    <VAR>Linux2_x86ifcdbg</VAR>, <VAR>Linux2_x86_64ifortdbg</VAR>,
     <VAR>Linux2_x86_64ifort</VAR>, <VAR>Linux2_ia64ifortdbg</VAR>,
     <VAR>Linux2_x86_64sun</VAR>, <VAR>Linux2_x86_64path</VAR>, to
     better support current compilers -- particularly Intel version 10.x.
@@ -2102,14 +2498,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     Improved error-checking in <VAR>WRITE3()</VAR>,  <VAR>CHKFIL()</VAR>.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may3007">
     Linux x86_64 <VAR>Makeinclude</VAR> support for PGI compilers
 </A></H2>
@@ -2137,23 +2533,23 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     setenv FC pgf90
     setenv F90 pgf90
     setenv CFLAGS   "-O2 -Msignextend -V"
-    setenv CPPFLAGS "-DNDEBUG -DpgiFortran" 
-    setenv FFLAGS   "-O2 -w -V" 
+    setenv CPPFLAGS "-DNDEBUG -DpgiFortran"
+    setenv FFLAGS   "-O2 -w -V"
     </CODE></BLOCKQUOTE>
     following <A HREF="http://www.pgroup.com/resources/netcdf/netcdf360_pgi60.htm">
     this advice from the PGI website</A>.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mar1607">
     Bug-fix/enhancement from Bonyoung Koo, Environ, to
-    <VAR>m3tools</VAR> program <VAR>M3COMBO</VAR>; 
+    <VAR>m3tools</VAR> program <VAR>M3COMBO</VAR>;
     fix to <VAR>CKDESC3()</VAR> for boundary files
 </A></H2>
 
@@ -2175,13 +2571,13 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     fix now permits <EM>very</EM> thick boundaries in some cases).
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb2107">
     Fixes to <VAR>m3tools</VAR> programs <VAR>M3COMBO</VAR>
     and <VAR>M3TPROC</VAR>
@@ -2195,7 +2591,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     <A HREF="M3TPROC.html"><VAR>MTXCALC</VAR></A> and provided
     a fix.
     <P>
-    
+
     Jerry Condrey, Baron Advanced Met Systems, found an inconsistent
     initialization in program <A HREF="M3COMBO.html"><VAR>M3COMBO</VAR></A>
     and provided a fix.
@@ -2207,7 +2603,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb1207">
     <CODE>#include &lt;stdlib.h&gt;</CODE> in <VAR>getdttime()</VAR>
 </A></H2>
@@ -2221,13 +2617,13 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     alleviated by adding a reference to <CODE>stdlib.h</CODE>.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb0507">
     Sun compilers:</A>s Bug-fix in <A HREF="M3COMBO.html">program <VAR>M3COMBO</VAR>
 </A></H2>
@@ -2252,15 +2648,15 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     that was evidently introduced in the April&nbsp;26, 2006 release.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan2907">
-    Daylight savings time; program <VAR>M3STAT</VAR>; negative 
+    Daylight savings time; program <VAR>M3STAT</VAR>; negative
     <CODE>JDATE</CODE>s
 </A></H2>
 
@@ -2272,21 +2668,21 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     that was introduced in the &quot;standard-year&quot; set of mods.
     <P>
     </BLOCKQUOTE>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan2507">
-    Daylight savings time; program <VAR>M3STAT</VAR>; negative 
+    Daylight savings time; program <VAR>M3STAT</VAR>; negative
     <CODE>JDATE</CODE>s
 </A></H2>
 
     January&nbsp;25, 2007:
     <P>
-    
+
     <BLOCKQUOTE>
     Subroutine <A HREF="ISDSTIME.html"><VAR>ISDSTIME</VAR></A> has been
     enhanced so that it supports daylight savings time determination for
@@ -2294,14 +2690,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
     US Congress changed the starting and ending times effective year
     2007).
     <P>
-    
+
     <A HREF="M3STAT.html"><VAR>M3STAT</VAR></A> had a bug in processing
     files of type <CODE>BNDARY3</CODE>.  This has now been corrected.
     <P>
 
     There were bugs in time-handling for dates with negative year
     component.  Such dates are required for <CODE>INTERP3()</CODE>
-    usage with 
+    usage with
     <A HREF="DATETIME.html#stdday"><STRONG>Standard-Year</STRONG> and
     <STRONG>Standard-Week</STRONG> files</A>.  Affected routines are
     <UL>
@@ -2325,14 +2721,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec1206">
     Corrected  bug bug in program <VAR>MTXCALC</VAR>
 </A></H2>
 
     December&nbsp;12, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     <A HREF="MTXCALC.html"><VAR>MTXCALC</VAR></A> had a
     map projection-types array that incorrectly swapped Equatorial
@@ -2346,14 +2742,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct0506">
     Corrected  Splash-Screen bug in <VAR>INIT3</VAR>
 </A></H2>
 
     October&nbsp;5, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     <VAR>INIT3</VAR>  incorrectly generated double-copies of the
     opening splash screen under some circumstances. Thanks to John
@@ -2366,15 +2762,15 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "sep1306">
-    Corrected  <CODE>Makeinclude.Linux2_x86pg_gcc_mp</CODE> and 
+    Corrected  <CODE>Makeinclude.Linux2_x86pg_gcc_mp</CODE> and
                <CODE>Makeinclude.Linux2_x86pg_gcc_nomp</CODE>
 </A></H2>
 
     September&nbsp;13, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     <VAR>gcc</VAR>  and its flags were not being set correctly.
     Thanks to NOAA/ASMD for noting this change.
@@ -2386,14 +2782,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "sep0706">
      <VAR>m3tools</VAR> program <VAR>M3CPLE</VAR> Enhancement
 </A></H2>
 
     September&nbsp;7, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     <VAR>m3tools</VAR> program <A HREF="M3CPLE.html"><VAR>M3CPLE</VAR></A>
     now accepts environment variable <A HREF="SETSPHERE.html">
@@ -2409,7 +2805,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "sep0106">
      C/Fortran interface utilities; <VAR>MMDDYY()</VAR> bug-fix
 </A></H2>
@@ -2433,7 +2829,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun1106">
      Warning-message format fix
      in <VAR>CKDESC3()</VAR>
@@ -2441,7 +2837,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
     June&nbsp;11, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     Tanya Otte, US EPA, notes that internal I/O&nbsp;API worker routine
     <VAR>CKDESC3()</VAR> had a bad warning-message format.
@@ -2454,15 +2850,15 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun0706">
-     Added WRF vertical coordinate 
+     Added WRF vertical coordinate
                support to worker routine <VAR>CKFILE3()</VAR>
 </A></H2>
 
     June&nbsp;7, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     Tanya Otte, US EPA, notes that internal I/O&nbsp;API worker routine
     <VAR>CKFILE3()</VAR> did not support the WRF vertical coordinate
@@ -2478,7 +2874,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may1606">
      Added <CODE>INTERFACE</CODE> block for <VAR>GTPZ0()</VAR> in
      <CODE>m3utilio.f</CODE>; corrected legend in <VAR>utmtool</VAR>
@@ -2486,7 +2882,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
     May&nbsp;16, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     <VAR>MDOULE M3UTILIO</VAR> now supports interface checking for
     USGS-derived routine <VAR>GTPZ0()</VAR>.
@@ -2509,7 +2905,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may0806">
      Support for WRF EM vertical coordinate type <CODE>VGWRFEM</CODE>
      in <VAR>CKDESC3()</VAR>
@@ -2517,7 +2913,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
     May&nbsp;8, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     Tanya Otte, US EPA, notes that internal I/O&nbsp;API worker routine
     <VAR>CKDESC3()</VAR> did not support the WRF EM vertical coordinate
@@ -2532,7 +2928,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr2606">
      New multiple-input file version of program <VAR>M3COMBO</VAR>;
      bug-fix in <VAR>M3COMBO</VAR>, <VAR>M3DIFF</VAR>
@@ -2540,7 +2936,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
     April&nbsp;26, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     There is a new version of &quot;m3tools&quot; program <A HREF =
     "M3COMBO.html"><VAR>M3COMBO</VAR></A> that can use variables from
@@ -2572,7 +2968,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mar3106">
      <VAR>state3.h</VAR> storage-order error  for
      <CODE>IOAPI_CSTATE3</CODE>
@@ -2580,7 +2976,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
     March&nbsp;31, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     David Wong points out that <VAR>versn</VAR> had been inserted into
     the wrong storage location in the <CODE>IOAPI_CSTATE3</CODE> typedef
@@ -2593,14 +2989,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mar0806">
      PGI &quot;save&quot; flag fix
 </A></H2>
 
     March&nbsp;8, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     The <CODE>FSFLAG</CODE> in the <VAR>Makeinclude.*pg*</VAR> has
     been fixed.  This is used to enforce default <CODE>SAVE</CODE> for
@@ -2615,23 +3011,23 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb1706">
      Another M3DIFF bug-fix
 </A></H2>
 
     February&nbsp;17, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     As pointed out by Matthew Johnson of the Iowa DNR - Air Quality
     Bureau, in the January&nbsp;27 bug-fix, an additional typo crept
     into program <A HREF = "M3DIFF.html"><CODE>M3DIFF</CODE></A> at
     line&nbsp;560 -- an extra inadvertent
     <BLOCKQUOTE><CODE>
-    IF ( VARMODE ) THEN 
+    IF ( VARMODE ) THEN
     </CODE></BLOCKQUOTE>
-    crept into the code.  This has now been fixed.  
+    crept into the code.  This has now been fixed.
     <P>
     </BLOCKQUOTE>
 
@@ -2640,14 +3036,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan2706">
      M3DIFF bug-fix
 </A></H2>
 
     January&nbsp;27, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     Program <A HREF = "M3DIFF.html"><CODE>M3DIFF</CODE></A> had an
     output time step sequence at about lines 653-735, as pointed out by
@@ -2661,14 +3057,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan1106">
      MTXCALC bug-fix
 </A></H2>
 
     January&nbsp;11, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     Program <A HREF = "MTXCALC.html"><CODE>MTXCALC</CODE></A>
     had an off-by-one-half error at about line 732, as pointed
@@ -2683,14 +3079,14 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan0306">
      LAMBERT() fixes; M3UTILIO additions
 </A></H2>
 
     January&nbsp;3, 2006:
     <P>
-    
+
     <BLOCKQUOTE>
     Subroutine <A HREF = "LAMBERT.html"><CODE>LAMBERT()</CODE></A>
     and its entries did not initialize ostensibly unused arguments
@@ -2713,21 +3109,21 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov2905">
      Support for Absoft Pro Fortran
 </A></H2>
 
     November&nbsp;29, 2005:
     <P>
-    
+
     <BLOCKQUOTE>
     Support has been added for Absoft Pro Fortran for <VAR>x86</VAR> and
     <VAR>x86_64</VAR> Linux.  Binary types are:
     <DL>
          <DT> <STRONG><CODE>Linux2_x86af95</CODE></STRONG>
          <DD> 32-bit Linux with Absoft native linker-sumbol
-              name-mangling (subroutine and function names 
+              name-mangling (subroutine and function names
               are upcased; <CODE>COMMON</CODE> block names
               are prefixed with <CODE>_C</CODE> and then upcased)
               <P>
@@ -2770,7 +3166,7 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov1105">
      Mac <VAR>ioapi</VAR> package from Alex&nbsp;Zubrow at the
      University of Chicago;  assorted unused variables removed
@@ -2848,10 +3244,10 @@ in programs <VAR>M3CPLE</VAR> and <VAR>MTXCALC</VAR>
 Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct3105">
     Python <VAR>ioapiTools</VAR> package from Alex&nbsp;Zubrow at the
-    University of Chicago; <VAR>UNGRIDI</VAR>; 
+    University of Chicago; <VAR>UNGRIDI</VAR>;
 </A></H2>
 
     October&nbsp;31, 2005:
@@ -2894,13 +3290,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     to follow standards almost guarantees referential integrity problems
     such as this one.</STRONG>
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct2105">
     Bad <VAR>M3TOOL</VAR> starting time constraints
 </A></H2>
@@ -2925,13 +3321,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
     These programs are now fixed.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "sep3005">
     <CODE>XTRACT3()</CODE>; web-pages
 </A></H2>
@@ -2950,13 +3346,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <CODE>NEXTIME()</CODE>.
     This has now been fixed.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "aug0405">
     <VAR>F77</VAR> issue in <CODE>GRDCHK3</CODE>
 </A></H2>
@@ -2970,13 +3366,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     compilers).   This is now replaced by a modified format and
     arg-list that does pass strict Fortran-77 checking.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "july272005">
     Mods to <CODE>PARMS3.EXT</CODE> for WRF-Chem
 </A></H2>
@@ -2987,7 +3383,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <STRONG><CODE>PARMS3.EXT</CODE></STRONG>,
     for WRF vertical coordinate types, to support
     <A HREF="http://www/baronams.com/projects/wrfchem/">the on-going
-    work to put the Models-3I/O API into WRF, and to create a
+    work to put the Models-3I/O&nbsp;API into WRF, and to create a
     WRF-Chem/SMOKE cooperating-model coupled system</A>:
     <DL>
         <DT> <STRONG><CODE>VGWRFEM</CODE>=7</STRONG>
@@ -2998,13 +3394,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
         <P>
     </DL>
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "july052005">
      <VAR><VAR>m3tools</VAR></VAR> program enhancements
 </A></H2>
@@ -3018,12 +3414,12 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
         <LI> There was a bug in the interaction between the top-level
              <VAR>make&nbsp;configure</VAR> and
              <VAR>make&nbsp;[no]cpl</VAR> commands... the latter would
-             not use the <CODE>Makefile</CODE>s created by the former!  
+             not use the <CODE>Makefile</CODE>s created by the former!
              This bug should now be corrected...
              <VAR>make&nbsp;configure</VAR> now copies the
              <CODE>Makefile</CODE>s it produces to
              <CODE>Makefile.${CPLMODE}</CODE>.
-        <LI> There was also a problem with <VAR>make&nbsp;configure</VAR> 
+        <LI> There was also a problem with <VAR>make&nbsp;configure</VAR>
              for the <CODE>m3tools</CODE>programs.
         <LI> There were some compile-flag problems causing warnings, with
              respect to the Intel compilers for Linux (both
@@ -3032,13 +3428,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
              <CODE>INSTDIR</CODE> for <VAR>make&nbsp;install</VAR>
     </UL>
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun222005">
      <VAR><VAR>m3tools</VAR></VAR> program enhancements
 </A></H2>
@@ -3058,13 +3454,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
         <LI> <STRONG><CODE><A HREF= "MTXCPLE.html">MTXCPLE</A></CODE></STRONG>
     </UL>
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun172005">
      AIX Build Changes
 </A></H2>
@@ -3078,13 +3474,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <CODE>M3PROMPT</CODE> to get around the <VAR>flush()</VAR> problems
     for AIX.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun102005">
      Build Enhancements
 </A></H2>
@@ -3101,13 +3497,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <VAR>m3tools</VAR> for this purpose (as provided, they assume
     OpenMP and coupling mode).
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun022005">
      Bugfix in programs <CODE>M3CPLE</CODE>, <CODE>M3INTERP</CODE>,
      <CODE>MTXBLEND</CODE>, and <CODE>MTXCPLE</CODE>
@@ -3116,7 +3512,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     June&nbsp;2, 2005:
     <P>
     These programs had a bug in the prompt for starting time:  they did
-    not permit an <CODE>STIME</CODE> less than the starting time for 
+    not permit an <CODE>STIME</CODE> less than the starting time for
     the input file(s) even if the starting date was later than the
     input file starting date.  This bug manifested itself, for example,
     if one had inputs starting at  2005153:120000 but wanted a program
@@ -3125,13 +3521,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     I/O&nbsp;API time manipulation routines are quite robust in that
     regard.]
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may252005">
      Bugfix in <CODE>NEXTIME()</CODE>
      and <CODE>CURREC()</CODE>
@@ -3145,13 +3541,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     were similar problems with <A
     HREF="CURREC.html"><CODE>CURREC()</CODE></A>.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may192005">
      Bugfix in <CODE>NEXTIME()</CODE>
 </A></H2>
@@ -3159,7 +3555,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     May&nbsp;19, 2005:
     <P>
     <A HREF="NEXTIME.html"><CODE>NEXTIME()</CODE></A> had a bug with
-    respect to normalizing  <CODE>0:0&nbsp;=&nbsp;JDATE:JTIME</CODE> 
+    respect to normalizing  <CODE>0:0&nbsp;=&nbsp;JDATE:JTIME</CODE>
     arguments (recall that <CODE>NEXTIME(JDATE,JTIME,0)</CODE> may be
     used to normalize <CODE>JDATE:JTIME</CODE> so that
     <CODE>JTIME</CODE> is between 0 and 235959); this is now handled
@@ -3174,13 +3570,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     Also minor enhancements to experimental
     <CODE>MODULE&nbsp;M3UTILIO</CODE>.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr1105">
      Bugfix in <CODE>ENVYN()</CODE>
 </A></H2>
@@ -3192,13 +3588,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     value is set to <CODE>.TRUE.</CODE> or <CODE>.FALSE.</CODE>.  Now
     fixed.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr0605">
      <CODE>Makefile.nocpl</CODE> issue:  <CODE>ddtvar3v.F</CODE> and
      <CODE>interp3v.F</CODE>
@@ -3214,13 +3610,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     in the <CODE>FSRC</CODE> list in <VAR>Makefile.nocpl</VAR>;
     that file has been revised accordingly.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr0405">
      Bugfix for file header checking routine
 </A></H2>
@@ -3234,7 +3630,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     corrected.
     <P>
     Weakened architecture/optimization flags for binary type
-    <CODE>Linux2_x86_64</CODE> to get around a compiler bug, i.e., 
+    <CODE>Linux2_x86_64</CODE> to get around a compiler bug, i.e.,
     internal compiler errors in the <VAR>gcc/g77</VAR> shipped with
     Fedora Core&nbsp;3 for <CODE>x86_64</CODE>:  the compiler has an
     internal &quot;unable to find a register to spill...&quot; error
@@ -3255,13 +3651,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     result of running the system <VAR>date</VAR> command at the time
     <VAR>make</VAR> runs the <VAR>gtar</VAR> command.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mar2305">
      Build System Enhancements, Bugfix for
      CBARNES gridding routines
@@ -3281,13 +3677,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     Coupling mode support for GNU compiled libraries has been added
     (with a new treatment of GNU-style Fortran name mangling...)
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb2205">
      <CODE>READ4D()</CODE> change; new <CODE>MODULE M3UTILIO</CODE>
 </A></H2>
@@ -3302,20 +3698,20 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
     New file <VAR>m3utilio.f</VAR>contains an experimental Fortran-90
     alternative, <A HREF="M3UTILIO.html"><CODE>MODULE
-    M3UTILIO</CODE></A>, to the <CODE>INCLUDE</CODE> files 
+    M3UTILIO</CODE></A>, to the <CODE>INCLUDE</CODE> files
     <CODE>'PARMS3.EXT</CODE>, <CODE>FDESC3.EXT</CODE>, and
     <CODE>IODECL3.EXT</CODE>, as well as providing explicit
     <CODE>INTERFACE</CODE> blocks for most of the public I/O&nbsp;API
     routines (those for which argument-signature is not subject to
     variation).
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb0805">
      New &quot;Edit FDESC3D&quot; capability for program
      <CODE>M3EDHDR</CODE>
@@ -3323,19 +3719,19 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
     February&nbsp;8, 2005:
     <P>
-    The capability of editing the file description field 
-    <CODE>FDESC3D</CODE> was added to <VAR>m3tools</VAR> program 
+    The capability of editing the file description field
+    <CODE>FDESC3D</CODE> was added to <VAR>m3tools</VAR> program
     <A HREF="M3EDHDR.html"><VAR>M3EDHDR</VAR></A>
     in order to compensate for systematic SMOKE Version 1.x and 2.x
     mis-design.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb0105">
      Bug fix for worker routine <CODE>m3abort()</CODE>
 </A></H2>
@@ -3347,13 +3743,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     error messages under some circumstances, when files could not
     be opened.  Fixed.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jan1805">
      Bug fix for <CODE>GCTP</CODE>;<BR>
      Format fix for <CODE>envrealc()</CODE> and <CODE>envdblec()</CODE>
@@ -3366,7 +3762,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     USGS:
     <BLOCKQUOTE>
     I've traced the problem to the subroutine SPHDZ0 in gctp.f. When
-    <CODE>GTPZ0</CODE> is first called, it calls <CODE>SPHDZ0</CODE> 
+    <CODE>GTPZ0</CODE> is first called, it calls <CODE>SPHDZ0</CODE>
     with dummy values that cause the spheroid to be set to Clarke 1866.
     A later call to <CODE>SPHDZ0</CODE> is made  that looks like it
     should reset the spheroid. However, at line 5475, the subroutine
@@ -3381,17 +3777,17 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
     Dr. Michael Bane of the University of Manchester (UK) notes that
     there are problemswith underflow with the existing <CODE>%f</CODE>
-    format used in <CODE>envrealc()</CODE> and <CODE>envdblec()</CODE>. 
+    format used in <CODE>envrealc()</CODE> and <CODE>envdblec()</CODE>.
     This has now been changed to a more-robust <CODE>%G</CODE>,that
     should not be subject to underflow.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec0904">
      Range checks for <CODE>NVARS</CODE> in <CODE>OPEN3</CODE>
 </A></H2>
@@ -3412,13 +3808,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     difficulties will still invoke the triple-time support penalties
     in the I/O&nbsp;API license.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec0104">
      Fixes to <CODE>M3TPROC</CODE>
 </A></H2>
@@ -3432,13 +3828,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <EM>F77</EM> style declarations (instead of <EM>F90</EM> style)
     for <CODE>MENUITMS</CODE> and <CODE>OPNAMES</CODE>.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov3004">
      Duplicate declaration removed from
      <CODE>STATE3.EXT</CODE>; new experimental Fortran-90 <CODE>MODULE
@@ -3465,7 +3861,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <STRONG>There is  a new <EM>experimental Fortran-90 module</EM>
     <CODE>MODULE M3UTILIO</CODE>, available</STRONG>, in file
     <CODE>m3utilio.f</CODE>, coming as a consequence of development
-    work to enable the I/O&nbsp;API and SMOKE to couple with WRF-Chem. 
+    work to enable the I/O&nbsp;API and SMOKE to couple with WRF-Chem.
     This module is not built by a default build (partly because of the
     lack of standards for naming module-files in the various Fortran
     90/95 compilers), but may be built and used by the interested
@@ -3516,7 +3912,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov2204">
      Enhancement for <CODE>CHECK3()</CODE>
 </A></H2>
@@ -3542,7 +3938,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov1904">
      Bug fix, version in sample program <CODE>VERTOT</CODE>
 </A></H2>
@@ -3561,7 +3957,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nov0104">
      Bug fix, <CODE>GCD()</CODE> and <CODE>RDTFLAG()</CODE>;
      enhanced program <VAR>M3TPROC</VAR>
@@ -3573,7 +3969,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     error messages for worker-routine <CODE>RDTFLAG()</CODE>.  These are
     now corrected.
     <P>
-    
+
     Program <A HREF = "M3TPROC.html"><VAR>M3TPROC</VAR></A> was enhanced so that it
     will now do time aggregation of minima, in addition to the
     previously supported arithmetic means and maxima (so  that one can
@@ -3581,7 +3977,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     The time-stepping logic was enhanced to support partial-input
     aggregation, and the program control logic was completely overhauled
     to get rid of the absurdly complex hierarchy of environment variables
-    and command-line prompts used in the prior version. 
+    and command-line prompts used in the prior version.
     <STRONG>Consequently, scripts used with the previous version will no
     longer work: <EM>the new version requires re-scripting.</EM></STRONG>
     <P>
@@ -3591,26 +3987,26 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct1504">
      Bug fix, version in <CODE>CRTFIL3()</CODE>
 </A></H2>
 
     October&nbsp;15, 2004:
     <P>
-    As pointed out by Dr.&nbsp;Michael Bane of the University of Manchester, 
+    As pointed out by Dr.&nbsp;Michael Bane of the University of Manchester,
     Manchester, UK, worker
     routines <CODE>CRTFIL3()</CODE> and <CODE>CRTKF3()</CODE> were not
-    correctly picking up the I/O API version to insert into file
+    correctly picking up the I/O&nbsp;API version to insert into file
     headers.  This is now corrected.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "sep072004">
      Bug fix, virtual mode <CODE>INTEPR3()</CODE>
 </A></H2>
@@ -3618,18 +4014,18 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     September&nbsp;7, 2004:
     <P>
     The virtual-mode part of the
-    <A HREF = "INTERP3.html"><CODE>interp3()</CODE></A> system 
+    <A HREF = "INTERP3.html"><CODE>interp3()</CODE></A> system
     <EM>still</EM> had a bug that occurred for PVM-based
     &quot;virtual&quot; files (netCDF file behavior is unaffected).
     This has now (<EM>finally!</EM>) been fixed and the fix validated.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "sep032004">
      Bug fixes; program <CODE>m3interp</CODE>
 </A></H2>
@@ -3657,13 +4053,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     sequence.  (This program has been moved from <CODE>iotests</CODE>
     directory to  <CODE>m3tools</CODE>.)
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "aug042004">
      Bug fix in <CODE>currstepc()</CODE>
 </A></H2>
@@ -3675,13 +4071,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     during attempt to rationalize/re-engineer the structure of PAVE.
     The previous version would almost certainly have caused a seg-fault.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jul302004">
      Bug fix in <CODE>M3COMBO</CODE>
 </A></H2>
@@ -3689,17 +4085,17 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     July&nbsp;30, 2004:
     <P>
     M. Talat Odman of Georgia Tech points out a bug in
-    <A HREF="M3COMBO.html"><CODE>M3COMBO</CODE></A>:  
+    <A HREF="M3COMBO.html"><CODE>M3COMBO</CODE></A>:
     the first term in the linear combinations was wrong for
     multi-variable <CODE>M3COMBO</CODE> runs.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jul262004">
      Bug fixes in <CODE>M3MSG2</CODE> and <CODE>UNGRIDB</CODE>
 </A></H2>
@@ -3718,7 +4114,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     The result of the bug was an inappropriate extend-by-constant
     computation for the last (N-S) column of the horizontal grid.
     <P>
-    
+
     <A HREF="M3MESG.html"><CODE>M3MESG</CODE> and <CODE>M3MSG2</CODE></A>
     had an argument-mismatch problem if they had to call worker routine
     <CODE>INITLOG3</CODE> (which would occur if they were called prior
@@ -3731,16 +4127,16 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may252004">
      Message fix in <CODE>MTXCALC</CODE>
 </A></H2>
 
     May&nbsp;25, 2004:
     <P>
-    Luca Delle Monache of the Atmospheric Science Programme at the 
+    Luca Delle Monache of the Atmospheric Science Programme at the
     University of British Columbia points out that the warning message
-    for unsupported coordinate system types was incorrect in program 
+    for unsupported coordinate system types was incorrect in program
     <A HREF="MTXCALC.html"><CODE>MTXCALC</CODE></A>.  This is now fixed
     in the <A HREF = "ioapi-3.0.tar.gz">I/O&nbsp;API Version&nbsp;3
     download</A>.
@@ -3751,7 +4147,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may172004">
     I/O&nbsp;API Version&nbsp;3.0 Pre-Release&nbsp;2
 </A></H2>
@@ -3763,13 +4159,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     also an over-dimensioning of the <VAR>malloc()</VAR>ed input
     buffer in that routine, now corrected.
     <P>
-   
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "ver30">
     I/O&nbsp;API Version&nbsp;3.0 Pre-Release&nbsp;1
 </A></H2>
@@ -3783,7 +4179,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
         <LI>  New/improved build-system with a new ew top-level
               <VAR>Makefile</VAR> which allows one to build various
               configurations of the entire (I/O&nbsp;API +
-              <VAR>m3tools</VAR>) system with one <VAR>make</VAR> command. 
+              <VAR>m3tools</VAR>) system with one <VAR>make</VAR> command.
               <P>
         <LI>  More complete WRF support
               <UL>
@@ -3814,7 +4210,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
         <LI>  A new &quot;native-binary I/O&quot; (<CODE>BINFIL3</CODE>)
               lower layer, in addition to the current netCDF,
               <CODE>BUFFERED</CODE>,  <CODE>VIRTUAL</CODE>, and
-              <CODE>FILE-LIST</CODE> lower layers.  This is the 
+              <CODE>FILE-LIST</CODE> lower layers.  This is the
               least-tested part of the code, and is primarily intended for
               use with ETA/CMAQ at NOAA/NCEP, where the departmental
               politics prevents the existence of <VAR>libnetcdf.a</VAR>
@@ -3839,7 +4235,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
               URL <A HREF="http://www.g95.org/">http://www.g95.org/</A>)
               <P>
         <LI>  Various new routines, including
-              <A HREF="M3MESG.html"><CODE>M3PARAG</CODE></A>, 
+              <A HREF="M3MESG.html"><CODE>M3PARAG</CODE></A>,
               <A HREF="M3MESG.html"><CODE>M3FLUSH</CODE></A>,
               <A HREF="IOPARMS3.html"><CODE>IOPARMS3</CODE></A>
               <A HREF="GET_ENDIAN.html"><CODE>GET_ENDIAN</CODE></A>
@@ -3871,7 +4267,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may042004">
     New <CODE>Makefile</CODE>s  for I/O&nbsp;API version&nbsp;2.2;
     beta availability for I/O&nbsp;API version&nbsp;3.
@@ -3882,11 +4278,11 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     In the retrofitting of <CODE>M3PARAG, M3FLUSH</CODE>, etc., into
     I/O&nbsp;API Version&nbsp;2.2, I failed to update the
     <CODE>Makefile</CODE>s  to match.  This error has now been corrected
-    for <A HREF = "ioapi_22.tar.gz">the new download tar-file.</A> 
+    for <A HREF = "ioapi_22.tar.gz">the new download tar-file.</A>
     <P>
 
-    The beta release of I/O&nbsp;API Version&nbsp;3, 
-    <A HREF = "#oct17">as described below</A> is now 
+    The beta release of I/O&nbsp;API Version&nbsp;3,
+    <A HREF = "#oct17">as described below</A> is now
     <A HREF = "ioapi-3.0.tar.gz">available for download.</A>
     <P>
     Further documentation for I/O&nbsp;API Version&nbsp;3 is in
@@ -3898,7 +4294,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may01">
     New subroutines <CODE>M3PARAG, M3FLUSH</CODE>
 </A></H2>
@@ -3911,7 +4307,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
 
     New subroutine <A HREF="M3MESG.html"><CODE>M3FLUSH</CODE></A>
-    allows the caller to flush a specified Fortran file to disk.  
+    allows the caller to flush a specified Fortran file to disk.
     This routine is useful for dealing with portability problems due to
     the fact that various operating system/Fortran compiler
     combinations define <CODE>FLUSH</CODE> inconsistently.
@@ -3930,7 +4326,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr162004">
     New subroutine <CODE>IOPARMS3</CODE>
 </A></H2>
@@ -3954,7 +4350,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mar302004">
     Bug-fix to subroutines <CODE>LAMBERT</CODE>; enhancements to
     <CODE>CKFILE3</CODE>, and <CODE>CKDESC3</CODE>
@@ -3973,7 +4369,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
               descriptions, when the underlying coordinate system is
               polar sterographic.
     </UL>
-    
+
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -3981,7 +4377,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dec022004">
     Bug-fix to <CODE>M3STAT</CODE>
 </A></H2>
@@ -4013,7 +4409,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "oct172003">
     <CODE>GDTYP=STEGRD3</CODE> checking; Type-portability, I/O&nbsp;API
     Version&nbsp;3
@@ -4052,7 +4448,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
         <LI>  A new &quot;native-binary I/O&quot; (<CODE>BINFIL3</CODE>)
               lower layer, in addition to the current netCDF,
               <CODE>BUFFERED</CODE>,  <CODE>VIRTUAL</CODE>, and
-              <CODE>FILE-LIST</CODE> lower layers. 
+              <CODE>FILE-LIST</CODE> lower layers.
         <LI>  A more thorough-going treatment of Fortran/C interface
               type-matching, to deal with platforms where one or more
               of the following do not occur:
@@ -4066,8 +4462,8 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
               </UL>
     </UL>
     For more information, contact the author,<BR>
-    <A HREF = "mailto:carlie.coats@baronams.com"> <ADDRESS> 
-          Carlie J. Coats, Jr. <BR> 
+    <A HREF = "mailto:carlie.coats@baronams.com"> <ADDRESS>
+          Carlie J. Coats, Jr. <BR>
           carlie.coats@baronams.com  </ADDRESS> </A>
     <P>
 
@@ -4076,7 +4472,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "aug202003">
     <CODE>Makeinclude.OSF1</CODE> enhancements
 </A></H2>
@@ -4101,7 +4497,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jul092003">
     Compiler-Bug Report: IRIX F90 Version 7.4
 </A></H2>
@@ -4116,7 +4512,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     processes <A HREF="BUFFERED.html#vol">declare the shared file
     to be &quot;volatile&quot;</A>.
     <P>
-   
+
     In the process of doing the May&nbsp;19 and June&nbsp;5 bugfixes
     and enhancements, an OpenMP critical-section deadlock related to
     <CODE>INIT3()</CODE> was created in various routines.  The critical
@@ -4156,7 +4552,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
         m3abort.F<BR>
     </CODE></BLOCKQUOTE>
     <P>
-   
+
     SGI IRIX F90 Version 7.4 does not follow industry-standard practice
     for ensuring that <CODE>BLOCK&nbsp;DATA&nbsp;INITBLK3</CODE> is
     correctly linked in, to initialize I/O&nbsp;API internal data
@@ -4170,13 +4566,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     and have fixed it for the 7.4.1 and later compilers.
     </EM>
     <P>
-   
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "jun052003">
     Enhancements for IRIX F90
 </A></H2>
@@ -4188,19 +4584,19 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     output is flushed to a file.  Routines <CODE>GETDBLE, GETMENU,
     GETNUM, GETREAL, GETSTR, M3MESG, M3MSG2, PROMPTDFILE, PROMPTFFILE,
     PROMTMFILE, PROMPTGRID </CODE> have been enhanced to attempt to
-    deal with these anomalies; additionally, new entry point 
+    deal with these anomalies; additionally, new entry point
     <CODE>M3FLUSH(&nbsp;INTEGER&nbsp;IUNIT&nbsp;)</CODE> for
     <CODE>M3MSG2()</CODE>has been added, for user-code to use for
     flushing its standard output, in order to similarly avoid these
     anomalies.
     <P>
-   
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may192003">
     Minor BugFixes/Enhancements for BUFFERED Files.
 </A></H2>
@@ -4214,13 +4610,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     error in a warning message in <CODE>OPNKF3()</CODE>  These were
     discovered, and fixes provided by David Wong, US&nbsp;EPA.
     <P>
-   
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may152003">
     Minor BugFixes/Enhancements
 </A></H2>
@@ -4234,32 +4630,32 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     the <VAR>Makefile</VAR> so that the tar-file building process
     would be both correct and automated.
     <P>
-    
+
     Function <CODE>CRLF()</CODE>, that had originated in SMOKE and
-    that is used (afaik) only in that model, was modified so that 
-    it generates correct C-style line terminators for both UNIX and 
+    that is used (afaik) only in that model, was modified so that
+    it generates correct C-style line terminators for both UNIX and
     Windows (instead of only for Windows, as its predecessor did...)
     [UNIX traditionally uses the ASCII line-feed character as a line
-    terminator; Windows uses a line-feed/carriage-return pair; 
+    terminator; Windows uses a line-feed/carriage-return pair;
     Mac&nbsp;OS (not yet supported&nbsp;;-(&nbsp;) uses a
     carriage-return/line-feed pair.]  Note that the insertion of C-style
     line terminators into the middle of Fortran strings for carriage
     control with Fortran I/O is <STRONG>not</STRONG> standard-conforming
     and in fact <EM>will not work on some systems</EM> (e.g., VMS, Crays).
     <P>
-    
+
     Function <CODE>XTRACT3()</CODE> was modified to use time-step-check
     routine <CODE>RDTFLAG()</CODE> to bring it into conformity with the
     rest of the Version&nbsp;2.2 I/O&nbsp;API input routines (which no
     longer have in-lined code for time step availability-checking,
     but use that routine instead).
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "may082003">
     Enhancement to allow for OpenMP-parallel <CODE>INTERP3()</CODE>
     and/or <CODE>KFOPEN()</CODE> on files not yet opened<BR>
@@ -4277,20 +4673,20 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     implementation, and removes the possibilities of deadlocks
     on opening multiple virtual files in parallel.
     <P>
-    
+
     <VAR>make nametest</VAR> assumes that <CODE>libioapi.a</CODE> is
     built, and that <CODE>libnetcdf.a</CODE> has been correctly placed
     in <CODE>${OBJDIR}</CODE>, and then checks that the compilers used
     to generate these two libraries use compatible name-mangling
     systems (e.g., the same number of trailing underscores, if any).
     <P>
-    
-    
+
+
     <VAR>make all</VAR> will run <VAR>make nametest</VAR> and report
     the results to the screen.
     <P>
-    
-    <VAR>nm_test.csh &lt;file1&gt; &lt;file2&gt; &lt;name&gt;</VAR> 
+
+    <VAR>nm_test.csh &lt;file1&gt; &lt;file2&gt; &lt;name&gt;</VAR>
     may be used to test that the compiler systems used to build
     <VAR>file1</VAR> and <VAR>file2 </VAR> generate the same linker
     symbol <VAR>name</VAR>.  Note that <VAR>file1</VAR> and
@@ -4301,12 +4697,12 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <CODE>open3</CODE> (or possibly the all-caps versions of these
     names).
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "apr142003">
     Bugfix for  <CODE>SETTRM()</CODE>; and new spheroid-selection
     routines <CODE>SETSPHERE()</CODE>, <CODE>INITSPHERES()</CODE>,
@@ -4316,7 +4712,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     April&nbsp;14, 2003:
     <P>
 
-   
+
     <A HREF = "SETSPHERE.html">These routines</A> allow the user to
     select a non-default sphere or spheroid for use with the  I/O&nbsp;
     wrappers (<CODE>LAM2LL()</CODE>, <CODE>LL2UTM()</CODE>,
@@ -4328,20 +4724,20 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <CODE>XCENT</CODE> and <CODE>YCENT</CODE>; this would silently
     generate corrupt results.
     <P>
-    
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "feb03">
     Bugfix for I/O&nbsp;API Version&nbsp;2.2 <CODE>rdatt3c()</CODE>,
-    <CODE>wratt3c()</CODE>, <CODE>BUFINTX</CODE>, and 
+    <CODE>wratt3c()</CODE>, <CODE>BUFINTX</CODE>, and
     <CODE>BUFINTXD</CODE>:
     <EM>Feb.&nbsp;18,&nbsp;2003</EM>
 </A></H2>
 
-    
+
     These bugs were discovered by David Wong, US EPA.
     <P>
 
@@ -4355,7 +4751,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     incorrect pointer-initializations; this would silently generate
     corrupt results.
     <P>
-    
+
     Code for the Cray version of public routine <CODE>SETENVVAR()</CODE>
     and private routine  <CODE>lentrim()</CODE> had syntax bugs, that
     are now fixed.
@@ -4365,7 +4761,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "tprocb">
     Bugfix for I/O&nbsp;API Version&nbsp;2.2 program <CODE>M3TPROC</CODE>:
     <EM>Feb.&nbsp;7,&nbsp;2003</EM>
@@ -4387,7 +4783,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "tproc">
     Bugfix for I/O&nbsp;API Version&nbsp;2.2 program <CODE>M3TPROC</CODE>:
     <EM>Nov.&nbsp;14,&nbsp;2002</EM>
@@ -4405,7 +4801,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "restart">
     Corrected handling of circular-buffer/RESTART files in
     <CODE>READ3(), WRITE3(), INTERP3()</CODE>, and
@@ -4430,7 +4826,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "dstbug">
     Bugfix in function <CODE>ISDSTIME()</CODE> and programs
     <CODE>GREGDATE</CODE> and <CODE>JULDATE</CODE>:
@@ -4448,7 +4844,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "lambug">
     Bugfix in <CODE>SETLAM()</CODE>:  <EM>June&nbsp;7,&nbsp;2002</EM>
 </A></H2>
@@ -4463,7 +4859,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "setbug">
     Bugfix in <CODE>SETENVVAR()</CODE>:  <EM>May 10,&nbsp;2002</EM>
 </A></H2>
@@ -4477,7 +4873,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "ver22">
     Version&nbsp;2.2:  <EM>Due May 2002</EM>
 </A></H2>
@@ -4485,7 +4881,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     The following set of enhancements does not break backward
     compatibility -- either at the source, link, or data levels.
     There is an additional round of enhancements planned for
-    I/O&nbsp;API Version&nbsp;3 to support the 
+    I/O&nbsp;API Version&nbsp;3 to support the
     <A HREF="http://wrf-model.org/">Weather Research and Forecasting
     Meteorology and  Atmospheric Chemistry (WRF; WRF-CHEM) Models</A>;
     this latter version (to appear 3rd quarter,&nbsp;2002) will break source
@@ -4552,8 +4948,8 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
              <P>
 
         <DT> <STRONG><A HREF = "WRF_IOAPI.html">WRF Enhancements</A></STRONG>
-        <DD> Routines <A HREF="INQATT3.html">INQATT3()</A>, 
-             <A HREF="RDATT3.html">RDATT3()</A>, and 
+        <DD> Routines <A HREF="INQATT3.html">INQATT3()</A>,
+             <A HREF="RDATT3.html">RDATT3()</A>, and
              <A HREF="WRATT3.html">WRATT3()</A> support the
              specification of additional per-file and per-variable
              metadata attributes beyond the standard list, found in
@@ -4565,8 +4961,8 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
              The I/O routines has been re-coded so that it is only
              required that <EM>trimmed lengths</EM> (i.e., length
-             exclusive of trailing blanks) of 
-             <A HREF = "LOGICALS.html">logical names</A> and 
+             exclusive of trailing blanks) of
+             <A HREF = "LOGICALS.html">logical names</A> and
              variable-names must not exceed <CODE>NAMELEN3</CODE>=16
              (e.g, <CODE>CHARACTER(LEN=24)
              FOO&nbsp;=&nbsp;'v23456789012345&nbsp;&nbsp;&nbsp;'</CODE>
@@ -4603,12 +4999,12 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
                   supports new development for CMAQ, SMOKE, and WRF.
                   Script <A HREF="fix_src.csh"><CODE>fix_src.csh</CODE></A>
                   is available for those users (e.g., CMAQ) who demand
-                  nonstandard 132-column fixed F90 source format; 
-                  <CODE>Makefile</CODE> goal <CODE>fixed_src</CODE> 
+                  nonstandard 132-column fixed F90 source format;
+                  <CODE>Makefile</CODE> goal <CODE>fixed_src</CODE>
                   constructs nonstandard 132-column INCLUDE-files in
                   a user-configurable directory.
                   <P>
-             <LI> I/O&nbsp;API <STRONG>Data type 
+             <LI> I/O&nbsp;API <STRONG>Data type
                   <A HREF="DATATYPES.html#profil"><CODE>PROFIL3</CODE></A>
                   </STRONG> now uses  <CODE>REAL</CODE>
                   position-variables in each time step record,
@@ -4627,7 +5023,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
              <CODE><STRONG>io_360</STRONG></CODE> e.g.,
              <CODE>Linux2_alpha_360</CODE>  For Version&nbsp;2.2 of the
              I/O&nbsp;API, we will unify the code of this version with
-             the code for the main branch, so that one may obtain the 
+             the code for the main branch, so that one may obtain the
              <CODE>io_360</CODE> by <CODE>#define</CODE>ing the
              preprocessor symbol <CODE>IO_360</CODE> as in the
              <CODE>Makefile.io_360</CODE> and using the usual build
@@ -4639,7 +5035,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
              <CODE>REALIST()</CODE>, and <CODE>STRLIST()</CODE></A>
              have been modified so that they accept an optional
              <CODE>LIST:</CODE> prefix for the value-list, so that
-             one may set the list-value as in the following 
+             one may set the list-value as in the following
              script-example for an <CODE>INTLIST()</CODE> list:
              <BLOCKQUOTE><CODE>
              setenv MYLIST &quot;LIST:1,24,9876,5&quot;
@@ -4662,13 +5058,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     I/O&nbsp;API Version&nbsp;3 will support <CODE>NAMELEN3</CODE>=32
     character variable and logical names, &quot;staggered&quot;
     variables, and various other things yet to be determined, in
-    support of WRF.  <STRONG>It will not be data- nor link-compatible (and 
+    support of WRF.  <STRONG>It will not be data- nor link-compatible (and
     may not be fully source-code compatible) with previous versions
     of the I/O&nbsp;API.</STRONG>  We will maintain forwards data
     compatibility (so that Version&nbsp;3 will read Version&nbsp;1 and
     Version&nbsp;2 generated files, but possibly not vice versa.
     <P>
-    
+
     <STRONG>STATUS:</STRONG>  under development.  Version&nbsp;2.2 is
     due out by the end of 2Q&nbsp;2002; Version&nbsp;3 should
     appear during 2Q&nbsp;2003.
@@ -4679,7 +5075,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "nextime">
     bugfix in <CODE>NEXTIME()</CODE>:  Jan. 15,&nbsp;2002
 </A></H2>
@@ -4687,11 +5083,11 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     It turns out that there was an algorithm error in subroutine
     <CODE>NEXTIME()</CODE> for the case of a negative time step that
     backed up the <CODE>JDATE:JTIME</CODE> argunments across a year
-    boundary (e.g., stepping backwards by an hour from 
+    boundary (e.g., stepping backwards by an hour from
     <CODE>2002001:003000</CODE> by <CODE>-10000</CODE> should yield
     <CODE>2001366:233000</CODE> but did not get the year correct.
     <P>
-    
+
     <STRONG>STATUS:</STRONG>  fixed.
     <P>
 
@@ -4700,7 +5096,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "ver21">
     I/O&nbsp;API Version 2.1:  <EM>December 5, 2001</EM>
 </A></H2>
@@ -4719,49 +5115,49 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     Intel Fortran and C, and Lahey-Fujitsu Fortran  compilers for Linux
     are now supported by the <VAR>Makeinclude</VAR> system.
     <P>
-    
+
     New routines <A HREF = "LISTS.html"><CODE>INTLIST()</CODE>,
     <CODE>REALLIST()</CODE>, and <CODE>STRLIST()</CODE></A> that read in
-    comma-delimited-list-valued environment variables.    
+    comma-delimited-list-valued environment variables.
     <P>
 
     New programs for analysis, model-coupling, grid-to-grid
     transformation, etc.:
     <UL>
        <LI>  <A HREF = "M3TPROC.html" ><STRONG>M3TPROC</STRONG></A>:
-             compute time period aggregates (e.g., 08:00-16:00 
+             compute time period aggregates (e.g., 08:00-16:00
              gridded daily maxima) and write them to an output file
              <P>
-       <LI>  <A HREF = "M3CPLE.html" ><STRONG>M3CPLE</STRONG></A>:  
+       <LI>  <A HREF = "M3CPLE.html" ><STRONG>M3CPLE</STRONG></A>:
              copy to the same grid, or interpolate to another grid
              a time sequence of all variables from a source file
              <P>
-       <LI>  <A HREF = "MTXBLEND.html" ><STRONG>MTXBLEND</STRONG></A>:  
+       <LI>  <A HREF = "MTXBLEND.html" ><STRONG>MTXBLEND</STRONG></A>:
              Use a sparse-matrix file to interpolate/transform data
              from an input file to the grid of a &quot;base&quot; file
              and to merge it with data from the &quot;base&quot; file.
              <P>
-       <LI>  <A HREF = "MTXBUILD.html" ><STRONG>MTXBUILD</STRONG></A>:  
+       <LI>  <A HREF = "MTXBUILD.html" ><STRONG>MTXBUILD</STRONG></A>:
              Build a sparse-matrix transform file from user-supplied
              ASCII coefficient inputs.
              <P>
-       <LI>  <A HREF = "MTXCALC.html" ><STRONG>MTXCALC</STRONG></A>:  
+       <LI>  <A HREF = "MTXCALC.html" ><STRONG>MTXCALC</STRONG></A>:
              Build a grid-to-grid sparse-matrix transform file using
              a sub-sampling algorithm.
              <P>
-       <LI>  <A HREF = "MTXCPLE.html" ><STRONG>MTXCPLE</STRONG></A>:  
+       <LI>  <A HREF = "MTXCPLE.html" ><STRONG>MTXCPLE</STRONG></A>:
              Use a sparse-matrix file to interpolate a time sequence of
              all variables from a source file to  a target file.
              <P>
-       <LI>  <A HREF = "PRESTERP.html" ><STRONG>PRESTERP</STRONG></A>:  
-             Interpolate from a 3-D sigma-coordinate file to a 
+       <LI>  <A HREF = "PRESTERP.html" ><STRONG>PRESTERP</STRONG></A>:
+             Interpolate from a 3-D sigma-coordinate file to a
              new 3-D pressure-coordinate file, using coefficients
              from <A HREF = "mcpl.files.html#pc3">
              PRES_CRO_3D</A> from the
              <A HREF = "mcpl.html">MCPL</A> I/O&nbsp;API
              output module for MM5.
              <P>
-       <LI>  <A HREF = "SELMRG2D.html" ><STRONG>SELMRG2D</STRONG></A>:  
+       <LI>  <A HREF = "SELMRG2D.html" ><STRONG>SELMRG2D</STRONG></A>:
              select multiple 2D layer/variable combinations from multiple
              gridded input files, and write result to merged 2D gridded
              output file
@@ -4774,7 +5170,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "check3">
     Bug-fix in <CODE>&nbsp;CHECK3()</CODE>, <VAR>Makefile</VAR>
 </A></H2>
@@ -4783,13 +5179,13 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     <A HREF = "CHECK3.html">CHECK3()</A>.  This bug arose during the
     effort to make all of the I/O&nbsp;API OpenMP thread-safe.
     <P>
-    
+
     There was also a bug in the way the <VAR>Makefile</VAR> was building
     <A HREF = "GCTP.html">GCTP()</A>.  The problem is that this is
     a very old Fortran routine from the US Geological Survey, which
     requires that compile-flags be set so as to <CODE>SAVE</CODE>
     all its local variables (and there turned out to be significant
-    differences how various platforms handled the matter).    
+    differences how various platforms handled the matter).
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -4797,12 +5193,12 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
 
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "mercs">
     More I/O&nbsp;API map projection support
 </A></H2>
 
-    Parameters have been added to INCLUDE file FDESC3.EXT for the 
+    Parameters have been added to INCLUDE file FDESC3.EXT for the
     following <A HREF = "GRIDS.html#horiz">horizontal map
     projection</A> types:
     <DL>
@@ -4818,7 +5214,7 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     </DL>
     The implementation of map-transformations for these is provided
     directly by USGS routine  <A HREF = "GCTP.html">GCTP</A>.
-    Support for these map projection types has been put into 
+    Support for these map projection types has been put into
     the user-friendly wrapper-module <A HREF = "LAMBERT.html">LAMBERT</A>
     and into interactive map-transformation utility program
     <A HREF = "UTMTOOL.html">UTMTOOL</A>.
@@ -4843,9 +5239,9 @@ Dr.&nbsp;Michael Bane of the University of Manchester (UK)
     IF ( .NOT.OPEN3( 'MYFILE', FSREAD3, 'Myprogram' ) ) THEN
 C              MYFILE could not be opened for read-only
         ...
-    ELSE IF ( .NOT. FILCHK3( 'MYFILE', 
+    ELSE IF ( .NOT. FILCHK3( 'MYFILE',
  &amp;                       GRDDED3, NCOLS, NROWS, NLAYS, NTHIK ) THEN
-C            Either the file type for 'MYFILE' was not GRIDDED, or 
+C            Either the file type for 'MYFILE' was not GRIDDED, or
 C            it had unexpected dimensions (see log for more details).
         ...
     END IF
@@ -4893,9 +5289,9 @@ C            it had unexpected dimensions (see log for more details).
              <P>
         <LI> <A HREF = "M3CPLE.html"><STRONG><CODE>m3cple</CODE></STRONG></A>:
              copy to the same grid, or interpolate to another grid
-             a time sequence of all variables from a source file to 
+             a time sequence of all variables from a source file to
              a target file, under the optional control of an
-             <A HREF="BUFFERED.html#pvm">I/O&nbsp;API coupling-mode 
+             <A HREF="BUFFERED.html#pvm">I/O&nbsp;API coupling-mode
              &quot;synch file&quot;</A>.
              <P>
         <LI> <A HREF = "SELMRG2D.html"><STRONG><CODE>selmrg2d</CODE></STRONG></A>:
@@ -4903,7 +5299,7 @@ C            it had unexpected dimensions (see log for more details).
              multiple gridded input files, and write result to merged
              2D gridded output file, e.g., for use preparing inputs to
              various &quot;canned&quot; 2-D graphics programs in
-             automated web-generation, e.g., for NCSC's 
+             automated web-generation, e.g., for NCSC's
              <A HREF = "http://www.baronams.com:/projects/NAQP/">Numerical Air Quality
              Prediction</A> project.
     </UL>
@@ -4915,13 +5311,13 @@ C            it had unexpected dimensions (see log for more details).
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "newvv">
-    New Release Version 
+    New Release Version
 </A></H2>
 
     In cooperation with EPA, we will be releasing the new and updated
     public version&nbsp;2.0 of the I/O&nbsp;API in late Fall,&nbsp;1999.
     This version incorporates both the
-    <STRONG><A HREF = "#taskp">task-parallel</A></STRONG> and the 
+    <STRONG><A HREF = "#taskp">task-parallel</A></STRONG> and the
     <STRONG><A HREF = "#coupl">coupling-mode extensions</A></STRONG>,
     as well as the <STRONG><A HREF = "#times">time series
     operations</A></STRONG>.<BR>
@@ -4929,37 +5325,37 @@ C            it had unexpected dimensions (see log for more details).
     here.</A></VAR>
     <P>
 
-    With this version, the source-code-level build-process uses 
+    With this version, the source-code-level build-process uses
     <CODE>Makefile</CODE>s rather than the previous <CODE>Makeit</CODE>
     shell-scripts.  This allows much faster re-building of the library
     for small bug-fixes.
     <P>
 
-    With this version, we will be supporting <STRONG>only 
+    With this version, we will be supporting <STRONG>only
     netCDF&nbsp;3.x</STRONG>, because of the support it provides for
     synchronization during model coupling.  Please note that the
     NCAR folks accidentally incorporated a link-incompatibility
     between versions&nbsp;2.x and 3.x of netCDF in some of the &quot;magic
     numbers&quot; used to describe modes of opening files.  Note also
-    that versions&nbsp;3.4 and later use different error numbers than 
+    that versions&nbsp;3.4 and later use different error numbers than
     version 3.3.1 and earlier.  The <A HREF="ERRORS.html">I/O&nbsp;API
-    Troubleshooting Page</A> will be updated to reflect both sets 
+    Troubleshooting Page</A> will be updated to reflect both sets
     of error numbers.  (As of 8/20/1999, the current released version
     of netCDF is 3.4, although we have been testing the new
     version&nbsp;3.5b2 in-house recently.)
     <P>
-    
+
     Also with this version, the default build of the library
-    <STRONG>will require linking with libpvm3.a</STRONG> for 
-    coupling mode support.  
+    <STRONG>will require linking with libpvm3.a</STRONG> for
+    coupling mode support.
     <A HREF = "http://www.epm.ornl.gov:80/pvm/">PVM&nbsp;3.4</A>
     or later is required, because of the requirement for PVM
     mailboxes.
     <P>
-    
+
     For some vendors, linking of serial programs will also require the
-    explicit specification of an <STRONG>OpenMP run-time library</STRONG> 
-    as well -- on SGI's, for example, this requires an additional 
+    explicit specification of an <STRONG>OpenMP run-time library</STRONG>
+    as well -- on SGI's, for example, this requires an additional
     <CODE> -lmp</CODE> in the linking-step command line for serial
     programs.
     <P>
@@ -4970,41 +5366,41 @@ C            it had unexpected dimensions (see log for more details).
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "datap">
-    OpenMP Task-Parallel Extensions 
+    OpenMP Task-Parallel Extensions
 </A></H2>
 
     <A HREF="http://www.openmp.org/">OpenMP</A> is a recent standard
-    for directive-based shared-memory parallel Fortran and C.  The 
-    Fortran and C standards were released in October, 1997 and October, 
+    for directive-based shared-memory parallel Fortran and C.  The
+    Fortran and C standards were released in October, 1997 and October,
     1998, respectively; a revision of the Fortran standard is expected
     in October, 1999.  Compilers supporting the OpenMP standard are
     available for a variety of platforms, including Compaq (DEC),
-    HP, IBM, Linux (both x86 and Alpha), SGI, Sun, and Win32 (95, 98, 
+    HP, IBM, Linux (both x86 and Alpha), SGI, Sun, and Win32 (95, 98,
     and NT (both x86 and Alpha)).  OpenMP supports not only the kind of
     loop-level parallelism that has long been available from a variety
     of vendors, but also task-parallelism as well.  In addition to much
-    better portability, it offers much better support (critical sections, 
-    barriers, nested parallelism) for large projects than did the 
+    better portability, it offers much better support (critical sections,
+    barriers, nested parallelism) for large projects than did the
     proprietary vendor specific directives.  We are using OpenMP Fortran
     in-house with various air quality modeling projects; with its
     <A HREF="http://www.mmm.ucar.edu/mm5/mm5-home.html">MM5 meteorology
     model</A>, NCAR is moving to OpenMP directives as of its MM5
     Version&nbsp;3.
     <P>
-    
+
     We are making the I/O&nbsp;API thread-safe for OpenMP, and have been
-    testing the result in various 
-    <A HREF="http://www.baronams.com:/projects/NAQP/">real-time air quality 
+    testing the result in various
+    <A HREF="http://www.baronams.com:/projects/NAQP/">real-time air quality
     forecasting</A> and <A
     HREF="http://www.baronams.com:/projects/dashmm/">
     other meteorological</A> projects.  The basic principle is that
     <STRONG>I/O&nbsp;API calls that read or write distinct variables
-    and/or distinct files may be done concurrently</STRONG> from 
+    and/or distinct files may be done concurrently</STRONG> from
     OpenMP programs.  The biggest gains for model-users are with
-    <CODE><A HREF="INTERP3.html">INTERP3</A></CODE> and 
+    <CODE><A HREF="INTERP3.html">INTERP3</A></CODE> and
     <CODE><A HREF="DDTVAR3.html">DDTVAR3</A></CODE>, where the
     call involves linear algebra computations (linear interpolation or
-    differencing) in addition to  I/O (which is performed sometimes--but 
+    differencing) in addition to  I/O (which is performed sometimes--but
     not always, because of the internal double-buffering mechanisms.
     Note that I/O to/from disk is itself sequential in any case.)
     <P>
@@ -5022,48 +5418,48 @@ C            it had unexpected dimensions (see log for more details).
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
-    
+
+
 <H2> <A NAME = "datap">
-    Data-Parallel Extensions 
+    Data-Parallel Extensions
 </A></H2>
 
     For message-passing data parallel programming, our colleagues at
     EPA's Atmospheric Research and Exposure Assessment Laboratory
-    (AREAL) have been constructing an extension to the I/O&nbsp;API 
-    which distributes gridded data for domain-decomposition data 
-    parallel message passing models.  Inquiries should be addressed 
-    to Dr.&nbsp;Jeffrey Young, 
+    (AREAL) have been constructing an extension to the I/O&nbsp;API
+    which distributes gridded data for domain-decomposition data
+    parallel message passing models.  Inquiries should be addressed
+    to Dr.&nbsp;Jeffrey Young,
     <A HREF = "mailto:yoj@hpcc.epa.gov">yoj@hpcc.epa.gov</A>.
-    <P> 
-    
-    As part of the 
+    <P>
+
+    As part of the
     <A HREF = "http://www.baronams.com:/projects/ppar/index.html">Practical
-    Parallel Project</A>, MCNC has developed an HPF2 implementation 
+    Parallel Project</A>, MCNC has developed an HPF2 implementation
     of an HPF I/O&nbsp;API module which calls the I/O&nbsp;API  and
     then re-destributes gridded or boundary data according to the
     data distribution of its caller.  Unfortunately, however, the
     IBM XL&nbsp;HPF and Portland Group HPF compilers we use support
-    only their own extensions to HPF&nbsp;1.1 at this time, so we 
+    only their own extensions to HPF&nbsp;1.1 at this time, so we
     have had to develop revised HPF I/O&nbsp;API modules for each
     which are not fully general but which do fulfill the requirements
     of our HPF air quality and hydrology models.
-    <P> 
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "coupl">
-     Parallel Extensions for Coupled Models 
+     Parallel Extensions for Coupled Models
 </A></H2>
 
-    As part of the 
+    As part of the
     <A HREF = "http://www.baronams.com:/projects/ppar/index.html">Practical
     Parallel Project</A>, MCNC has developed an extended
     <STRONG>Model-Coupling Mode</STRONG> for the I/O&nbsp;API.  This mode,
-    based upon <A HREF = "http://www.epm.ornl.gov:80/pvm/">PVM&nbsp;3.4</A> 
+    based upon <A HREF = "http://www.epm.ornl.gov:80/pvm/">PVM&nbsp;3.4</A>
     mailboxes, allows the user to specify in
     the run-script whether &quot;file&quot; means a physical file on
     disk or a PVM mailbox-based communications channel.  In the latter
@@ -5071,65 +5467,65 @@ C            it had unexpected dimensions (see log for more details).
     model on the basis of data availability:  requests for data which
     has not yet been written put the reading process to sleep until the
     data arrives, at which point the reader is awakened and given the
-    data it requested.  The one requirement is that the programmers 
+    data it requested.  The one requirement is that the programmers
     structure reads and writes so as to avoid deadlocks (two or more
     models, each asleep while waiting for input from the other).
     <P>
-    
+
     This has several advantages from the model-engineering point of
     view:
-    <UL>  
+    <UL>
         <LI>  The same programs work unchanged both in standalone mode
               (reading input from files and writing output to files)
               and in coupled-model mode (reading and writing selected
               inputs or outputs to/from PVM mailboxes).
-               
+
         <LI>  Readers and writers do not need to know about each other
-              in detail.  In particular, any reader only needs to know 
+              in detail.  In particular, any reader only needs to know
               that <EM>some</EM> writer will put the variables it needs
               into the mailbox.  Writers don't care whether readers
               even exist or not.
-              
+
         <LI>  One writer can supply multiple readers without special
               programming (and without needing to know who they are).
               For example, in a coupled system with the MM5/MCIP
-              meteorology model, the SMOKE emissions model, and the 
+              meteorology model, the SMOKE emissions model, and the
               MAQSIP air quality model, MM5 produces 5 time-stepped
               output &quot;virtual files&quot;, some variables of two
               of which are read by SMOKE and all of which are read by
               MAQSIP; and SMOKE produces one output &quot;virtual
-              files&quot; read by MAQSIP.  MAQSIP produces a 
+              files&quot; read by MAQSIP.  MAQSIP produces a
               &quot;synchronization file&quot; read by MM5/MCIP and
               used to keep MM5/MCIP from running ahead and exhausting
               available mailbox-buffer space.
-              
-        <LI>  Since data is tagged by variable-name, simulation date, 
+
+        <LI>  Since data is tagged by variable-name, simulation date,
               and time, the system is not subject to data scrambling
               because of implicit programming assumptions about the
               data ordering in the way that stream-like communications
               channels are.
 
     </UL>
-    <P> 
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-    
+
 <H2> <A NAME = "times">
-    Time Series READ/WRITE 
+    Time Series READ/WRITE
 </A></H2>
 
     In order to support the needs of surface-water, lake and estuary,
     and bay modeling, at the request of EPA-AREAL we have added two
     routines to the I/O&nbsp;API which will access an entire time
     step sequence of data in a single operation (&quot;read or write
-    <VAR>N</VAR> time steps of data starting at date and time 
-    <VAR>D:T</VAR> with step <VAR>DT</VAR> for variable <VAR>V</VAR> 
+    <VAR>N</VAR> time steps of data starting at date and time
+    <VAR>D:T</VAR> with step <VAR>DT</VAR> for variable <VAR>V</VAR>
     to/from file <VAR>F</VAR>&quot;).  The new routines are
-    <CODE><A HREF = "READ4D.html">READ4D()</A></CODE> and 
-    <CODE><A HREF = "WRITE4D.html">WRITE4D()</A></CODE>, and 
+    <CODE><A HREF = "READ4D.html">READ4D()</A></CODE> and
+    <CODE><A HREF = "WRITE4D.html">WRITE4D()</A></CODE>, and
     very much resemble <CODE>READ3()</CODE> and
     <CODE>WRITE3()</CODE>, except for the specification of an
     entire time step sequence as arguments, the restriction to
@@ -5139,7 +5535,7 @@ C            it had unexpected dimensions (see log for more details).
     <CODE><A HREF = "DATATYPES.html#grdded">GRDDED3</A></CODE>,
     <CODE><A HREF = "DATATYPES.html#bndary">BNDARY3</A></CODE>, and
     <CODE><A HREF = "DATATYPES.html#tsries">TSRIES3</A></CODE>.
-    <P> 
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -5153,28 +5549,28 @@ C            it had unexpected dimensions (see log for more details).
     Conditional compilation directives in the I/O&nbsp;API were recently
     modified to make it easier to port the I/O&nbsp;API to other platforms.
     Three issues are prominent:
-    <UL>  
+    <UL>
         <LI>  Feldman-style name mangling (trailing underscores) and
               CHARACTER string-passing conventions or not; and
         <LI>  Native length for REAL, INTEGER, and DOUBLE
-        <LI>  Dynamic memory allocation mechanism, whether via 
+        <LI>  Dynamic memory allocation mechanism, whether via
               Cray-pointers and <VAR>MALLOC</VAR> or by automatic
               arrays
     </UL>
     Preprocessor definitions and conditional compilation directives
     recognizing them have been provided in the code: defining FLDMN=0,1
-    specifies the first; REAL8=0,1 specifies the second, and 
+    specifies the first; REAL8=0,1 specifies the second, and
     AUTO_ARRAYS=0,1 the last of these.
     Work is in progress to provide the I/O API on at least the
     following additional platforms:
-    <UL>  
+    <UL>
         <LI>  Compaq <VAR>fort</VAR> and <VAR>gcc</VAR> on Linux Alpha.
         <LI>  <VAR>gcc/g77</VAR> (FLDMN=1, REAL8=0, and AUTO_ARRAYS=1)
-        <LI>  Win32 (Windows&nbsp;3.1/win32s, Windows&nbsp;95, and 
+        <LI>  Win32 (Windows&nbsp;3.1/win32s, Windows&nbsp;95, and
               Windows&nbsp;NT/x86) using either the Digital or the
               Absoft Fortran-90 compilers and the Microsoft C compiler
               (this requires that the Fortran pre-processing be done
-              in advance on a UNIX system;  FLDMN=1, REAL8=0, and 
+              in advance on a UNIX system;  FLDMN=1, REAL8=0, and
               AUTO_ARRAYS=1);
         <LI>  Windows&nbsp;NT/Alpha using the Digital compilers (also
               requires Fortran pre-processing n advance; FLDMN=1,
@@ -5183,7 +5579,7 @@ C            it had unexpected dimensions (see log for more details).
               Do you want to donate us a machine (or machine-time)
               for it?&gt;</A>
     </UL>
-    <P> 
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -5195,23 +5591,23 @@ C            it had unexpected dimensions (see log for more details).
     MCPL:  an I/O&nbsp;API output module for MM5
 </A></H2>
 
-    <A HREF="mcpl.html">MCPL</A> 
-    is an I/O&nbsp;API output module for MM5 developed under the 
+    <A HREF="mcpl.html">MCPL</A>
+    is an I/O&nbsp;API output module for MM5 developed under the
     <A HREF="http://www.baronams.com:/projects/ppar/index.html">MCNC PPAR project</A>.  It is
     MCPL is designed to fit into MM5 with a minimum of effort, to offer
     great flexibility of run-time configuration, and to be written in
-    &quot;boring&quot; code that is easy to understand, extend, and 
-    maintain.  It generates output files with a variety of kinds of 
+    &quot;boring&quot; code that is easy to understand, extend, and
+    maintain.  It generates output files with a variety of kinds of
     variables:
     <UL>
         <LI>  MM5 internal variables (including all those written by
               OUTTAP);
-        <LI>  all the variables needed for input to the 
-              <A HREF="/products/maqsip/index.html">MAQSIP</A> 
-              air quality model or the 
-              <A HREF="/products/smoke/index.html">SMOKE</A> 
+        <LI>  all the variables needed for input to the
+              <A HREF="/products/maqsip/index.html">MAQSIP</A>
+              air quality model or the
+              <A HREF="/products/smoke/index.html">SMOKE</A>
               emissions model;
-        <LI>  variables needed by the TOPLATS land surface/hydrology 
+        <LI>  variables needed by the TOPLATS land surface/hydrology
               model;
         <LI>  variables interpolated to pressure-surfaces; and
         <LI>  a variety of other diagnostic or analysis variables
@@ -5222,29 +5618,29 @@ C            it had unexpected dimensions (see log for more details).
     <P>
 
 <HR> <!----------------------------------------------------------------->
- 
+
     Go to the <STRONG><A HREF = "index.html"> I/O&nbsp;API
     Home Page</A></STRONG>
     <P>
     Go to the <STRONG><EM><A HREF = "AVAIL.html">I/O&nbsp;API
     Availability/Download page</A></EM></STRONG>
     <P>
-    Go to the <A HREF = "index.html"> 
+    Go to the <A HREF = "index.html">
     <STRONG> I/O&nbsp;API Home Page</STRONG></A>
     <P>
-    Go to the <STRONG><EM><A HREF = "AA.html">I/O&nbsp;API 
+    Go to the <STRONG><EM><A HREF = "AA.html">I/O&nbsp;API
     User Manual</A></EM></STRONG>
     <P>
 
 
-Send comments to 
-<A HREF = "mailto:carlie.coats@baronams.com"> <ADDRESS> 
-          Carlie J. Coats, Jr. <BR> 
-          carlie.coats@baronams.com  </ADDRESS> </A><P> 
+Send comments to
+<A HREF = "mailto:carlie.coats@baronams.com"> <ADDRESS>
+          Carlie J. Coats, Jr. <BR>
+          carlie.coats@baronams.com  </ADDRESS> </A><P>
 
 
     <PRE>
-    $Id: NEWSTUFF.html 146 2015-02-02 17:04:47Z coats $
+    $Id: NEWSTUFF.html 277 2015-12-03 18:49:20Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

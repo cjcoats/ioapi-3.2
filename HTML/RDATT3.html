@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: RDATT3.html 144 2015-01-31 15:50:42Z coats $" -->
+<!-- "$Id: RDATT3.html 165 2015-02-24 06:51:40Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> RDATT3() and RDATTC() </TITLE>
 </HEAD>
@@ -23,7 +23,7 @@
         CHARACTER*(*), INTENT(IN   ) :: FNAME         !  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME         !  variable name, or ALLVARS3
         CHARACTER*(*), INTENT(IN   ) :: ANAME         !  attribute name
-        INTEGER      , INTENT(IN   ) :: ATYPE         !  attribute type (M3REAL, M3INT, M3DBLE)
+        INTEGER      , INTENT(IN   ) :: ATYPE         !  attribute type (M3CHAR, M3REAL, M3INT, M3INT8, M3DBLE)
         INTEGER      , INTENT(IN   ) :: AMAX          !  attribute dimensionality
         INTEGER      , INTENT(  OUT) :: ASIZE         !  attribute actual size
         REAL         , INTENT(  OUT) :: AVAL( AMAX )  !  attribute value (numeric)
@@ -98,11 +98,11 @@
 <H2> See Also: </H2>
 
     <UL>
-        <LI>  <A HREF = "INQATT3.html">INQATT3()</A>
-        <LI>  <A HREF = "WRATT3.html" >WRATT3() and WRATTC()</A>
-        <LI>  <A HREF = "DESC3.html"  >DESC3()</A>
-        <LI>  <A HREF = "OPEN3.html"  >OPEN3()</A>
-        <LI>  <A HREF = "M3ATTS.html" >MODULE&nbsp;M3ATTS</A>
+        <LI>  <A HREF = "INQATT3.html" >INQATT3()</A>
+        <LI>  <A HREF = "WRATT3.html"  >WRATT3() and WRATTC()</A>
+        <LI>  <A HREF = "DESC3.html"   >DESC3()</A>
+        <LI>  <A HREF = "OPEN3.html"   >OPEN3()</A>
+        <LI>  <A HREF = "MODATTS3.html">MODULE&nbsp;MODATTS3</A>
     </UL>
     <P>
 

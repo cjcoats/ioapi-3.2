@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: M3FAKE.html 117 2015-01-19 16:50:41Z coats $" -->
+<!-- "$Id: M3FAKE.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program M3FAKE </TITLE>
 </HEAD>
@@ -18,6 +18,7 @@
 <PRE>
     setenv  &lt;outfile&gt;     &lt;path name&gt;
     m3fake
+    &lt;and respond to the prompts&gt;
 </PRE>
 where <VAR>outfile</VAR> is the <A HREF = "LOGICALS.html"> logical name </A> 
 of the output file.  
@@ -42,8 +43,12 @@ of the grid and coordinate system, entry by entry.
 Currently, only the following <STRONG>file types</STRONG> are supported:
 <UL>
     <LI>  <A HREF = "DATATYPES.html#custom"> CUSTOM</A>, 
-    <LI>  <A HREF = "DATATYPES.html#grdded"> GRIDDED</A>, and 
-    <LI>  <A HREF = "DATATYPES.html#bndary"> BOUNDARY</A>
+    <LI>  <A HREF = "DATATYPES.html#grdded"> GRIDDED</A>,
+    <LI>  <A HREF = "DATATYPES.html#bndary"> BOUNDARY</A>,
+    <LI>  <A HREF = "DATATYPES.html#iddata"> IDDATA</A>,
+    <LI>  <A HREF = "DATATYPES.html#profil"> PROFILE</A>,
+    <LI>  <A HREF = "DATATYPES.html#grnest"> GRID-NEST</A>,
+    <LI>  <A HREF = "DATATYPES.html#smatrx"> SPARSE MATRIX</A>
 </UL>                                                    
 The following <STRONG>formulas</STRONG> are currently available,
 on a per-variable basis:
@@ -79,11 +84,13 @@ on a per-variable basis:
     </PRE>
 
     <STRONG>The program will prompt you</STRONG> for the logical name
-    you have chosen for the output file, and for its description.  The
-    prompts  will have default responses whichcan be accepted by
-    hitting &lt;RETURN&gt;.   The specification ofstarting date and
-    time, and duration for the file specification follow Models-3  <A
-    HREF = "DATETIME.html"> date and time conventions. </A>
+    you have chosen for the output file, and for its description,
+    including the names, types, units, descriptions, and formulas or
+    input files, for all the variables. The prompts  will have default
+    responses which can be accepted by hitting &lt;RETURN&gt;.   The
+    specification ofstarting date and time, and duration for the file
+    specification follow Models-3  <A HREF = "DATETIME.html">date and
+    time conventions.</A>
     <P> 
 
     Note that the set of specifications for which files can be
@@ -101,7 +108,7 @@ on a per-variable basis:
 
     Source code for program <CODE>m3fake</CODE> is available
     <A HREF = "gpl.txt">under the GNU GPL License, Version 2</A>,
-    and can be downloaded <A HREF = "AVAIL.html">from this page</A>.<EM>
+    and can be downloaded <A HREF = "AVAIL.html">from this page</A>.
     <P>
 
 <HR>

@@ -13,16 +13,16 @@
       LEFTMARGIN="15" 
       MARGINWIDTH="15">
 
-<H1>    Program M3PROBE </H1>
+<H1>    Program M3TOTXT </H1>
 
 <H2> Summary </H2>
 
-    The <VAR>m3probe</VAR> program <STRONG>writes contents of a
+    The <VAR>m3totxt</VAR> program <STRONG>writes contents of a
     specified 1-layer window into a GRIDDED M3IO file for specified
     variables for a specified time period to a (human-readable)
     formatted-ASCII REPORT-file.</STRONG>
 
-    Source code for program <CODE>m3probe</CODE> is available
+    Source code for program <CODE>m3totxt</CODE> is available
     <A HREF = "gpl.txt">under the GNU GPL License, Version 2</A>,
     and can be downloaded as part of the I/O&nbsp;API distribution tar-ball 
     <A HREF = "AVAIL.html">from this page</A>.
@@ -61,19 +61,19 @@
     setenv VARLIST "TA2,QV2"
     set    UI  = /tmp/m3totxt.$$
 
-    echo "Yes           " >&! ${UI}     #  Yes, continue with program
-    echo "1979003       " >>  ${UI}     #  starting date for run
-    echo "120000        " >>  ${UI}     #  starting time
-    echo "              " >>  ${UI}     #  default time step
-    echo "1979003       " >>  ${UI}     #  ending date
-    echo "15000         " >>  ${UI}     #  ending time
-    echo "6             " >>  ${UI}     #  starting col
-    echo "12            " >>  ${UI}     #  ending   col
-    echo "11            " >>  ${UI}     #  starting row
-    echo "15            " >>  ${UI}     #  ending   row
-    echo "1             " >>  ${UI}     #  layer
+    echo "Yes           " &gt;&amp;! ${UI}     #  Yes, continue with program
+    echo "1979003       " &gt;&gt;  ${UI}     #  starting date for run
+    echo "120000        " &gt;&gt;  ${UI}     #  starting time
+    echo "              " &gt;&gt;  ${UI}     #  default time step
+    echo "1979003       " &gt;&gt;  ${UI}     #  ending date
+    echo "15000         " &gt;&gt;  ${UI}     #  ending time
+    echo "6             " &gt;&gt;  ${UI}     #  starting col
+    echo "12            " &gt;&gt;  ${UI}     #  ending   col
+    echo "11            " &gt;&gt;  ${UI}     #  starting row
+    echo "15            " &gt;&gt;  ${UI}     #  ending   row
+    echo "1             " &gt;&gt;  ${UI}     #  layer
     
-    m3probe < ${UI}
+    m3probe &lt; ${UI}
     set foo = ${status}
     if ( ${foo} != 0 )  then
         rm ${UI}
@@ -173,10 +173,7 @@ following:
 
 <HR>
 
-<A HREF = "
-        For what fraction of the grid does OZONE in this file 
-        exceed 0.120?
-        </EM>" >
+<A HREF = "M3STAT.html">
 Previous:  <STRONG>M3STAT</STRONG>
 </A><P> 
 

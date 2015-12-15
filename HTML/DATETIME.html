@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: DATETIME.html 134 2015-01-27 15:45:03Z coats $" -->
+<!-- "$Id: DATETIME.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Dates and Time Conventions </TITLE>
 </HEAD>
@@ -32,10 +32,10 @@ little more than 24.5 years; however, for I/O&nbsp;API-3.1 or later,
 a number of I/O&nbsp;API routines&mdash;<CODE>CURREC(), CURRSTEP(),
 JSTEP3(), LASTTIME(), NEXTTIME()</CODE>&mdash;are carefully coded so as
 to  avoid such overflow, and can be used for time periods as long as
-several thousand years.  For I/O&nbsp;API files, the limiting factor is
+several thousand years.  For I/O&nbsp;API files, <STRONG>the limiting factor is
 <CODE>INTEGER</CODE>-overflow</STRONG> for the number of records.  (For
 files with a one-hour timestep, for example, this limits file-duration
-to 89,478 years (which is sufficient for most applications).)</EM>
+to 89,478 years (which is sufficient for most applications:-).)</EM>
 <P> 
 
 A <STRONG>time step sequence</STRONG> is a sequence of dates and times

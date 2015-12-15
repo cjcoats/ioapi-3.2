@@ -1,11 +1,13 @@
 
-        CHARACTER*24 FUNCTION  DT2STR ( JDATE , JTIME )
+        CHARACTER*24 FUNCTION  DT2STR( JDATE, JTIME )
 
 C***********************************************************************
-C Version "$Id: dt2str.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: dt2str.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and 
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................

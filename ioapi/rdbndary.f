@@ -2,14 +2,15 @@
         LOGICAL FUNCTION RDBNDARY( FID, VID, LAYER, STEP, BUFFER )
 
 C***********************************************************************
-C Version "$Id: rdbndary.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: rdbndary.f 230 2015-10-08 20:44:26Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC, (C) 1992-2012 Carlie J. Coats, Jr.,
+C (C) 2003-2011 Baron Advanced Meteorological Systems, and 
+C (C) 2015 UNC Institute for the Environment
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  77
+C  function body starts at line  81
 C
 C  FUNCTION:  reads data from Models-3 GRDDED data file with state-variable
 C             file index FID, for variable VID and layer LAYER, for the
@@ -34,7 +35,11 @@ C       Modified 10/2003 by CJC for I/O API version 3:  RDVARS support for
 C       native-binary BINFIL3 file type.
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 08/2015 by CJC: USE MODNCFIO for I/O API v3.2
 C***********************************************************************
+
+      USE MODNCFIO
 
       IMPLICIT NONE
 
@@ -42,7 +47,6 @@ C...........   INCLUDES:
 
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 
 
 C...........   ARGUMENTS and their descriptions:
@@ -63,15 +67,15 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
         INTEGER         PERIM           !  2-D boundary-slice volume (cells)
-        INTEGER         DELTA           !  d(INDX) / d( NCVGT call )
-        INTEGER         DIMS ( 5 )      !  corner arg array for NCVGT()
-        INTEGER         DELTS( 5 )      !  corner arg array for NCVGT()
+        INTEGER         DELTA           !  d(INDX) / d( NF_GET_VARA_* call )
+        INTEGER         DIMS ( 5 )      !  corner arg array for NF_GET_VARA_*()
+        INTEGER         DELTS( 5 )      !  corner arg array for NF_GET_VARA_*()
 
 
 C***********************************************************************
 C   begin body of function  RDBNDARY
 
-C.......   Set up DIMS and DELTS arguments for NCVGT(), according
+C.......   Set up DIMS and DELTS arguments for NF_GET_VARA_*(), according
 C.......   to whether request is to read all layers:
 
         PERIM = 2 * NTHIK3( FID )

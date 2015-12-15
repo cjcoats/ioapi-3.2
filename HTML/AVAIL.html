@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 144 2015-01-31 15:50:42Z coats $" -->
+<!-- "$Id: AVAIL.html 284 2015-12-15 18:38:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -38,12 +38,16 @@
     Note that a large amount of effort has been expended during the
     whole of I/O&nbsp;API development to ensure upward compatibility:
     programs written for the original Version&nbsp;0.9 pre-release of
-    November, 1992 should still work correctly with the latest (August
-    2014) I/O&nbsp;API Version&nbsp;3.1, unlike some other software we
-    will refrain from naming here.
+    November, 1992 should still work correctly with the latest
+    (August&nbsp;2014) I/O&nbsp;API Version&nbsp;3.1, unlike some other
+    software we will refrain from naming here.  There are very few
+    upward compatibility issues between Versions&nbsp;3.1 and 3.2,
+    mostly coming from the renaming and generalization of
+    <CODE>MODULE&nbsp;MATXATTS<CODE> as 
+    <CODE>MODULE&nbsp;MODATTS3<CODE>.
     <P>
 
-    In general, you are best off if you can build the whole modeling
+    In general, you are best off if you can build your whole modeling
     system (<VAR>libnetcdf.a</VAR>, <VAR>libpvm3.a</VAR>,
     <VAR>libioapi.a</VAR>, and your model(s)  <VAR>CMAQ</VAR>,
     <VAR>SMOKE</VAR>, etc. with a common compiler set and common set of
@@ -115,12 +119,18 @@ m3stat:
     <H3><A NAME="build">Build and installation instructions</A>
                for I/O&nbsp;API Versions&nbsp;3.0, 3.1, and 3.2</H3>
 
+    As of this writing (Dec&nbsp;2015), I/O&nbsp;API Versions 2.2 and
+    earlier are obsolete; 3.0 is obsolescent, in critical-fixes-only
+    mode; 3.1 is the current stable/production version; and 3.2 is the
+    development/R&amp;D version.  See the <A HREF = "NEWSTUFF.html">Change
+    Log&nbsp;/&nbsp;&quot;What's New&quot;&nbsp;/&nbsp;Research Directions</A>
+    page for further information.
     <P>
     <DL>
         <DT>  <STRONG>To set up the installation:</STRONG>
         <DD>  <OL>
                   <LI> Download the <EM>gzip</EM>ped tar-file
-                       for the version you want:
+                       of the source code for the version you want:
                        <A HREF="#v32"><VAR>ioapi-3.2.tar.gz</VAR></A>
                        <A HREF="#v31"><VAR>ioapi-3.1.tar.gz</VAR></A>, or
                        <A HREF="#v30"><VAR>ioapi-3.0.tar.gz</VAR></A>.
@@ -128,21 +138,104 @@ m3stat:
                        the I/O&nbsp;API library source code,
                        <CODE>HTML</CODE> for the documentation,
                        <CODE>m3tools</CODE> for the related tool
-                       programs, <CODE>iotest</CODE> for various
-                       test-programs for I/O&nbsp;API developers, and
-                       <CODE>notcdf</CODE> for the NCEP
-                       <VAR>libnotcdf.a</VAR> library (a dummy library for
-                       installation sites that don't allow <VAR>netCDF</VAR>
-                       on-site). <P>
+                       programs, and for version&nbsp;3.0,
+                       <CODE>iotest</CODE> for various test-programs for
+                       I/O&nbsp;API developers, and <CODE>notcdf</CODE>
+                       for the NCEP <VAR>libnotcdf.a</VAR> library (a
+                       dummy library for installation sites that don't
+                       allow <VAR>netCDF</VAR> on-site).
+                       <P>
+                       Version&nbsp;3.2 is also available on GitHub from
+                       <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
+                       To install a copy of this source code from
+                       GitHub, go to the directory under which do the
+                       installation, and then do the command
+    <PRE>
+    git clone https://github.com/cjcoats/ioapi-3.2
+    </PRE>
+                  <P>
                   <LI> <EM>cd</EM> to the directory under which you wish
                        to build the I/O&nbsp;API. <EM>gunzip</EM> and
                        untar it (<VAR>gtar&nbsp;xvfz&nbsp;ioapi-3.1.tar.gz</VAR>
-                       [etc...] does this in one operation).
+                       [etc...] does this in one operation).<BR>
+                       <STRONG>This directory will be the <CODE>BASEDIR</CODE>
+                       for subsequent steps in the installation.</STRONG>
                   <P>
+                  <LI> <EM>NOTE: <CODE>Makefile</CODE>,
+                       <CODE>ioapi/Makefile</CODE>, and
+                       <CODE>m3tools/Makefile</CODE> </EM> will need to
+                       be customized for your particular installation.
+                       Make sure you back them up when you do this.<BR>
+                       For I/O&nbsp;API 3.2, these are no longer in the
+                       <CODE>tar</CODE>-file; for previous versions, the
+                       untar-operation above will undo your
+                       customization.
+                       <BR>
+                       In particular, you will need to customize
+                       <VAR>make</VAR>-variables <CODE>BASEDIR</CODE> 
+                       in all <VAR>Makefile</VAR>s, and <CODE>LIBS</CODE>
+                       in  <VAR>m3tools/Makefile</VAR> to deal with
+                       <A HREF="#ncf4">netCDF-4 library issues.</A>
+                  <P>
+                  <LI> <EM>I/O&nbsp;API 3.2 only</EM> If you want to enable the
+                        <A HREF="BUFFERED.html#pncf">PnetCDF
+                        distributed I/O</A> configuration,
+                        <EM>cd&nbsp;ioapi</EM>  and then
+                        <EM>cp&nbsp;Makefile.pncf&nbsp;Makefile</EM>
+                        and <VAR>setenv</VAR> environment variable
+                        <CODE>BIN</CODE> to one of the supported 
+                        distributed-I/O types
+                        <CODE>Linux2_x86_64gfortmpi,
+                        Linux2_x86_64ifortmpi,Linux2_x86_64pgmpi,
+                        Linux2_x86_64sunmpi  </CODE>
+                        <BR>
+                        <EM><STRONG>NOTES</STRONG></EM>
+                        <OL>
+                            <LI> <STRONG>PnetCDF enabled I/O&nbsp;API
+                                 libraries are not compatible with
+                                 &quot;normal&quot; libraries.</STRONG> 
+                                 Make sure you keep them separate.
+                            <LI> What is called <VAR>mpif90</VAR> is really
+                                 a script that understands about an
+                                 underlying compiler-set (e.g., Intel
+                                 <VAR>ifort/icc</VAR>, PGI 
+                                 <VAR>pgf90/pgcc</VAR>, etc.), a set of
+                                 <CODE>INCLUDE</CODE> files, and a set
+                                 of<CODE>$quot;.a&quot;</CODE>
+                                 library-files. <STRONG>These are not
+                                 compatible from MPI-implementation to
+                                 MPI-implementation (OpenMPI, MVAPICH,
+                                 etc.) nor from underlying compiler-set
+                                 to underlying compiler-set</STRONG>.
+                            <LI> There may even be compatibility
+                                 problems between different versions of
+                                 the &quot;same&quot; implementation:
+                                 This author has found that
+                                 <STRONG>OpenMPI-1.4.x is not even
+                                 source-code  compatible with
+                                 OpenMPI-1.6.x&nbsp;;-(</STRONG>
+                            <LI> The I/O&nbsp;API source code had to be
+                                 hacked badly to deal with the above.
+                        </OL>
+                 <P>
                   <LI> If you want to disable the <A HREF="BUFFERED.html#pvm">coupling-mode
                         </A> configuration (which is enabled by default),
                         <EM>cd&nbsp;ioapi</EM>  and then
-                        <EM>cp&nbsp;Makefile.nocpl&nbsp;Makefile</EM>.
+                        <EM>cp&nbsp;Makefile.nocpl&nbsp;Makefile</EM>,
+                        and similarly for the <EM>m3tools</EM> directory.
+                  <P>
+                  <P>
+                  <LI> If you want to enable the <STRONG>360-day or 365-day 
+                        climatology year</STRONG> (365 for
+                        <EM>I/O&nbsp;API 3.2 only</EM>) , customize your
+                        <VAR>ioapi/Makefile</VAR> by adding
+                        <CODE>-DIO_360=1</CODE> or
+                        <CODE>-DIO_365=1</CODE> respectively to the
+                        <CODE>DEFINEFLAGS</CODE>
+                        <VAR>make</VAR>-variable. <BR>
+                        <EM>Note that you need to keep the resulting
+                        libraries separate from the normal (leap-year
+                        enabled) libraries.</EM>
                  <P>
                   <LI>  For each desired configuration,
                         <VAR>setenv&nbsp;BIN&nbsp;&lt;machinetype&gt;</VAR>,
@@ -171,7 +264,7 @@ m3stat:
                         Note,  for example,
                         that for <CODE>Linux2_x86*</CODE>, there are
                         distinct (and incompatible) variants for the
-                        GNU <VAR>g77/gcc</VAR>, Intel <VAR>ifc/icc</VAR>,
+                        GNU <VAR>gfortran/gcc</VAR>, Intel <VAR>ifort/icc</VAR>,
                         Lahey-Fujitsu <VAR>lf95</VAR>/GNU <VAR>gcc</VAR>,
                         and Portland Group <VAR>pgf90/pgcc</VAR>;
                         <STRONG>moreover, the latter is not compatible with
@@ -192,7 +285,7 @@ m3stat:
                                 platform, and both   <VAR>efc</VAR> and
                                 <VAR>ifc</VAR> become <VAR>ifort</VAR>; you
                                 may need to edit the
-                                <CODE>MAKEINCLUDE.$BIN</CODE>
+                                <CODE>Makeinclude.$BIN</CODE>
                                 accordingly.
                            <LI> There are problems with the Fortran
                                 pre-processing for some versions of the
@@ -227,7 +320,21 @@ m3stat:
                         <VAR>libnetcdf.a</VAR> ( and <VAR>libnetcdff.a</VAR>,
                         if you're building netCDF version 4.1 or later)
                         to the appropriate object
-                        directory.
+                        directory <CODE>$BASEDIR/$BIN</CODE>.
+                        <P>
+                        For I/O&nbsp;API-3.2, if you are building the
+                        PnetCDF/MPI distributed-I/O version for CMAQ,
+                        then install the appropriate MPI development
+                        package, and download PnetCDF from
+                        <A HREF="https://trac.mcs.anl.gov/projects/parallel-netcdf/wiki/Download">https://trac.mcs.anl.gov/projects/parallel-netcdf/wiki/Download</A>
+                        then build and install <VAR>libpnetcdf.a</VAR> and 
+                        copy or link it to the appropriate object
+                        directory.<BR>
+                        Note that to a very large extent,
+                        <STRONG>different MPI implementations are not
+                        compatible</STRONG>:  Intel MPI does not play
+                        well with OpenMPI does not play well with MPICH
+                        does not play well with MVAPICH...&nbsp;;-(
                         <P>
                         If you plan to build a
                         <A HREF="BUFFERED.html#pvm">coupling-mode
@@ -241,20 +348,32 @@ m3stat:
                         are used.)
                   <P>
                   <LI>  Edit the relevant files
-                        <CODE>ioapi/Makeinclude.$BIN</CODE> for your
-                        system specific compiler options and PVM
-                        installation location, as appropriate.
+                        <VAR>ioapi/Makeinclude.$BIN</VAR> for your
+                        system specific compiler options, PVM
+                        installation location, etc., as appropriate.
                   <P>
-                  <LI>  Edit the top-level <CODE>Makefile</CODE> to set
-                        variables <CODE>BASEDIR</CODE>, etc., for your
-                        system.
+                  <LI>  Edit the <VAR>Makefile</VAR>s to set
+                        <VAR>make</VAR>-variable <CODE>BASEDIR</CODE>,
+                        etc., for your system.
                         <P>
                         If you are doing a multi-configuration
                         installation, do the same for each
-                        <CODE>*/Makefile*</CODE>.
+                        <VAR>*/Makefile*</VAR>.
                         <P>
                         If you are doing a single-configuration
-                        installation, do <VAR>make&nbsp;configure</VAR>
+                        installation, you may customize
+                        <VAR>make</VAR>-variables in the top level
+                        <VAR>Makefile</VAR> and do the following 
+                        from the top level directory as a
+                        short-cut:
+                        <BLOCKQUOTE><CODE>
+                        make configure<BR>
+                        make dir<BR>
+                        [cd ../${BIN} and copy in the needed netCDF etc.
+                        libraries]<BR>
+                        cd ..<BR>
+                        make<BR>
+                        </CODE></BLOCKQUOTE>
                   <P>
                   <LI>  <VAR>setenv&nbsp;BIN&nbsp;...</VAR>, followed by
                         one of the <VAR>make&nbsp;&lt;target&gt;</VAR>
@@ -273,6 +392,10 @@ m3stat:
         <DT>  <STRONG>Top-Level <VAR>make</VAR> targets include the
               following:</STRONG>
         <DD>  <DL "COMPACT">
+                  <DT><STRONG><CODE>make dir</CODE></STRONG>
+                  <DD>  Construct the build-directory <CODE>$OBJDIR</CODE>
+                        You only need to do this once for each 
+                        configuration <CODE>$BIN</CODE>
                   <DT><STRONG><CODE>make all</CODE></STRONG>
                   <DD>  Build all libraries and executables (assumes
                         the Fortran compiler is Fortran-90 compliant)
@@ -285,9 +408,9 @@ m3stat:
                         probably the best target for regulatory
                         users who need multiple configurations.</EM>
                   <DT><STRONG><CODE>make relink</CODE></STRONG>
-                  <DD>  Rebuild all the executables, using the existing
-                        <CODE>M3TOOLS</CODE> object files (e.g.,if
-                        you have changed the libraries).
+                  <DD>  Rebuild all the <CODE>M3TOOLS</CODE> executables,
+                        using the existing <CODE>M3TOOLS</CODE> object
+                        files (e.g.,if you have changed the libraries).
                   <DT><STRONG><CODE>make clean</CODE></STRONG>
                   <DD>  removes all executable, object (<CODE>.o</CODE>),
                         and library (<CODE>.a</CODE>) files.
@@ -298,7 +421,9 @@ m3stat:
                         on the templates <CODE>*/Makefile*.sed</CODE>
                         in order to generate lower level
                         <CODE>Makefile</CODE>s for a particular
-                        configuration.
+                        configuration.<BR>
+                        <STRONG>Writes over any existing
+                        <CODE>Makefile</CODE> customizations!</STRONG>
                   <DT><STRONG><CODE>make bins</CODE></STRONG>
                   <DD>  builds everything for several choices
                         of Linux architectures and compilers.
@@ -308,7 +433,7 @@ m3stat:
                   <DD>  builds everything for several choices
                         of Linux architectures and compilers.
                   <DT><STRONG><CODE>make fix</CODE></STRONG>
-                  <DD>  builds (pre-version-5.0) CMAQ &quot;fixed-132&quot;
+                  <DD>  builds pre-version-5.0-CMAQ and SMOKE &quot;fixed-132&quot;
                         Fortran source form <CODE>INCLUDE</CODE>-files.
               </DL>
         <P>
@@ -323,6 +448,7 @@ m3stat:
 
     <H3><A NAME="gfort">NOTES on <VAR>gfortran</VAR></A></H3>
 
+    <BLOCKQUOTE>
     GNU  <VAR>gfortran</VAR> seems to be insistent upon incompatibility:
     not only incompatibility with existing industry standards, but even
     inconsistency with itself from version to version.  In some cases,
@@ -353,7 +479,7 @@ m3stat:
 	<BLOCKQUOTE><CODE>
 	-M/foo/bar/$BIN
 	</CODE></BLOCKQUOTE>
-    or
+or (PGI)
 	<BLOCKQUOTE><CODE>
 	-module /foo/bar/$BIN
 	</CODE></BLOCKQUOTE>.
@@ -398,6 +524,7 @@ m3stat:
 
     </DL>
 
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -405,6 +532,24 @@ m3stat:
 <HR> <!----------------------------------------------------------------->
 
     <H3><A NAME="ncf4">NOTE on  <VAR>netCDF</VAR> Version&nbsp;4</A></H3>
+
+    <BLOCKQUOTE>
+    <STRONG>
+    Evidently, starting with netCDF-Fortran&nbsp;4.4.2, UCAR in their
+    wisdom decided to silently eliminate the
+    <CODE>CALL&nbsp;NC*()</CODE> Fortran interfaces in terms of which
+    the I/O&nbsp;API was originally implemented.  [If you can find any
+    documentation indicating this intent on the web, I would enjoy
+    seeing it; <EM>I</EM> can't find it.]  
+    <P>
+    I/O&nbsp;API Version&nbsp;3.2 was tediously re-coded to replace all
+    943 of these calls by the newer <CODE>IERR=NF_*()</CODE> Fortran
+    interfaces that are still supported.  Prior editions of the
+    I/O&nbsp;API will have link errors with netCDF-Fortran&nbsp;4.4.2 or
+    later, because routines such as <CODE>NCCLOS()</CODE> are no longer
+    in that library.
+    <P>
+    </STRONG>
 
     NetCDF Version&nbsp;4.x have lots of additional build options,
     that will require a complex set of additional libraries in
@@ -436,9 +581,10 @@ m3stat:
 
     <STRONG>
     Starting with I/O&nbsp;API Version&nbsp;3.1 of October&nbsp;11,
-    2011, the <VAR>m3tools/Makefile</VAR>s are configured to use the
-    <CODE>-lnetcdff&nbsp;-lnetcdf</CODE> netCDF-v4-style libraries.  If
-    using a previous version of netCDF, you must modify them manually.
+    2011, the <VAR>m3tools/Makefile</VAR>s are configured by default to
+    use the <CODE>-lnetcdff&nbsp;-lnetcdf</CODE> netCDF-v4-style
+    libraries.  If using a previous version of netCDF, you must modify
+    them manually.
     <P>
     You must also modify the build-systems for CMAQ, MCIP, SMOKE, and
     all your other models that use netCDF similarly.
@@ -451,6 +597,7 @@ m3stat:
     <CODE>-lnetcdf</CODE> instead of the <CODE>-lnetcdff&nbsp;-lnetcdf</CODE>
     required by netCDF version 4 and later.
     <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -495,7 +642,7 @@ m3stat:
     <DL>
         <DT>  <STRONG>Strong Recommendation &nbsp;1</STRONG>
         <DD>  <EM>Don't change any I/O&nbsp;API <CODE>INCLUDE</CODE>
-              files.</EM>
+              files.</EM><BR>
               Any changes are likely to result in very obscure,
               difficult-to-diagnose bugs caused by an inconsistency
               between standard <VAR>libioapi.a</VAR> object-libraries
@@ -531,7 +678,6 @@ m3stat:
               versions of the same compiler--Intel <VAR>ifort</VAR> versions
               10, 11, and 12, for example) separate.
               <P>
-              <P>
         <DT>  <STRONG>Note&nbsp;4</STRONG>
         <DD>  For 64-bit platforms, it turns out that many compilers by
               default still only allow individual arrays and
@@ -565,9 +711,9 @@ m3stat:
     Version&nbsp;3.2-<VAR>beta</VAR> of the I/O&nbsp;API library source
     code is available from the CMASA Center web site for download in
     <VAR>tar-gzip</VAR>ped form
-    <A HREF = "../../../download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
+    <A HREF ="../../../download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
     or is available on GitHub from 
-    <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;<VAR></A>.
+    <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
     To install it from GitHub, go to the directory under which do the
     installation, and then do the command
     <PRE>
@@ -578,7 +724,7 @@ m3stat:
     Due to <CODE>INTERFACE</CODE> changes in
     <CODE>MODULE&nbsp;M3UTILIO</CODE>, new
     <CODE>MODULE&nbsp;MODGCTP</CODE> , and new module
-    <CODE>MODULE&nbsp;M3ATTS</CODE> (which replaces
+    <CODE>MODULE&nbsp;MODATTS3</CODE> (which replaces
     <CODE>MODULE&nbsp;MATXATTS</CODE>), there will be minor source-code
     changes in programs that use it; re-compilation and re-linking will
     be required:  see <A HREF="NEWSTUFF.html#ver32">here for more details.</A>
@@ -593,7 +739,7 @@ m3stat:
 <H3> <A NAME="v31">I/O&nbsp;API Version&nbsp;3.1 Availability</A></H3>
 
     Version&nbsp;3.1 of the I/O&nbsp;API library source code is
-    <A HREF = "../../../../../download/ioapi-3.1.tar.gz">available here
+    <A HREF ="../../../download/ioapi-3.1.tar.gz">available here
     for download</A> in <VAR>tar-gzip</VAR>ped  form. This version is
     upwardly source-code compatible with previous versions; however, it
     is <EM>not</EM> object-code compatible, nor is it compatible with
@@ -707,7 +853,7 @@ m3stat:
 <H3> <A NAME="v30">I/O&nbsp;API Version&nbsp;3.0 Availability</A></H3>
 
     Version&nbsp;3.0 of the I/O&nbsp;API library source code is
-    <A HREF = "../../../download/ioapi-3.0.tar.gz">available here for
+    <A HREF ="../../../download/ioapi-3.0.tar.gz">available here for
     download</A> in <VAR>tar-gzip</VAR>ped  form. New features of this release
     are <A HREF = "NEWSTUFF.html#may17">documented here</A>, and include
     additional support for WRF, a new native-binary-format lower layer,
@@ -1089,7 +1235,7 @@ m3stat:
               that <EM>do</EM> require F90:  <CODE>dayagg, ginterp,
               m3cple, m3agmax, m3agmask, m3combo, m3merge, mtxblend,
               mtxbuild, mtxcalc, mtxcple, presterp,</CODE> and
-              s<CODE>elmrg2d</CODE>.
+              <CODE>selmrg2d</CODE>.
               <P>
     </OL>
     Binary executables and object libraries are no longer available
@@ -1201,7 +1347,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 144 2015-01-31 15:50:42Z coats $
+    $Id: AVAIL.html 284 2015-12-15 18:38:33Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

@@ -2,14 +2,18 @@
         SUBROUTINE SYNCHTAO( JDATE, JTIME )
 
 C*************************************************************************
-C       Version "$Id: synchtao.f 100 2015-01-16 16:52:16Z coats $"
-C       EDSS/Models-3 I/O API.
-C       Copyright (C) 2003-2010 Baron Advanced Meteorological Systems, LLC
-C       Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
-C       See file "LGPL.txt" for conditions of use.
+C Version "$Id: synchtao.f 219 2015-08-17 18:05:54Z coats $"
+C EDSS/Models-3 I/O API.100 2015-01-16 16:52:16Z coats $"
+C EDSS/Models-3 I/O API.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
+C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
+C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine body   starts at line  101
-C  entry  INITSYNCH  starts at line  153
+C  subroutine body   starts at line   96
+C  entry  INITSYNCH  starts at line  148
 C
 C  DESCRIPTION:
 C       Package for virtual-mode synchronization.
@@ -47,34 +51,25 @@ C
 C  REVISION  HISTORY:
 C       Prototype 5/2003 by Carlie J. Coats, Jr., BAMS
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
+C
+C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO
 C***********************************************************************
 
+        USE M3UTILIO
+
         IMPLICIT NONE
-
-C...........   INCLUDES:
-
-        INCLUDE 'PARMS3.EXT'      ! I/O API constants
-        INCLUDE 'FDESC3.EXT'      ! I/O API file description data structure
-        INCLUDE 'IODECL3.EXT'     ! I/O API function declarations
-
 
 C...........   ARGUMENTS and their descriptions:
 
         CHARACTER*(*), INTENT(IN   ) :: SYNCHFILE
         CHARACTER*(*), INTENT(IN   ) :: SYNCHVBLE
-        INTEGER      , INTENT(IN   ) :: STATUS
+        INTEGER      , INTENT(INOUT) :: STATUS
         INTEGER      , INTENT(IN   ) :: JDATE
         INTEGER      , INTENT(IN   ) :: JTIME
 
 C...........   PARAMETERS and their descriptions:
 
         CHARACTER*16, PARAMETER :: BLANK = ' '
-
-
-C...........   EXTERNAL FUNCTIONS and their descriptions:
-
-        INTEGER, EXTERNAL:: ENVINT, INDEX1, SECSDIFF, SEC2TIME, TIME2SEC
-
 
 C...........   SAVED LOCAL VARIABLES and their descriptions:
 C...........   NOTE:  the ANSI standard requires the use of SAVE statements

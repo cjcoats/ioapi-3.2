@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: XY2XY.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: XY2XY.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> XY2XY </TITLE>
 </HEAD>
@@ -71,7 +71,19 @@ of points being converted.
     Transform point-locations with GRID2 coordinates into GRID1
     coordinates, using USGS GCTP-package routine  
     <A HREF="GCTP.html"><CODE>GTPZ0()</CODE></A>.
+    <P>
 
+    Versions without the spheroid arguments use routine
+    <CODE>INITSPHERES()</CODE> (controlled by environment variable
+    <VAR>IOAPI_ISPH</VAR>) to determine the spheroid used by the map
+    projections; the two-spheroid-argument versions should be used for
+    transformations for which the input map projection uses a different
+    spheroid from the output map projection (in which case, the
+    tramsform must be implemented &quot;behind the scenes&quot; as a
+    two-stage process: first, using the input spheroid, from
+    input-projection coordinates to Lat-Lon; then, using the output
+    spheroid, from Lat-Lon to the output-projection coordinates).
+    <P>
 
 <H2> Preconditions </H2>
 
@@ -153,7 +165,6 @@ of points being converted.
 
 
 <HR> <!----------------------------------------------------------------->
-</A><P> 
 
 <A HREF = "MODGCTP.html" >
 Up:  <STRONG>MODULE MODGCTP</STRONG>

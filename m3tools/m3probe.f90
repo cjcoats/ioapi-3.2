@@ -2,14 +2,16 @@
 PROGRAM M3PROBE
 
     !!***************************************************************
-    !!  Version "$Id: m3probe.f90 101 2015-01-16 16:52:50Z coats $"
-    !!   EDSS/Models-3 M3TOOLS.
-    !!   Copyright (C) 2010 Baron Advanced Meteorological Systems. LLC., and
-    !!   (C) 2015 UNC Institute for the Environment.
-    !!   Distributed under the GNU GENERAL PUBLIC LICENSE version 2
-    !!   See file "GPL.txt" for conditions of use.
+    !! Version "$Id: m3probe.f90 176 2015-03-02 16:20:06Z coats $"
+    !! EDSS/Models-3 M3TOOLS.
+    !! Copyright (C) 1992-2002 MCNC, 
+    !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
+    !! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and 
+    !! (C) 2015 UNC Institute for the Environment.
+    !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
+    !! See file "GPL.txt" for conditions of use.
     !!..............................................................
-    !!  program body starts at line  87
+    !!  program body starts at line  99
     !!
     !!  DESCRIPTION:
     !!      See splash screen
@@ -23,7 +25,11 @@ PROGRAM M3PROBE
     !!      Version    01/2013 by CJC:   Use LASTTIME to compute EDATE:ETIME
     !!      Version    03/2013 by CJC:   increase MXPNT from 20 to 256
     !!      Version    01/2015 by CJC:   Changes for I/O API-3.2;
-    !!      better error-checking, support for BNDARY3 files.
+    !!      better error-checking, support for BNDARY3 files, INTEGER
+    !!      and REAL*8 variables.
+    !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source
+    !!      Support for M3INT8 variables; use generics for "GET*()",
+    !!      call RUNSPEC() to get SDATE:STIME:TSTEP:NRECS
     !!***************************************************************
 
     USE M3UTILIO
@@ -52,6 +58,7 @@ PROGRAM M3PROBE
 
     INTEGER         NPNTS
     INTEGER         PNTS( MXPNT )
+    INTEGER         VTYPE
     CHARACTER*16    VNAME
 
     LOGICAL         EFLAG
@@ -80,13 +87,11 @@ PROGRAM M3PROBE
     REAL*8          YORIG2
     REAL*8          XCELL2
     REAL*8          YCELL2
-    INTEGER         SDATE2
-    INTEGER         STIME2
-    INTEGER         TSTEP2
-    INTEGER         EDATE2
-    INTEGER         ETIME2
 
-    REAL, ALLOCATABLE :: RBUF( : )
+    REAL     , ALLOCATABLE :: RBUF( : )
+    INTEGER  , ALLOCATABLE :: IBUF( : )
+    REAL*8   , ALLOCATABLE :: DBUF( : )
+    INTEGER*8, ALLOCATABLE :: LBUF( : )
 
     !!--------------------------------------------------------------
     !!   begin body of program M3PROBE
@@ -104,11 +109,11 @@ PROGRAM M3PROBE
 '    setenv INFILE     <path name for  input gridded file>',                &
 '    setenv REPORT     <path name for output ASCII file>',                  &
 '',                                                                         &
-'    at most 256 points in the list.',                                      &
+'    at most 256 points in the set of points.',                             &
 '',                                                                         &
-'THE PROGRAM WILL PROMPT YOU for starting and ending date time for the',    &
-'report period, variable, and grid/vector coordinates for the selected',    &
-'set of points.',                                                           &
+'THE PROGRAM WILL PROMPT YOU for starting and ending date&time for the',    &
+'report period, time step, variable-name, and grid/vector coordinates',     &
+'for the selected set of points.',                                          &
 '',                                                                         &
 'See URL',                                                                  &
 '',                                                                         &
@@ -116,8 +121,8 @@ PROGRAM M3PROBE
 '',                                                                         &
 'Copyright (C) 2012 Baron Advanced Meteorological Systems, LLC.,',          &
 '(C) 2015 UNC Institute for the Environment.',                              &
-'Released under Version 2 of the GNU General Public License. See',          &
-'enclosed GPL.txt, or URL',                                                 &
+'Released under Version 2 of the GNU General Public License.',              &
+'See enclosed GPL.txt, or URL',                                             &
 ''  ,                                                                       &
 '    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',               &
 ''  ,                                                                       &
@@ -130,10 +135,10 @@ PROGRAM M3PROBE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3probe.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: m3probe.f90 176 2015-03-02 16:20:06Z coats $',&
 ''
 
-    IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
+    IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
         MESG = 'Program terminated at user request'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
     END IF
@@ -170,12 +175,6 @@ PROGRAM M3PROBE
         XCELL2 = XCELL3D
         YCELL2 = YCELL3D
 
-        SDATE2 = SDATE3D
-        STIME2 = STIME3D
-        TSTEP2 = TSTEP3D
-
-        CALL LASTTIME( SDATE2, STIME2, TSTEP2, MXREC3D, EDATE2, ETIME2 )
-
         IF      ( FTYPE2 .EQ. CUSTOM3 ) THEN
             NSIZE2 = NCOLS2 * NLAYS2
         ELSE IF ( FTYPE2 .EQ. GRDDED3 ) THEN
@@ -189,13 +188,6 @@ PROGRAM M3PROBE
         ELSE
             EFLAG = .TRUE.
             WRITE( MESG, '( A, I10 )' )  'Unsupported file type', FTYPE2
-            CALL M3MESG( MESG )
-        END IF
-
-        ALLOCATE( RBUF( NSIZE2 ),  STAT = ISTAT )
-        IF ( ISTAT .NE. 0 ) THEN
-            WRITE( MESG, '( A, I10 )' ) 'ERROR:  Allocation failure for work arrays:  STATUS=', ISTAT
-            EFLAG = .TRUE.
             CALL M3MESG( MESG )
         END IF
 
@@ -232,19 +224,7 @@ PROGRAM M3PROBE
 
     !!...............  Get date&time, probe-point specs:
 
-    IF ( TSTEP2 .GT. 0 ) THEN
-        SDATE = GETNUM( SDATE2, EDATE2, SDATE2, 'Enter starting date  for ${REPORT}' )
-        STIME = GETNUM(      0, 999999, STIME2, 'Enter starting time  for ${REPORT}' )
-        EDATE = GETNUM( SDATE , EDATE2, EDATE2, 'Enter ending   date  for ${REPORT}' )
-        ETIME = GETNUM(      0, 999999, ETIME2, 'Enter ending   time  for ${REPORT}' )
-        TSTEP = GETNUM( TSTEP2, 999999, TSTEP2, 'Enter     time step  for ${REPORT}'     )
-        NRECS = CURREC( EDATE, ETIME, SDATE, STIME, TSTEP, JDATE, JTIME )
-    ELSE
-        SDATE = 0
-        STIME = 0
-        TSTEP = 0
-        NRECS = 1
-    END IF
+    CALL RUNSPEC( 'INFILE', .FALSE., SDATE, STIME, TSTEP, NRECS )
 
     CALL M3MESG( BLANK )
     CALL M3MESG( 'Available variables are:' )
@@ -255,11 +235,8 @@ PROGRAM M3PROBE
         EFLAG = .TRUE.
         MESG  = 'ERROR:  Variable "' // TRIM( VNAME ) // '" not available from "INFILE"'
         CALL M3MESG( MESG )
-    ELSE IF ( VTYPE3D(V) .NE. M3REAL ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'ERROR:  Variable "' // TRIM( VNAME ) // '" not of type REAL'
-        CALL M3MESG( MESG )
     END IF
+    VTYPE = VTYPE3D( V )
 
     NPNTS = 0
     CALL M3MESG( BLANK )
@@ -269,11 +246,11 @@ PROGRAM M3PROBE
 
         IF      ( FTYPE2 .EQ. GRDDED3 ) THEN
 
-            C = GETNUM( 0, NCOLS2, 1, 'Enter column for this point, or 0 to end list' )
-            IF ( C .EQ. 0 )  EXIT
-            R = GETNUM( 1, NROWS2, 1, 'Enter row    for this point' )
+            C = GETVAL( 0, NCOLS2, 1, 'Enter column for this point, or 0 to end list' )
+            IF ( C .LE. 0 )  EXIT
+            R = GETVAL( 1, NROWS2, 1, 'Enter row    for this point' )
             IF ( NLAYS2 .GT. 1 ) THEN
-                L = GETNUM( 1, NLAYS2, 1, 'Enter layer  for this point' )
+                L = GETVAL( 1, NLAYS2, 1, 'Enter layer  for this point' )
             ELSE
                 L = 1
             END IF
@@ -282,11 +259,11 @@ PROGRAM M3PROBE
 
         ELSE IF ( FTYPE2 .EQ. BNDARY3 ) THEN
 
-            C = GETNUM( 1-NTHIK2, NCOLS2+NTHIK2, 1, 'Enter column for this point, or 0 to end list' )
-            IF ( C .EQ. 0 )  EXIT
-            R = GETNUM( 1-NTHIK2, NROWS2+NTHIK2, 1, 'Enter row    for this point' )
+            C = GETVAL( 1-NTHIK2, NCOLS2+NTHIK2, 1, 'Enter column for this point, or -9999 to end list' )
+            IF ( C .LE. -NTHIK2 )  EXIT
+            R = GETVAL( 1-NTHIK2, NROWS2+NTHIK2, 1, 'Enter row    for this point' )
             IF ( NLAYS2 .GT. 1 ) THEN
-                L = GETNUM( 1, NLAYS2, 1, 'Enter layer  for this point' )
+                L = GETVAL( 1, NLAYS2, 1, 'Enter layer  for this point' )
             ELSE
                 L = 1
             END IF
@@ -323,10 +300,10 @@ PROGRAM M3PROBE
 
         ELSE IF ( FTYPE2 .EQ. CUSTOM3 ) THEN
 
-            C = GETNUM( 0, NCOLS2, 1, 'Enter index for this point, or 0 to end list' )
-            IF ( C .EQ. 0 )  EXIT
+            C = GETVAL( 0, NCOLS2, 1, 'Enter index for this point, or 0 to end list' )
+            IF ( C .LE. 0 )  EXIT
             IF ( NLAYS2 .GT. 1 ) THEN
-                L = GETNUM( 1, NLAYS2, 1, 'Enter layer  for this point' )
+                L = GETVAL( 1, NLAYS2, 1, 'Enter layer  for this point' )
             ELSE
                 L = 1
             END IF
@@ -339,8 +316,10 @@ PROGRAM M3PROBE
 
 
     IF ( NPNTS .EQ. 0 ) THEN
+        EFLAG = .TRUE.
         CALL M3MESG( 'ERROR:  No points entered' )
     END IF
+
     IF ( EFLAG) THEN
         CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad set-up', 2 )
     END IF
@@ -352,21 +331,103 @@ PROGRAM M3PROBE
     JDATE = SDATE
     JTIME = STIME
 
-    DO N = 1, NRECS
+    IF ( VTYPE .EQ. M3REAL ) THEN
 
-        WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing', JDATE, ':', JTIME
-        CALL M3MESG( MESG )
-
-        IF ( .NOT.READ3( 'INFILE', VNAME, ALLAYS3, JDATE, JTIME, RBUF ) ) THEN
-            EFLAG = .TRUE.
-        ELSE
-            WRITE( RDEV, '( I9.7, A, I6.6, 256( 2X, 1PE14.6, : ) )' )     &
-                JDATE, ':', JTIME, ( RBUF( PNTS( K ) ), K = 1, NPNTS )
+        ALLOCATE( RBUF( NSIZE2 ),  STAT = ISTAT )
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' ) 'ERROR:  Allocation failure for work array:  STATUS=', ISTAT
+            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         END IF
 
-        CALL NEXTIME( JDATE, JTIME, TSTEP )
+        DO N = 1, NRECS
 
-    END DO          !!  end loop on time steps for this variable
+            WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing', JDATE, ':', JTIME
+            CALL M3MESG( MESG )
+
+            IF ( .NOT.READ3( 'INFILE', VNAME, ALLAYS3, JDATE, JTIME, RBUF ) ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                WRITE( RDEV, '( I9.7, A, I6.6, 256( 2X, 1PE14.6, : ) )' )     &
+                    JDATE, ':', JTIME, ( RBUF( PNTS( K ) ), K = 1, NPNTS )
+            END IF
+
+            CALL NEXTIME( JDATE, JTIME, TSTEP )
+
+        END DO          !!  end loop on time steps for this variable
+
+    ELSE IF ( VTYPE .EQ. M3INT ) THEN
+
+        ALLOCATE( IBUF( NSIZE2 ),  STAT = ISTAT )
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' ) 'ERROR:  Allocation failure for work array:  STATUS=', ISTAT
+            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+        END IF
+
+        DO N = 1, NRECS
+
+            WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing', JDATE, ':', JTIME
+            CALL M3MESG( MESG )
+
+            IF ( .NOT.READ3( 'INFILE', VNAME, ALLAYS3, JDATE, JTIME, IBUF ) ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                WRITE( RDEV, '( I9.7, A, I6.6, 256( I12, : ) )' )     &
+                    JDATE, ':', JTIME, ( IBUF( PNTS( K ) ), K = 1, NPNTS )
+            END IF
+
+            CALL NEXTIME( JDATE, JTIME, TSTEP )
+
+        END DO          !!  end loop on time steps for this variable
+
+    ELSE IF ( VTYPE .EQ. M3INT8 ) THEN
+
+        ALLOCATE( LBUF( NSIZE2 ),  STAT = ISTAT )
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' ) 'ERROR:  Allocation failure for work array:  STATUS=', ISTAT
+            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+        END IF
+
+        DO N = 1, NRECS
+
+            WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing', JDATE, ':', JTIME
+            CALL M3MESG( MESG )
+
+            IF ( .NOT.READ3( 'INFILE', VNAME, ALLAYS3, JDATE, JTIME, LBUF ) ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                WRITE( RDEV, '( I9.7, A, I6.6, 256( I18, : ) )' )     &
+                    JDATE, ':', JTIME, ( LBUF( PNTS( K ) ), K = 1, NPNTS )
+            END IF
+
+            CALL NEXTIME( JDATE, JTIME, TSTEP )
+
+        END DO          !!  end loop on time steps for this variable
+
+    ELSE IF ( VTYPE .EQ. M3DBLE ) THEN
+
+        ALLOCATE( DBUF( NSIZE2 ),   STAT = ISTAT )
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' ) 'ERROR:  Allocation failure for work array:  STATUS=', ISTAT
+            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+        END IF
+
+        DO N = 1, NRECS
+
+            WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing', JDATE, ':', JTIME
+            CALL M3MESG( MESG )
+
+            IF ( .NOT.READ3( 'INFILE', VNAME, ALLAYS3, JDATE, JTIME, DBUF ) ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                WRITE( RDEV, '( I9.7, A, I6.6, 256( 2X, 1PE24.16, : ) )' )     &
+                    JDATE, ':', JTIME, ( DBUF( PNTS( K ) ), K = 1, NPNTS )
+            END IF
+
+            CALL NEXTIME( JDATE, JTIME, TSTEP )
+
+        END DO          !!  end loop on time steps for this variable
+
+    END IF      !!  if vtype is REAL, or INT, or DOUBLE
 
 
     IF ( EFLAG ) THEN

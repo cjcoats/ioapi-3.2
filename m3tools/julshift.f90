@@ -2,7 +2,7 @@
 PROGRAM JULSHIFT
 
     !!******************************************************************
-    !! Version "$Id: julshift.f90 121 2015-01-20 22:24:38Z coats $"
+    !! Version "$Id: julshift.f90 176 2015-03-02 16:20:06Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2014 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -24,6 +24,7 @@ PROGRAM JULSHIFT
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  2/2014 by CJC
+    !!      Version    2/2015 by CJC to handle negative dates
     !!******************************************************************
 
     USE M3UTILIO
@@ -132,7 +133,8 @@ PROGRAM JULSHIFT
             CALL NEXTIME( DATE, JTIME, 240000 * STEP )
         END IF
 
-    WRITE( *,'( I7.7 )' ) DATE
+    WRITE( SCRBUF,'( I9.7 )' ) DATE
+    WRITE( *,'( A )' ) ADJUSTL( SCRBUF )
 
     CALL EXIT( 0 )
 

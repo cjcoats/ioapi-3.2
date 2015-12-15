@@ -3,7 +3,7 @@
      &                     NP, NV, YLAT, XLON, Z, WL50, GRID )
 
 C***********************************************************************
-C Version "$Id: cbarnesN.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: cbarnesN.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.

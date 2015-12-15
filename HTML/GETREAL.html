@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GETREAL.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: GETREAL.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> GETREAL() </TITLE>
 </HEAD>
@@ -16,7 +16,8 @@
 
 <H2> Fortran version: </H2>
 <PRE>
-    REAL FUNCTION GETREAL( LO , HI , DEFAULT , PROMPT )
+    REAL FUNCTION GETREAL ( LO , HI , DEFAULT , PROMPT )
+    REAL FUNCTION GETREAL1( DEFAULT , PROMPT )
         REAL         , INTENT(IN   ) :: LO      ! Minimum allowed return value
         REAL         , INTENT(IN   ) :: HI      ! Maximum allowed return value
         REAL         , INTENT(IN   ) :: DEFAULT ! Default return value
@@ -28,57 +29,85 @@
 
 <H2> Summary: </H2>
 
-    Display the  <CODE>PROMPT</CODE>  to standard output for an integer
-    between   <CODE>LO</CODE>  and  <CODE>HI</CODE>, get the user's
-    response and check that it is within  range.  Return
+    <BLOCKQUOTE>
+    Display the  <CODE>PROMPT</CODE> to standard output, get the user's
+    response as a <CODE>REAL</CODE>, and for <CODE>GETREAL()</CODE>
+    check that it is within  rangee <CODE>[LO,HI]</CODE>.  Return
     <CODE>DEFAULT</CODE> if the user hits &lt;RET&gt;.  Reprompts on
     error for up to 5 attempts; exits in case of more than 5 entry
     errors. If <A HREF = "ENVIRONMENT.html">environment variable
-    PROMPTFLAG</A> is set to &quot;N&quot;, returns
-    <CODE>DEFAULT</CODE> without prompting the user.  Logs the value
-    returned, for tracking and validation purposes.
+    PROMPTFLAG</A> is set to &quot;N&quot;, returns <CODE>DEFAULT</CODE>
+    without prompting the user.  Logs the value returned, for tracking
+    and validation purposes.
     <P>
 
     The default is displayed in square brackets at the end of
     the prompt <CODE>[LIKE THIS]</CODE>
     <P> 
 
-    See also  <A HREF = "GETDBLE.html"> GETDBLE() </A>,
-    <A HREF = "GETMENU.html"> GETMENU() </A>,
-    <A HREF = "GETNUM.html">  GETNUM()  </A>,
-    <A HREF = "GETSTR.html"> GETSTR() </A>, and
-    <A HREF = "GETYN.html"> GETYN() </A>.
-<P> 
+    See also  
+    <A HREF = "GETVAL.html">GETVAL()</A>,
+    <A HREF = "GETDATE.html">GETDATE()</A>,
+    <A HREF = "GETDBLE.html">GETDBLE()</A>,
+    <A HREF = "GETMENU.html">GETMENU()</A>,
+    <A HREF = "GETNUM.html" >GETNUM()</A>,
+    <A HREF = "GETSTR.html" >GETSTR()</A>, and
+    <A HREF = "GETYN.html"  >GETYN()</A>.
+    <P> 
+    </BLOCKQUOTE>
 
         
-<H2> Preconditions: </H2>  none
-<P> 
+<H2> Preconditions: </H2>
+
+    <BLOCKQUOTE>
+    none
+    </BLOCKQUOTE>
 
     
 <H2> Fortran Usage: </H2>
 
+<BLOCKQUOTE>
+
+    <A HREF="GETVAL.html"><STRONG><CODE>GETVAL()</CODE></STRONG></A> is the
+    Fortran-90-generic <EM>(I/O&nbsp;API-3.2 or later only)</EM> that
+    calls these or various other similar routines, as determined
+    by the argument-list.
+    <P>
+
     For Fortran-90 declarations and interface checking:    
     <PRE>
     <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
-    </PRE><P>
+    </PRE>
+    <EM><CODE>GETREAL1</CODE> is for I/O&nbsp;API-3.2 and later,
+    only.</EM>
+    <P>
  
     (See <A HREF = "SAMPLE.html">sample</A> programs
     <A HREF = "LATLON.txt">LATLON</A> or
     <A HREF = "PRESZ.txt">PRESZ</A>
     for additional usage examples.)
+</BLOCKQUOTE>
 
 <PRE>
     ...
-    REAL           X
-    REAL           GETREAL
+    USE M3UTILIO    !! else:  REAL, EXTERNAL :: GETREAL, GETREAL1
     ...
-    X = GETREAL( 0.0, 10.0, 7.5, 'Give me a number between 0.0 and 10.0' )
+    REAL        X, Y, Z, W
+    INTEGER     N
+    ...
+    X = GETREAL( 0.0, 10.0, 7.5, 'Give me a (REAL) number between 0.0 and 10.0' )
+    Y = GETREAL1( 23.4, 'Give me a  (REAL)   number' )
+    Z = GETVAL(   12.3, 'Give me a  (REAL)   number' )  !!  only if USE M3UTILIO
+    N = GETVAL(   99,   'Give me a (INTEGER) number' )  !!  only if USE M3UTILIO
     ...
 </PRE><P> 
     
-<H2> C Usage: </H2>  don't
-<P>         
+<H2> C Usage: </H2>
 
+    <BLOCKQUOTE>
+    Don't, unless you're already comfortable with mixed-language programming.
+    </BLOCKQUOTE>
+    <P>
 
 <HR>
 

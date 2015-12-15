@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVGETS.html 132 2015-01-26 19:18:10Z coats $" -->
+<!-- "$Id: ENVGETS.html 183 2015-04-15 19:04:15Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> ENVGET(), [B]ENV*() and env*c() </TITLE>
 </HEAD>
@@ -15,9 +15,9 @@
 <H1> ENVGET(), [B]ENV*() and env*c() </H1>
 
 <BLOCKQUOTE>
-    <CODE>ENVINT(), ENVDBLE(), ENVREAL(), ENVSTR(), ENVYN()</CODE> are Fortran wrappers
-    calling the C <CODE>envintc(), envdblec(), envrealc(), envstrc(), envync()<CODE>
-    respectively.
+    <CODE>ENVINT(), ENVDBLE(), ENVREAL(), ENVSTR(), ENVYN()</CODE> are
+    Fortran wrappers calling the C <CODE>envintc(), envdblec(),
+    envrealc(), envstrc(), envync()</CODE> respectively.
 </BLOCKQUOTE>
 <P>
 
@@ -106,6 +106,19 @@ INTERFACE ENVGET(... )      !! generic:  I/O API v3.2 or later, only
         CHARACTER*(*), INTENT(IN   ) :: DESCRIP ! description of the value
         LOGICAL      , INTENT(IN   ) :: DEFAULT ! default value (if LNAME not set, or empty)
         INTEGER      , INTENT(  OUT) :: STATUS  !  for distinguishing error/default-value cases
+    END INTERFACE           !! envget()
+
+    INTERFACE
+
+        SUBROUTINE ENVSTR( LNAME, DESC, DEFAULT, EQNAME, STAT )
+        CHARACTER*(*), INTENT(IN   ) :: LNAME
+        CHARACTER*(*), INTENT(IN   ) :: DESC
+        CHARACTER*(*), INTENT(IN   ) :: DEFAULT
+        CHARACTER*(*), INTENT(  OUT) :: EQNAME
+        INTEGER      , INTENT(  OUT) :: STAT
+        END SUBROUTINE ENVSTR
+
+    END INTERFACE           !! envstr()
 </PRE><P> 
 
 

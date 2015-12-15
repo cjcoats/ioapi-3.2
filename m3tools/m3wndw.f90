@@ -2,7 +2,7 @@
 PROGRAM  M3WNDW
 
     !!***********************************************************************
-    !! Version "$Id: m3wndw.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: m3wndw.f90 163 2015-02-24 06:48:57Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
@@ -11,7 +11,7 @@ PROGRAM  M3WNDW
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  102
+    !!  program body starts at line  103
     !!
     !!  FUNCTION:
     !!       Window a subrectangle of the grid from gridded input file
@@ -35,7 +35,8 @@ PROGRAM  M3WNDW
     !!       USE M3UTILIO, and related changes.  Inline WNDWSTEP().
     !!       Bug-fix  01/2014 by CJC for GRDCHK3() call
     !!
-    !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source
+    !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
+    !!      expand WNDW for M3DBLE and M3INT8 variables.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -94,7 +95,7 @@ PROGRAM  M3WNDW
 
     LOGICAL         EFLAG
 
-    REAL, ALLOCATABLE :: WNDW( :,:,:,: )
+    REAL, ALLOCATABLE :: WNDW( : )
 
     !!.........................................................................
     !!   begin body of program  M3WNDW
@@ -135,7 +136,7 @@ PROGRAM  M3WNDW
 '    Chapel Hill, NC 27599-1105',                                       &
 ' ',                                                                    &
 'Program version: ',                                                    &
-'$Id: m3wndw.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: m3wndw.f90 163 2015-02-24 06:48:57Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -286,7 +287,7 @@ PROGRAM  M3WNDW
 
     !!...............   Allocate I/O Buffer:
 
-    ALLOCATE ( WNDW( NCOLS3D, NROWS3D, NLAYS, NVARS ), STAT = ISTAT )
+    ALLOCATE ( WNDW( 2*NCOLS3D*NROWS3D*NLAYS*NVARS ), STAT = ISTAT )
 
     IF ( ISTAT .NE. 0 ) THEN
         WRITE( MESG, '( A, I10 )' ) 'Memory allocation failed:  STAT=', ISTAT

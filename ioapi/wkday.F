@@ -1,11 +1,13 @@
 
       INTEGER FUNCTION WKDAY( JDATE )
- 
+
 C***********************************************************************
-C Version "$Id: wkday.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: wrbuf3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -26,8 +28,11 @@ C       Unification 2/2002 by CJC with global-climate DAYMON, which
 C       uses a 360-day "year"
 C
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
+C
+C       Modified 11/2015 by CJC: IO_365 changes.  For IO_360 an IO_365,
+C       assume Year 1900 Day 1 is a Monday.  Equivalently, Year 3 Day 1
 C***********************************************************************
- 
+
       IMPLICIT NONE
 
 
@@ -38,29 +43,39 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   PARAMETERS and their descriptions:
 
-#ifdef IO_360
-        INTEGER, PARAMETER :: YDAYS = 360
-#endif
-#ifndef IO_360
         INTEGER, PARAMETER :: YDAYS = 365
-#endif
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
-      INTEGER  YEAR	!  year 
+      INTEGER  YEAR	!  year
       INTEGER  JDAY	!  Julian day-number 1 ... 365,366
       INTEGER  K	!  subexpression
 
-                                                                                
+#ifdef IO_360
+#define     CLIMODAYS   (360)
+#endif
+
+#ifdef IO_365
+#define     CLIMODAYS   (365)
+#endif
+
+
 C***********************************************************************
 C   begin body of function  WKDAY
 
       YEAR  = JDATE / 1000
       JDAY  = MOD( JDATE, 1000 )
+
+#ifdef CLIMODAYS
+        K     = 360 * ( YEAR - 3 ) + ( MOD( JDAY + CLIMODAYS - 1, 7 )
+        WKDAY = 1 + MOD (K, 7)
+        RETURN
+#endif
+
       K     = MAX( YEAR - 1, 0 )
       K     = K * YDAYS  +  K / 4  -  K / 100  +  K / 400  +  JDAY  -  1
       WKDAY = 1 + MOD (K, 7)
- 
+
       RETURN
       END FUNCTION WKDAY
 

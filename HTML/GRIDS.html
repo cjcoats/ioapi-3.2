@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GRIDS.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: GRIDS.html 211 2015-07-22 19:46:32Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> On The Definition of Grids and Coordinates for Models-3  </TITLE>
 </HEAD>
@@ -99,17 +99,18 @@ data against a map will be particularly troublesome; sorry.
 </EM>
 <P>
 
-The following types of coordinate systems are supported.  They are
-identified by the use of  <A HREF = "INCLUDE.html#magic"> &quot;magic
-number&quot; token values </A>  as the <CODE>GDTYP3D</CODE> in file
-description data structures such as those found in
-<A HREF = "INCLUDE.html#fdesc"> <CODE>FDESC3.EXT</CODE> </A>.
-The magic numbers are specified in
-<A HREF = "INCLUDE.html#parms"><CODE>PARMS3.EXT</CODE></A>, which gives
-their names as <CODE>LATGRD3, LAMGRD3, MERGRD3, STEGRD3, UTMGRD3,
-POLGRD3, TRMGRD3, EQMGRD3, ALBGRD3,</CODE>, and <CODE>LEQGRD3</CODE>
-They may be identified by the corresponding map coordinate identifier,
-and further specified by five additional descriptive parameters
+<A NAME="coords">The following types of coordinate systems are
+supported.</A>
+They are identified by the use of  <A HREF = "INCLUDE.html#magic">
+&quot;magic number&quot; token values </A>  as the <CODE>GDTYP3D</CODE>
+in file description data structures such as those found in <A HREF =
+"INCLUDE.html#fdesc"> <CODE>FDESC3.EXT</CODE> </A>. The magic numbers
+are specified in <A HREF =
+"INCLUDE.html#parms"><CODE>PARMS3.EXT</CODE></A>, which gives their
+names as <CODE>LATGRD3, LAMGRD3, MERGRD3, STEGRD3, UTMGRD3, POLGRD3,
+TRMGRD3, EQMGRD3, ALBGRD3,</CODE>, and <CODE>LEQGRD3</CODE> They may be
+identified by the corresponding map coordinate identifier, and further
+specified by five additional descriptive parameters
 <CODE>PROJ_ALPHA</CODE>, <CODE>PROJ_BETA</CODE>,
 <CODE>PROJ_GAMMA</CODE>, <CODE>X_CENT</CODE>, and <CODE>Y_CENT</CODE>. 
 Note that file descriptions contain all of these specifying parameters,
@@ -132,11 +133,14 @@ grid-description support software systems.
         <TD ALIGN="LEFT" >
               PROJ_ALPHA, PROJ_BETA, PROJ_GAMMA unused.
               <BR>
-              Coordinate units are degrees, 
-              -180.0&nbsp;&lt;&nbsp;X,Y&nbsp;&lt;=&nbsp;180.0
+              ISO 6709 compliant:  coordinate units are degrees, 
+              -90.0&nbsp;&lt;&nbsp;X&nbsp;&lt;=&nbsp;90.0 and
+              -180.0&nbsp;&lt;&nbsp;Y&nbsp;&lt;=&nbsp;180.0
               <BR>
               Note that Western hemisphere longitudes and  Southern
               Hemisphere latitudes are taken to be negative.
+              <BR>
+              GCTP projection 0.
         </TD>
     </TR>
 
@@ -154,6 +158,8 @@ grid-description support software systems.
               center  (0,0) of the Cartesian coordinate  system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 4.
         </TD>
     </TR>
 
@@ -175,6 +181,8 @@ grid-description support software systems.
               center (0,0) of the Cartesian coordinate system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 20.
         </TD>
     </TR>
 
@@ -201,6 +209,8 @@ grid-description support software systems.
               center (0,0) of the Cartesian coordinate system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 10.
         </TD>
     </TR>
 
@@ -221,6 +231,8 @@ grid-description support software systems.
               UTM coords).
               <BR>
               Coordinate units are meters. 
+              <BR>
+              GCTP projection 1.
         </TD>
     </TR>
 
@@ -243,6 +255,8 @@ grid-description support software systems.
               center  (0,0) of the Cartesian coordinate  system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 6.
         </TD>
     </TR>
 
@@ -262,6 +276,8 @@ grid-description support software systems.
               center  (0,0) of the Cartesian coordinate  system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 5.
         </TD>
     </TR>
 
@@ -273,7 +289,7 @@ grid-description support software systems.
         <TD ALIGN="LEFT" >
               PROJ_ALPHA is  the latitude of true scale.
               <BR>
-              PROJ_BETA is unused;
+              PROJ_BETA is the scale factor at the central meridian;
               <BR>
               PROJ_GAMMA is the longitude of the central meridian.
               <BR>
@@ -281,6 +297,8 @@ grid-description support software systems.
               center  (0,0) of the Cartesian coordinate  system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 9.
         </TD>
     </TR>
 
@@ -298,6 +316,8 @@ grid-description support software systems.
               center  (0,0) of the Cartesian coordinate  system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 3.
         </TD>
     </TR>
 
@@ -314,6 +334,27 @@ grid-description support software systems.
               center  (0,0) of the Cartesian coordinate  system.
               <BR>
               Coordinate units are meters.
+              <BR>
+              GCTP projection 11.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD ALIGN="LEFT"    VALIGN="TOP" ><STRONG>Sinusoidal Equal-Area</STRONG>
+        </TD>
+        <TD ALIGN="CENTER"  VALIGN="TOP" ><CODE>SINUGRD3&nbsp;=&nbsp;10</CODE>
+        <BR>
+        Added 5/5/2015 to I/O&nbsp;API-3.1,-3.2.
+        </TD>
+        <TD ALIGN="LEFT" >
+              PROJ_GAMMA is the central meridian.
+              <BR>
+              (X_CENT,Y_CENT) are the lat-lon  coordinates for the
+              center  (0,0) of the Cartesian coordinate  system.
+              <BR>
+              Coordinate units are meters.
+              <BR>
+              GCTP projection 16.
         </TD>
     </TR>
 

@@ -1,11 +1,13 @@
 
-        REAL FUNCTION YR2DAY ( YEAR )
+        REAL FUNCTION YR2DAY( YEAR )
 
 C********************************************************************
-C Version "Id: yr2day.F 1034 2011-08-03 17:46:01Z coats@borel $"
+C Version "$Id: wrbuf3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -33,6 +35,8 @@ C       Unification 2/2002 by CJC with global-climate DAYMON, which
 C       uses a 360-day "year"
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 11/2015 by CJC: IO_365 changes
 C****************************************************************************
 
         IMPLICIT NONE
@@ -46,9 +50,14 @@ C       begin YR2DAY
 
 #ifdef IO_360
         YR2DAY = 1.0 / 360.0
+        RETURN
 #endif
 
-#ifndef IO_360
+#ifdef IO_365
+        YR2DAY = 1.0 / 365.0
+        RETURN
+#endif
+
         IF ( MOD( YEAR,4 ) .NE. 0 ) THEN           !  nonleap years
             YR2DAY = 1.0 / 365.0
         ELSE IF ( MOD( YEAR,100 ) .NE. 0 ) THEN    !  noncentury leap years
@@ -58,7 +67,6 @@ C       begin YR2DAY
         ELSE                                       !  leap centuries
             YR2DAY = 1.0 / 366.0
         END IF
-#endif
 
         RETURN
 

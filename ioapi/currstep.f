@@ -4,10 +4,12 @@
      &                                CDATE, CTIME )
 
 C***********************************************************************
-C Version "$Id: currstep.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: currstep.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and 
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -36,7 +38,7 @@ C       Gross simplification 1/2008 by CJC:  use result from CURREC(),
 C       new version of which is now relatively safe from integer overflow.
 C***********************************************************************
 
-      IMPLICIT NONE
+        IMPLICIT NONE
 
 C...........   ARGUMENTS and their descriptions:
 
@@ -49,11 +51,9 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
         INTEGER, EXTERNAL :: CURREC
 
-
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
-        INTEGER       IREC
-
+        INTEGER     IREC
 
 C***********************************************************************
 C   begin body of subroutine  CURRSTEP

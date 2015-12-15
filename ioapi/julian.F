@@ -2,10 +2,12 @@
       INTEGER FUNCTION JULIAN (YEAR, MNTH, MDAY)
 
 C***********************************************************************
-C Version "$Id: julian.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: wrbuf3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -41,10 +43,12 @@ C       improved comments; improved Zeller's Congruence algorithm
 C       and using IF-THEN ... ELSE IF ... construction.
 C
 C    8/1999   Version for global-climate IO_360, which uses 360-day "year"
-C       
+C
 C       2/2002 Unification by CJC with global-climate JULIAN
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 11/2015 by CJC: IO_365 changes
 C***********************************************************************
 
       IMPLICIT NONE
@@ -63,13 +67,27 @@ C...........   SCRATCH LOCAL VARIABLES:
 C***********************************************************************
 C   begin body of function  JULIAN
 
+C...........   Climatology-year calculations:
+
 #ifdef IO_360
 
         JULIAN = MDAY + 30 * ( MNTH - 1 )
+        RETURN
 
 #endif
 
-#ifndef IO_360
+        M = MOD ((MNTH + 9), 12)
+        N = (M * 153 + 2) / 5 + MDAY + 58
+
+#ifdef IO_365
+
+        JULIAN = 1 + MOD (N, 365)
+        RETURN
+
+#endif
+
+
+C...........   Otherwise
 
         M = MOD ((MNTH + 9), 12)
         N = (M * 153 + 2) / 5 + MDAY + 58
@@ -81,13 +99,11 @@ C   begin body of function  JULIAN
             N = 1 + N
         ELSE IF ( MOD (YEAR, 400) .NE. 0 )  THEN
             L = 365
-        ELSE 
+        ELSE
             L = 366
             N = 1 + N
         END IF
         JULIAN = 1 + MOD (N, L)
-
-#endif
 
       RETURN
       END FUNCTION JULIAN

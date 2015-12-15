@@ -2,7 +2,7 @@
 /**********************************************************************
 VERSION:
         EDSS/Models-3 I/O API -- Version 3
-        "iocplf2c.c" version "$Id: iocplf2c.c 100 2015-01-16 16:52:16Z coats $"
+        "iocplf2c.c" version "$Id: iocplf2c.c 216 2015-08-17 17:47:29Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
@@ -31,6 +31,8 @@ REVISION HISTORY:
         Modified 11/2005 by CJC:  extra name-mangling for Absoft Pro Fortran:
         upper-case Fortran  symbols, prepend _C to common blocks.
 **********************************************************************/
+
+#ifdef IOAPICPL
 
 #include <string.h>
 #include "parms3.h"
@@ -285,3 +287,5 @@ void setsynchro3v_( FINT * newvalue )
 
 
 /* =========================================================== */
+
+#endif      /*  ifdef IOAPICPL   */

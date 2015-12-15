@@ -3,14 +3,16 @@
      &                           CALLER )
 
 C***********************************************************************
-C Version "$Id: getdfile.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: getdfile.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line 82
+C  function body starts at line 75
 C
 C  DESCRIPTION:
 C    Gets value of logical name LNAME from the environment, checks for
@@ -40,7 +42,7 @@ C
 C       Modified 03/2010, 09/2014 by CJC: F9x changes for I/O API v3.1
 C***********************************************************************
 
-       IMPLICIT NONE
+        IMPLICIT NONE
 
 C...........   ARGUMENTS and their descriptions:
 
@@ -53,9 +55,7 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        INTEGER, EXTERNAL :: INIT3
-        INTEGER, EXTERNAL :: JUNIT
-
+        INTEGER, EXTERNAL :: INIT3, JUNIT
 
 C...........   LOCAL VARIABLES and their descriptions:
 
@@ -63,7 +63,8 @@ C...........   LOCAL VARIABLES and their descriptions:
         INTEGER		ISTAT, JSTAT
         LOGICAL     LCHECK
 
-        CHARACTER*256   PNAME
+        CHARACTER*512   PNAME
+        CHARACTER*512   MESG
         CHARACTER*16    FMTSTRING
 
         INTEGER, SAVE :: LOGDEV = -1
@@ -89,7 +90,17 @@ C...........   Read filename from environment ---
 
 C.......   Check for existence of files ---
 
-      INQUIRE( FILE=PNAME, EXIST=LCHECK )
+      INQUIRE( FILE=PNAME, EXIST=LCHECK , IOSTAT=JSTAT )
+
+      IF ( JSTAT .NE. 0 ) THEN
+          WRITE( MESG, '( A, I11, 2X, A, 1X, A)' )
+     &       'GETDFILE:  Error', JSTAT, 'inquiring about', LNAME
+          CALL M3MESG( MESG )
+          MESG = 'Path-name: ' // PNAME
+          CALL M3MESG( MESG )
+          GETDFILE = -1
+          RETURN
+      END IF
 
       IF ( RDONLY ) THEN
 

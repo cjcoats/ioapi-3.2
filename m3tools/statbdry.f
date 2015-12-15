@@ -4,7 +4,7 @@
      &                        INNAME, VNAMES, VTYPES, LOGDEV )
 
 C***********************************************************************
-C Version "$Id: statbdry.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: statbdry.f 163 2015-02-24 06:48:57Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems, LLC
@@ -61,8 +61,9 @@ C...........   ARGUMENTS and their descriptions:
 C...........   LOCAL VARIABLES and their descriptions:
 
         REAL             BDRY( SIZE, NLAYS )
-        INTEGER          IGRD( NCOLS, NROWS, NLAYS )
-        DOUBLE PRECISION DGRD( NCOLS, NROWS, NLAYS )
+        INTEGER          IGRD( SIZE, NLAYS )
+        INTEGER*8        LGRD( SIZE, NLAYS )
+        DOUBLE PRECISION DGRD( SIZE, NLAYS )
         INTEGER          V
 
         CHARACTER*120   MESG
@@ -107,6 +108,21 @@ C   begin body of subroutine  STATBDRY
                 END IF              !  if read3() worked, or not
 
                 CALL INTG2REAL( SIZE, IGRD, BDRY )
+
+            ELSE IF ( VTYPES( V ) .EQ. M3INT8 ) THEN
+
+                IF ( .NOT. READ3( INNAME, VNAMES( V ), ALLAYS3,
+     &                            JDATE, JTIME, LGRD ) ) THEN
+
+                    MESG = 'Read failure:  file ' // INNAME //
+     &                     ' variable ' // VNAMES( V )
+                    CALL M3EXIT( 'M3STAT:STATBDRY', JDATE, JTIME,
+     &                           MESG, 2 )
+                    GO TO 111
+
+                END IF              !  if read3() worked, or not
+
+                CALL INTG2REAL( SIZE, LGRD, BDRY )
 
             ELSE IF ( VTYPES( V ) .EQ. M3DBLE ) THEN
 

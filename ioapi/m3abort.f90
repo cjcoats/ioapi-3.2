@@ -32,6 +32,7 @@ SUBROUTINE  M3ABORT( FNAME, FNUM, IERR, MESSAGE )
     !!      Modified 03/2010 by CJC: F9x changes for I/O API v3.1
     !!      Modified 08/2015 by CJC: USE MODNCFIO.  Call NF_STRERROR().
     !!      F90 "free" source format.
+    !!      Modified 08/2015 by CJC: 
     !!***********************************************************************
 
     USE MODNCFIO
@@ -48,6 +49,7 @@ SUBROUTINE  M3ABORT( FNAME, FNUM, IERR, MESSAGE )
 
     !!.......   Scratch LOCAL VARIABLES
 
+    INTEGER         JERR
     CHARACTER*256   MESG       !  fixed-length buffer
 
 
@@ -60,7 +62,11 @@ SUBROUTINE  M3ABORT( FNAME, FNUM, IERR, MESSAGE )
     CALL M3MSG2( MESG  )
     MESG = NF_STRERROR( IERR )
     CALL M3MSG2( MESG  )
-    IERR = NF_ABORT( FNUM )    
+    JERR = NF_ABORT( FNUM )
+    IF ( JERR .NE. 0 ) THEN
+        MESG = NF_STRERROR( IERR )
+        CALL M3MSG2( MESG  )
+    END IF
 
     RETURN
 

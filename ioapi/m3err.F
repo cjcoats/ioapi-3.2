@@ -2,7 +2,7 @@
         SUBROUTINE  M3ERR ( CALLER, JDATE, JTIME, MSGTXT, FATAL )
 
 C***********************************************************************
-C Version "$Id: m3err.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: m3err.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.

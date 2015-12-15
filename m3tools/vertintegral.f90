@@ -2,14 +2,14 @@
 PROGRAM  VERTINTEGRAL
 
     !!***********************************************************************
-    !! Version "$Id: vertintegral.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: vertintegral.f90 224 2015-08-19 14:23:57Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2009 UNC Institute for the Environment and
     !! Baron Advanced Meteorological Systems, LLC, and (C) 2015 UNC IE.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  141
+    !!  program body starts at line  147
     !!
     !!  DESCRIPTION:
     !!       For a user-specified GRIDDED Models-3 CMAQ CONC file
@@ -29,19 +29,23 @@ PROGRAM  VERTINTEGRAL
     !!       Models-3 I/O.
     !!
     !!  REVISION  HISTORY:
-    !!       PROTOTYPE: 07/2009 by Francis S. Binkowski, modified from
-    !!       I/O API M3TOOLS "vertot"
+    !!      PROTOTYPE: 07/2009 by Francis S. Binkowski, modified from
+    !!      I/O API M3TOOLS "vertot"
     !!
-    !!       Version 08/2009: optimizations by FSB and Zac Adelman;
-    !!       parallelization, style changes for M3TOOLS release:  Carlie Coats, BAMS
+    !!      Version 08/2009: optimizations by FSB and Zac Adelman;
+    !!      parallelization, style changes for M3TOOLS release:  Carlie Coats, BAMS
     !!
-    !!       Version  02/2010 by CJC for I/O API v3.1:  USE M3UTILIO, and
-    !!       related changes; fix in parallel directives
+    !!      Version  02/2010 by CJC for I/O API v3.1:  USE M3UTILIO, and
+    !!      related changes; fix in parallel directives
     !!
-    !!       Bug-fix  09/2012 from Sarika Kulkarni, CA ARB
+    !!      Bug-fix  09/2012 from Sarika Kulkarni, CA ARB
     !!
-    !!       Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source,
-    !!       non-integer-overflow formulation for duration
+    !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source,
+    !!      non-integer-overflow formulation for duration
+    !!
+    !!      Version  08/2015 by CJC:  enhanced splash-screen; more-robust
+    !!      check for DENS and ZF in METFILE; integration-interval bounded
+    !!      by LAY_LO, LAY_HI
     !!***********************************************************************
 
     USE M3UTILIO
@@ -49,12 +53,12 @@ PROGRAM  VERTINTEGRAL
 
     !!...........   EXTERNAL FUNCTIONS and their descriptions:
 
-    INTEGER           :: IARGC              !  may be intrinsic...
+    INTEGER :: IARGC              !  may be intrinsic...
 
     !!...........   PARAMETERS and their descriptions:
     !!...........     for unit conversion:
 
-    REAL, PARAMETER :: AVO   = 6.0221367e23 ! Avogadro's Constant [ number/mol ]
+    REAL, PARAMETER :: AVO   =  6.0221367e23 ! Avogadro's Constant [ number/mol ]
     REAL, PARAMETER :: MWAIR = 28.9628       ! mean molecular weight for dry air [ g/mol ]
                     ! FSB: 78.06% N2, 21% O2, and 0.943% A on a mole
                     ! fraction basis ( Source : Hobbs, 1995) pp. 69-70
@@ -91,7 +95,7 @@ PROGRAM  VERTINTEGRAL
     INTEGER         NLAYS      ! number of layers
     INTEGER         NTHIK      ! bdy thickness
     INTEGER         NVARS      ! number of variables
-    INTEGER         GDTYP      ! grid type:  1=LAT-LON, 2=UTM, ...
+    INTEGER         GDTYP      ! grid type:  1=LAT-LON, 2=Lambert, ...
     INTEGER         VGTYP      ! vertical coord type
     INTEGER         SDATE      ! starting date
     INTEGER         STIME      ! starting time
@@ -116,6 +120,8 @@ PROGRAM  VERTINTEGRAL
     CHARACTER*16    UNITSO( MXVARS3 ) !  list of vble units
     CHARACTER*80    VDESCO( MXVARS3 ) !  list of vble descs
     INTEGER         ISTAT   !  response from allocate
+
+    INTEGER         LAY0, LAY1          !  integrationj bounds
 
     INTEGER         JDATE   !  starting date, from user
     INTEGER         JTIME   !  starting time, from user
@@ -157,7 +163,17 @@ PROGRAM  VERTINTEGRAL
 'PRECONDITIONS REQUIRED:',                                                  &
 '    setenv <INFILE>          <path name>',                                 &
 '    setenv <METFILE>         <path name>',                                 &
+'',                                                                         &
+'    setenv LAY_LO            <bottom layer for the integration> [1]',      &
+'    setenv LAY_HI            <top    layer for the integration> [NLAYS]',  &
+'',                                                                         &
+'',                                                                         &
+'',                                                                         &
 '    ${INFILE} and ${METFILE} share a common grid.',                        &
+'',                                                                         &
+'    ${METFILE} must contain variable ZF (height of the full-level',        &
+'    surfaces) and DENS (air density), which are needed for the',           &
+'    calculations performed by VERTINTEGRAL.',                              &
 '',                                                                         &
 '    If compiled for OpenMP parallel:',                                     &
 '    setenv  OMP_NUM_THREADS  <number of processor cores>',                 &
@@ -182,7 +198,7 @@ PROGRAM  VERTINTEGRAL
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertintegral.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: vertintegral.f90 224 2015-08-19 14:23:57Z coats $',&
 ''
 
     WRITE ( LUNIT,'( 5X , A )' )
@@ -336,11 +352,37 @@ PROGRAM  VERTINTEGRAL
         EFLAG = .TRUE.
         MESG = 'Inconsistent coord/grid  for ' // METFILE
         CALL M3MESG( MESG )
-    ELSE IF( .NOT. CHECK3( METFILE, 'ZF', SDATE, STIME ) ) THEN
+    ELSE
+        IF( 0 .LE. INDEX1( 'ZF', NVARS3D, VNAME3D ) ) THEN
+            EFLAG = .TRUE.
+            MESG = 'Variable ZF not found in met file  '// METFILE
+            CALL M3MESG( MESG )
+        END IF
+        IF( 0 .LE. INDEX1( 'DENS', NVARS3D, VNAME3D ) ) THEN
+            EFLAG = .TRUE.
+            MESG = 'Variable DENS not found in met file  '// METFILE
+            CALL M3MESG( MESG )
+        END IF
+    END IF
+
+
+    !!...............   Get integration bounds
+
+    LAY0 = BENVINT( 'LAY_LO', 'Lower bound for integration', 1, NLAYS-1, 1, ISTAT )
+    IF ( ISTAT .LT. 0 ) THEN
         EFLAG = .TRUE.
-        MESG = ' no match for full height in met file  '// METFILE
+        MESG = ' Bad environment variable "LAY_LO"'
         CALL M3MESG( MESG )
     END IF
+
+    LAY1 = BENVINT( 'LAY_HI', 'Upper bound for integration', LAY0+1, NLAYS, NLAYS, ISTAT )
+    IF ( ISTAT .LT. 0 ) THEN
+        EFLAG = .TRUE.
+        MESG = ' Bad environment variable "LAY_HI"'
+        CALL M3MESG( MESG )
+    END IF
+
+    !!...............   Get M
 
     IF( EFLAG ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Fatal setup error(s)', 2 )
@@ -395,15 +437,15 @@ PROGRAM  VERTINTEGRAL
 !$OMP&       SHARED( NLAYS, NROWS, NCOLS, ZFA, GAS_FAC, PM_FAC, DENSA ),    &
 !$OMP&      PRIVATE( C, R, L, DELZ )
 
-        DO L  = 1, NLAYS
+        DO L  = LAY0, LAY1
 
-            IF ( L .EQ. 1 ) THEN
+            IF ( L .EQ. LAY0 ) THEN
 
                 DO R = 1, NROWS
                 DO C = 1, NCOLS
                     DELZ = ZFA(C,R,L) * M2CM
                     GAS_FAC(C,R,L) = PPM_MCM3 * DENSA(C,R,L) * DENS_CONV * DELZ
-                    PM_FAC(C,R,L)  = M2CM1 * DELZ
+                    PM_FAC (C,R,L) = M2CM1 * DELZ
                 END DO ! loop on columns
                 END DO  ! loop on rows
 
@@ -413,7 +455,7 @@ PROGRAM  VERTINTEGRAL
                 DO C = 1, NCOLS
                     DELZ = ( ZFA(C,R,L) - ZFA(C,R,L-1) ) * M2CM
                     GAS_FAC(C,R,L) = PPM_MCM3 * DENSA(C,R,L) * DENS_CONV * DELZ
-                    PM_FAC(C,R,L)  = M2CM1 * DELZ
+                    PM_FAC (C,R,L) = M2CM1 * DELZ
                 END DO ! loop on columns
                 END DO  ! loop on rows
 
@@ -424,10 +466,10 @@ PROGRAM  VERTINTEGRAL
 
         !............  process for integral
 
-!$OMP    PARALLEL DO                                                    &
-!$OMP&       DEFAULT( NONE ),                                           &
-!$OMP&        SHARED( NVARS_OUT, NCOLS, NROWS, NLAYS, JDATE, JTIME,     &
-!$OMP&                VNAMEO, UNITSO, GAS_FAC, PM_FAC, AOUT ),          &
+!$OMP    PARALLEL DO                                                        &
+!$OMP&       DEFAULT( NONE ),                                               &
+!$OMP&        SHARED( NVARS_OUT, NCOLS, NROWS, NLAYS, JDATE, JTIME,         &
+!$OMP&                LAY0, LAY1, VNAMEO, UNITSO, GAS_FAC, PM_FAC, AOUT ),  &
 !$OMP&       PRIVATE( V, MESG )
 
         DO V = 1, NVARS_OUT  ! loop over output variables
@@ -438,14 +480,14 @@ PROGRAM  VERTINTEGRAL
             IF( UNITSO( V ) .EQ. GAS_OUT ) THEN
 
                 CALL VERTOT( CNCFILE, VNAMEO(V), JDATE, JTIME,  &
-                             NCOLS, NROWS, NLAYS, GAS_FAC,      &
-                             AOUT( 1,1,V ) )
+                             NCOLS, NROWS, NLAYS, LAY0, LAY1,   &
+                             GAS_FAC, AOUT( 1,1,V ) )
 
             ELSE IF( UNITSO( V ) .EQ. PM_OUT ) THEN
 
                 CALL VERTOT( CNCFILE, VNAMEO(V), JDATE, JTIME,  &
-                             NCOLS, NROWS, NLAYS, PM_FAC,       &
-                             AOUT( 1,1,V ) )
+                             NCOLS, NROWS, NLAYS, LAY0, LAY1,   &
+                             PM_FAC, AOUT( 1,1,V ) )
 
             END IF  ! check on species
 
@@ -486,7 +528,8 @@ CONTAINS    !!==================================================================
 
 
     SUBROUTINE  VERTOT( FNAME, VNAME, JDATE, JTIME,         &
-                        NCOLS, NROWS, NLAYS, VFAC, VTOT )
+                        NCOLS, NROWS, NLAYS, LAY0, LAY1,    &
+                        VFAC, VTOT )
 
         USE M3UTILIO
 
@@ -494,7 +537,7 @@ CONTAINS    !!==================================================================
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME, VNAME
         INTEGER,       INTENT(IN   ) :: JDATE, JTIME
-        INTEGER,       INTENT(IN   ) :: NCOLS, NROWS, NLAYS
+        INTEGER,       INTENT(IN   ) :: NCOLS, NROWS, NLAYS, LAY0, LAY1
         REAL   ,       INTENT(IN   ) :: VFAC( NCOLS, NROWS, NLAYS )
         REAL   ,       INTENT(INOUT) :: VTOT( NCOLS, NROWS )
 
@@ -515,10 +558,10 @@ CONTAINS    !!==================================================================
         DO R = 1, NROWS     !!  loop-nest order for cache-efficiency:
 
             DO C = 1, NCOLS
-                VTOT( C,R ) = VINP( C,R,1 )*VFAC( C,R,1 )
+                VTOT( C,R ) = VINP( C,R,LAY0 )*VFAC( C,R,LAY0 )
             END DO
 
-            DO L = 2, NLAYS
+            DO L = LAY0+1, LAY1
             DO C = 1, NCOLS
                 VTOT( C,R ) = VTOT( C,R ) + VINP( C,R,L )*VFAC( C,R,L )
             END DO

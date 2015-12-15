@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: LISTS.html 129 2015-01-23 18:52:17Z coats $" -->
+<!-- "$Id: LISTS.html 275 2015-12-03 18:42:26Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> Environment-LIST() Functions </TITLE>
 </HEAD>
@@ -26,14 +26,16 @@ only</EM>
         CHARACTER*(*), INTENT(IN   ) :: EDESC   !  in:  environment variable description
         INTEGER      , INTENT(IN   ) :: NMAX    !  in:  dimension for list
         INTEGER      , INTENT(  OUT) :: NCNT    ! out:  actual number of entries in list
-      [ INTEGER      , INTENT(  OUT) :: ILIST( NMAX )    ! out:  array of values found
+        INTEGER      , INTENT(  OUT) :: ILIST( NMAX )    ! out:  array of values found
         REAL         , INTENT(  OUT) :: RLIST( NMAX )    ! out:  array of values found
+        REAL*8       , INTENT(  OUT) :: DLIST( NMAX )    ! out:  array of values found
         CHARACTER*(*), INTENT(  OUT) :: SLIST( NMAX ) ]  ! out:  array of string values found
 </PRE><P>
 Type-specific forms: (<EM>all I/O&nbsp;API versions</EM>)
 <PRE>
     LOGICAL FUNCTION INTLIST( ENAME, EDESC, NMAX, NCNT, ILIST )
     LOGICAL FUNCTION REALIST( ENAME, EDESC, NMAX, NCNT, RLIST )
+    LOGICAL FUNCTION DBLLIST( ENAME, EDESC, NMAX, NCNT, DLIST )
     LOGICAL FUNCTION STRLIST( ENAME, EDESC, NMAX, NCNT, SLIST )
         CHARACTER*(*), INTENT(IN   ) :: ENAME   !  in:  environment variable for the list
         CHARACTER*(*), INTENT(IN   ) :: EDESC   !  in:  environment variable description
@@ -41,6 +43,7 @@ Type-specific forms: (<EM>all I/O&nbsp;API versions</EM>)
         INTEGER      , INTENT(  OUT) :: NCNT    ! out:  actual number of entries in list
         INTEGER      , INTENT(  OUT) :: ILIST( NMAX )    ! out:  array of values found
         REAL         , INTENT(  OUT) :: RLIST( NMAX )    ! out:  array of values found
+        REAL*8       , INTENT(  OUT) :: DLIST( NMAX )    ! out:  array of values found
         CHARACTER*(*), INTENT(  OUT) :: SLIST( NMAX )    ! out:  array of string values found
 </PRE><P>
 
@@ -51,12 +54,17 @@ Type-specific forms: (<EM>all I/O&nbsp;API versions</EM>)
 <H2> Summary: </H2>
 
     Looks at the value of the indicated environment variable, parses and
-    evaluates it as a comma-delimited list of the indicated type, counts
-    the number of entries and returns the count in <CODE>NCNT</CODE> and
-    the values in the array <CODE>[I|R|S]LIST</CODE>.
-    Environment-variable lists may have an optional <CODE>LIST:</CODE>
-    prefix, followed by a sequence of comma-delimited values.  Blanks
-    are not significant (and are skipped).
+    evaluates it as a (blank- or) comma-delimited list of the indicated
+    type, counts the number of entries and returns the count in
+    <CODE>NCNT</CODE> and the values in the array
+    <CODE>[I|R|S]LIST</CODE>. Environment-variable lists may have an
+    optional <CODE>LIST:</CODE> prefix, followed by a sequence of
+    comma-delimited values.  Blanks are not significant (and are
+    skipped).
+    <P>
+
+    <EM>I/O&nbsp;API-3.2 and later also now support blank-delimited
+    lists.  Previous versions require comma-delimited lists.</EM>
     <P>
 
     Return <CODE>FALSE</CODE> if <CODE>ENAME</CODE> is a bad environment

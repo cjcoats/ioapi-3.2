@@ -4,14 +4,16 @@
      &                         INNAME, VNAMES, VTYPES, RDEV )
 
 C***********************************************************************
-C Version "$Id: statspars.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: statspars.f 163 2015-02-24 06:48:57Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine body starts at line  105
+C  subroutine body starts at line  68
 C
 C  FUNCTION:
 C       Statistics report to  on variables VNAMES  from file
@@ -30,6 +32,8 @@ C
 C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C       Version  12/2013 by CJC: INTENT for arguments
+C       Version  02/2015 by CJC: Support for M3INT8 variables.
+C       Fix indexing bug
 C***********************************************************************
 
       USE M3UTILIO
@@ -53,11 +57,9 @@ C...........   ARGUMENTS and their descriptions:
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
         INTEGER         CSUM( 2 * NROWS )
-        INTEGER         NACT( NROWS )
-        INTEGER         INDX( NCOLS )
-        REAL            COEF( NCOLS, NVARS )
-        REAL            GRID( NCOLS )           !  scratch array
-        INTEGER         V, W
+        INTEGER         NACT( NROWS + (2*NVARS+1)*NCOLS )   !! NACT(NROWS) // INDX(NCOLS) // COEF(NCOLS,NVARS)
+        REAL            GRID( NCOLS )                       !!  scratch array
+        INTEGER         V, W, K
 
 
 C***********************************************************************
@@ -70,52 +72,53 @@ C   begin body of subroutine  STATSPARS
             WRITE( RDEV,92010 ) INNAME
         END IF
 
-        IF ( READ3( INNAME, ALLVAR3, ALLAYS3,
-     &                 JDATE, JTIME, NACT ) ) THEN
-
-            W = 1
-
-            DO  111  V = 1, NVARS
-
-                IF ( VTYPES( V ) .EQ. M3REAL ) THEN
-
-                    CALL STATM( NCOLS, NROWS, NTHIK,
-     &                          NACT, INDX, COEF( 1,W ), CSUM,
-     &                          VNAMES( V ), RDEV )
-                    W = W + NCOLS
-
-                ELSE IF ( VTYPES( V ) .EQ. M3INT ) THEN
-
-                    CALL INTG2REAL( NCOLS, COEF( 1,W ), GRID )
-                    CALL STATM( NCOLS, NROWS, NTHIK,
-     &                          NACT, INDX, GRID, CSUM,
-     &                          VNAMES( V ), RDEV )
-                    W = W + NCOLS
-
-                ELSE IF ( VTYPES( V ) .EQ. M3DBLE ) THEN
-
-                    CALL DBLE2REAL( NCOLS, COEF( 1,W ), GRID )
-                    CALL STATM( NCOLS, NROWS, NTHIK,
-     &                          NACT, INDX, GRID, CSUM,
-     &                          VNAMES( V ), RDEV )
-                    W = W + 2 * NCOLS
-
-                ELSE
-
-                    CALL M3EXIT( 'M3STAT:STATSPARS', JDATE, JTIME,
-     &                           'Bad type for variable ' //
-     &                           VNAMES( V ), 2 )
-
-                END IF
-
-111         CONTINUE
-
-        ELSE                !  read3() failed:
+        IF ( .NOT.READ3( INNAME, ALLVAR3, ALLAYS3,
+     &                   JDATE, JTIME, NACT ) ) THEN
 
             CALL M3EXIT( 'M3STAT:STATSPARS', JDATE, JTIME,
      &                   'Read failure:  file ' // INNAME, 2 )
 
-        END IF              !  if read3() worked, or not
+        END IF              !  if read3() failed
+
+        K = NROWS + 1   !!  start of "INDX(NCOLS")
+        W = K + NCOLS   !!  start of "COEF(NCOLS,NVARS")
+
+        DO  V = 1, NVARS
+
+            IF ( VTYPES( V ) .EQ. M3REAL ) THEN
+
+                CALL STATM( NCOLS, NROWS, NTHIK,
+     &                      NACT, NACT(K), NACT(W), CSUM,
+     &                      VNAMES( V ), RDEV )
+                W = W + NCOLS
+
+            ELSE IF ( VTYPES( V ) .EQ. M3INT ) THEN
+
+                CALL INTG2REAL( NCOLS, NACT(W), GRID )
+                CALL STATM( NCOLS, NROWS, NTHIK,
+     &                      NACT, NACT(K), GRID, CSUM,
+     &                      VNAMES( V ), RDEV )
+                W = W + NCOLS
+
+            ELSE IF ( VTYPES( V ) .EQ. M3INT8 ) THEN
+
+                CALL INT82REAL( NCOLS, NACT(W), GRID )
+                CALL STATM( NCOLS, NROWS, NTHIK,
+     &                      NACT, NACT(K), GRID, CSUM,
+     &                      VNAMES( V ), RDEV )
+                W = W + 2 * NCOLS
+
+            ELSE IF ( VTYPES( V ) .EQ. M3DBLE ) THEN
+
+                CALL DBLE2REAL( NCOLS, NACT(W), GRID )
+                CALL STATM( NCOLS, NROWS, NTHIK,
+     &                      NACT, NACT(K), GRID, CSUM,
+     &                      VNAMES( V ), RDEV )
+                W = W + 2 * NCOLS
+
+            END IF
+
+        END DO
 
 
         RETURN

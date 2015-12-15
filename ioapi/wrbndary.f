@@ -2,10 +2,12 @@
         LOGICAL FUNCTION WRBNDARY( FID, VID, TSTAMP, STEP2, BUFFER )
 
 C***********************************************************************
-C Version "$Id: wrbndary.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: wrbndary.f 230 2015-10-08 20:44:26Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -23,23 +25,25 @@ C             file type is BNDARY3.
 C
 C  SUBROUTINES AND FUNCTIONS CALLED:  WRVARS
 C
-C  REVISION  HISTORY:  
+C  REVISION  HISTORY:
 C       prototype 3/92 by CJC
 C
-C       revised  10/94 by CJC:  allow write-by-variable; record 
+C       revised  10/94 by CJC:  allow write-by-variable; record
 C               time-step number as time step flag; restart files.
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C
+C       Modified 08/2015 by CJC for I/O API 3.2:  USE MODNCFIO
 C***********************************************************************
 
-      IMPLICIT NONE
+        USE MODNCFIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 
 
 C...........   ARGUMENTS and their descriptions:
@@ -60,8 +64,8 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
         INTEGER         DELTA           !  d(INDX) / d(NCVGTcall)
-        INTEGER         DIMS ( 5 )      !  corner arg array for NCVGT()
-        INTEGER         DELTS( 5 )      !  corner arg array for NCVGT()
+        INTEGER         DIMS ( 5 )      !  corner arg array for NF_PUT_VARA()
+        INTEGER         DELTS( 5 )      !  corner arg array for NF_PUT_VARA()
 
 
 C***********************************************************************
@@ -92,7 +96,7 @@ C.......   Set up args for WRVARS:
 
 C...........   Perform the writes:
 
-        WRBNDARY = WRVARS( FID, VID, TSTAMP, STEP2, 
+        WRBNDARY = WRVARS( FID, VID, TSTAMP, STEP2,
      &                     DIMS, DELTS, DELTA, BUFFER )
 
         RETURN

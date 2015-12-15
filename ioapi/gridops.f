@@ -2,16 +2,18 @@
         SUBROUTINE GRIDOPS( NCOL, NROW, NSPC, NLEV, A, B, C )
 
 C***********************************************************************
-C Version "$Id: gridops.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: gridops.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2011 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and 
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine GRIDOPS body starts at line  130
-C  entry      PICKOPS body starts at line  345
-C  entry      NAMEDOP body starts at line  360
+C  subroutine GRIDOPS body starts at line  131
+C  entry      PICKOPS body starts at line  346
+C  entry      NAMEDOP body starts at line  361
 C
 C  PRECONDITIONS REQUIRED:  Call entry PICKOPS before calling GRIDOPS
 C                           Valid OPNAME for NAMEDOP
@@ -51,7 +53,10 @@ C
 C  REVISION  HISTORY:
 C       prototype 09/1992 by CJC
 C       Modified  03/2010 by CJC: F9x changes for I/O API v3.1
+C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO
 C***********************************************************************
+
+        USE M3UTILIO
 
         IMPLICIT NONE
 
@@ -111,11 +116,6 @@ C...........   Parameter:
      &          'min(a, B)       ' ,         ! 17
      &          'Grid A          ' ,         ! 18
      &          'Grid B          ' /)        ! 19
-
-
-C...........   EXTERNAL FUNCTION:  make a menu selection; table lookup
-
-        INTEGER, EXTERNAL :: GETMENU, INDEX1
 
 
 C...........   LOCAL VARIABLES:  menu choices and descriptions

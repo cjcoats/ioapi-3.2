@@ -1,10 +1,11 @@
 /**************************************************************************
-VERSION "$Id: bufint3.c 100 2015-01-16 16:52:16Z coats $"
+VERSION "$Id: bufint3.c 164 2015-02-24 06:50:01Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-    (C) 2003-2010 Baron Advanced Meteorological Systems.
+    (C) 2003-2010 Baron Advanced Meteorological Systems, and
+    (C) 2015 UNC Institute for the Environment.
     Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     See file "LGPL.txt" for conditions of use.
 
@@ -76,6 +77,7 @@ REVISION HISTORY:
     Modified 11/2005 by CJC:  extra name-mangling for Absoft Pro Fortran:
     upper-case Fortran  symbols, prepend _C to common blocks.
     Modified 04/2011 for full buffered-file file descriptions.
+    Modified 02/2015 by CJC for I/O API version 3.2:  M3INT8 (INTEGER*8) support
 **************************************************************************/
 
 #include <stdio.h>
@@ -616,6 +618,7 @@ FINT BUFCRE3 ( FINT  *fndx,     /** M3 file index **/
             if      ( btype[i] == M3REAL ) asize = rsize * sizeof( FREAL ) ;
             else if ( btype[i] == M3DBLE ) asize = rsize * sizeof( double ) ;
             else if ( btype[i] == M3INT  ) asize = rsize * sizeof( FINT ) ;
+            else if ( btype[i] == M3INT8 ) asize = rsize * sizeof( int64_t ) ;
             if ( ! ( baddr[ *fndx ][ i ] = malloc( (size_t) asize ) ) )
                 {
                 m3mesgc( "Error allocating internal buffer for BUFCRE3()" ) ;

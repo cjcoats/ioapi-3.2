@@ -2,14 +2,16 @@
 PROGRAM  M3PAIR
 
     !!***********************************************************************
-    !! Version "$Id: m3pair.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: m3pair.f90 163 2015-02-24 06:48:57Z coats $"
     !! EDSS/Models-3 M3TOOLS.
-    !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-    !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+    !! Copyright (C) 1992-2002 MCNC, 
+    !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
+    !! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and 
+    !! (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  109
+    !!  program body starts at line  112
     !!
     !!  FUNCTION:
     !!       For a user-specified pair of GRIDDED Models-3 files and
@@ -29,6 +31,7 @@ PROGRAM  M3PAIR
     !!      USE M3UTILIO, and related changes.
     !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source,
     !!      CONTAINed SUBROUTINE PAIRSTEP
+    !!      Version  02/2015 by CJC: Support for M3INT8 variables.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -383,6 +386,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DOUBLE PRECISION DBLE2( NCOLS, NROWS, NLAYS )
         INTEGER          INTG1( NCOLS, NROWS, NLAYS )
         INTEGER          INTG2( NCOLS, NROWS, NLAYS )
+        INTEGER          LONG1( NCOLS, NROWS, NLAYS )
+        INTEGER*8        LONG2( NCOLS, NROWS, NLAYS )
 
         LOGICAL         FLAG1, FLAG2
 
@@ -410,6 +415,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             FLAG1 = READ3( FILEA,  WNAMES( 1 ), ALLAYS3, JDATEA, JTIMEA, INTG1 )
             CALL INTG2REAL( SIZE, INTG1, GRID1 )
 
+        ELSE IF ( WTYPES( 1 ) .EQ. M3INT8 ) THEN
+
+            FLAG1 = READ3( FILEA,  WNAMES( 1 ), ALLAYS3, JDATEA, JTIMEA, LONG1 )
+            CALL INT82REAL( SIZE, LONG1, GRID1 )
+
         ELSE
 
             FLAG1 = .FALSE.
@@ -430,23 +440,20 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             FLAG2 = READ3( FILEB,  WNAMES( 2 ), ALLAYS3, JDATEA, JTIMEA, INTG2 )
             CALL INTG2REAL( SIZE, INTG2, GRID2 )
 
+        ELSE IF ( WTYPES( 2 ) .EQ. M3INT8 ) THEN
+
+            FLAG2 = READ3( FILEB,  WNAMES( 2 ), ALLAYS3, JDATEA, JTIMEA, LONG2 )
+            CALL INT82REAL( SIZE, LONG2, GRID2 )
+
         ELSE
 
             FLAG2 = .FALSE.
 
         END IF
 
-        IF ( .NOT. FLAG1 ) THEN
+        IF ( .NOT. FLAG1 .OR. .NOT. FLAG2 ) THEN
 
             EFLAG = .TRUE.
-            MESG  = 'Read failure:  file ' // FILEA // ' variable ' // WNAMES( 1 )
-            CALL M3WARN( 'M3PAIR:PAIRSTEP', JDATEA, JTIMEA, MESG )
-
-        ELSE IF ( .NOT. FLAG2 ) THEN
-
-            EFLAG = .TRUE.
-            MESG  = 'Read failure:  file ' // FILEB // ' variable ' // WNAMES( 2 )
-            CALL M3WARN( 'M3PAIR:PAIRSTEP', JDATEB, JTIMEB, MESG )
 
         ELSE            !  both reads OK
 

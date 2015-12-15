@@ -1,16 +1,19 @@
 
       LOGICAL FUNCTION READ4D( FNAME, VNAME, LAYER,
      &                         SDATE, STIME, TSTEP, NRECS, BUFFER )
+     &                 RESULT( RDFLAG3 )
 
 C***********************************************************************
-C Version "$Id: read4d.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: read4d.F 230 2015-10-08 20:44:26Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014-2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  136
+C  function body starts at line  145
 C
 C  FUNCTION:
 C       reads all the data for the specified LAYER and the timestep
@@ -51,15 +54,21 @@ C       Bug-fix 2/2005 by Alex Zubrow (U. Chicago):  need to return
 C       READ4D = .TRUE. for success.
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO
+C
+C       Modified 02/2015 by CJC: USE MODNCFIO, NF_*() interfaces.
+C       Support for M3INT8 variables
 C***********************************************************************
 
-      IMPLICIT NONE
+        USE MODNCFIO
+        USE M3UTILIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
-        INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 #ifdef IOAPICPL
         INCLUDE 'STATE3V.EXT'
 #endif
@@ -79,8 +88,6 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        INTEGER, EXTERNAL :: INIT3      !  initialize I/O API
-        INTEGER, EXTERNAL :: INDEX1     !  look up names in name tables
         INTEGER, EXTERNAL :: NAME2FID   !  fname~~> fid lookup
         LOGICAL, EXTERNAL :: RDTFLAG    !  compute time step availability
         LOGICAL, EXTERNAL :: RDVARS     !  read time step records
@@ -97,9 +104,9 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
         INTEGER         JTIME           !  time, formatted HHMMSS
         INTEGER         IDUM            !  holds return value for INIT3()
         INTEGER         ITYP            !  holds file type
-        INTEGER         DELTA           !  d(INDX) / d(NCVGTcall)
-        INTEGER         DIMS ( 5 )      !  start  arg array for NCVPT()
-        INTEGER         DELTS( 5 )      !  corner arg array for NCVPT()
+        INTEGER         DELTA           !  d(INDX) / d(NF_GET_VARA_* call)
+        INTEGER         DIMS ( 5 )      !  start  arg array for NF_GET_VARA_*()
+        INTEGER         DELTS( 5 )      !  corner arg array for NF_GET_VARA_*()
         INTEGER         IREC            !  record number:  loop counter
         INTEGER         IT              !  subscript for STEP
         INTEGER         IS              !  subscript for BUFFER
@@ -123,10 +130,12 @@ C...........   PARAMETERs:
      &        'UNKNOWN' /)      !   7:    "
 
 #if _CRAY || REAL8
-        INTEGER, PARAMETER :: TYPSIZE( 6 ) = (/ 1, 1, 1, 1, 1, 1 /)
+        INTEGER, PARAMETER :: TYPSIZE( 10 ) =
+     &        (/ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 /)
 #endif
 #if ! ( _CRAY || REAL8 )
-        INTEGER, PARAMETER :: TYPSIZE( 6 ) = (/ 1, 1, 1, 1, 1, 2 /)
+        INTEGER, PARAMETER :: TYPSIZE( 10 ) =
+     &        (/ 1, 1, 1, 1, 1, 2, 1, 1, 1, 2 /)
 #endif
 
 C***********************************************************************
@@ -151,7 +160,7 @@ C.......   Check that Models-3 I/O has been initialized:
         IF ( EFLAG ) THEN
             MESG = 'Invalid variable or file name arguments'
             CALL M3WARN( 'READ3', JDATE, JTIME, MESG )
-	    READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
         END IF          !  if len( fname ) > 16, or if len( vname ) > 16
 
@@ -161,28 +170,28 @@ C.......   Check availability of requested  layer, variable:
 
             MESG = 'File:  '//FNAME// ' is BUFFERED.'
             CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-            READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
 
         ELSE IF ( CDFID3( FID ) .EQ. VIRFIL3 ) THEN
 
             MESG = 'File:  '//FNAME// ' is VIRTUAL.'
             CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-            READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
 
         ELSE IF ( TSTEP3( FID ) .EQ. 0 ) THEN
 
             MESG = 'File:  '//FNAME// ' is time-independent.'
             CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-            READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
 
         ELSE IF ( TSTEP3( FID ) .LT. 0 ) THEN
 
             MESG = 'File:  '//FNAME// ' is RESTART, not time-stepped.'
             CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-            READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
 
         END IF          !  if file not available, or...
@@ -203,7 +212,7 @@ C.......   Check availability of requested  layer, variable:
              MESG = 'Requested variable "' //  VNAME //
      &              '" not available'
             CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-            READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
         END IF          !  end check on vid
 
@@ -220,12 +229,12 @@ C.......   Check availability of requested  layer, variable:
 
             WRITE( MESG,91010 ) 'Requested layer:', LAYER
             CALL M3MSG2( MESG )
-	    WRITE( MESG,91010 )
+            WRITE( MESG,91010 )
      &          'Layers in the file:  1 ...', NLAYS3( FID )
             CALL M3MSG2( MESG )
             MESG = 'LAYER not available in file ' // FNAME
             CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-            READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
 
         END IF          !  end check on layer-number
@@ -302,7 +311,7 @@ C.......   Set up DIMS, DELS for RDVARS():
             MESG = 'Filetype not CUSTOM3, GRDDED3, BNDARY3, or TSRIES3'
             CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
 
-            READ4D = .FALSE.
+            RDFLAG3 = .FALSE.
             RETURN
 
         END IF          !  if file type is ...
@@ -327,7 +336,7 @@ C...........   Process the requested time step sequence:
      &              '" not available in file "', FNAME,
      &              '" for date&time ', JDATE, ':', JTIME
                 CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-                READ4D = .FALSE.
+                RDFLAG3 = .FALSE.
                 RETURN
 
             END IF              ! if rdvars(0 failed
@@ -342,7 +351,7 @@ C...........   Process the requested time step sequence:
      &              'Error reading "', VNAME, '" from "', FNAME,
      &              '" for date&time ', JDATE, ':', JTIME
                 CALL M3WARN( 'READ4D', JDATE, JTIME, MESG )
-                READ4D = .FALSE.
+                RDFLAG3 = .FALSE.
                 RETURN
 
             END IF              ! if rdvars(0 failed
@@ -355,7 +364,7 @@ C...........   Process the requested time step sequence:
 
         END DO          !  end loop on output records.
 
-        READ4D = .TRUE.
+        RDFLAG3 = .TRUE.
 
         RETURN
 
@@ -363,13 +372,7 @@ C******************  FORMAT  STATEMENTS   ******************************
 
 C...........   Error and warning message formats..... 91xxx
 
-91000   FORMAT ( 5A )
-
 91010   FORMAT ( 3 ( A , :, I5, :, 2X ) )
-
-91020   FORMAT ( A , I9, ':' , I6.6, :, A )
-
-91030   FORMAT ( A , I6.6 )
 
 91040   FORMAT ( 3 ( '"', A16, '"', :, 4X ) )
 

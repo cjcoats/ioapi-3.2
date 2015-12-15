@@ -2,14 +2,17 @@
         REAL*8 FUNCTION GETDBLE( LO, HI, DEFAULT, PROMPT )
 
 C********************************************************************
-C Version "$Id: getdble.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: getdble.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (c) 2004-2007 Baron Advanced Meteorological Systems,
+C (c) 2007-2013 Carlie J. Coats, Jr., and (C) 2014 UNC Institute
+C for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  73
+C       function getdble()   body starts at line  83
+C       entry    getdble1()  body starts at line 183
 C
 C  FUNCTION:
 C
@@ -36,6 +39,9 @@ C
 C  REVISION  HISTORY:
 C       prototype 4/2003 by Carlie J. Coats, Jr, BAMS, adapted fromn GETREAL
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C       Modified 02/2014 by CJC: ENTRY GETDBLE1() does not have bounds LO, HI;
+C       use F90 "READ( BUFFER,*,...)"; Fix MH violation of coding-standards:
+C       check status IOS from  ENVYN() !!
 C********************************************************************
 
         IMPLICIT NONE
@@ -46,6 +52,7 @@ C.......   ARGUMENTS:
         REAL*8       , INTENT(IN   ) :: DEFAULT
         CHARACTER*(*), INTENT(IN   ) :: PROMPT
 
+        REAL*8          GETDBLE1
 
 C.......   EXTERNAL FUNCTION:  interpret I/O errors:
 
@@ -54,6 +61,7 @@ C.......   EXTERNAL FUNCTION:  interpret I/O errors:
 
 C.......   LOCAL VARIABLES:
 
+        INTEGER         MODE                !!  mode=1 for getdble(), mode=0 for getdble1()
         INTEGER         K , L , M , N, P
         REAL*8          LLO , LHI , LDF
         REAL*8          ANSWER
@@ -67,13 +75,22 @@ C.......   LOCAL VARIABLES:
         LOGICAL, SAVE :: PROMPTON
         LOGICAL, SAVE :: FIRSTIME = .TRUE.
 
+        CHARACTER*16, PARAMETER :: PNAME = 'GETDBLE'
+
 C*********************************************************************
 C       begin GETDBLE
+
+        MODE = 1
+
+11      CONTINUE        !!  target of entry getdble1()
 
         IF( FIRSTIME ) THEN
 
             PROMPTON = ENVYN( 'PROMPTFLAG', 'Prompt for input flag',
      &                      .TRUE., IOS )
+            IF ( IOS .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "PROMPTFLAG"', 2 )
+            END IF
             FIRSTIME = .FALSE.
  
         END IF
@@ -108,58 +125,15 @@ C       begin GETDBLE
             WRITE( MESG, '( A , 1X , 1PD22.15 )' ) 'Using default', LDF
         ELSE
 
-C...........   upcase and remove excess white space
+            READ( BUFFER, *, IOSTAT=IOS ) ANSWER
 
-            L = 0
-            M = 0
-            N = 0
+            IF ( IOS .NE. 0 ) GO TO 900
 
-            DO  111  K = 1, LEN( BUFFER )
+            IF ( MODE .EQ. 0 ) THEN
 
-                CH = BUFFER( K:K )
-                IF ( CH .EQ. ' ' )  GO TO 111
-                IF ( CH .EQ. '	' ) GO TO 111
+                CONTINUE        !!  getnum1() -- don't do range-check
 
-                L = L + 1
-                IF ( CH .EQ. 'e' ) CH = 'D'
-                IF ( CH .EQ. 'd' ) CH = 'D'
-                IF ( CH .EQ. 'E' )  M = L
-                IF ( CH .EQ. 'L' )  M = L
-                IF ( CH .EQ. '.' )  N = L
-                BUFFER( L:L ) = CH
-
-111         CONTINUE
-112         CONTINUE
-
-            DO  122  K = L+1, LEN( BUFFER )
-                BUFFER( K:K ) = ' '
-122         CONTINUE
-
-            IF ( N .EQ. 0 ) THEN                !  no decimal:  integer response
-                IF ( M .EQ. 0 ) THEN            !  no exponent
-                    WRITE( FMTSTR, 94010 ) L
-                    READ ( BUFFER, FMTSTR, ERR=400 )  N
-                    ANSWER = FLOAT( N )
-                ELSE
-                    WRITE( FMTSTR, 94010 ) M - 1
-                    READ ( BUFFER( 1:M-1 ), FMTSTR, ERR=400 )  N
-                    WRITE( FMTSTR, 94010 ) L - M
-                    READ ( BUFFER( M+1:L ), FMTSTR, ERR=400 )  M
-                    ANSWER = FLOAT( N ) * 10.0 ** M
-                END IF
-            ELSE
-                IF ( M .EQ. 0 ) THEN            !  F format response
-                    WRITE( FMTSTR, 94011 ) 'F', L, L - N
-                ELSE IF ( M .GT. N ) THEN       !  E format response
-                    WRITE( FMTSTR, 94011 ) 'D',  L, M - N
-                ELSE                            !  bad response
-                    GO TO  900
-                END IF
-                READ ( BUFFER, FMTSTR, ERR=400 )  ANSWER
-            END IF
-
-
-            IF ( ANSWER .LT. LLO  .OR.  ANSWER .GT. LHI )  THEN
+            ELSE IF ( ANSWER .LT. LLO  .OR.  ANSWER .GT. LHI )  THEN
                 ERRCNT  =  ERRCNT + 1
                 WRITE ( 6,92100 ) ANSWER , LLO , LHI , ERRCNT
                 IF ( ERRCNT .LT. 5 )  GO TO  100
@@ -205,6 +179,13 @@ C...........   upcase and remove excess white space
         END IF
 
 C................   end body of GETDBLE  .......................................
+
+        ENTRY GETDBLE1( DEFAULT , PROMPT )   !!  no "lo" nor "hi" bounds for result
+        
+        MODE = 0
+        GO TO 11
+
+C................   end body of GETDBLE1  .......................................
 
 
 92000   FORMAT ( /5X , '>>> ERROR IN ROUTINE GETDBLE <<< ' ,

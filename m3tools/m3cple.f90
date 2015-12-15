@@ -2,7 +2,7 @@
 PROGRAM M3CPLE
 
     !!***********************************************************************
-    !! Version "$Id: m3cple.f90 121 2015-01-20 22:24:38Z coats $"
+    !! Version "$Id: m3cple.f90 174 2015-02-26 21:23:12Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
     !!   (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -49,7 +49,7 @@ PROGRAM M3CPLE
     !!       USE M3UTILIO, and related changes.
     !!       Version  01/2013 by CJC:  use new LASTTIME() to find EDATE:ETIME
     !!       Version  12/2014 by CJC for I/O API v3.2:  USE MODGCTP: GRID2INDX(),
-    !!       INDXMULT();  F90 free-format source, and related changes.
+    !!       INDXMULT();  F90 free-format source; use generics for "GET*()"
     !!***********************************************************************
 
     USE M3UTILIO
@@ -212,10 +212,10 @@ PROGRAM M3CPLE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3cple.f90 121 2015-01-20 22:24:38Z coats $',&
+'$Id: m3cple.f90 174 2015-02-26 21:23:12Z coats $',&
 ' '
 
-        IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
+        IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
             CALL M3EXIT( PNAME, 0, 0, 'Program terminated at user request', 2 )
         END IF
 
@@ -281,15 +281,15 @@ PROGRAM M3CPLE
         GO TO  11
     END IF
 
-    JDATE = GETNUM( SDATE3D, 9999999, SDATE3D, 'Enter STARTING DATE for time step sequence' )
+    JDATE = GETVAL( SDATE3D, 9999999, SDATE3D, 'Enter STARTING DATE for time step sequence' )
 
-    JTIME = GETNUM(       0, 9999999, STIME3D, 'Enter STARTING TIME for time step sequence' )
+    JTIME = GETVAL(       0, 9999999, STIME3D, 'Enter STARTING TIME for time step sequence' )
 
-    TSTEP = GETNUM( TSTEP3D, 9999999, TSTEP3D, 'Enter   TIME STEP   for time step sequence' )
+    TSTEP = GETVAL( TSTEP3D, 9999999, TSTEP3D, 'Enter   TIME STEP   for time step sequence' )
 
     CALL LASTTIME( SDATE3D,STIME3D,TSTEP3D, MXREC3D, EDATE,ETIME )
     N     = CURREC( EDATE, ETIME, JDATE, JTIME, TSTEP, C, R )
-    NRECS = GETNUM( 1, 9999999, N, 'Enter     NRECS     for time step sequence' )
+    NRECS = GETVAL( 1, 9999999, N, 'Enter     NRECS     for time step sequence' )
 
     SDATE3D = JDATE
     STIME3D = JTIME

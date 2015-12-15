@@ -2,19 +2,19 @@
         SUBROUTINE M3MSG2( MESSAGE )
 
 C***********************************************************************
-C Version "$Id: m3msg2.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: m3msg2.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010  Baron Advanced Meteorological Systems
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  Subroutine  M3MSG2   starts at line  103
-C  Subroutine  M3MESG   starts at line  150
-C  Subroutine  M3PROMPT starts at line  158
-C  Subroutine  M3PARAG  starts at line  187
-C  Subroutine  M3FLUSH  starts at line  219
-C  subroutine  FLUSH    starts at line  229
+C  Subroutine  M3MSG2   starts at line   96
+C  Subroutine  M3MESG   starts at line  139
+C  Subroutine  M3PROMPT starts at line  196
+C  Subroutine  M3PARAG  starts at line  261
+C  Subroutine  M3FLUSH  starts at line  324
+C  subroutine  FLUSH    starts at line  348
 C
 C  FUNCTION:
 C       M3MSG2:    Generate simple (1-line text) messages. 
@@ -86,7 +86,7 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
 C.......   Scratch LOCAL VARIABLES
 
-        INTEGER		L, M
+        INTEGER         L, M
         LOGICAL         STDOUTFLAG
 
 
@@ -120,12 +120,12 @@ C   begin body of subroutine  M3MSG2
             END IF          !!  if logdev < 0 (initialization required)
 
             WRITE( LOGDEV,'( 5X, A )' ) MESSAGE( 1:L )
-	    CALL FLUSH( LOGDEV )
+            CALL FLUSH( LOGDEV )
 
             IF ( STDOUTFLAG .AND. LOGDEV .NE. 6 ) THEN
                 WRITE( 6,'( 5X, A )' ) MESSAGE( 1:L )
-	        CALL FLUSH( 6 )
-            END IF		!  if logdev is not pointing at standard output
+                CALL FLUSH( 6 )
+            END IF          !  if logdev is not pointing at standard output
 
 !$OMP END CRITICAL( S_LOGDEV )
 
@@ -182,7 +182,7 @@ C   begin body of subroutine  M3MESG
             END IF          !!  if logdev < 0 (initialization required)
 
             WRITE( LOGDEV,'( 5X, A )' ) TRIM( MESSAGE )
-	    CALL FLUSH( LOGDEV )
+            CALL FLUSH( LOGDEV )
 
 !$OMP END CRITICAL( S_LOGDEV )
 
@@ -216,14 +216,13 @@ C...........   ARGUMENTS and their descriptions:
                  
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        LOGICAL, EXTERNAL :: ENVYN   !  get YES/NO environment variable
         INTEGER, EXTERNAL :: INITLOG3
         EXTERNAL          :: INITBLK3        !!  BLOCK DATA to initialize STATE3 commons
 
 
 C.......   Scratch LOCAL VARIABLES
 
-        INTEGER		L, M
+        INTEGER     L, M
 
 
 C......................................................................
@@ -238,7 +237,7 @@ C   begin body of subroutine  M3PROMPT
             END IF          !!  if logdev < 0 (initialization required)
 
             WRITE( LOGDEV,'( 5X, A, $ )' ) TRIM( MESSAGE )
-	    CALL FLUSH( LOGDEV )
+            CALL FLUSH( LOGDEV )
             ANSWER = ' '
             READ  ( *, '( A )', IOSTAT=ISTAT )  ANSWER
 
@@ -248,7 +247,7 @@ C   begin body of subroutine  M3PROMPT
             CALL M3EXIT( 'M3PROMPT',0,0,'END-OF-FILE encountered', 1 )
         ELSE IF ( ISTAT .EQ. 0 ) THEN
             L = INDEX( ANSWER, '!' )
-            IF ( L .GT. 0 ) ANSWER = ' '
+            IF ( L .GT. 0 ) ANSWER( L: ) = ' '
         END IF
 
         RETURN
@@ -280,13 +279,12 @@ C...........   ARGUMENTS and their descriptions:
                  
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        LOGICAL, EXTERNAL :: ENVYN   !  get YES/NO environment variable
         INTEGER, EXTERNAL :: INITLOG3
         EXTERNAL          :: INITBLK3        !!  BLOCK DATA to initialize STATE3 commons
 
 C.......   Scratch LOCAL VARIABLES
 
-        INTEGER		L, M
+        INTEGER     L, M
 
 C......................................................................
 C   begin body of subroutine  M3PARAG
@@ -307,10 +305,10 @@ C   begin body of subroutine  M3PARAG
                 DO L = 1, NMESG
                     WRITE( 6,'( 5X, A )' ) TRIM( MSGS( L ) )
                 END DO
-            END IF		!  if logdev is not pointing at standard output
+            END IF          !  if logdev is not pointing at standard output
 #endif
 
-	    CALL FLUSH( LOGDEV )
+        CALL FLUSH( LOGDEV )
 
 !$OMP   END CRITICAL( S_LOGDEV )
 
@@ -332,7 +330,7 @@ C   begin body of subroutine  M3flush
 
 !$OMP CRITICAL( S_LOGDEV )
 
-	    CALL FLUSH( IDEV )
+        CALL FLUSH( IDEV )
 
 !$OMP END CRITICAL( S_LOGDEV )
 

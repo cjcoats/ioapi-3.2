@@ -2,7 +2,7 @@
 SUBROUTINE  FAKESTEP( FNAME, JDATE, JTIME, OPS, VAL )
 
     !!***********************************************************************
-    !! Version "$Id: fakestep.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: fakestep.f90 163 2015-02-24 06:48:57Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -31,7 +31,8 @@ SUBROUTINE  FAKESTEP( FNAME, JDATE, JTIME, OPS, VAL )
     !!      Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
     !!      USE M3UTILIO, and related changes.
     !!
-    !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source
+    !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
+    !!      support for M3INT8 variables; bug-fixes for non-M3REAL cases.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -57,7 +58,10 @@ SUBROUTINE  FAKESTEP( FNAME, JDATE, JTIME, OPS, VAL )
 
     INTEGER         NCOLS, NROWS, NLAYS
     REAL            X
-    REAL            GRID( NCOLS3D, NROWS3D, 2*NLAYS3D )
+    REAL            GRID( NCOLS3D, NROWS3D, NLAYS3D )
+    INTEGER         IGRD( NCOLS3D, NROWS3D, NLAYS3D )
+    INTEGER*8       LGRD( NCOLS3D, NROWS3D, NLAYS3D )
+    REAL*8          DGRD( NCOLS3D, NROWS3D, NLAYS3D )
     CHARACTER*80    MESG
     INTEGER         C, R, L, V
     INTEGER         TYPE, OP, IDEV
@@ -76,8 +80,8 @@ SUBROUTINE  FAKESTEP( FNAME, JDATE, JTIME, OPS, VAL )
         NROWS = NROWS3D
         NLAYS = NLAYS3D
     ELSE IF ( FTYPE3D .EQ. BNDARY3 ) THEN
-        NCOLS = NTHIK3D
-        NROWS = 2 * ( NCOLS3D + NROWS3D + 2 * NTHIK3D )
+        NCOLS = 1
+        NROWS = 2 * NTHIK3D * ( NCOLS3D + NROWS3D + 2 * NTHIK3D )
         NLAYS = NLAYS3D
     ELSE
         WRITE( MESG, '( A, I4, 2X, A )' )  'File type', FTYPE3D, 'not yet supported'
@@ -93,38 +97,83 @@ SUBROUTINE  FAKESTEP( FNAME, JDATE, JTIME, OPS, VAL )
         TYPE = VTYPE3D( V )
         OP   = OPS( V )
 
-        IF ( OP .LT. 0 ) THEN
+        IF ( OP .LT. 0 ) THEN       !!  always read from an ASCII file:
 
             IDEV = -OP
-            DO  L = 1, NLAYS3D
-            DO  R = 1, NROWS3D
-                READ( IDEV,* ) (GRID( C,R,L ), C = 1, NCOLS3D )
-            END DO
-            END DO
+            IF ( TYPE .EQ. M3INT ) THEN
 
-        ELSE IF ( TYPE .NE. LTYPE  .OR.     &
-                  LOP  .NE. OP     .OR.     &
-                  TYPE .EQ. 5         ) THEN
+                DO  L = 1, NLAYS3D
+                DO  R = 1, NROWS3D
+                    READ( IDEV,* ) (IGRD( C,R,L ), C = 1, NCOLS3D )
+                END DO
+                END DO
+                IF( .NOT. WRITE3( FNAME, VNAME3D( V ), JDATE, JTIME, IGRD ) ) THEN
+                    MESG = 'Error writing ' // VNAME3D( V ) // ' to ' // FNAME
+                    CALL M3EXIT( 'FAKESTEP', JDATE, JTIME, MESG, 2 )
+                END IF
+
+            ELSE IF ( TYPE .EQ. M3REAL ) THEN
+
+                DO  L = 1, NLAYS3D
+                DO  R = 1, NROWS3D
+                    READ( IDEV,* ) (GRID( C,R,L ), C = 1, NCOLS3D )
+                END DO
+                END DO
+                IF( .NOT. WRITE3( FNAME, VNAME3D( V ), JDATE, JTIME, GRID ) ) THEN
+                    MESG = 'Error writing ' // VNAME3D( V ) // ' to ' // FNAME
+                    CALL M3EXIT( 'FAKESTEP', JDATE, JTIME, MESG, 2 )
+                END IF
+
+            ELSE IF ( TYPE .EQ. M3DBLE ) THEN
+
+                DO  L = 1, NLAYS3D
+                DO  R = 1, NROWS3D
+                    READ( IDEV,* ) (DGRD( C,R,L ), C = 1, NCOLS3D )
+                END DO
+                END DO
+                IF( .NOT. WRITE3( FNAME, VNAME3D( V ), JDATE, JTIME, DGRD ) ) THEN
+                    MESG = 'Error writing ' // VNAME3D( V ) // ' to ' // FNAME
+                    CALL M3EXIT( 'FAKESTEP', JDATE, JTIME, MESG, 2 )
+                END IF
+
+            ELSE IF ( TYPE .EQ. M3INT8 ) THEN
+
+                DO  L = 1, NLAYS3D
+                DO  R = 1, NROWS3D
+                    READ( IDEV,* ) (LGRD( C,R,L ), C = 1, NCOLS3D )
+                END DO
+                END DO
+                IF( .NOT. WRITE3( FNAME, VNAME3D( V ), JDATE, JTIME, LGRD ) ) THEN
+                    MESG = 'Error writing ' // VNAME3D( V ) // ' to ' // FNAME
+                    CALL M3EXIT( 'FAKESTEP', JDATE, JTIME, MESG, 2 )
+                END IF
+
+            END IF
+
+        ELSE
 
             IF ( OP .EQ. 4 ) THEN
                 VAL( V ) = FLOAT( STEP )
             END IF
             X = VAL( V )
+
             IF ( TYPE .EQ. M3INT ) THEN
                 CALL IFILL( GRID, NCOLS, NROWS, NLAYS, OP, VAL(V) )
             ELSE IF ( TYPE .EQ. M3REAL ) THEN
                 CALL RFILL( GRID, NCOLS, NROWS, NLAYS, OP, VAL(V) )
             ELSE IF ( TYPE .EQ. M3DBLE ) THEN
                 CALL DFILL( GRID, NCOLS, NROWS, NLAYS, OP, VAL(V) )
+            ELSE IF ( TYPE .EQ. M3INT8 ) THEN
+                CALL LFILL( GRID, NCOLS, NROWS, NLAYS, OP, VAL(V) )
             END IF
             LTYPE = TYPE
             LOP   = OP
 
-        END IF
+            IF( .NOT. WRITE3( FNAME, VNAME3D( V ), JDATE, JTIME, GRID ) ) THEN
+                MESG = 'Error writing ' // VNAME3D( V ) // ' to ' // FNAME
+                CALL M3EXIT( 'FAKESTEP', JDATE, JTIME, MESG, 2 )
+            END IF
 
-        IF( .NOT. WRITE3( FNAME, VNAME3D( V ), JDATE, JTIME, GRID ) ) THEN
-            MESG = 'Error writing ' // VNAME3D( V ) // ' to ' // FNAME
-            CALL M3EXIT( 'FAKESTEP', JDATE, JTIME, MESG, 2 )
         END IF
 
     END DO

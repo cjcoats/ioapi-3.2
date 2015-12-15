@@ -4,7 +4,7 @@ C
       LOGICAL FUNCTION INTERP3V( FID, VID, JDATE, JTIME, BUFFER )
 
 C***********************************************************************
-C Version "$Id: interp3v.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: interp3v.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
@@ -180,7 +180,7 @@ C       begin body of INTERP3V
       END IF
 
       RETURN
-      END
+      END FUNCTION INTERP3V
 
 
 C*********************************************************************
@@ -203,11 +203,8 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-      LOGICAL           READ3V
-      EXTERNAL          READ3V
-
-      INTEGER           BUFPUT3
-      EXTERNAL          BUFPUT3
+      LOGICAL, EXTERNAL :: READ3V
+      INTEGER, EXTERNAL :: BUFPUT3
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
@@ -221,7 +218,7 @@ C       begin body of VIR2BUF
       SKIP = 0
 
       VIR2BUF = READ3V( FID, VID, SKIP, COUNT,
-     $                  KDATE, KTIME, BUFFER )
+     &                  KDATE, KTIME, BUFFER )
       RET = BUFPUT3( FID, VID, COUNT, IP, BUFFER)
       IF (VIR2BUF .AND. RET .NE. 0) THEN
          IF (IP .EQ. 0) THEN
@@ -243,6 +240,6 @@ C       begin body of VIR2BUF
          VIR2BUF = .FALSE.
       ENDIF
       RETURN
-      END
+      END FUNCTION VIR2BUF
 
 #endif

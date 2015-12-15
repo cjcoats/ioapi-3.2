@@ -2,11 +2,12 @@
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 VERSION:
     EDSS/Models-3 I/O API -- Version 3
-    "iobin3.c" version "$Id: iobin3.c 100 2015-01-16 16:52:16Z coats $"
+    "iobin3.c" version "$Id: iobin3.c 164 2015-02-24 06:50:01Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-    (C) 2003-2010 Baron Advanced Meteorological Systems.
+    (C) 2003-2010 Baron Advanced Meteorological Systems, and
+    (C) 2015 UNC Institute for the Environment.
     Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     See file "LGPL.txt" for conditions of use.
 
@@ -42,6 +43,8 @@ REVISION HISTORY:
 
     Modified 11/2005 by CJC:  extra name-mangling for Absoft Pro Fortran:
     upper-case Fortran  symbols, prepend _C to common blocks.
+
+    Modified 02/2015 by CJC for I/O API version 3.2:  M3INT8 (INTEGER*8) support
 
 BINFIL3 file Structure:
 
@@ -384,6 +387,10 @@ static int  set_fstate( int f,
             vsize = rsize * (off_t)fsiz ;
             }
         else if ( vtyp[ v ] == M3DBLE )
+            {
+            vsize = rsize * (off_t)dsiz ;
+            }
+        else if ( vtyp[ v ] == M3INT8 )
             {
             vsize = rsize * (off_t)dsiz ;
             }

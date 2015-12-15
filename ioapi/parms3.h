@@ -2,11 +2,12 @@
 /********************************************************************
 C  INCLUDE FILE  parms3.h
 C
-C    VERSION "$Id: parms3.h 100 2015-01-16 16:52:16Z coats $"
+C    VERSION "$Id: parms3.h 185 2015-04-28 19:14:38Z coats $"
 C    EDSS/Models-3 I/O API Version 3.1.
 C       Copyright (C) 1992-2002 MCNC,
-C       (C) 1992-2002,2005-2013  Carlie J. Coats, Jr., and
-C       (C) 2003-2010 Baron AAdvanced Meteorological Systems, LLC (BAMS)
+C       (C) 1992-2002,2005-2013  Carlie J. Coats, Jr.,
+C       (C) 2003-2010 Baron AAdvanced Meteorological Systems, LLC. (BAMS), and
+C       (C) 2015- UNC Institute for the Environment.
 C       Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C       See file "LGPL.txt" for conditions of use.
 C
@@ -45,6 +46,9 @@ C	Modified  8/1999 by CJC:  FLDMN, Win32 portability enhancements
 C	Modified  8/2003 by CJC:  INT_FC_STRLEN, STRLEN() for Intel "efc"
 C	Modified 10/2003 by CJC:  for I/O API version 3:
 C       move typedefs to "parms3.h" from "fdesc3.h"
+C   Modified 02/2015 by CJC for I/O API version 3.2:  INTEGER*8 support
+C   Modified 04/2015 by CJC:  SINUGRD3 map projection for MIMS
+C       Spatial Allocator
 ************************************************************************/
 
 #ifndef    PARMS3_DEFINED
@@ -177,6 +181,9 @@ typedef char   M3Line[ MXDLEN3 ] ; /* ... "description-line" objects  */
                           /*  basic data type value:  double */
 #define   M3DBLE     (6)  
 
+                          /*  basic data type value:  int_64t */
+#define   M3INT8     (10)  
+
 
 
                           /*  intraprocess-comm virtual files           */
@@ -228,6 +235,8 @@ typedef char   M3Line[ MXDLEN3 ] ; /* ... "description-line" objects  */
 #define   ALBGRD3    (9)  
                           /*  grid type value:  Lambert Azimuthal Equal Area */
 #define   LEQGRD3    (10)  
+                          /*  grid type value:  Sinusoidal*/
+#define   SINUGRD3   (11)
 
                           /*  vert coord type 1:  hydrostatic sigma-P  */
 #define   VGSGPH3    (1)  

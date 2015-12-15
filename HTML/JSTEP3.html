@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: JSTEP3.html 129 2015-01-23 18:52:17Z coats $" -->
+<!-- "$Id: JSTEP3.html 156 2015-02-12 22:04:24Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> JULIAN() </TITLE>
 </HEAD>
@@ -46,8 +46,9 @@
     <P> 
     
     See also subroutines
-     <A HREF = "CURRSTEP.html"> CURRSTEP()</A> and
-     <A HREF = "NEXTIME.html"> NEXTIME()</A>.
+     <A HREF = "CURRSTEP.html">CURRSTEP()</A>,
+     <A HREF = "LASTTIME.html">LASTTIME()</A>, and
+     <A HREF = "NEXTIME.html" >NEXTIME()</A>.
 
 <H2> Preconditions: </H2>
 
@@ -67,7 +68,8 @@ Code example:
     ...
     USE M3UTILIO    ! or: INTEGER, EXTERNAL :: JSTEP3
     ...
-    INTEGER   JDATE, JTIME, SDATE, STIME, TSTEP
+    INTEGER   JDATE, JTIME, TSTEP       !  current simulation time
+    INTEGER   SDATE, STIME, OUTSTEP     !  define output time step sequence
     ...
     !!  set SDATE:STIME:OUTSTEP for output-file timestep sequence
     !!  and JDATE:JTIME to the model simulation-clock

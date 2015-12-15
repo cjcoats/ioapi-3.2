@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: INQATT3.html 144 2015-01-31 15:50:42Z coats $" -->
+<!-- "$Id: INQATT3.html 165 2015-02-24 06:51:40Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> DESC3() and desc3c() </TITLE>
 </HEAD>
@@ -22,7 +22,7 @@
         INTEGER      , INTENT(IN   ) :: MXATTS            !  max number of attributes
         INTEGER      , INTENT(  OUT) :: NATTS             !  number of actual attributes
         CHARACTER*(*), INTENT(  OUT) :: ANAMES( MXATTS )  !  attribute names
-        INTEGER      , INTENT(  OUT) :: ATYPES( MXATTS )  !  " types (M3REAL, M3INT, M3DBLE)
+        INTEGER      , INTENT(  OUT) :: ATYPES( MXATTS )  !  " types (M3CHAR, M3REAL, M3INT, M3INT8, M3DBLE)
         INTEGER      , INTENT(  OUT) :: ASIZES( MXATTS )  !  " size/length
 </PRE><P> 
 
@@ -87,7 +87,7 @@ int inqatt3c( const char          * fname ,
     <P> 
     
     Actual on-file number of attributes must not exceed the
-    maximum, <CODE>MXATTS</CODE> or <CODE>maxatt</CODE>.
+    maximum, <CODE>MXATTS3</CODE>.
     <P>
 
 
@@ -98,7 +98,7 @@ int inqatt3c( const char          * fname ,
         <LI>  <A HREF = "WRATT3.html" >WRATT3() and WRATTC()</A>
         <LI>  <A HREF = "DESC3.html" >DESC3()</A>
         <LI>  <A HREF = "OPEN3.html" >OPEN3()</A>
-        <LI>  <A HREF = "M3ATTS.html" >MODULE&nbsp;M3ATTS</A>
+        <LI>  <A HREF = "MODATTS3.html">MODULE&nbsp;MODATTS3</A>
     </UL>
     <P>
 

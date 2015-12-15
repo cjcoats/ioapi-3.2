@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 146 2015-02-02 17:04:47Z coats $" -->
+<!-- "$Id: AA.html 271 2015-11-28 16:53:44Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -22,20 +22,12 @@ Contents
 </A></H2>
 
     <UL>
-        <LI>  <A HREF = "index.html">      Back to the IOAPI Home Page </A>
-        <!--
-        <LI>  <A HREF = "#note" >          Note on the 2002
-                                           <CODE>CMAQ</CODE>
-                                           Code Fork</A>
-        -->
-        <LI>  <A HREF = "AVAIL.html" >     Availability/Download/Installation </A>
-        <LI>  <A HREF = "TUTORIAL.html" >  Tutorial </A>
-        <LI>  <A HREF = "NEWSTUFF.html" >
-              Research Directions / &quot;What's New&quot;</A>
-        <LI>  <A HREF = "CHANGES.html" >
-              Changes from I/O&nbsp;API Version&nbsp;1 to Version&nbsp;2
-              and then to Version&nbsp;3</A>
-        <LI>  <A HREF = "#conventions">      Conventions </A>
+        <LI>  <A HREF = "index.html"   >Back to the I/O&nbsp;API Home Page </A>
+        <LI>  <A HREF = "AVAIL.html"   >Availability/Download/Installation </A>
+        <LI>  <A HREF = "TUTORIAL.html">Tutorial </A>
+        <LI>  <A HREF = "NEWSTUFF.html">Change
+                Log&nbsp;/&nbsp;&quot;What's New&quot;&nbsp;/&nbsp;Research Directions</A>
+        <LI>  <A HREF = "#conventions" >Conventions</A>
               <UL>
                   <LI><A HREF = "LOGICALS.html"   >Logical Names</A>
                   <LI><A HREF = "ENVIRONMENT.html">Standard
@@ -51,39 +43,42 @@ Contents
                   <LI><A HREF = "BUFFERED.html"    >Files as Data Sets:
                                                     netCDF and native
                                                     binary disk files,
+                                                    PnetCDF/MPI
+                                                    distributed files,
+                                                    file-list sequnces,
                                                     and buffered and
                                                     PVM virtual files</A>
               </UL>
-        <LI>  <A HREF = "DATATYPES.html" >   Data Types </A>
+        <LI>  <A HREF = "DATATYPES.html"    >Data Types </A>
         <LI>  <A HREF = "LIBS.html">         Object Libraries and
                                              Executables</A>
-        <LI>  <A HREF = "INCLUDE.html">      <CODE>MODULE</CODE>s and 
-                                             Public INCLUDE FILES </A>
-        <LI>  <A HREF = "#ioapi">            Public I/O Routines </A>
-        <LI>  <A HREF = "#coordstuff">       Coordinate and Grid
+        <LI>  <A HREF = "INCLUDE.html"      ><CODE>MODULE</CODE>s and 
+                                             Public <CODE>INCLUDE</CODE>
+                                             Files </A>
+        <LI>  <A HREF = "#ioapi"            >Public I/O Routines </A>
+        <LI>  <A HREF = "#coordstuff"       >Coordinate and Grid
                                              Related Routines </A>
-        <LI>  <A HREF = "#datestuff">        Date-Time Manipulation
+        <LI>  <A HREF = "#datestuff"        >Date-Time Manipulation
                                              Routines </A>
-        <LI>  <A HREF = "#utility">          Utility Routines </A>
-        <LI>  <A HREF = "#tools">            Related Programs; Examples </A>
-        <LI>  <A HREF = "#python">           Python <VAR>ioapiTools</VAR></A>
-        <LI>  <A HREF = "ERRORS.html" >      I/O API Troubleshooting </A>
-        <LI>  <A HREF = "REQUIREMENTS.html" >
-                                             Requirements Document  </A>
-        <LI>  <A HREF = "NOTICES.html" >     Notices:  Copyright,
+        <LI>  <A HREF = "#utility"          >Utility Routines </A>
+        <LI>  <A HREF = "#tools"            >Related Programs:
+                                             <VAR>m3tools</VAR>; Examples </A>
+        <LI>  <A HREF = "#python"           >Python <VAR>ioapiTools</VAR></A>
+        <LI>  <A HREF = "ERRORS.html"       >I/O API Troubleshooting </A>
+        <LI>  <A HREF = "REQUIREMENTS.html" >Requirements Document  </A>
+        <LI>  <A HREF = "NOTICES.html"      >Notices:  Copyright,
                                              Acknowledgements</A>
                                              <P>
-        <LI>  <A HREF =
-	      "http://www.unidata.ucar.edu/packages/netcdf/index.html" >
+        <LI>  <A HREF = "http://www.unidata.ucar.edu/packages/netcdf/index.html" >
                                              netCDF User's Guide </A>
                                              (at NCAR's netCDF home
                                              web-site)
-        <LI>  <A HREF = "http://www.netlib.org/pvm3/book/pvm-book.html" >
-                                             PVM: Parallel Virtual
-                                             Machine <BR>
+        <LI>  <A HREF = "http://www.netlib.org/pvm3/book/pvm-book.html" >PVM:
+                                             Parallel Virtual
+                                             Machine</A> <BR>
                                              A Users' Guide and Tutorial
                                              for Networked Parallel
-                                             Computing</A>
+                                             Computing
                                              (at Oak Ridge's web site)
     </UL>
 
@@ -124,7 +119,8 @@ Contents
     MCNC, &copy; 1992-2013 Carlie J. Coats, Jr., &copy; 2003-2013
     Baron Advanced Meteorological Systems, LLC., &copy; 2014-2015
     UNC Institute for the Environment.  Distributed under the
-    GNU Library Public License (LGPL) Version&nbsp;2.1.
+    GNU Library Public License (LGPL) Version&nbsp;2.1. See the
+    <A HREF="NOTICES.html">Notices and Acknowledgements</A> page.
     <P>
 
     Both the original working prototype and this version are implemented
@@ -164,17 +160,9 @@ Contents
 <HR> <!- ------------------------------------------------------------- ->
 
 <H2> <A HREF = "AVAIL.html" >
-     Availability/Download of the BAMS&nbsp;EDSS/EPA&nbsp;Models-3 I/O&nbsp;API
-     </A></H2>
-
-    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
-    <P>
-
-<HR> <!- ------------------------------------------------------------- ->
-
-<H2> <A HREF = "CHANGES.html">
-Changes from I/O&nbsp;API Version&nbsp;1
-</A> </H2>
+     Availability/Download/Installation</A><BR>
+     of the UNC&nbsp;IE&nbsp;/BAMS/&nbsp;EDSS/EPA&nbsp;Models-3 I/O&nbsp;API
+     </H2>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -207,7 +195,8 @@ Changes from I/O&nbsp;API Version&nbsp;1
         <DT> <A HREF = "C.html">
              <STRONG>Calling from C</STRONG>:
              </A>
-             (but use <VAR>f77</VAR> to link the &quot;.o&quot; files)
+             (but use <VAR>f90</VAR> (etc.) to link the
+             <VAR>&quot;.o&quot;</VAR> files)
         <DT> <A HREF = "VBLE.html">
              <STRONG>File Structure</STRONG>:
              </A>
@@ -215,10 +204,11 @@ Changes from I/O&nbsp;API Version&nbsp;1
         <DT> <A HREF = "BUFFERED.html">
              <STRONG>Files as Data Sets</STRONG>:
              </A>
-             NetCDF and native-binary disk files, PVM-mailbox
-             <STRONG>Coupling-Mode virtual</STRONG> &quot;files&quot;
-             and memory-resident <STRONG>buffered virtual</STRONG>
-             &quot;files&quot;.
+             NetCDF and native-binary disk files, PnetCDF/MPI
+             distributed-I/O files for CMAQ, <CODE>LIST:</CODE>
+             sequences of disk-files,  PVM-mailbox <STRONG>Coupling-Mode
+             virtual</STRONG> &quot;files&quot;, and memory-resident
+             <STRONG>buffered virtual</STRONG> &quot;files&quot;.
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -281,8 +271,8 @@ Changes from I/O&nbsp;API Version&nbsp;1
              parameters, data structures, <VAR>INTERFACE</VAR>
              blocks, and declarations.  Replaces use of the
              (now-deprecated) INCLUDE-files below.
-        <DT> <A HREF = "MATXATTS.html">
-             <STRONG><VAR>MODULE MATXATTS</VAR></STRONG></A>:
+        <DT> <A HREF = "MODATTS3.html">
+             <STRONG><VAR>MODULE MODATTS3</VAR></STRONG></A>:
              parameters and routines for map-transform metadata.
         <DT> <A HREF = "MODGCTP.html">
              <STRONG><VAR>MODULE MODGCTP</VAR></STRONG></A>:
@@ -433,14 +423,14 @@ Changes from I/O&nbsp;API Version&nbsp;1
              Numeric attributes use <CODE>WRATT3()</CODE> and
              character-string attributes use <CODE>WRATTC()</CODE>
              <P>
-        <DT> <STRONG><A HREF="MATXATTS.html#getmtxatt">GETMTXATT()</A></STRONG>:
+        <DT> <STRONG><A HREF="MODATTS3.html#getmtxatt">GETMTXATT()</A></STRONG>:
              get input or output grid description attributes for
              matrix files and return them as arguments.
-        <DT> <STRONG><A HREF="MATXATTS.html#setmtxatt">SETMTXATT()</A></STRONG>:
+        <DT> <STRONG><A HREF="MODATTS3.html#setmtxatt">SETMTXATT()</A></STRONG>:
              set or check input and output grid description attributes
              from arguments for matrix-files:  if file is <CODE>NEW</CODE>,
              set the attributes; else check them.
-        <DT> <STRONG><A HREF="MATXATTS.html#chkmtxatt">CHKMTXATT()</A></STRONG>:
+        <DT> <STRONG><A HREF="MODATTS3.html#chkmtxatt">CHKMTXATT()</A></STRONG>:
              check input or output grid description attributes for
              matrix-files against attributes from  the argument list.
              Return <CODE>.TRUE.</CODE> if they match,
@@ -474,6 +464,12 @@ Changes from I/O&nbsp;API Version&nbsp;1
              read <VAR>&lt;time step sequence &gt;</VAR> of
              <VAR>&lt;layer&gt;</VAR> of <VAR>&lt;variable&gt;</VAR>
              from <VAR>&lt;file&gt;</VAR>
+        <DT> <A HREF = "RUNSPEC.html" >
+             <STRONG>RUNSPEC</STRONG>:
+             </A>
+             Get <VAR>&lt;time step sequence &gt;</VAR> for a program
+             run, consistent with, and with defaults from, a specified
+             <VAR>&lt;file&gt;</VAR>
         <DT> <A HREF = "WRITE4D.html" >
              <STRONG>WRITE4D</STRONG>:
              </A>
@@ -554,7 +550,7 @@ Changes from I/O&nbsp;API Version&nbsp;1
                      operations
                 <P>              
                 <DT> <STRONG><CODE><A HREF = "LAMBERT.html">INITPROJ,
-                ..., LAMBERT(), ..., ALB2EQM</CODE></STRONG></A>
+                ..., LAMBERT(), ..., ALB2EQM()</A></CODE></STRONG>
                 <DD> (Legacy) single-precision single-point
                      coordinate tranforms
              </DL></BLOCKQUOTE>
@@ -603,7 +599,7 @@ Changes from I/O&nbsp;API Version&nbsp;1
                        <CODE>LAM2LL,  LAM2UTM, LAM2POL, LAM2TRM, LAM2EQM, LAM2ALB</CODE><BR>
                        <CODE>POL2LL,  POL2LAM, POL2UTM, POL2TRM, POL2EQM, POL2ALB</CODE><BR>
                        <CODE>TRM2LL,  TRM2LAM, TRM2UTM, TRM2POL, TRM2EQM, TRM2ALB</CODE><BR>
-                       <CODE>EQM2LL,  EQM2LAM, EQM2UTM, EQM2POL, EQM2TRM, EQM2ALB></CODE><BR>
+                       <CODE>EQM2LL,  EQM2LAM, EQM2UTM, EQM2POL, EQM2TRM, EQM2ALB</CODE><BR>
                        <CODE>ALB2LL,  ALB2LAM, ALB2UTM, ALB2POL, ALB2TRM, ALB2EQM</CODE><BR>
                   <DD> Perform single-point coordinate transforms                       
                   <P>
@@ -710,6 +706,12 @@ Changes from I/O&nbsp;API Version&nbsp;1
              </A>
              update <VAR>&lt;jdate-&amp;-time&gt;</VAR> by
              <VAR>&lt;timestep&gt;</VAR>
+        <DT> <A HREF = "RUNSPEC.html" >
+             <STRONG>RUNSPEC</STRONG>:
+             </A>
+             Get <VAR>&lt;time step sequence &gt;</VAR> for a program
+             run, consistent with, and with defaults from, a specified
+             <VAR>&lt;file&gt;</VAR>
         <DT> <A HREF = "SEC2TIME.html" >
              <STRONG>SEC2TIME</STRONG>:
              </A>
@@ -804,6 +806,11 @@ Changes from I/O&nbsp;API Version&nbsp;1
              <STRONG>GET_ENDIAN</STRONG>:
              </A>
              get host-machine byte order.
+        <DT> <A HREF = "GETDBLE.html" >
+             <STRONG>GETDBLE</STRONG> and <STRONG>GETDBLE1</STRONG>:
+             </A>
+             prompt user for DOUBLE and get response, with default and
+             range checking
         <DT> <A HREF = "GETDFILE.html" >
              <STRONG>GETDFILE</STRONG>:
              </A>
@@ -818,27 +825,34 @@ Changes from I/O&nbsp;API Version&nbsp;1
              open sequential Fortran file with
              <VAR>&lt;logical name&gt;</VAR>,  <VAR>&lt;formatting&gt;</VAR>
              and  <VAR>&lt;read-write status&gt;</VAR>
-        <DT> <A HREF = "GETDBLE.html" >
-             <STRONG>GETDBLE</STRONG>:
-             </A>
-             prompt user for DOUBLE and get response, with default and
-             range checking
         <DT> <A HREF = "GETMENU.html" >
              <STRONG>GETMENU</STRONG>:
              </A>
              prompt user for menu choice, etc.
         <DT> <A HREF = "GETNUM.html" >
-             <STRONG>GETNUM</STRONG>:
+             <STRONG>GETNUM</STRONG> and <STRONG>GETNUM1</STRONG>:
              </A>
              prompt user for INTEGER, etc.
         <DT> <A HREF = "GETREAL.html" >
-             <STRONG>GETREAL</STRONG>:
+             <STRONG>GETREAL</STRONG> and <STRONG>GETREAL1</STRONG>:
              </A>
              prompt user for REAL, etc.
         <DT> <A HREF = "GETSTR.html" >
              <STRONG>GETSTR</STRONG>:
              </A>
              prompt user for CHARACTER STRING, etc.
+        <DT> <STRONG>GETVAL</STRONG>: <EM>I/O&nbsp;API-3.2 or later, only</EM>
+        <DD> prompt user for a numeric or <CODE>LOGICAL</CODE> answer,
+             with <CODE>DEFAULT</CODE>.
+             <BR>
+             <EM>Fortran-90 generic function for:</EM>
+             <BLOCKQUOTE><CODE><STRONG>
+             <A HREF = "GETDBLE.html" >GETDBLE</A>,<BR>
+             <A HREF = "GETMENU.html" >GETMENU</A>,<BR>
+             <A HREF = "GETNUM.html"  >GETNUM</A>,<BR>
+             <A HREF = "GETREAL.html" >GETREAL</A>,<BR>
+             <A HREF = "GETYN.html"   >GETYN</A>,<BR>
+             </STRONG></CODE></BLOCKQUOTE>
         <DT> <A HREF = "GETYN.html" >
              <STRONG>GETYN</STRONG>:
              </A>
@@ -1004,25 +1018,33 @@ Changes from I/O&nbsp;API Version&nbsp;1
 <HR> <!- ------------------------------------------------------------- ->
 
 <H2> <A NAME = "tools">
-     I/O API Related Programs and Examples
+     I/O&nbsp;API Related Programs and Examples
 </A> </H2>
 
     The following programs are designed to do simple interactive
     analysis and data manipulation tasks on I/O&nbsp;API files. The
-    source code for these programs is available <A HREF =
-    "gpl.txt">under the GNU GPL License, Version 2</A>, and can be
-    downloaded as part of the I/O API tar-ball from
-    <A HREF = "AVAIL.html">from this page</A>.
+    source code for these programs is available
+    <A HREF = "gpl.txt">under the GNU GPL License, Version 2</A>, and
+    can be downloaded as part of the I/O API tar-ball from
+    <A HREF="AVAIL.html">from this page</A>.  All of these are character
+    based applications (run in, e.g., an  <VAR>xterm</VAR>) rather than
+    being GUI X applications; consequently, they can be run either
+    interactively or from relatively simple scripts.
     <P>
 
     With the exception of programs designed specifically for
     manipulating dates and times in scripts (<VAR>greg2jul, jul2greg,
-    juldiff, julshift, timeshift</VAR>), these programs begin by
+    juldiff, julshift, timeshift</VAR>), these programs are designed
+    for easy interactive use.  They begin by
     displaying a &quot;splash screen&quot; displaying the name, usage,
-    and version for the program, and then promt the user for the
+    and version for the program, and then prompt the user for the
     sepcifications for the program-run.  Most of these prompts have
     default values computed from the metadata in input-file headers;
     defaults may be accepted by hitting the <CODE>RETURN</CODE> key.
+    To develop scripts for them, it is generally best to run them
+    interactively once, recording all the responses you give to the
+    prompts, and  then use that information to develop a command-file
+    which redirect into the program within the script.
     <P>
 
     <BLOCKQUOTE><DL>
@@ -1045,7 +1067,7 @@ Changes from I/O&nbsp;API Version&nbsp;1
         <DT> <A HREF = "AIRS2M3.html" >
              <STRONG>airs2m3</STRONG>:
              </A>
-             Import air quality monitor data from an AIRS AMP350-format
+             import air quality monitor data from an AIRS AMP350-format
              ASCII file and put it into an I/O&nbsp;API
              &quot;observational data&quot; file.
         <P>
@@ -1053,13 +1075,13 @@ Changes from I/O&nbsp;API Version&nbsp;1
              <STRONG>bcwndw</STRONG>:
              </A>
              extract data data from a gridded file to the boundary of
-             a subgrid window (see <STRONG>m3wndw</STRONG> for extracting
-             to the window itself)
+             a subgrid window (see <STRONG>m3wndw</STRONG> below for
+             extracting to the window itself)
         <P>
         <DT> <A HREF = "CAMXTOM3.html" >
              <STRONG>camxtom3</STRONG>:
              </A>
-             Convert CAMx and other UAM-format binary files to GRIDDED
+             convert CAMx and other UAM-format binary files to GRIDDED
              I/O&nbsp;API files.
         <P>
         <DT> <A HREF = "DAYAGG.html" >
@@ -1068,6 +1090,20 @@ Changes from I/O&nbsp;API Version&nbsp;1
              construct weighted averages from a set of input files
              and write the result to a seasonal &quot;standard day&quot;
              (year-zero) output file.
+        <DT> <A HREF = "GRIDPROBE.html" >
+             <STRONG>gridprobe</STRONG>:
+             </A>
+             build ASCII time series file by interpolating a selected
+             set of (Lat-Lon specified) points for a selected variable
+             from a GRIDDED file.
+        <P>
+        <DT> <A HREF = "INSERTGRID.html" >
+             <STRONG>insertgrid</STRONG>:
+             </A>
+             Aggregate/re-grid values from a high-resolution
+             subdomain-file to &quot;covered&quot; grid cells in a
+             coarse-resolution large-domain file, with map-projection
+             transformation as appropriate.
         <P>
         <DT> <A HREF = "M3CPLE.html" >
              <STRONG>m3cple</STRONG>:
@@ -1080,7 +1116,7 @@ Changes from I/O&nbsp;API Version&nbsp;1
         <DT> <A HREF = "M3COMBO.html" >
              <STRONG>m3combo</STRONG>:
              </A>
-             Compute linear combinations of sets of variables from
+             compute linear combinations of sets of variables from
              an I/O&nbsp;API input file, and write the resulting
              variables to an I/O&nbsp;API output file.
         <DT> <A HREF = "M3DIFF.html" >
@@ -1098,11 +1134,11 @@ Changes from I/O&nbsp;API Version&nbsp;1
              </A>
              build a file according to user specifications,
              filled with dummy data, or with data read in from a
-             set of user-supplied CSV files.
+             set of user-supplied ASCII CSV files.
         <DT> <A HREF = "M3MERGE.html" >
              <STRONG>m3merge</STRONG>:
              </A>
-             Merges selected variables from a set of input files for a
+             merge selected variables from a set of input files for a
              specified time period, and writes them to a single output
              file, with optional variable-renaming in the process.
         <DT> <A HREF = "M3PAIR.html" >
@@ -1114,9 +1150,9 @@ Changes from I/O&nbsp;API Version&nbsp;1
         <DT> <A HREF = "M3PROBE.html" >
              <STRONG>m3probe</STRONG>:
              </A>
-             build ASCII time series file for a selected set of points
-             for a selected variable from a GRIDDED, BOUNDARY, or CUSTOM
-             file.
+             build ASCII time series file for a selected set of
+             (subscript specified) points for a selected variable from a
+             GRIDDED, BOUNDARY, or CUSTOM file.
         <DT> <A HREF = "M3STAT.html" >
              <STRONG>m3stat</STRONG>:
              </A>
@@ -1124,7 +1160,7 @@ Changes from I/O&nbsp;API Version&nbsp;1
         <DT> <A HREF = "M3TOTXT.html" >
              <STRONG>m3totxt</STRONG>:
              </A>
-             Extract selected variables for a specified
+             extract selected variables for a specified
              window and time period into a GRIDDED M3IO file
              and write to an ASCII report file.
         <DT> <A HREF = "M3TPROC.html" >
@@ -1140,8 +1176,8 @@ Changes from I/O&nbsp;API Version&nbsp;1
              <STRONG>m3wndw</STRONG>:
              </A>
              window data from a gridded file to a subgrid (see
-             <STRONG>bcwndw</STRONG> for extracting
-             to the boundary of the subgrdi window)
+             <STRONG>bcwndw</STRONG> above, for extracting
+             to the boundary of the subgrid window)
         <DT> <A HREF = "M3XTRACT.html" >
              <STRONG>m3xtract</STRONG>:
              </A>
@@ -1156,12 +1192,12 @@ Changes from I/O&nbsp;API Version&nbsp;1
         <DT> <A HREF = "MTXBUILD.html" >
              <STRONG>mtxbuild</STRONG>:
              </A>
-             Build a sparse-matrix transform file from user-supplied
+             build a sparse-matrix transform file from user-supplied
              ASCII coefficient inputs.
         <DT> <A HREF = "MTXCALC.html" >
              <STRONG>mtxcalc</STRONG>:
              </A>
-             Build a grid-to-grid sparse-matrix transform file for
+             build a grid-to-grid sparse-matrix transform file for
              program <VAR>mtxcple</VAR> [etc...] using
              a sub-sampling algorithm.
         <DT> <A HREF = "MTXCPLE.html" >
@@ -1214,13 +1250,26 @@ Changes from I/O&nbsp;API Version&nbsp;1
              layer-thickness nor mass-weighting into account;
              think of it as a programming-example)
         <P>
+        <DT> <A HREF = "WRFGRIDDESC.html" >
+             <STRONG>wrfgriddesc</STRONG>:
+             </A>
+             Create a <VAR>GRIDDESC</VAR> file from the header-data
+             in a WRF-format netCDF file.
+        <P>
+        <DT> <A HREF = "WRFTOM3.html" >
+             <STRONG>wrftom3</STRONG>:
+             </A>
+             Convert/extract/window variables from WRF-format netCDF
+             files to GRIDDED I/O&nbsp;API files.
+        <P>
         <DT> <STRONG>Programs for coordinate-manipulation </STRONG>
         <P>
         <DT> <A HREF = "LATLON.html" >
              <STRONG>latlon</STRONG>:
              </A>
              construct GRIDDED and/or BOUNDARY files with variables the
-             cell-center <CODE>LAT</CODE> and <CODE>LON</CODE>.
+             cell-center <CODE>LAT</CODE> and <CODE>LON</CODE>.for
+             Fortran, 
         <DT> <A HREF = "PROJTOOL.html" >
              <STRONG>projtool</STRONG>:
              </A>
@@ -1240,14 +1289,8 @@ Changes from I/O&nbsp;API Version&nbsp;1
              computations for Lat-Lon, Lambert, and UTM coordinate
              systems.
         <P>
-        <DT> <STRONG>Programs for date-manipulation </STRONG><P>
-             Verbose, prompt based, for interactive use:
-        <DT> <A HREF = "DATSHIFT.html" >
-             <STRONG>datshift</STRONG>:
-             </A>
-             Takes Gregorian-calendar date <CODE>YYYYMMDD</CODE>, adds a
-             specified number of days <CODE>D</CODE>, and reports the
-             result.
+        <DT> <STRONG><A NAME="datepgms">Programs</A> for date-manipulation</STRONG><P>
+             Verbose, prompt based, <STRONG>for interactive use</STRONG>:
         <DT> <A HREF = "GREGDATE.html" >
              <STRONG>gregdate</STRONG>:
              </A>
@@ -1273,26 +1316,24 @@ Changes from I/O&nbsp;API Version&nbsp;1
              <CODE>YESTERDAY, TODAY, TOMORROW</CODE> as command-line
              arguments.
         <P>
-        <DT> <A HREF = "GREG2JUL.html">
-             <STRONG>greg2jul</STRONG>:
-             </A> Convert a Gregorian-style date <CODE>YYYYMMDD</CODE> to
+        <DT> <A HREF = "DATSHIFT.html" ><STRONG>datshift</STRONG></A>:
+             Shift a Gregorian-calendar date <CODE>YYYYMMDD</CODE> by a 
+             specified number of days and echo the result.
+        <DT> <A HREF = "GREG2JUL.html"><STRONG>greg2jul</STRONG></A>:
+             Convert a Gregorian-style date <CODE>YYYYMMDD</CODE> to
              Julian-style  <CODE>YYYYDDD</CODE> and echo the result.
-        <DT> <A HREF = "JUL2GREG.html">
-             <STRONG>jul2greg</STRONG>:
-             </A> Convert Julian-style date  <CODE>YYYYDDD</CODE>
+        <DT> <A HREF = "JUL2GREG.html"><STRONG>jul2greg</STRONG></A>:
+             Convert Julian-style date  <CODE>YYYYDDD</CODE>
              to Gregorian-style <CODE>YYYYMMDD</CODE> and
              echo the result.
-        <DT> <A HREF = "JULDIFF.html">
-             <STRONG>juldiff</STRONG>:
-             </A> Compute the number of days between two Julian dates and
+        <DT> <A HREF = "JULDIFF.html"><STRONG>juldiff</STRONG></A>:
+             Compute the number of days between two Julian dates and
              echo the result.
-        <DT> <A HREF = "JULSHIFT.html">
-             <STRONG>julshift</STRONG>:
-             </A> Shift a Julian date <CODE>YYYYDDD</CODE> by a specified number of days and
+        <DT> <A HREF = "JULSHIFT.html"><STRONG>julshift</STRONG></A>:
+             Shift a Julian date <CODE>YYYYDDD</CODE> by a specified number of days and
              echo the result.
-        <DT> <A HREF = "TIMESHIFT.html">
-             <STRONG>timeshift</STRONG>:
-             </A> Shift a Julian date&amp;time
+        <DT> <A HREF = "TIMESHIFT.html"><STRONG>timeshift</STRONG></A>:
+             Shift a Julian date&amp;time
              <CODE>YYYYDDD.HHMMSS</CODE> by a specified time step
              <CODE>HHMMSS</CODE> and
              echo the result.
@@ -1390,7 +1431,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 146 2015-02-02 17:04:47Z coats $
+    $Id: AA.html 271 2015-11-28 16:53:44Z coats $
     </PRE>
 
 </BODY>

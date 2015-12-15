@@ -2,10 +2,12 @@
       SUBROUTINE NEXTIME  ( JDATE , JTIME, DTIME )
 
 C.....................................................................
-C Version "$Id: nextime.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: wrbuf3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -14,7 +16,7 @@ C
 C  FUNCTION:
 C
 C       Subroutine to add  DTIME  to the current time, and then
-C       update the clock  JTIME  and calendar  IDATE  accordingly.  
+C       update the clock  JTIME  and calendar  IDATE  accordingly.
 C       Output is fully normalized (0 <= JTIME <= 235959).
 C
 C   IDATE is stored in the form   YYYYDDD = YEAR*1000  +  DAY
@@ -23,7 +25,7 @@ C   DTIME is stored in the form   HHMMSS  = HOUR*10000 +  MINS*100  +  SECS
 C
 C  CALLS:  none
 C
-C  REVISION HISTORY: 
+C  REVISION HISTORY:
 C       prototype 10/1990 by Carlie J. Coats, Jr., MCNC Environmental Programs
 C
 C       Version    3/1993 by CJC for CRAY, etc.
@@ -43,6 +45,8 @@ C
 C       Version 1/2007 by CJC:  handle negative JDATEs correctly
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 11/2015 by CJC: IO_365 changes
 C........................................................................
 
         IMPLICIT  NONE
@@ -65,6 +69,14 @@ C.......   LOCAL VARIABLES:  day and year components of date
         INTEGER         SCR             !  scratch accumulator
         INTEGER         SIGN            !  sign of DTIME
         INTEGER         ATIME           !  absolute value of DTIME
+
+#ifdef IO_360
+#define     CLIMODAYS   (360)
+#endif
+
+#ifdef IO_365
+#define     CLIMODAYS   (365)
+#endif
 
 
 C........................................................................
@@ -146,12 +158,12 @@ C...........   Note that each year must be treated individually
 
             IF ( DAYS .LE. 0 ) THEN
 
-#ifdef IO_360
-                DAYS  =  361   +  DAYS
+#ifdef CLIMODAYS
+                DAYS  =  CLIMODAYS   +  DAYS
                 YEAR  =  YEAR  -  1
 #endif
 
-#ifndef IO_360
+#ifndef CLIMODAYS
 
                 IF (           ( MOD (YEAR,4)   .NE. 1 )        !  nonleap year
      &             .OR. (      ( MOD (YEAR,100) .EQ. 1 )
@@ -176,11 +188,11 @@ C...........   Note that each year must be treated individually
 
 200     CONTINUE        !  loop normalizing day numbers > 365,366
 
-#ifdef IO_360
+#ifdef CLIMODAYS
 
-            IF ( DAYS .GE. 361 ) THEN
+            IF ( DAYS .GE. CLIMODAYS+1 ) THEN
 
-                DAYS  =  DAYS  - 360
+                DAYS  =  DAYS  - CLIMODAYS
                 YEAR  =  YEAR  +   1
 
                 GO TO  200
@@ -189,7 +201,7 @@ C...........   Note that each year must be treated individually
 
 #endif
 
-#ifndef IO_360
+#ifndef CLIMODAYS
 
             IF ( DAYS .GE. 366 ) THEN
 
@@ -220,3 +232,51 @@ C...........   Note that each year must be treated individually
 
         RETURN
         END  SUBROUTINE NEXTIME
+
+
+
+        !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+        SUBROUTINE LASTTIME( SDATE,STIME,TSTEP,NRECS, EDATE,ETIME )
+
+        INTEGER, INTENT(IN   ) :: SDATE, STIME, TSTEP, NRECS
+        INTEGER, INTENT(  OUT) :: EDATE, ETIME
+
+        INTEGER, PARAMETER :: S365 = 365 * 24 * 60 * 60     !!  seconds
+        INTEGER, PARAMETER :: T365 = 365 * 24 * 10000       !!  time as H*MMSS
+
+        !!.......   LOCAL VARIABLES:  day and year components of date
+
+        INTEGER     ISEC, STEP
+        INTEGER*8   IREC, SECS
+
+        !!  Normalized copies of the arguments:
+
+        EDATE = SDATE
+        ETIME = STIME
+        CALL NEXTIME( EDATE, ETIME, 0 )
+
+        IF ( TSTEP .EQ. 0 ) THEN   !  time-independent case:
+            RETURN
+        ELSE IF ( NRECS .LE. 1 ) THEN   !  at most 1 record
+            RETURN
+        END  IF
+
+        IREC = NRECS - 1
+        SECS = IREC * TIME2SEC( ABS( TSTEP ) )
+
+        DO
+            IF ( SECS .LT. S365 ) EXIT
+            SECS = SECS - S365
+            CALL NEXTIME( EDATE, ETIME, T365 )
+        END DO
+
+        ISEC = SECS
+        STEP = SEC2TIME( ISEC )
+        CALL NEXTIME( EDATE, ETIME, STEP )
+
+        RETURN
+
+        END SUBROUTINE LASTTIME
+

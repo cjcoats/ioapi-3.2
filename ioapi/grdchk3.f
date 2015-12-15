@@ -6,7 +6,7 @@
      &                            NLAYS, VGTYP, VGTOP, VGLEV )
 
 C***********************************************************************
-C Version "$Id: grdchk3.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: grdchk3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) (C) 2005-2013 Baron Advanced Meteorological Systems
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1

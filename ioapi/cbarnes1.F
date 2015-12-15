@@ -3,7 +3,7 @@
      &                     N, YLAT, XLON, Z, WL50, GRID)
 
 C***********************************************************************
-C Version "$Id: cbarnes1.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: cbarnes1.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
@@ -50,7 +50,7 @@ C   CBARNES1():
 C   12/95   Modified by CJC to fit EDSS/Models-3 conventions from 
 C           the UAM BEIS CGRID1().  Uses "exact" spherical-geometry
 C           distance formula.
-C   08/2000 Bug-fix by CJC in SAVED-variables list.
+C   08/2000 Bug-fix by CJC in SAVED-variables list. 
 C   03/2004 Back to linar-approx distance formula
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
@@ -63,15 +63,15 @@ C***********************************************************************
 
 C.......   ARGUMENTS:
 
-        INTEGER, INTENT(IN   ) :: NG		!  Number of output values (=NCOLS*NROWS)
-        REAL   , INTENT(IN   ) :: LAT( NG )	!  single-indexed output latitudes
-        REAL   , INTENT(IN   ) :: LON( NG )	!  single-indexed output longitudes
-        INTEGER, INTENT(IN   ) :: N		!  number of input values
-        REAL   , INTENT(IN   ) :: YLAT( N )	!  input latitudes
-        REAL   , INTENT(IN   ) :: XLON( N )	!  input longitudes
-        REAL   , INTENT(IN   ) :: Z   ( N )	!  input values
-        REAL   , INTENT(IN   ) :: WL50		!  50 Percent filtered wavelength  (KM)
-        REAL   , INTENT(  OUT) :: GRID( NG )	!  output values
+        INTEGER, INTENT(IN   ) :: NG            !  Number of output values (=NCOLS*NROWS)
+        REAL   , INTENT(IN   ) :: LAT( NG )     !  single-indexed output latitudes
+        REAL   , INTENT(IN   ) :: LON( NG )     !  single-indexed output longitudes
+        INTEGER, INTENT(IN   ) :: N             !  number of input values
+        REAL   , INTENT(IN   ) :: YLAT( N )     !  input latitudes
+        REAL   , INTENT(IN   ) :: XLON( N )     !  input longitudes
+        REAL   , INTENT(IN   ) :: Z   ( N )     !  input values
+        REAL   , INTENT(IN   ) :: WL50          !  50 Percent filtered wavelength  (KM)
+        REAL   , INTENT(  OUT) :: GRID( NG )    !  output values
 
 C...........   PARAMETERS:
 

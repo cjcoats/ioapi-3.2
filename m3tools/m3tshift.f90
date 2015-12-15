@@ -2,7 +2,7 @@
 PROGRAM  M3TSHIFT
 
     !!***********************************************************************
-    !! Version "$Id: m3tshift.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: m3tshift.f90 163 2015-02-24 06:48:57Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
@@ -32,8 +32,8 @@ PROGRAM  M3TSHIFT
     !!       Version  02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
     !!       USE M3UTILIO, and related changes.
     !!
-    !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source;
-    !!      inlined SUBROUTINE TSHIFT, explicit ALLOCATE
+    !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
+    !!      inlined SUBROUTINE TSHIFT, explicit ALLOCATE. Support for M3INT8 variables.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -78,7 +78,7 @@ PROGRAM  M3TSHIFT
 
     LOGICAL         EFLAG
     
-    REAL*8, ALLOCATABLE :: RBUF ( : )   !!  over-size except for M3DBLE...
+    REAL*8, ALLOCATABLE :: RBUF ( : )   !!  over-size except for M3DBLE, M3INT8...
 
     !!.........................................................................
     !!   begin body of program  M3TSHIFT
@@ -115,7 +115,7 @@ PROGRAM  M3TSHIFT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tshift.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: m3tshift.f90 163 2015-02-24 06:48:57Z coats $',&
 ' '
 
     ARGCNT = IARGC()

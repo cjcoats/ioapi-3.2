@@ -2,7 +2,7 @@
 PROGRAM MTXCALC
 
     !!***********************************************************************
-    !! Version "$Id: mtxcalc.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: mtxcalc.f90 174 2015-02-26 21:23:12Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -39,22 +39,22 @@ PROGRAM MTXCALC
     !!      Lines 732-2
     !!      Version   12/2006 by CJC:  Bug-fix to GTYPES menu
     !!      Version    6/2008 by CJC:  Albers support
-    !!      Version    8/2008 by CJC:  USE M3UTILIO, M3ATTS to put
+    !!      Version    8/2008 by CJC:  USE M3UTILIO, MODATTS3 to put
     !!      grid-attributes into matrix.
     !!      Version   12/2008 by CJC:  heuristic to compensate for WMO screw-up
     !!      that declares all longitudes should be positive
     !!      Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
     !!      USE M3UTILIO, and related changes.
     !!      Version 12/2014 by CJC for I/O API v3.2:  USE MODGCTP::GRID2XY(),
-    !!      USE M3ATTS::SETMTXATT()
-    !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source,
+    !!      USE MODATTS3::SETMTXATT()
+    !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source,
     !!      in-this-code (but external) BLDMATRIX; new environment variable
     !!      SCALEFAC; USE routine GRID2XY from MODULE MODGCTP; USE routine
-    !!      SETMTXATT from MODULE M3ATTS
+    !!      SETMTXATT from MODULE MODATTS3; use generics for "GET*()", "ENV*()"
     !!***********************************************************************
 
     USE M3UTILIO
-    USE M3ATTS
+    USE MODATTS3
     USE MODGCTP
 
     IMPLICIT NONE
@@ -213,10 +213,10 @@ PROGRAM MTXCALC
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: mtxcalc.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: mtxcalc.f90 174 2015-02-26 21:23:12Z coats $',&
 ' '
 
-    IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
+    IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Program terminated at user request', 2 )
     ELSE IF ( ARGCNT .EQ. 2 ) THEN
         CALL GETARG( 1, IGRID )
@@ -325,17 +325,17 @@ PROGRAM MTXCALC
     ELSE
         R = 100 * ( 1 + NINT( YCELL2 / YCELL1 ) )
     END IF
-    NX = ENVINT( 'COL_REFINEMENT', 'column-factor', C, STATUS )
+    NX = ENVGET( 'COL_REFINEMENT', 'column-factor', C, STATUS )
     IF ( STATUS .GT. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad environment variable "COL_REFINEMENT"', 2 )
     END IF
 
-    NY = ENVINT( 'ROW_REFINEMENT','row-factor', R, STATUS )
+    NY = ENVGET( 'ROW_REFINEMENT','row-factor', R, STATUS )
     IF ( STATUS .GT. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad environment variable "ROW_REFINEMENT"', 2 )
     END IF
 
-    SCALEFAC = ENVREAL( 'SCALEFAC', 'Scale factor for transform matrix', 1.0, STATUS )
+    SCALEFAC = ENVGET( 'SCALEFAC', 'Scale factor for transform matrix', 1.0, STATUS )
     IF ( STATUS .GT. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad environment variable "SCALEFAC"', 2 )
     END IF

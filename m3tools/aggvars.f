@@ -4,14 +4,16 @@
      &                     OFILE, ONAME )
 
 C***********************************************************************
-C Version "$Id: aggvars.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: aggvars.f 163 2015-02-24 06:48:57Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C       subroutine body starts at line  100
+C       subroutine body starts at line  107
 C
 C  FUNCTION:
 C       Aggregate time steps as either sum, average, max, or min.
@@ -47,6 +49,8 @@ C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C
 C       Version 11/2013 by CJC:  OpenMP parallel
+C
+C       Version  02/2015 by CJC: Support for M3INT8 variables.
 C***********************************************************************
 
       USE M3UTILIO
@@ -89,6 +93,8 @@ C...........   LOCAL VARIABLES and their descriptions:
 
         INTEGER         IGRD ( VSIZE )
         INTEGER         ISCR ( VSIZE )
+        INTEGER         LGRD ( VSIZE )
+        INTEGER         LSCR ( VSIZE )
         REAL            RGRD ( VSIZE )
         REAL            RSCR ( VSIZE )
         REAL*8          DGRD ( VSIZE )
@@ -168,6 +174,77 @@ C   begin body of VINITAGG entry:
             END IF
 
             IF ( .NOT.WRITE3( OFILE, ONAME, JDATE, JTIME, IGRD ) ) THEN
+                MESG = 'Write failure:  file "' // TRIM( OFILE ) //
+     &                 '" and variable "'       // TRIM( ONAME ) // '"'
+                CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+            END IF
+
+        ELSE IF ( VTYPE .EQ. M3INT8 ) THEN
+
+            IF( ATYPE .EQ. M3MAX ) THEN
+!$OMP           PARALLEL DO DEFAULT( NONE ), SHARED( VSIZE, LGRD ),
+!$OMP&                      PRIVATE( I )
+                DO I = 1, VSIZE
+                    LGRD( I ) = -1999999999
+                END DO
+            ELSE IF( ATYPE .EQ. M3MIN ) THEN
+!$OMP           PARALLEL DO DEFAULT( NONE ), SHARED( VSIZE, LGRD ),
+!$OMP&                      PRIVATE( I )
+                DO I = 1, VSIZE
+                    LGRD( I ) = 1999999999
+                END DO
+            ELSE
+                WRITE( MESG, '( A, I12, 2X, A )' )
+     &               'Aggregation type', ATYPE, 'not supported for INT'
+                CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+                RETURN
+            END IF
+
+            DO ISTEP = 1, ASTEPS
+
+                N = N + 1
+
+                IF ( .NOT. READ3( IFILE, INAME, ALLAYS3,
+     &                            IDATE, ITIME, LSCR ) ) THEN
+
+                    MESG = 'Read failure:  file "' // TRIM( IFILE ) //
+     &                     '" variable "' // TRIM( INAME ) // '"'
+                    CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+
+                ELSE IF( ATYPE .EQ. M3MAX ) THEN
+
+!$OMP               PARALLEL DO
+!$OMP&                   DEFAULT( NONE ),
+!$OMP&                    SHARED( VSIZE, LGRD, LSCR ),
+!$OMP&                   PRIVATE( I )
+                    DO I = 1, VSIZE
+                        LGRD( I ) = MAX( LGRD( I ), LSCR( I ) )
+                    END DO
+
+                ELSE IF( ATYPE .EQ. M3MIN ) THEN
+
+!$OMP               PARALLEL DO
+!$OMP&                   DEFAULT( NONE ),
+!$OMP&                    SHARED( VSIZE, LGRD, LSCR ),
+!$OMP&                   PRIVATE( I )
+                    DO I = 1, VSIZE
+                        LGRD( I ) = MIN( LGRD( I ), LSCR( I ) )
+                    END DO
+
+                END IF              !  if read3() worked, or atype=max or min
+
+                CALL NEXTIME( IDATE, ITIME, TSTEP )
+
+            END DO              !  end loop on time steps
+
+            IF ( N .EQ. 0 ) THEN
+                WRITE( MESG, '( A, I9.7, A, I6.6 )' )
+     &                 'No data starting at', JDATE, ':', JTIME
+                CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+                RETURN
+            END IF
+
+            IF ( .NOT.WRITE3( OFILE, ONAME, JDATE, JTIME, LGRD ) ) THEN
                 MESG = 'Write failure:  file "' // TRIM( OFILE ) //
      &                 '" and variable "'       // TRIM( ONAME ) // '"'
                 CALL M3WARN( ANAME, JDATE, JTIME, MESG )

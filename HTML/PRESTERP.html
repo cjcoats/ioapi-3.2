@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: PRESTERP.html 117 2015-01-19 16:50:41Z coats $" -->
+<!-- "$Id: PRESTERP.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program PRESTERP </TITLE>
 </HEAD>
@@ -21,11 +21,13 @@
     setenv  &lt;presfile&gt;    &lt;path name&gt;
     setenv  &lt;outfile&gt;     &lt;path name&gt;
     presterp [&lt;infile&gt; &lt;presfile&gt; &lt;outfile&gt; [&lt;interp-mode&gt;]]
+        &lt;and respond to the prompts&gt;
 </PRE>
 where <VAR>infile</VAR>, <VAR>presfile</VAR>, and <VAR>outfile</VAR> 
 are the <A HREF = "LOGICALS.html">logical names</A> of the input data
 file, the input presssure-coefficient file, and output data files, 
 respectively, and <VAR>interp-mode</VAR> is one of the following:
+<BLOCKQUOTE>
 <DL>
     <DT> <STRONG>LIN</STRONG>:
     <DD> do <VAR>linear-in-pressure</VAR> interpolation from sigma 
@@ -39,6 +41,7 @@ respectively, and <VAR>interp-mode</VAR> is one of the following:
          sigma vertical coordinate inputs to pressure vertical 
          coordinate outputs
 </DL>
+</BLOCKQUOTE>
 
 If these command-line arguments are not present, the program will 
 prompt the user for them.  If the <VAR>interp-mode</VAR> is not present, 

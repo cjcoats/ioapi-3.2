@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: SMATVEC.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: SMATVEC.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> SMATVEC() </TITLE>
 </HEAD>
@@ -54,11 +54,11 @@
 
     <CODE>SMATVECP()</CODE> is I/O&nbsp;API-3.2 or later only, is 
     OpenMP parallel, using cumulative-count
-    <CODE>NN(0:NROWS)</CODE> defined below, instead of <CODE>SMATVEC
-    NX</CODE>:
+    <CODE>NN(0:NROWS)</CODE> defined below, instead of
+    <CODE>SMATVEC&nbsp;NX</CODE>:
     <BLOCKQUOTE><VAR>
         NN(0) = 0<BR>
-        NN(R) = <STRONG><BIG>&Sigma;</BIG></STRONG><SUB>K=1<SUP>R</SUP>  <VAR>NX(K)</VAR>
+        NN(R) = <STRONG><BIG>&Sigma;</BIG></STRONG><SUB>K=1</SUB><SUP>R</SUP>  <VAR>NX(K)</VAR>
     </VAR></BLOCKQUOTE>
 
     NOTES:  
@@ -76,7 +76,7 @@
     
     <STRONG>See also</STRONG> subroutines
     <BLOCKQUOTE>
-    <A HREF="GRID2INDX.html">Bilinear interpolation package </A>
+    <A HREF="GRID2INDX.html">Bilinear interpolation package</A>
              <CODE>GRID2INDX(), PNTS2INDX(), and INDXMULT()</CODE>
              from <CODE>MODULE MODGCTP</CODE><P>
     <A HREF = "BMATVEC.html">BMATVEC and BILIN</A>,

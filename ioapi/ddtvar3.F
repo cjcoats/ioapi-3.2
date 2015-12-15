@@ -3,14 +3,16 @@
      &                            JDATE, JTIME, RSIZE, BUFFER )
 
 C***********************************************************************
-C Version "$Id: ddtvar3.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: ddtvar3.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2011 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and 
+C (C) 2014-2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  DDTVAR3 function body starts at line  154
+C  DDTVAR3 function body starts at line  151
 C
 C  NOTE:  MACHINE-DEPENDENT CODE !!!  depends upon FORTRAN : C
 C       coupling between DDTVAR3() and BUFDDT3()
@@ -60,15 +62,16 @@ C       native-binary BINFIL3 file type; uses INTEGER NAME2FID
 C       Modified  8/17/2004 by CJC:  deal with virtual-file bug.
 C       Modified 11/2004 by CJC:  new "verbose-flag" argument to RDTFLAG
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C       Modified 08/2015 by CJC: eliminate unused NETCDF.EXT;
+C       support for type MPIGRD3 for MPI/PnetCDF distributed I/O
 C***********************************************************************
 
-      IMPLICIT NONE
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 #ifdef IOAPICPL
         INCLUDE 'STATE3V.EXT'
 #endif
@@ -101,17 +104,12 @@ C...........   PARAMETER :
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
+        INTEGER, EXTERNAL :: INDEX1, SECSDIFF, TIME2SEC
+        LOGICAL, EXTERNAL :: CURRSTEP, OPEN3
         INTEGER, EXTERNAL :: BUFDDT3         !  ddt() from circ. bufs. (C)
         INTEGER, EXTERNAL :: BUFVGT3         !  alloc/read for circ. bufs. (C)
-        LOGICAL, EXTERNAL :: CURRSTEP        !  finds start of timestep
-        INTEGER, EXTERNAL :: INDEX1          !  name-table lookup
-        INTEGER, EXTERNAL :: INIT3           !  initialize I/O API
-        INTEGER, EXTERNAL :: JSTEP3          !  compute time step record numbers
         INTEGER, EXTERNAL :: NAME2FID        !  fname~~> fid lookup
         LOGICAL, EXTERNAL :: RDTFLAG         !  get date&time availability; rec #
-        LOGICAL, EXTERNAL :: OPEN3           !  opens M3 files
-        INTEGER, EXTERNAL :: SECSDIFF        !  computes date&time differences
-        INTEGER, EXTERNAL :: TIME2SEC        !  converts time to seconds
 
 #ifdef IOAPICPL
         REAL            P, Q
@@ -221,7 +219,7 @@ C.......   Find netCDF index for the file, and check time step availability:
 
             TDIM  = 3
 
-        ELSE IF ( IDUM .EQ. GRDDED3 ) THEN
+        ELSE IF ( IDUM .EQ. GRDDED3 .OR. IDUM .EQ. MPIGRD3 ) THEN
 
             DIMS( 1 ) = 1
             DELS( 1 ) = NCOLS3( FID )
@@ -571,20 +569,5 @@ C...........   check its success/failure status and return accordingly:
 
         RETURN          !  from DDTVAR3
 
-C******************  FORMAT  STATEMENTS   ******************************
-
-C...........   Error and warning message formats..... 91xxx
-
-91010   FORMAT ( A , I5 )
-
-C...........   Internal buffering formats............ 94xxx
-
-94010   FORMAT( A, I7, A, I7, :, A )
-
-94020   FORMAT( A, I4, 2X, A )
-
-94040   FORMAT( A, :, I9.7, ':', I6.6 )
-
-
-        END FUNCTION DDTVAR3
+      END FUNCTION DDTVAR3
 

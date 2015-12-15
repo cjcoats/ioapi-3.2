@@ -1,16 +1,19 @@
 
-      INTEGER FUNCTION INDEX1 (NAME, N, NLIST)
+      INTEGER FUNCTION INDEX1( NAME, N, NLIST )
 
 C***********************************************************************
-C Version "$Id: index1.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: index1.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems, LLC.
+C BAMS/MCNC/EDSS/Models-3 I/O API.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2004-2007 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  INDEX1    subroutine body starts at line 53
-C  INDEXINT1 subroutine body starts at line 99
+C  INDEX1    body starts at line 56
+C  INDEXINT1 body starts at line 72
 C
 C  FUNCTION:
 C
@@ -29,7 +32,7 @@ C    INDEX1:
 C       5/1988   Modified for ROMNET
 C       9/1994   Modified for Models-3 by CJC
 C    INDEXINT1:
-C       Prototype 11/2004 by CJC:  MODULE M3UTILIO for I/O API v3
+C       Prototype 11/2004 by CJC:  for I/O API v3
 C       Modified   3/2006 by CJC:  moved INDEXINT1() to file "index1.f"
 C
 C       Modified  03/2010 by CJC: F9x changes for I/O API v3.1

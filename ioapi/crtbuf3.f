@@ -1,16 +1,18 @@
 
-        LOGICAL FUNCTION CRTBUF3 ( FID )
+        LOGICAL FUNCTION CRTBUF3( FID ) RESULT( CRTFLAG )
 
 C***********************************************************************
-C Version "$Id: crtbuf3.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: crtbuf3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems, and
-C (C) 2011 David Wong
+C (C) 2011 David Wong,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine body starts at line 70
+C  subroutine body starts at line 74
 C
 C  FUNCTION:  Create "BUFFERED "file" FNAME using info stored in the FDESC3
 C             common.
@@ -25,7 +27,7 @@ C
 C  REVISION  HISTORY:
 C       prototype 07/1994 by CJC
 C
-C	Revised   10/1996 by CJC:  new file type TSERIES3 for hydrology work.
+C       Revised   10/1996 by CJC:  new file type TSERIES3 for hydrology work.
 C
 C       Modified  05/1998 by CJC for OpenMP thread-safety
 C
@@ -34,15 +36,18 @@ C
 C       Revised 4/2011 by David Wong, US EPA, and by CJC, to add state for
 C       full buffered-file file descriptions.  Arg-list bugfix for call
 C       to BUFCRE3().
+C
+C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO;
+C       support for M3INT8 variables
 C***********************************************************************
 
-      IMPLICIT NONE
+        USE M3UTILIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
-        INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'FDESC3.EXT'
 
 
 C...........   ARGUMENTS and their descriptions:
@@ -52,7 +57,6 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        INTEGER, EXTERNAL :: INDEX1  !  look up names in tables
         INTEGER, EXTERNAL :: BUFCRE3 !  creates buffered file allocations
 
 
@@ -83,7 +87,7 @@ C.......   "file" types, or error return:
             WRITE( LOGDEV,91010 )
      &      'BUFFERED-file creation error for file ' // FLIST3( FID ),
      &      'ILLEGAL FILE TYPE.', FTYPE3D
-            CRTBUF3 = .FALSE.
+            CRTFLAG = .FALSE.
 
 !$OMP END CRITICAL( S_LOGOUT )
 
@@ -132,7 +136,7 @@ C...........   Set grid and coordinate system parameters
 
 C.......   Define all the Models-3 variables for this file:
 
-        DO 111  VAR = 1 , NVARS3D
+        DO  VAR = 1 , NVARS3D
             VINDX3( VAR,FID ) = IMISS3
             VTYPE3( VAR,FID ) = VTYPE3D( VAR )
             ILAST3( VAR,FID ) = 0
@@ -146,15 +150,15 @@ C.......   Define all the Models-3 variables for this file:
                 CALL M3WARN( 'OPEN3/CRTBUF3', 0, 0,
      &            'DOUBLE PRECISION BUFFERRED not supported for '//
      &            VNAME3D( VAR ) )
-                CRTBUF3 = .FALSE.
+                CRTFLAG = .FALSE.
                 RETURN
             END IF
-111     CONTINUE
+        END DO
 
 C.......   Call BUFCRE3() to allocate buffers for each variable
 C.......   in this "file"
 
-        CRTBUF3 = ( 0 .NE. BUFCRE3( FID, NVARS3D, NLAYS3D,
+        CRTFLAG = ( 0 .NE. BUFCRE3( FID, NVARS3D, NLAYS3D,
      &                              VSIZE, VTYPE3D, TSTEP3D ) )
 
         RETURN

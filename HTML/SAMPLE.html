@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: SAMPLE.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: SAMPLE.html 177 2015-03-02 16:20:58Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> I/O API Sample Programs </TITLE>
 </HEAD>
@@ -17,16 +17,23 @@
 
 <H1>    Some Sample Programs Using the I/O&nbsp;API </H1>
 
-    Here are four sample <VAR>m3tools</VAR> programs to show normal
+    Here are six sample <VAR>m3tools</VAR> programs to show normal
     usage of the I/O&nbsp;API.  These programs were designed to show
-    some typical uses in a meaningful fashion (i.e., the programs really
-    <U>do</U> compute something useful).  These programs also use a
-    number of the utility and coordinate transformation routines.  Along
-    with these programs, a number of I/O&nbsp;API data manipulation
-    programs are also distributed, in the <VAR>m3tools</VAR>
-    subdirectory of the release;m they are <A
-    HREF="AA.html#tools">documented here in the I/O&nbsp;API User
-    Manual</A>.
+    some typical interactive uses in a meaningful fashion (i.e., the programs really
+    <U>do</U> compute something useful).  Note that a <U>modeling program</U>
+    should use fixed logical names which are properties of the program itself,
+    and should use <CODE>OPEN3()</CODE> and
+    <A HREF="GETEFILE.html" ><CODE>GETEFILE()</CODE></A> (etc.), instead of prompting
+    the user for file names with the <CODE>PROMPT*FILE()</CODE> routines.
+    <P>
+
+    <P>
+    These programs also use a number of the utility and coordinate
+    transformation routines.  Along with these programs, a number of
+    I/O&nbsp;API data manipulation programs are also distributed, in the
+    <VAR>m3tools</VAR> subdirectory of the release; they are
+    <A HREF="AA.html#tools">documented here</A> in the I/O&nbsp;API
+    Programmer/User Manual.
     <P>
     
     These sample programs are:
@@ -41,18 +48,39 @@
               <UL>
                   <LI>  <A HREF = "M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
                   <LI>  <A HREF = "MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>
-                  <LI>  <A HREF = "DSCGRID.html"><CODE>DSCGRID</CODE></A>
-                  <LI>  <A HREF = "GETDBLE.html"><CODE>GETDBLE</CODE></A>
-                  <LI>  <A HREF = "GETMENU.html"><CODE>GETMENU</CODE></A>
-                  <LI>  <A HREF = "GETNUM.html" ><CODE>GETNUM</CODE></A>
-                  <LI>  <A HREF = "GETREAL.html"><CODE>GETREAL</CODE></A>
-                  <LI>  <A HREF = "GETSTR.html" ><CODE>GETSTR</CODE></A>
-                  <LI>  <A HREF = "GETYN.html"  ><CODE>GETYN</CODE></A>
-                  <LI>  <A HREF = "M3EXIT.html" ><CODE>M3EXIT</CODE></A>
-                  <LI>  <A HREF = "OPEN3.html"  ><CODE>OPEN3</CODE></A>
-                  <LI>  <A HREF = "GRID2XY.html"><CODE>GRID2XY</CODE></A>
-                  <LI>  <A HREF = "XY2XY.html"  ><CODE>XY2XY</CODE></A>
-                  <LI>  <A HREF = "WRITE3.html" ><CODE>WRITE3</CODE></A>
+                  <LI>  <A HREF = "DSCGRID.html"><CODE>DSCGRID()</CODE></A>,
+                  <LI>  <A HREF = "GETVAL.html"><CODE>GETVAL()</CODE></A>,
+                  as generic for <CODE>GETDBLE(), GETMENU(), GETNUM(), GETREAL(), GETYN()</CODE>
+                  <LI>  <A HREF = "GETSTR.html" ><CODE>GETSTR()</CODE></A>
+                  <LI>  <A HREF = "GRID2XY.html"><CODE>GRID2XY()</CODE></A>
+                  <LI>  <A HREF = "M3EXIT.html" ><CODE>M3EXIT()</CODE></A>
+                  <LI>  <A HREF = "OPEN3.html"  ><CODE>OPEN3()</CODE></A>
+                  <LI>  <A HREF = "XY2XY.html"  ><CODE>XY2XY()</CODE></A>
+                  <LI>  <A HREF = "WRITE3.html" ><CODE>WRITE3()</CODE></A>
+              </UL>
+              <P> 
+        <LI>  <A HREF = "M3PROBE.txt"><STRONG><VAR>m3probe</VAR></STRONG></A>
+              extracts time series for a specified variable for a
+              specified set of points from an input file of type
+              <CODE>GRIDDED, BOUNDARY,</CODE> or <CODE>CUSTOM</CODE>,
+              and writes the resulting time series as columns to a
+              human-readable ASCII REPORT-file.
+              <BR>
+              Note that this program also demonstrates how
+              array-subscript order works for <CODE>BOUNDARY</CODE>
+              files.
+              <UL>
+                  <LI>  <A HREF = "M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
+                  <LI>  <A HREF = "DESC3.html"   ><CODE>DESC3()</CODE></A>
+                  <LI>  <A HREF = "GETEFILE.html"><CODE>GETEFILE()</CODE></A>
+                  <LI>  <A HREF = "GETSTR.html"  ><CODE>GETSTR()</CODE></A>
+                  <LI>  <A HREF = "GETVAL.html"><CODE>GETVAL()</CODE></A>,
+                  as generic for <CODE>GETNUM(), GETYN()</CODE>
+                  <LI>  <A HREF = "M3EXIT.html"  ><CODE>M3EXIT()</CODE></A>
+                  <LI>  <A HREF = "M3MESG.html"  ><CODE>M3MESG()</CODE></A>
+                  <LI>  <A HREF = "NEXTIME.html" ><CODE>NEXTIME()</CODE></A>
+                  <LI>  <A HREF = "OPEN3.html"   ><CODE>OPEN3()</CODE></A>
+                  <LI>  <A HREF = "RUNSPEC.html" ><CODE>RUNSPEC()</CODE></A>
               </UL>
               <P> 
         <LI>  <A HREF = "M3CPLE.txt"><STRONG><VAR>m3cple</VAR></STRONG></A>
@@ -64,23 +92,25 @@
               <UL>
                   <LI>  <A HREF = "M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
                   <LI>  <A HREF = "MODGCTP.html" ><CODE>MODULE&nbsp;MODGCTP</CODE></A>
-                  <LI>  <A HREF = "DSCGRID.html" ><CODE>DSCGRID</CODE></A>
-                  <LI>  <A HREF = "DESC3.html"   ><CODE>DESC3</CODE></A>
-                  <LI>  <A HREF = "GETNUM.html"  ><CODE>GETNUM</CODE></A>
-                  <LI>  <A HREF = "GETREAL.html" ><CODE>GETREAL</CODE></A>
-                  <LI>  <A HREF = "GETSTR.html"  ><CODE>GETSTR</CODE></A>
-                  <LI>  <A HREF = "GETYN.html"   ><CODE>GETYN</CODE></A>
-                  <LI>  <A HREF = "GRID2INDX.html"><CODE>GRID2INDX and INDXMULT</CODE></A>
-                  <LI>  <A HREF = "LASTTIME.html"><CODE>LASTTIME</CODE></A>
-                  <LI>  <A HREF = "M3EXIT.html"  ><CODE>M3EXIT</CODE></A>
-                  <LI>  <A HREF = "M3MESG.html"  ><CODE>M3MESG</CODE></A>
-                  <LI>  <A HREF = "M3WARN.html"  ><CODE>M3WARN</CODE></A>
-                  <LI>  <A HREF = "NEXTIME.html" ><CODE>NEXTIME</CODE></A>
-                  <LI>  <A HREF = "OPEN3.html"   ><CODE>OPEN3</CODE></A>
-                  <LI>  <A HREF = "PROMPTMFILE.html"><CODE>PROMPTMFILE</CODE></A>
-                  <LI>  <A HREF = "READSMET.html"><CODE>READ3</CODE></A>
-                  <LI>  <A HREF = "UPCASE.html"  ><CODE>UPCASE</CODE></A>
-                  <LI>  <A HREF = "WRITE3.html"  ><CODE>WRITE3</CODE></A>
+                  <LI>  <A HREF = "GETVAL.html"><CODE>GETVAL()</CODE></A>,
+                  as generic for <CODE>GETNUM(), GETYN()</CODE>
+                  <LI>  <A HREF = "CHECK3.html"  ><CODE>CHECK3()</CODE></A>
+                  <LI>  <A HREF = "CURREC.html"  ><CODE>CURREC()</CODE></A>
+                  <LI>  <A HREF = "DESC3.html"   ><CODE>DESC3()</CODE></A>
+                  <LI>  <A HREF = "DSCGRID.html" ><CODE>DSCGRID()</CODE></A>
+                  <LI>  <A HREF = "GETSTR.html"  ><CODE>GETSTR()</CODE></A>
+                  <LI>  <A HREF = "GRID2INDX.html"><CODE>GRID2INDX()</CODE> and <CODE>INDXMULT()</CODE></A>
+                  <LI>  <A HREF = "LASTTIME.html"><CODE>LASTTIME()</CODE></A>
+                  <LI>  <A HREF = "LUSTR.html"   ><CODE>LUSTR()</CODE></A>
+                  <LI>  <A HREF = "M3EXIT.html"  ><CODE>M3EXIT()</CODE></A>
+                  <LI>  <A HREF = "M3MESG.html"  ><CODE>M3MESG()</CODE></A>
+                  <LI>  <A HREF = "M3WARN.html"  ><CODE>M3WARN()</CODE></A>
+                  <LI>  <A HREF = "NEXTIME.html" ><CODE>NEXTIME()</CODE></A>
+                  <LI>  <A HREF = "OPEN3.html"   ><CODE>OPEN3()</CODE></A>
+                  <LI>  <A HREF = "PROMPTMFILE.html"><CODE>PROMPTMFILE()</CODE></A>
+                  <LI>  <A HREF = "READ3.html"   ><CODE>READ3()</CODE></A>
+                  <LI>  <A HREF = "UPCASE.html"  ><CODE>UPCASE()</CODE></A>
+                  <LI>  <A HREF = "WRITE3.html"  ><CODE>WRITE3()</CODE></A>
               </UL>
               <P> 
         <LI>  <A HREF = "MTXCALC.txt"><STRONG><VAR>mtxcalc</VAR></STRONG></A>
@@ -89,19 +119,18 @@
               a sparse-matrix file.
               <UL>
                   <LI>  <A HREF = "M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
-                  <LI>  <A HREF = "M3ATTS.html"  ><CODE>MODULE&nbsp;M3ATTS</CODE></A>
+                  <LI>  <A HREF = "MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A>
                   <LI>  <A HREF = "MODGCTP.html" ><CODE>MODULE&nbsp;MODGCTP</CODE></A>
-                  <LI>  <A HREF = "DSCGRID.html" ><CODE>DSCGRID</CODE></A>
-                  <LI>  <A HREF = "ENVINT.html"  ><CODE>ENVINT</CODE></A>
-                  <LI>  <A HREF = "ENVREAL.html" ><CODE>ENVREAL</CODE></A>
-                  <LI>  <A HREF = "GETYN.html"   ><CODE>GETYN</CODE></A>
-                  <LI>  <A HREF = "GRID2XY.html" ><CODE>GRID2XY</CODE></A>
-                  <LI>  <A HREF = "M3EXIT.html"  ><CODE>M3EXIT</CODE></A>
-                  <LI>  <A HREF = "M3MESG.html"  ><CODE>M3MESG</CODE></A>
-                  <LI>  <A HREF = "OPEN3.html"   ><CODE>OPEN3</CODE></A>
-                  <LI>  <A HREF = "PROMPTFFILE.html"><CODE>PROMPTGFILE</CODE></A>
-                  <LI>  <A HREF = "SETMTXATT.html">  <CODE>SETMTXATT</CODE></A>
-                  <LI>  <A HREF = "WRITE3.html"  ><CODE>WRITE3</CODE></A>
+                  <LI>  <A HREF = "DSCGRID.html" ><CODE>DSCGRID()</CODE></A>
+                  <LI>  <A HREF = "ENVGETS.html" ><CODE>ENVGET()</CODE></A> as generic for <CODE>ENVINT(), ENVREAL()</CODE>
+                  <LI>  <A HREF = "GETVAL.html"  ><CODE>GETVAL()</CODE></A> as generic for <CODE>GETYN()</CODE>
+                  <LI>  <A HREF = "GRID2XY.html" ><CODE>GRID2XY()</CODE></A>
+                  <LI>  <A HREF = "M3EXIT.html"  ><CODE>M3EXIT()</CODE></A>
+                  <LI>  <A HREF = "M3MESG.html"  ><CODE>M3MESG()</CODE></A>
+                  <LI>  <A HREF = "OPEN3.html"   ><CODE>OPEN3()</CODE></A>
+                  <LI>  <A HREF = "PROMPTFFILE.html"><CODE>PROMPTFFILE()</CODE></A>
+                  <LI>  <A HREF = "MODATTS3.html#setmtxatt">  <CODE>SETMTXATT()</CODE></A>
+                  <LI>  <A HREF = "WRITE3.html"  ><CODE>WRITE3()</CODE></A>
               </UL>
               <P>
         <LI>  <A HREF = "PRESZ.txt"><STRONG><VAR>presz</VAR></STRONG></A> 
@@ -123,20 +152,17 @@
               Uses
               <UL>
                   <LI>  <A HREF = "M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
-                  <LI>  <A HREF = "DESC3.html"><CODE>DESC3</CODE></A>
-                  <LI>  <A HREF = "DSCGRID.html"><CODE>DSCGRID</CODE></A>
-                  <LI>  <A HREF = "GETDBLE.html"><CODE>GETDBLE</CODE></A>
-                  <LI>  <A HREF = "GETMENU.html"><CODE>GETMENU</CODE></A>
-                  <LI>  <A HREF = "GETNUM.html"><CODE>GETNUM</CODE></A>
-                  <LI>  <A HREF = "GETREAL.html"><CODE>GETREAL</CODE></A>
-                  <LI>  <A HREF = "GETSTR.html"><CODE>GETSTR</CODE></A>
-                  <LI>  <A HREF = "GETYN.html"><CODE>GETYN</CODE></A>
-                  <LI>  <A HREF = "M3EXIT.html"><CODE>M3EXIT</CODE></A>
-                  <LI>  <A HREF = "M3WARN.html"><CODE>M3WARN</CODE></A>
-                  <LI>  <A HREF = "OPEN3.html"><CODE>OPEN3</CODE></A>
-                  <LI>  <A HREF = "READ3.html"><CODE>READ3</CODE></A>
-                  <LI>  <A HREF = "WRATT3.html"><CODE>WRATT3</CODE></A>
-                  <LI>  <A HREF = "WRITE3.html"><CODE>WRITE3</CODE></A>
+                  <LI>  <A HREF = "DESC3.html"><CODE>DESC3()</CODE></A>
+                  <LI>  <A HREF = "DSCGRID.html"><CODE>DSCGRID()</CODE></A>
+                  <LI>  <A HREF = "GETVAL.html"><CODE>GETVAL()</CODE></A>,
+                  as generic for <CODE>GETDBLE(), GETMENU(), GETNUM(), GETREAL(), GETYN()</CODE>
+                  <LI>  <A HREF = "GETSTR.html"><CODE>GETSTR()</CODE></A>
+                  <LI>  <A HREF = "M3EXIT.html"><CODE>M3EXIT()</CODE></A>
+                  <LI>  <A HREF = "M3WARN.html"><CODE>M3WARN()</CODE></A>
+                  <LI>  <A HREF = "OPEN3.html"><CODE>OPEN3()</CODE></A>
+                  <LI>  <A HREF = "READ3.html"><CODE>READ3()</CODE></A>
+                  <LI>  <A HREF = "WRATT3.html"><CODE>WRATT3()</CODE></A>
+                  <LI>  <A HREF = "WRITE3.html"><CODE>WRITE3()</CODE></A>
               </UL>
               <P>
         <LI>  <A HREF = "VERTINTEGRAL.txt"><STRONG><VAR>vertintegral</VAR></STRONG></A>
@@ -150,21 +176,21 @@
               parallelism, and how to use command line arguments.
               <UL>
                   <LI>  <A HREF = "M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
-                  <LI>  <A HREF = "CHECK3.html"><CODE>CHECK3</CODE></A>
-                  <LI>  <A HREF = "DESC3.html"><CODE>DESC3</CODE></A>
-                  <LI>  <A HREF = "FILCHK3.html"><CODE>FILCHK3</CODE></A>
-                  <LI>  <A HREF = "GETNUM.html"><CODE>GETNUM</CODE></A>
-                  <LI>  <A HREF = "GRDCHK3.html"><CODE>GRDCHK3</CODE></A>
-                  <LI>  <A HREF = "INIT3.html"><CODE>INIT3</CODE></A>
-                  <LI>  <A HREF = "M3EXIT.html"><CODE>M3EXIT</CODE></A>
-                  <LI>  <A HREF = "M3MESG.html"><CODE>M3MESG</CODE></A>
-                  <LI>  <A HREF = "NEXTIME.html"><CODE>NEXTIME</CODE></A>
-                  <LI>  <A HREF = "OPEN3.html"><CODE>OPEN3</CODE></A>
-                  <LI>  <A HREF = "PROMPTMFILE.html"><CODE>PROMPTMFILE</CODE></A>
-                  <LI>  <A HREF = "READ3.html"><CODE>READ3</CODE></A>
-                  <LI>  <A HREF = "SEC2TIME.html"><CODE>SEC2TIME</CODE></A>
-                  <LI>  <A HREF = "TIME2SEC.html"><CODE>TIME2SEC</CODE></A>
-                  <LI>  <A HREF = "WRITE3.html"><CODE>WRITE3</CODE></A>
+                  <LI>  <A HREF = "CHECK3.html"><CODE>CHECK3()</CODE></A>
+                  <LI>  <A HREF = "DESC3.html"><CODE>DESC3()</CODE></A>
+                  <LI>  <A HREF = "FILCHK3.html"><CODE>FILCHK3()</CODE></A>
+                  <LI>  <A HREF = "GETNUM.html"><CODE>GETNUM()</CODE></A>
+                  <LI>  <A HREF = "GRDCHK3.html"><CODE>GRDCHK3()</CODE></A>
+                  <LI>  <A HREF = "INIT3.html"><CODE>INIT3()</CODE></A>
+                  <LI>  <A HREF = "M3EXIT.html"><CODE>M3EXIT()</CODE></A>
+                  <LI>  <A HREF = "M3MESG.html"><CODE>M3MESG()</CODE></A>
+                  <LI>  <A HREF = "NEXTIME.html"><CODE>NEXTIME()</CODE></A>
+                  <LI>  <A HREF = "OPEN3.html"><CODE>OPEN3()</CODE></A>
+                  <LI>  <A HREF = "PROMPTMFILE.html"><CODE>PROMPTMFILE()</CODE></A>
+                  <LI>  <A HREF = "READ3.html"><CODE>READ3()</CODE></A>
+                  <LI>  <A HREF = "SEC2TIME.html"><CODE>SEC2TIME()</CODE></A>
+                  <LI>  <A HREF = "TIME2SEC.html"><CODE>TIME2SEC()</CODE></A>
+                  <LI>  <A HREF = "WRITE3.html"><CODE>WRITE3()</CODE></A>
               </UL>
     </UL>
 

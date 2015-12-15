@@ -2,7 +2,7 @@
         LOGICAL FUNCTION ISDSTIME( JDATE )
 
 C***********************************************************************
-C Version "$Id: isdstime.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: isdstime.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems
@@ -11,9 +11,9 @@ C See file "LGPL.txt" for conditions of use.
 C.........................................................................
 C  function body starts at line  70
 C
-C  RETURNS:  
+C  RETURNS:
 C       TRUE iff Daylight Savings Time is in effect for JDATE,
-C       calculated using Zeller's Congruence to find the 
+C       calculated using Zeller's Congruence to find the
 C       starting and ending dates for Daylight Savings Time:
 C       pre-2007:  first Sunday in April and the last Sunday in October
 C       post-2007: secnd Sunday in March and the first Sunday in November
@@ -26,7 +26,7 @@ C       None
 C
 C  REVISION  HISTORY:
 C       Prototype  8/1995 by Carlie J. Coats, Jr., MCNC Environmental Programs
-C       
+C
 C       Unification 2/2002 by CJC with global-climate ISDST, which
 C       uses a 360-day "year"
 C
@@ -36,6 +36,8 @@ C       Version 1/2007 by CJC:  update for 2007 Daylight Saving Time changes;
 C       handle negative JDATE arguments correctly
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 11/2015 by CJC: IO_365 changes
 C***********************************************************************
 
       IMPLICIT NONE
@@ -50,7 +52,13 @@ C...........   PARAMETERS and their descriptions:
 #ifdef IO_360
         INTEGER, PARAMETER :: APR1  =  91
         INTEGER, PARAMETER :: OCT31 = 300
+#define CLIMO
 #endif
+
+#ifdef IO_365
+#define CLIMO
+#endif
+
 #ifndef IO_360
         INTEGER, PARAMETER :: APR1  =  91
         INTEGER, PARAMETER :: OCT31 = 304
@@ -58,11 +66,11 @@ C...........   PARAMETERS and their descriptions:
 
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
-        
+
         INTEGER         YEAR, IDAY
         INTEGER         DAY0, DAY1
         INTEGER         K, IBIAS
-        
+
 
 C***********************************************************************
 C   begin body of function  ISDSTIME
@@ -85,7 +93,7 @@ C.......   wkday = 1 + mod( k + day, 7 )
         DAY0  = APR1        !  get first Sunday in April,
         DAY1  = OCT31       !  last Sunday in October
 
-#ifndef IO_360
+#ifndef CLIMO
         IF (          ( MOD (YEAR,4)   .EQ. 0 )        !  leap year adjustment
      &     .AND. (    ( MOD (YEAR,100) .NE. 0 )        !  month >= FEB
      &           .OR. ( MOD (YEAR,400) .EQ. 0 ) ) ) THEN

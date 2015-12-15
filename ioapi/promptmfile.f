@@ -3,14 +3,16 @@
      &                                     DEFAULT, CALLER )
 
 C***********************************************************************
-C Version "$Id: promptmfile.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: promptmfile.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line 91
+C  function body starts at line 94
 C
 C       If environment variable PROMPTFLAG is 'Y', returns DEFAULT.
 C
@@ -43,6 +45,8 @@ C       IRIX F90v7.4
 C       Revised   7/2003 by CJC:  clean up LUNIT=INIT3() and
 C       FIRST-TIME logic
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
+C       Modified 02/2015 by CJC for I/O API 3.2:   Fix MH violation of
+C       coding-standards:  check status IOS from  ENVYN!!
 C***********************************************************************
 
       IMPLICIT NONE
@@ -60,14 +64,13 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   PARAMETERS:
 
+        CHARACTER*16, PARAMETER :: PNAME   = 'PROMPTMFILE'
         CHARACTER*16, PARAMETER :: BLANK16 = ' '
         CHARACTER*16, PARAMETER :: NONE16  = 'NONE'
-
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
         LOGICAL, EXTERNAL :: ENVYN, GETYN
-
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
@@ -95,6 +98,9 @@ C   begin body of function  PROMPTMFILE
             CALL M3MSG2( BLANK16 )
             PROMPTON = ENVYN( 'PROMPTFLAG', 'Prompt for input flag',
      &                        .TRUE., IOS )
+            IF ( IOS .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "PROMPTFLAG"', 2 )
+            END IF
 
          END IF         !  if firstime:  lunit < 0
 

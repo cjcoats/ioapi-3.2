@@ -1,6 +1,6 @@
 
 !.........................................................................
-! Version "$Id: FDESC3.EXT 100 2015-01-16 16:52:16Z coats $"
+! Version "$Id: FDESC3.EXT 187 2015-05-05 17:02:57Z coats $"
 !    EDSS/Models-3 I/O API.
 !   Copyright (C) 1992-2002 MCNC,
 !   (C) 1992-2002,2005-2013 Carlie J. Coats, Jr., and
@@ -110,29 +110,30 @@
 !.......   lat-lon:   unused.  Coordinate units are degrees, with
 !.......              -180.0 < X <= 180.0,  -90.0 <= Y <= 90.0
 !.......              Note that Western hemisphere longitudes are taken
-!.......              to be negative.
+!.......              to be negative. (GCTP projection 0)
 !.......
 !.......   Lambert Conformal Conic:  PROJ_ALPHA <= PROJ_BETA are the two
 !.......              latitudes which determine the projection cone;
 !.......              PROJ_GAMMA is the central meridian.
-!.......              Coordinate units are meters.
+!.......              Coordinate units are meters. (GCTP projection 4)
 !.......
 !.......   (General) Mercator   PROJ_ALPHA and PROJ_BETA are the
 !.......              latitude and longitude of the coordinate origin
 !.......              (within the tangent circle);
 !.......              PROJ_GAMMA is the angle between the cylinder axis
-!.......              and the North polar axis. Coordinate units are meters.
+!.......              and the North polar axis.
+!.......              Coordinate units are meters. (GCTP projection 20)
 !.......
 !.......   (General Tangent) Stereographic   PROJ_ALPHA and PROJ_BETA are
 !.......              the latitude and longitude of the point of tangency;
 !.......              PROJ_GAMMA is the angle from true North to the Y-axis.
-!.......              Coordinate units are meters.
+!.......              Coordinate units are meters. (GCTP projection 10)
 !.......
 !.......   UTM:  PROJ_ALPHA is the UTM zone, as a double.
 !.......              PROJ_BETA and PROJ_GAMMA are unused.
 !.......              Note that for safety, PROJ_ALPHA should be
 !.......              *>rounded<* to integer.
-!.......              Coordinate units are meters.
+!.......              Coordinate units are meters. (GCTP projection 1)
 !.......
 !.......   (Secant) Polar Stereographic:  PROJ_ALPHA is 1 for North Polar
 !.......              -1 for South Polar, as a double.
@@ -141,27 +142,30 @@
 !.......              PROJ_GAMMA is the Y-axis.
 !.......              Note that for safety, PROJ_ALPHA should be
 !.......              *>rounded<* to integer.
-!.......              Coordinate units are meters.
+!.......              Coordinate units are meters. (GCTP projection 6)
 !.......
 !.......   Transverse Mercator   PROJ_ALPHA is the latitude of the origin.
 !.......              PROJ_BETA is the scale factor at the central meridian;
 !.......              PROJ_GAMMA is the longitude of the central meridian.
-!.......              Coordinate units are meters.
+!.......              Coordinate units are meters. (GCTP projection 9)
 !.......
 !.......   Equatorial Mercator   PROJ_ALPHA is the latitude of true scale.
 !.......              PROJ_BETA is unused.
 !.......              PROJ_GAMMA is the longitude of the central meridian.
-!.......              Coordinate units are meters.
-!.......              to be negative.
+!.......              Coordinate units are meters. (GCTP projection 5)
 !.......
 !.......   Albers Equal Area:  PROJ_ALPHA <= PROJ_BETA are the two
 !.......              latitudes which determine the projection cone;
 !.......              PROJ_GAMMA is the central meridian.
-!.......              Coordinate units are meters.
+!.......              Coordinate units are meters. (GCTP projection 3)
 !.......
-!.......   Lambert Azimuthal Equal-Area:  PROJ_ALPHAis the central latitude;
+!.......   Lambert Azimuthal Equal-Area:  PROJ_ALPHA is the central latitude;
 !.......              PROJ_BETA is unused; PROJ_GAMMA is the central meridian.
-!.......              Coordinate units are meters.
+!.......              Coordinate units are meters. (GCTP projection 11)
+!.......
+!.......   Sinusoidal Equal-Area:  PROJ_ALPHA and PROJ_BETA are unused;
+!.......              PROJ_GAMMA is the central meridian.
+!.......              Coordinate units are meters. (GCTP projection 16)
 !.......
 !.......   (XCENT3D,YCENT3D):
 !.......   For Lat-Lon:  unused.

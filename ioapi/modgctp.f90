@@ -2,8 +2,8 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 100 2015-01-16 16:52:16Z coats $"
-    !!  Copyright (c) 2014 UNC Institute for the Environment.
+    !!  Version "$Id: modgctp.f90 266 2015-11-20 16:59:47Z coats $"
+    !!  Copyright (c) 2014-2015 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
     !!..............................................................
@@ -41,9 +41,57 @@ MODULE MODGCTP
     !!      and critical sections; support for additional spheres.
     !!      Version   12/2014 by CJC for I/O API-3.2:  move to "ioapi" and
     !!      unify with "lambert.f", "ll2utm.f", "utm2ll.f", and "setsphere.f"
+    !!      Version  11/2015:  re-add LAMBERT etc. INTERFACEs from 3.1
+    !!      to MODULE M3UTILIO, together with re-naming clauses here
+    !!      to avoid double-declaration problems.
     !!..............................................................
 
-    USE M3UTILIO
+    USE M3UTILIO, M3U_GTPZ0       => GTPZ0      ,   &
+                  M3U_SETSPHERE   => SETSPHERE  ,   &
+                  M3U_INITSPHERES => INITSPHERES,   &
+                  M3U_SPHEREDAT   => SPHEREDAT  ,   &
+                  M3U_LAMBERT     => LAMBERT    ,   &
+                  M3U_EQMERC      => EQMERC     ,   &
+                  M3U_TRMERC      => TRMERC     ,   &
+                  M3U_ALBERS      => ALBERS     ,   &
+                  M3U_SETLAM      => SETLAM     ,   &
+                  M3U_SETPOL      => SETPOL     ,   &
+                  M3U_SETEQM      => SETEQM     ,   &
+                  M3U_SETTRM      => SETTRM     ,   &
+                  M3U_SETALB      => SETALB     ,   &
+                  M3U_LAM2LL      => LAM2LL     ,   &
+                  M3U_LL2LAM      => LL2LAM     ,   &
+                  M3U_UTM2LL      => UTM2LL     ,   &
+                  M3U_LL2UTM      => LL2UTM     ,   &
+                  M3U_LAM2UTM     => LAM2UTM    ,   &
+                  M3U_UTM2LAM     => UTM2LAM    ,   &
+                  M3U_LAM2POL     => LAM2POL    ,   &
+                  M3U_POL2LAM     => POL2LAM    ,   &
+                  M3U_POL2LL      => POL2LL     ,   &
+                  M3U_LL2POL      => LL2POL     ,   &
+                  M3U_POL2UTM     => POL2UTM    ,   &
+                  M3U_UTM2POL     => UTM2POL    ,   &
+                  M3U_TRM2LL      => TRM2LL     ,   &
+                  M3U_LL2TRM      => LL2TRM     ,   &
+                  M3U_LAM2TRM     => LAM2TRM    ,   &
+                  M3U_TRM2LAM     => TRM2LAM    ,   &
+                  M3U_TRM2UTM     => TRM2UTM    ,   &
+                  M3U_UTM2TRM     => UTM2TRM    ,   &
+                  M3U_TRM2POL     => TRM2POL    ,   &
+                  M3U_POL2TRM     => POL2TRM    ,   &
+                  M3U_EQM2LL      => EQM2LL     ,   &
+                  M3U_LL2EQM      => LL2EQM     ,   &
+                  M3U_LAM2EQM     => LAM2EQM    ,   &
+                  M3U_EQM2LAM     => EQM2LAM    ,   &
+                  M3U_EQM2UTM     => EQM2UTM    ,   &
+                  M3U_UTM2EQM     => UTM2EQM    ,   &
+                  M3U_EQM2POL     => EQM2POL    ,   &
+                  M3U_POLSTE      => POLSTE     ,   &
+                  M3U_POL2EQM     => POL2EQM    ,   &
+                  M3U_EQM2TRM     => EQM2TRM    ,   &
+                  M3U_TRM2EQM     => TRM2EQM    ,   &
+                  M3U_ALB2LL      => ALB2LL     ,   &
+                  M3U_LL2ALB      => LL2ALB
 
     IMPLICIT NONE
 
@@ -123,12 +171,12 @@ MODULE MODGCTP
                           INSPH, IPR, JPR, LEMSG, LPARM,            &
                           CRDIO, IOSYS, IOZONE, TPARIO, IOUNIT,     &
                           LN27, LN83, FN27, FN83, LENGTH, IFLG )
-        REAL*8 , INTENT( IN ) :: CRDIN(2), TPARIN(15)
+        REAL*8 , INTENT( IN ) :: CRDIN(2), TPARIN(15), TPARIO(15)
         INTEGER, INTENT( IN ) :: INSYS, INZONE, INUNIT, INSPH
         INTEGER, INTENT( IN ) :: IPR, JPR, LEMSG, LPARM, IOUNIT
         INTEGER, INTENT( IN ) :: LN27, LN83, LENGTH
         CHARACTER(LEN=128), INTENT( IN ) :: FN27, FN83
-        REAL*8 , INTENT( OUT ) :: CRDIO(2), TPARIO(15)
+        REAL*8 , INTENT( OUT ) :: CRDIO(2)
         INTEGER, INTENT( OUT ) :: IFLG
         END SUBROUTINE GTPZ0
     END INTERFACE
@@ -177,12 +225,12 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 100 2015-01-16 16:52:16Z coats                     $'
+'$Id:: modgctp.f90 266 2015-11-20 16:59:47Z coats                     $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:
 
-    INTEGER, SAVE :: ISPH   = 8      !  default GRS80
+    INTEGER, SAVE :: KSPH   = 8      !  default GRS80
     INTEGER, SAVE :: NCALLS = 0
 
     REAL*8, SAVE :: AXISMAJ = 0.0D0
@@ -307,7 +355,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             SETSPHERE = .FALSE.
         ELSE
             NCALLS    = NCALLS + 1
-            ISPH      = I1
+            KSPH      = I1
             AXISMAJ   = P1
             AXISMIN   = P2
             SETSPHERE = .TRUE.
@@ -386,7 +434,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             IF ( EFLAG ) THEN
                 INITSPHERES = .FALSE.
             ELSE
-                ISPH    = I1
+                KSPH    = I1
                 AXISMAJ = P1
                 AXISMIN = P2
                 INITSPHERES = .TRUE.
@@ -408,7 +456,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  Body  ......................................................
 
-            INSPHERE     = ISPH
+            INSPHERE     = KSPH
             INPARAM( 1 ) = AXISMAJ
             INPARAM( 2 ) = AXISMIN
             IOPARAM( 1 ) = AXISMAJ
@@ -3443,23 +3491,36 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             DSCR = P_GAM
             DEG  = INT( DSCR )                              !  int degrees
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             DSCR = YCENT
             DEG  = INT( DSCR )                              !  int degrees
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             ISYS  = 3       !  Albers Conic Equal Area
+            IZONE = IZONE1 + 5
+            IUNIT = 2       !  input units:  meters
+
+        ELSE IF ( GDTYP .EQ. SINUGRD3 ) THEN
+
+            DSCR = P_GAM
+            DEG  = INT( DSCR )                              !  int degrees
+            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
+            MNT  = INT( DSCR )                              !  int minutes
+            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
+            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
+
+            ISYS  = 16       !  Sinusoidal Equal Area
             IZONE = IZONE1 + 5
             IUNIT = 2       !  input units:  meters
 
@@ -3472,6 +3533,16 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CALL M3MESG( MESG )
 
         END IF  ! if non-Lam grid (etc...) for GTP0 input
+
+        IF ( .NOT. INITSPHERES() ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'SETSPHERE/INITSPHERES() failure'
+            CALL M3MESG( MESG )
+        ELSE
+            ISPH     = KSPH
+            TPA( 1 ) = AXISMAJ
+            TPA( 2 ) = AXISMIN
+        END IF
 
         M3TOGTPZ1 = ( .NOT.EFLAG )
 
@@ -3507,7 +3578,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         ISPH = NINT( SPHER )
 
         IF ( SPHER .GT. 19.5 ) THEN
-            ISPH    = -2
+            ISPH   = -2
             TPA(1) = SPHER
         ELSE IF ( SPHER .LT. -0.05 ) THEN
             EFLAG = .TRUE.
@@ -3537,21 +3608,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             DSCR = P_GAM
             DEG  = INT( DSCR )                              !  int degrees
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             DSCR = YCENT
             DEG  = INT( DSCR )                              !  int degrees
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             ISYS  = 4       !  Lambert conformal conic
             IZONE = IZONE1 + 1
@@ -3571,14 +3642,14 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             DSCR = P_BET
             DEG  = INT( DSCR )                              !  int degrees
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             ISYS  = 6       !  Polar stereographic
             IZONE = IZONE1 + 2
@@ -3600,7 +3671,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             ISYS  = 9       !  Transverse Mercator
             IZONE = IZONE1 + 3
@@ -3613,7 +3684,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             DSCR = P_ALP
             DEG  = INT( DSCR )                              !  int degrees
@@ -3640,7 +3711,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             DSCR = P_GAM
             DEG  = INT( DSCR )                              !  int degrees
@@ -3654,9 +3725,22 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
             MNT  = INT( DSCR )                              !  int minutes
             DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
 
             ISYS  = 3       !  Albers Conic Equal Area
+            IZONE = IZONE1 + 5
+            IUNIT = 2       !  input units:  meters
+
+        ELSE IF ( GDTYP .EQ. SINUGRD3 ) THEN
+
+            DSCR = P_GAM
+            DEG  = INT( DSCR )                              !  int degrees
+            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
+            MNT  = INT( DSCR )                              !  int minutes
+            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
+            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
+
+            ISYS  = 16      !  Sinusoidal Equal Area
             IZONE = IZONE1 + 5
             IUNIT = 2       !  input units:  meters
 

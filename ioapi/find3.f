@@ -2,7 +2,7 @@
         INTEGER FUNCTION FIND3( K1, K2, K3, N, LIST1, LIST2, LIST3 )
 
 C***********************************************************************
-C Version "$Id: find3.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: find3.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (c) 2004-2007 Baron Advanced Meteorological Systems,

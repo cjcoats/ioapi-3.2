@@ -3,14 +3,16 @@
      &                                RDONLY, FMTTED, DEFAULT, CALLER )
 
 C***********************************************************************
-C Version "$Id: promptffile.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: promptffile.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line 85
+C  function body starts at line 88
 C
 C       Prompts user for logical file name, then opens the Fortran file
 C       associated with it, for read-only or not, and formatted or not,
@@ -30,17 +32,19 @@ C       GETEFILE
 C
 C  REVISION  HISTORY:
 C       prototype 6/95 by CJC
-C	Revised  10/95 by CJC:  more robust treatment of 'NONE'
+C       Revised  10/95 by CJC:  more robust treatment of 'NONE'
 C       Modified  8/96 by CJC:  ! is a comment-designator for input
-C       Modified  4/99 by CJC:  turn on/off prompting with environment
-C       variable "PROMPTFLAG"
+C       Modified  4/99 by CJC & M. Houyoux:  turn on/off prompting with
+C       environment variable "PROMPTFLAG"
 C       Revised   6/2003 by CJC:  factor through M3MSG2, M3PROMPT, and
 C       M3FLUSH to ensure flush() of PROMPT and of log-messages for
 C       IRIX F90v7.4  
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
+C       Modified 02/2015 by CJC for I/O API 3.2:  Fix MH violation
+C       of coding-standards:  check status IOS from  ENVYN!!
 C***********************************************************************
 
-      IMPLICIT NONE
+        IMPLICIT NONE
 
 C...........   ARGUMENTS and their descriptions:
         
@@ -50,7 +54,6 @@ C...........   ARGUMENTS and their descriptions:
         CHARACTER*(*), INTENT(IN   ) :: DEFAULT        !  default logical file name
         CHARACTER*(*), INTENT(IN   ) :: CALLER         !  caller-name for logging messages
 
-
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
         INTEGER, EXTERNAL :: GETEFILE
@@ -58,10 +61,10 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
 C...........   PARAMETERS:
 
+        CHARACTER*16, PARAMETER :: PNAME   = 'PROMPTFFILE'
         CHARACTER*16, PARAMETER :: BLANK16 = ' '
         CHARACTER*16, PARAMETER :: NONE16  = 'NONE'
         CHARACTER*16, PARAMETER :: ALL16   = 'ALL'
-
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
@@ -86,6 +89,9 @@ C   begin body of function  PROMPTFFILE
 
             PROMPTON = ENVYN( 'PROMPTFLAG', 'Prompt for input flag',
      &                        .TRUE., IOS )
+            IF ( IOS .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "PROMPTFLAG"', 2 )
+            END IF
             FIRSTIME = .FALSE.
 
         ENDIF

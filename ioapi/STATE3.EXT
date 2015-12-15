@@ -1,6 +1,6 @@
 
 !.........................................................................
-! Version "$Id: STATE3.EXT 100 2015-01-16 16:52:16Z coats $"
+! Version "$Id: STATE3.EXT 216 2015-08-17 17:47:29Z coats $"
 ! EDSS/Models-3 I/O API.
 ! Copyright (C) 1992-2002 MCNC, (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
 ! (C) 2003-2011 Baron Advanced Meteorological Systems, LLC., and
@@ -149,7 +149,8 @@
 
 !...........   Other system attributes:
 
-        LOGICAL       STDOUT ! controls message-echo to standard output
+        LOGICAL       STDOUT    ! controls message-echo to standard output
+        LOGICAL       PN_MODE   ! parallel IO mode
 
         CHARACTER*80  EXECN3 ! value of env vble EXECUTION_ID (set by INIT3())
 
@@ -180,7 +181,7 @@
      &          BSIZE3, LDATE3, LTIME3, NDATE3, NTIME3, ILAST3,         &
      &          VTYPE3,                                                 &
      &          ILCNT3, NLIST3, IFRST3, ILIST3, BEGRC3, ENDRC3,         &
-     &          STDOUT
+     &          STDOUT, PN_MODE
 
         !!  character portion of current I/O API state
 

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GRID2XY.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: GRID2XY.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> SUBROUTINE GRID2XY </TITLE>
 </HEAD>
@@ -46,6 +46,18 @@ different map projection, with optional <CODE>SPHER1</CODE>,
     <VAR>GRID1</VAR> using USGS GCTP-package routine
     <CODE>GTPZ0()</CODE>.
     <P>
+
+    Versions without the spheroid arguments use routine
+    <CODE>INITSPHERES()</CODE> (controlled by environment variable
+    <VAR>IOAPI_ISPH</VAR>) to determine the spheroid used by the map
+    projections; the two-spheroid-argument versions should be used for
+    transformations for which the input map projection uses a different
+    spheroid from the output map projection (in which case, the
+    tramsform must be implemented &quot;behind the scenes&quot; as a
+    two-stage process: first, using the input spheroid, from
+    input-projection coordinates to Lat-Lon; then, using the output
+    spheroid, from Lat-Lon to the output-projection coordinates).
+    <P>
     
     NOTE:  The GRID1-vs-GRID2 issue for many uses is
     &quot;backward&quot; to the naive intuition:  to interpolate
@@ -80,10 +92,10 @@ different map projection, with optional <CODE>SPHER1</CODE>,
 
 <H2> Fortran Usage: </H2>
  
-    In addition to the example below, see also <A
-    HREF="BMATVEC.html#usage">the example under <CODE>BMATVEC()</CODE>
-    and <CODE>BILIN()</CODE> and the <A
-    HREF="MTXCALC.txt"><VAR>m3tools</VAR> program <VAR>mtxcalc</VAR></A>
+    In addition to the example below, see also
+    <A HREF="BMATVEC.html#usage">the example under <CODE>BMATVEC()</CODE>
+    and <CODE>BILIN()</CODE></A> and the
+    <A HREF="MTXCALC.txt"><VAR>m3tools</VAR> program <VAR>mtxcalc</VAR></A>
     for a full-program example.
  
     <PRE>
@@ -138,7 +150,6 @@ different map projection, with optional <CODE>SPHER1</CODE>,
 
 
 <HR> <!----------------------------------------------------------------->
-</A><P> 
 
 <A HREF = "MODGCTP.html" >
 Up:  <STRONG>MODULE MODGCTP</STRONG>

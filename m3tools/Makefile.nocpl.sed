@@ -1,11 +1,11 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl.sed 127 2015-01-23 15:24:30Z coats $"
+# Version "$Id: Makefile.nocpl.sed 270 2015-11-28 16:53:06Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
 #    (C) 2005-2014 Carlie J. Coats, Jr., and
-#    (C) 2014-     UNC Institute for the Environment
+#    (C) 2014-2015 UNC Institute for the Environment
 # Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 # See file "GPL.txt" for conditions of use.
 #.........................................................................
@@ -57,8 +57,9 @@ LDFLAGS = -I$(IODIR) -DIOAPICPL $(DEFINEFLAGS) $(ARCHFLAGS)
 #          nc-config --libs
 #          nf-config --libs
 #
- LIBS = -L${OBJDIR} -lioapi -lnetcdf -lnetcdff $(PVMLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
-#LIBS = -L${OBJDIR} -lioapi -lnetcdf  $(PVMLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
+ LIBS = -L${OBJDIR} -lioapi $(NCFLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
+#LIBS = -L${OBJDIR} -lioapi -lnetcdf  $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
+#LIBS = -L${OBJDIR} -lioapi `nf-config --libs` `nc-config --libs` $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 
 VPATH = ${OBJDIR}
 
@@ -72,28 +73,30 @@ m3merge.f       m3pair.f        m3stat.f        m3xtract.f      mtxblend.f      
 mtxbuild.f      mtxcple.f       presterp.f      projtool.f      selmrg2d.f      \
 statb.f         statbdry.f      statc.f         statcust.f      statg.f         \
 statgrid.f      stati.f         statiddat.f     statm.f         stats.f         \
-statspars.f     statstep.
+statspars.f     statstep.f
 
 f90SRC = \
-bcwndw.f90      camxtom3.f90    \
-datshift.f90    factor.f90      fakestep.f90    fills.f90       greg2jul.f90    \
-gregdate.f90    jul2greg.f90    juldate.f90     juldiff.f90     julshift.f90    \
-latlon.f90      m3fake.f90      m3pair.f90      m3probe.f90     m3totxt.f90     \
-m3tproc.f900    m3tshift.f90    m3wndw.f90      mtxcalc.f90     pairstep.f90    \
-presz.f90       timeshift.f90   vertot.f90      vertimeproc.f90 vertintegral.f90
+bcwndw.f90      camxtom3.f90    datshift.f90    factor.f90      fakestep.f90    \
+fills.f90       greg2jul.f90    gridprobe.f90   gregdate.f90    insertgrid.f90  \
+jul2greg.f90    juldate.f90     juldiff.f90     julshift.f90    latlon.f90      \
+m3fake.f90      m3pair.f90      m3probe.f90     m3totxt.f90     m3tproc.f900    \
+m3tshift.f90    m3wndw.f90      mtxcalc.f90     pairstep.f90    presz.f90       \
+timeshift.f90   vertot.f90      vertimeproc.f90 vertintegral.f90                \
+wrfgriddesc.f90 wrftom3.f90
 
 OBJ = $(fSRC:.f=.o) $(FSRC:.F=.o) $(f90SRC:.f=.o)
 
 EXE = \
 airs2m3         bcwndw          camxtom3        datshift        dayagg          \
-factor          greg2jul        gregdate        jul2greg        juldate         \
-juldiff         julshift        kfxtract        latlon          m3agmax         \
-m3agmask        m3cple          m3combo         m3diff          m3edhdr         \
-m3fake          m3hdr           m3interp        m3merge         m3pair          \
-m3probe         m3stat          m3totxt         m3tproc         m3tshift        \
-m3wndw          m3xtract        mtxblend        mtxbuild        mtxcalc         \
-mtxcple         presterp        presz           projtool        selmrg2d        \
-timeshift       vertot          vertimeproc     vertintegral
+factor          greg2jul        gregdate        gridprobe       insertgrid      \
+jul2greg        juldate         juldiff         julshift        kfxtract        \
+latlon          m3agmax         m3agmask        m3cple          m3combo         \
+m3diff          m3edhdr         m3fake          m3hdr           m3interp        \
+m3merge         m3pair          m3probe         m3stat          m3totxt         \
+m3tproc         m3tshift        m3wndw          m3xtract        mtxblend        \
+mtxbuild        mtxcalc         mtxcple         presterp        presz           \
+projtool        selmrg2d        timeshift       vertot          vertimeproc     \
+vertintegral    wrfgriddesc     wrftom3
 
 
 #      ----------------------   TOP-LEVEL TARGETS:   ------------------
@@ -172,6 +175,21 @@ flags:
 .f90.o:
 	cd ${OBJDIR}; $(FC) $(FFLAGS) -c $(SRCDIR)/$<
 
+#  ---------------------------  Dependencies:  --------------------
+
+
+gridprobe.o     : modgctp.mod
+insertgrid.o    : modgctp.mod
+latlon.o        : modgctp.mod
+m3cple.o        : modgctp.mod
+m3interp.o      : modgctp.mod
+mtxbuild.o      : modatts3.mod
+mtxcalc.o       : modatts3.mod modgctp.mod
+mtxcple.o       : modatts3.mod
+projtool.o      : modgctp.mod
+wrfgriddesc.o   : modwrfio.mod
+wrftom3.o       : modwrfio.mod
+
 
 #  ---------------------------  $(EXE) Program builds:  -----------------
 
@@ -199,6 +217,12 @@ greg2jul: greg2jul.o
 
 gregdate: gregdate.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+gridprobe: gridprobe.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+insertgrid:  insertgrid.o
+	cd ${OBJDIR}; ${FC} ${LFLAGS} $^ ${LIBS} -o $@
 
 jul2greg:  jul2greg.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
@@ -313,5 +337,11 @@ vertintegral:  vertintegral.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 vertot:  vertot.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+wrfgriddesc:  wrfgriddesc.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+wrftom3:  wrftom3.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 

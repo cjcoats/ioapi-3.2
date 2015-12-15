@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVYN.html 132 2015-01-26 19:18:10Z coats $" -->
+<!-- "$Id: ENVYN.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> ENVYN() and envync() </TITLE>
 </HEAD>
@@ -16,9 +16,12 @@
 
 <H2> Fortran version: </H2>
 <BLOCKQUOTE>
-        ENVYN() is a Fortran wrapper calling the C envync()<BR>
         <A HREF="ENVGETS.html"><CODE>ENVGET()</CODE></A> is the
-        Fortran-90-generic (I/O&nbsp;API-3.2 or later only)
+        Fortran-90-generic (I/O&nbsp;API-3.2 or later only) that
+        calls the following (or various other routines), as determined
+        by the argument-list:
+        <P>
+        ENVYN() is a Fortran wrapper calling the C envync()
 </BLOCKQUOTE><P> 
 <PRE>
 LOGICAL FUNCTION ENVYN( LNAME, DESCRIP, DEFAULT, STATUS )

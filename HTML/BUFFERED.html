@@ -2,10 +2,10 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BUFFERED.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: BUFFERED.html 238 2015-10-14 20:21:03Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> 
-REAL FILES AND &quot;VIRTUAL FILES&quot;
+REAL FILES, PARALLEL FILES,  AND &quot;VIRTUAL FILES&quot;
 </TITLE>
 </HEAD>
 
@@ -23,10 +23,11 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 </H2>
     <UL>
         <LI>  <A HREF="#intro">Introduction</A>
+        <LI>  <A HREF="#pncf"><VAR>PnetCDF</VAR> Distributed-I/O Files</A>
+        <LI>  <A HREF="#list">File-Set File Lists</A>
         <LI>  <A HREF="#vol">VOLATILE Real Files</A>
         <LI>  <A HREF="#buf">BUFFERED Virtual Files</A>
         <LI>  <A HREF="#pvm">COUPLING-MODE Virtual Files</A>
-        <LI>  <A HREF="#list">File-Set File Lists</A>
         <LI>  <A HREF="#bin">Native-Binary Real Files</A>
     </UL>
 
@@ -34,9 +35,11 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 <A NAME="intro">Introduction</A>
 </H2>
 
+    <BLOCKQUOTE>
+
     The I/O&nbsp;API provides both real, disk-based files (which may be
     <A HREF = "#vol">&quot;volatile&quot;</A> or not, and are
-    implemented on top of either netCDF or a native-binary
+    implemented on top of either netCDF, PnetCDF,  or a native-binary
     implementation) and &quot;virtual files&quot; that may be used to
     provide safe, structured exchange of data -- the latter of 
     &quot;<A HREF = "DATATYPES.html#grdded">gridded</A>,&quot; 
@@ -57,14 +60,120 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     machines half a continent apart across the Internet.
     <P> 
 
+    </BLOCKQUOTE>
+
     <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
     <P>
 
 <HR> <!----------------------------------------------------------------->
 
 <H2> 
+<A NAME="pncf"><VAR>pnetCDF</VAR> Distributed-I/O Files</A>
+</H2>
+
+    <BLOCKQUOTE>
+
+    I/O&nbsp;API Version&nbsp;3.2 introduces support for distributed
+    parallel I/O using 
+    <A HREF="https://trac.mcs.anl.gov/projects/parallel-netcdf"><VAR>PnetCDF</VAR></A>
+    from Argonne National Laboratory, for use in CMAQ-5.1 and later.
+    There are a number of restrictions:
+    <UL>
+        <LI> Only GRIDDED files are supported.
+        <LI> All distributed-I/O files must be on the same grid
+        (matching the CMAQ cross-point grid).
+        <LI>There is one fixed data-distribution and processor-map,
+        which is the one specified by CMAQ.
+    </UL>
+    Additionally, the following environment variables are needed
+    for setting up how the data is distributed over the processors:
+    <BLOCKQUOTE>
+    <DL>
+        <DT><CODE>GRIDDESC</CODE></DT>
+        <DD>Path name for the <A HRERF="">GRIDDESC file</A></DD>
+        <P>
+        <DT><CODE>GRID_NAME</CODE></DT>
+        <DD><CODE>GRIDDESC</CODE>-name for the data grid</DD>
+        <P>
+        <DT><CODE>NPCOL_NPROW</CODE></DT>
+        <DD>Comma list with the column- and row-dimensions
+        for the processor-grid</DD>
+        <P>
+    </DL>
+    </BLOCKQUOTE>
+    To declare that a particular file is to be used with PnetCDF
+    parallel I/O, you need a <CODE>MPI:</CODE> prefix on the 
+    path-name in the usual <CODE>setenv</CODE> statement, as in
+    the following example running on a 6&times;8 processor-grid
+    (48 processors in all):    
+    <PRE>
+    setenv  GRIDDESC     /nas01/depts/ie/cempd/WRFCMAQ/CMAQv5.0.1.GRIDDESC.txt
+    setenv  GRID_NAME    US36_CRO
+    setenv  NPCOL_NPROW  &quot;6 8&quot;
+    ...
+    setenv  CHEMCONC3D   MPI:/tmp/mydir/cmaq.conc.US36_CRO.2015233.ncf
+    </PRE>
+    <P>
+
+    </BLOCKQUOTE>
+
+    <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> 
+<A NAME="list">File-Set File Lists</A>
+</H2>
+
+    <BLOCKQUOTE>
+
+    Multiple files which have the same structure (type, dimensions, list
+    of variables, time step), and which cover an extended time period
+    may be opened under a single logical name by:
+    <PRE>
+    setenv FILE_1 &lt;path name&gt;
+    ...
+    setenv FILE_N &lt;path name&gt;
+    setenv ANAME  LIST:FILE_1,...,FILE_N
+    </PRE>
+    subject to the requirement that the value for <CODE>ANAME</CODE> 
+    has length at most 256.  In case of overlapping time step sequences,
+    the rule is &quot;first file wins,&quot; i.e., if the data is
+    available from the first file, <CODE>FILE_1</CODE>, use it; else if
+    it is available from the second file, use that, and so on.
+    <P>
+    Because of this rule, if you have a sequence of overlapping files
+    covering an extended time period, you probably want to put the list
+    <CODE>LIST:FILE_1,...,FILE_N</CODE>  in reverse chronological order.
+    For example, if the files <CODE>data.M-N.ncf</CODE> have data
+    from 00Z on day M through 00Z on day N from consecutive model
+    runs, then you would probably want to list them in reverse
+    chronological order, at least if you want to get data
+    for 2015124:000000 from file <CODE>data.2015124-2015125.ncf</CODE>:
+    <PRE>
+    setenv F123 /my/dir/data.2015123-2015124.ncf
+    setenv F124 /my/dir/data.2015124-2015125.ncf
+    setenv F125 /my/dir/data.2015125-2015126.ncf
+    setenv F126 /my/dir/data.2015126-2015127.ncf
+    setenv ANAME  LIST:F126,F125,F124,F123
+    ...
+    </PRE>
+    <P>
+
+    </BLOCKQUOTE>
+
+    <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+
+<H2> 
 <A NAME="vol">VOLATILE Real Files</A>
 </H2>
+
+    <BLOCKQUOTE>
 
     Real (netCDF or native-binary disk-based) I/O&nbsp;API files may
     optionally be declared &quot;volatile&quot; by the addition of a
@@ -73,32 +182,27 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     the I/O&nbsp;API to perform disk-synch operations before every
     input and after every output operation on that file:
     <PRE>
-        ...
-        setenv  QUX  &quot;/tmp/mydir/volatiledata.mymodel -v&quot;
+    ...
+    setenv  QUX  &quot;/tmp/mydir/volatiledata.mymodel -v&quot;
     </PRE><P>
     <P> 
 
     These file based lower layers attempt the I/O optimization of not
-    writing a file's header -- needed in order to interpret the file's
-    contents -- out to disk until either a &quot;synch&quot; operation
+    writing a file's header&mdash;needed in order to interpret the file's
+    contents&mdash;out to disk until either a &quot;synch&quot; operation
     is performed, or until the file is closed.  This has the effect of
     making non-volatile output files unreadable until the program that
     writes them does a  <A HREF="SYNC3.html">SYNC3()</A> call for the
     individual files, or <A HREF="SHUT3.html">SHUT3()</A> or
-    <A HREF="M3EXIT.html">M3EXIT()</A> (or if it crashes unexpectedly). 
+    <A HREF="M3EXIT.html">M3EXIT()</A> (or making the files unreadable
+    if the program crashes unexpectedly). 
     This extra &quot;synch&quot; operation does cause some (usually
     small) performance penalty, but it allows other programs to read
     I/O&nbsp;API files while they are still being written, and prevents
     data loss upon program crashes.
-    <P> 
-
-    <EM><STRONG>NOTE: </STRONG> There is a bug in the interaction of
-    netCDF&nbsp;3.4 and the SGI IRIX6 operating system NFS implementation
-    that sometimes causes NFS-based data exchange between
-    concurrently-running programs using volatile netCDF files to fail.
-    If you plan to do such data exchange, either go back to netCDF
-    3.3.1 or before, or go to netCDF 3.5-beta2 or later.</EM>
     <P>
+
+    </BLOCKQUOTE>
 
     <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
     <P>
@@ -108,6 +212,8 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 <H2> 
 <A NAME="buf">BUFFERED Virtual Files</A>
 </H2>
+
+    <BLOCKQUOTE>
 
     For memory-resident BUFFERED files, one restriction at present is
     that  the <A HREF = "DATATYPES.html#basic"> basic data type </A> of
@@ -156,6 +262,9 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
                <CODE>M3REAL</CODE></A>.
      </OL>
 
+    </BLOCKQUOTE>
+
+    <P>
     <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
     <P>
 
@@ -165,9 +274,11 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 <A NAME="pvm">COUPLING-MODE Virtual Files</A>
 </H2>
 
+    <BLOCKQUOTE>
+
     As part of the MCNC
-    <A HREF = "http://www.baronams.com:/projects/ppar/index.html">Practical
-    Parallel Project</A>, MCNC has developed an extended
+    <A HREF = "http://terra.baronams.com:/projects/ppar/index.html">Practical
+    Parallel Project</A>, MCNC developed an extended
     <STRONG>Model Coupling Mode</STRONG> for the I/O&nbsp;API.  
     This mode, implemented using 
     <A HREF = "http://www.epm.ornl.gov:80/pvm/">PVM&nbsp;3.4</A> 
@@ -281,30 +392,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     </UL>
     <P>
 
-    <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
-    <P>
-
-<HR> <!----------------------------------------------------------------->
-
-<H2> 
-<A NAME="list">File-Set File Lists</A>
-</H2>
-
-    Multiple files which have the same structure (type, dimensions, list
-    of variables, time step), and which cover an extended time period
-    may be opened under a single logical name by:
-    <BLOCKQUOTE><CODE>
-    setenv ANAME  LIST:FILE_1,...,FILE_N
-    setenv FILE_1 &lt;path name&gt;
-    ...
-    setenv FILE_N &lt;path name&gt;
-    </CODE></BLOCKQUOTE>
-    subject to the requirement that the value for <CODE>ANAME</CODE> 
-    has length at most 256.  In case of overlapping time step sequences,
-    the rule is &quot;first file wins,&quot; i.e., if the data is
-    available from the first file, <CODE>FILE_1</CODE>, use it; else if
-    it is available from the second file, use that, and so on.
-    <P>
+    </BLOCKQUOTE>
 
     <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
     <P>
@@ -316,6 +404,8 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 </H2>
 
     <H3>Abstract:  Use</H3>
+
+    <BLOCKQUOTE>
     
     The following environment-variable assignment tells the I/O&nbsp;API
     that the indicated file is in the I/O&nbsp;API version of native
@@ -330,8 +420,16 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     <A HREF="M3CPLE.html">M3CPLE</A> to serve as translators back and
     forth between I/O&nbsp;API native binary and I/O&nbsp;API netCDF.
     <P>
+    <EM><U>NOTE:</U>  These are primarily for use at NCEP, where
+    the office politics forbids the presence of netCDF on their
+    computers.</EM>
+    <P>
+
+    </BLOCKQUOTE>
 
     <H3>Introduction</H3>
+
+    <BLOCKQUOTE>
 
     This section describes the structure of the files for a new underlying
     <STRONG>(&quot;<CODE>BINFIL3</CODE>&quot;) binary mode</STRONG> for
@@ -359,7 +457,11 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     formats, e.g., GRIB.
     <P>
 
+    </BLOCKQUOTE>
+
     <H3>Implementation Considerations:  Restrictions and Limitations</H3>
+
+    <BLOCKQUOTE>
 
     <UL>
         <LI>  Initially, the <STRONG>supported platforms</STRONG> are
@@ -424,7 +526,11 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 
    </UL>
 
+    </BLOCKQUOTE>
+
    <H3>Implementation Strategy</H3>
+
+    <BLOCKQUOTE>
 
     <UL>
        <LI>  Implementation is in C, interfacing to Fortran in the same
@@ -477,9 +583,13 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
              <P>
     </UL>
 
+    </BLOCKQUOTE>
+
     <P>
 
     <H3>Metadata Format</H3>
+
+    <BLOCKQUOTE>
 
     The following representations of primitive data types of
     significance to the I/O&nbsp;API are used to store metadata in a
@@ -539,12 +649,14 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;contents[&nbsp;length&nbsp;];<BR>
                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;;<BR>
                  </BLOCKQUOTE></TT>
-        <DD>
     </DL>
     </BLOCKQUOTE>
     <P>
+    </BLOCKQUOTE>
 
     <H3>File Data Structure Design</H3>
+
+    <BLOCKQUOTE>
 
     The structure of a <CODE>BINFIL3</CODE> file is as follows:
     <P>
@@ -781,11 +893,13 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     </BLOCKQUOTE>
     </TT>
 
+    </BLOCKQUOTE>
+
+    <P>
     <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
     <P>
 
 <HR> <!----------------------------------------------------------------->
-
 
 <A HREF = "VBLE.html">
 Previous Section:  <STRONG>Variables and Layers and Time Steps</STRONG>

@@ -2,16 +2,16 @@
 PROGRAM M3FAKE
 
     !!***********************************************************************
-    !! Version "$ $Id: m3fake.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$ $Id: m3fake.f90 163 2015-02-24 06:48:57Z coats $"
     !! EDSS/Models-3 M3TOOLS.
-    !! Copyright (C) 1992-2002 MCNC,
-    !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
-    !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.,
-    !! and (C) 2015 UNC Institute for the Environment
+    !! Copyright (C) 1992-2002 MCNC, 
+    !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
+    !! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and 
+    !! (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  subroutine body starts at line  131
+    !!  subroutine body starts at line  133
     !!
     !!  FUNCTION:
     !!       Generate new EDSS/Models-3 I/O API file with the user-sepcified
@@ -33,7 +33,8 @@ PROGRAM M3FAKE
     !!      Version   6/2008 by CJC:  Albers map-projection support
     !!      Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
     !!          USE M3UTILIO, and related changes.
-    !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source
+    !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source
+    !!      Support for M3INT8 variables.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -68,12 +69,13 @@ PROGRAM M3FAKE
             'File type GRID-NEST        ',          &
             'File type SPARSE MATRIX    '    /)
 
-    INTEGER, PARAMETER :: VTYPES( 3 ) = (/ M3REAL, M3DBLE, M3INT /)
+    INTEGER, PARAMETER :: VTYPES( 4 ) = (/ M3REAL, M3DBLE, M3INT, M3INT8 /)
 
-    CHARACTER*60, PARAMETER :: VMENU( 3 ) =                 &
+    CHARACTER*60, PARAMETER :: VMENU( 4 ) =                 &
         (/  'Primitive data type REAL               ',      &
             'Primitive data type DOUBLE PRECISION   ',      &
-            'Primitive data type INTEGER            '    /)
+            'Primitive data type INTEGER            ',      &
+            'Primitive data type INTEGER8           '    /)
 
     INTEGER, PARAMETER :: GTYPES( 10 ) =                    &
         (/  LATGRD3, LAMGRD3, MERGRD3, STEGRD3, UTMGRD3,    &
@@ -181,7 +183,7 @@ PROGRAM M3FAKE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3fake.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: m3fake.f90 163 2015-02-24 06:48:57Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN

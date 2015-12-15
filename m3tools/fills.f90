@@ -1,15 +1,18 @@
 
 !!***********************************************************************
-!! Version "$Id: fills.f90 101 2015-01-16 16:52:50Z coats $"
+!! Version "$Id: fills.f90 163 2015-02-24 06:48:57Z coats $"
 !! EDSS/Models-3 M3TOOLS.
-!! Copyright (C) 1992-2002 MCNC, (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
-!! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+!! Copyright (C) 1992-2002 MCNC,
+!! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
+!! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
+!! (C) 2015 UNC Institute for the Environment
 !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 !! See file "GPL.txt" for conditions of use.
 !!.........................................................................
 !!  subroutine IFILL starts at line  46
 !!  subroutine RFILL starts at line 120
 !!  subroutine DFILL starts at line 193
+!!  subroutine LFILL starts at line 193
 !!
 !!  FUNCTION:
 !!       fill GRID( NCOLS, NROWS, NLAYS ) with value-pattern determined
@@ -39,7 +42,8 @@
 !!       Version 11/2013 by CJC:  OpenMP parallel.  Reorganize loops
 !!       with R outermost to allow parallelism whether or not NLAYS=1
 !!
-!!       Version 01/2015 by CJC:  free-form F90 source
+!!      Version 02/2015 by CJC for I/O API v3.2:  free-form F90 source;
+!!      support for M3INT8 variables
 !!***********************************************************************
 
 
@@ -261,5 +265,80 @@ SUBROUTINE  DFILL( GRID, NCOLS, NROWS, NLAYS, OP, VAL )
     RETURN
 
 END SUBROUTINE  DFILL
+
+
+!!...........................  begin LFILL()  .....................
+
+SUBROUTINE  LFILL( GRID, NCOLS, NROWS, NLAYS, OP, VAL )
+
+    IMPLICIT NONE
+
+    !!...........   ARGUMENTS and their descriptions:
+
+    INTEGER  , INTENT(IN   ) :: NCOLS, NROWS, NLAYS
+    INTEGER*8, INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS )
+    INTEGER  , INTENT(IN   ) :: OP
+    REAL     , INTENT(IN   ) :: VAL
+
+
+    !!...........   SCRATCH LOCAL VARIABLES and their descriptions:
+
+    INTEGER         R, C, L, V
+
+
+    !!***********************************************************************
+    !!   begin body of subroutine  IFILL
+
+    IF ( OP .EQ. 1 ) THEN
+!$OMP       PARALLEL DO DEFAULT( NONE ),
+!$OMP&                  SHARED( GRID, NCOLS, NROWS, NLAYS ),
+!$OMP&                  PRIVATE( I )
+        DO  R = 1, NROWS
+        DO  L = 1, NLAYS
+        DO  C = 1, NCOLS
+            GRID( C,R,L ) = C
+        END DO
+        END DO
+        END DO
+    ELSE IF ( OP .EQ. 2 ) THEN
+!$OMP       PARALLEL DO DEFAULT( NONE ),
+!$OMP&                  SHARED( GRID, NCOLS, NROWS, NLAYS ),
+!$OMP&                  PRIVATE( I )
+        DO  R = 1, NROWS
+        DO  L = 1, NLAYS
+        DO  C = 1, NCOLS
+            GRID( C,R,L ) = R
+        END DO
+        END DO
+        END DO
+    ELSE IF ( OP .EQ. 3 ) THEN
+!$OMP       PARALLEL DO DEFAULT( NONE ),
+!$OMP&                  SHARED( GRID, NCOLS, NROWS, NLAYS ),
+!$OMP&                  PRIVATE( I )
+        DO  R = 1, NROWS
+        DO  L = 1, NLAYS
+        DO  C = 1, NCOLS
+            GRID( C,R,L ) = L
+        END DO
+        END DO
+        END DO
+    ELSE
+        V = INT( VAL )
+!$OMP       PARALLEL DO DEFAULT( NONE ),
+!$OMP&                  SHARED( GRID, NCOLS, NROWS, NLAYS, V ),
+!$OMP&                  PRIVATE( I )
+        DO  R = 1, NROWS
+        DO  L = 1, NLAYS
+        DO  C = 1, NCOLS
+            GRID( C,R,L ) = V
+        END DO
+        END DO
+        END DO
+    END IF
+
+    RETURN
+
+END SUBROUTINE  LFILL
+
 
 

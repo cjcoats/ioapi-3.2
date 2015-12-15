@@ -2,14 +2,14 @@
         PROGRAM  M3EDHDR
 
 C***********************************************************************
-C Version "$Id: m3edhdr.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: m3edhdr.f 243 2015-10-21 20:06:21Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  110
+C  program body starts at line  112
 C
 C  FUNCTION:
 C       Edit file header attributes.
@@ -31,6 +31,8 @@ C       Version   6/2005 by CJC:  use3 M3PROMPT() for file description
 C       to get around AIX FLUSH() problem
 C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
+C       Version 10/2015 by CJC for I/O API v3.2:  use NF_* netCDF-3 calls
+C       instead of NC*() netCDF-2 calls.
 C***********************************************************************
 
       USE M3UTILIO
@@ -59,7 +61,7 @@ C...........   LOCAL VARIABLES and their descriptions:
         CHARACTER*16    INAME   !  logical name of the first  input file
         INTEGER         FNUM    !  state3 file index
         INTEGER         FID     !  netCDF file ID
-        INTEGER         RCODE   !  netCDF return status
+        INTEGER         IERR   !  netCDF return status
 
         INTEGER         SDATE   !  starting date
         INTEGER         STIME   !  starting time
@@ -145,7 +147,7 @@ C   begin body of program  M3EDHDR
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3edhdr.f 101 2015-01-16 16:52:50Z coats                $',
+     &'$Id:: m3edhdr.f 243 2015-10-21 20:06:21Z coats                $',
      &' '
 
         ARGCNT = IARGC()
@@ -212,10 +214,10 @@ C.......   Head of loop:  choose next edit operation.
             IF ( CHOICE .EQ. 10 ) THEN      !  quit
 
                 IF ( DFLAG ) THEN
-                    CALL NCENDF( FID, RCODE )
-                    IF ( RCODE .NE. 0 ) THEN
+                    IERR = NF_ENDDEF( FID )
+                    IF ( IERR .NE. 0 ) THEN
                          WRITE( MESG, 94000 )
-     &                      'Error', RCODE,
+     &                      'Error', IERR,
      &                      'leaving DEFINE mode for "' //
      &                      TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
@@ -226,10 +228,10 @@ C.......   Head of loop:  choose next edit operation.
 
             ELSE IF ( .NOT. DFLAG ) THEN
 
-                CALL NCREDF( FID, RCODE )
-                IF ( RCODE .NE. 0 ) THEN
+                IERR = NF_REDEF( FID )
+                IF ( IERR .NE. 0 ) THEN
                      WRITE( MESG, 94000 )
-     &                 'Error', RCODE, 'starting DEFINE mode for "' //
+     &                 'Error', IERR, 'starting DEFINE mode for "' //
      &                 TRIM( INAME ) // '"'
                     CALL M3WARN( PNAME, 0, 0, MESG )
                 END IF      !  if ncapt() failed
@@ -253,12 +255,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( P_ALP .NE. P_ALP3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'P_ALP', NCDOUBLE,
-     &                              1, P_ALP, RCODE )
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'P_ALP', NCDOUBLE, 1, P_ALP )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining P_ALP in "' //
+     &                      'Error', IERR, 'redefining P_ALP in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -276,12 +278,12 @@ C.......   Head of loop:  choose next edit operation.
 
                         IF ( P_BET .NE. P_BET3D ) THEN
 
-                            CALL NCAPT( FID, NCGLOBAL, 'P_BET',
-     &                                  NCDOUBLE, 1, P_BET, RCODE )
+                            IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'P_BET', NCDOUBLE, 1, P_BET )
 
-                            IF ( RCODE .NE. 0 ) THEN
+                            IF ( IERR .NE. 0 ) THEN
                                 WRITE( MESG, 94000 )
-     &                          'Error', RCODE, 'redefining P_BET in "'
+     &                          'Error', IERR, 'redefining P_BET in "'
      &                          // TRIM( INAME ) // '"'
                                 CALL M3WARN( PNAME, 0, 0, MESG )
                             ELSE
@@ -297,12 +299,12 @@ C.......   Head of loop:  choose next edit operation.
 
                         IF ( P_GAM .NE. P_GAM3D ) THEN
 
-                            CALL NCAPT( FID, NCGLOBAL, 'P_GAM',
-     &                                  NCDOUBLE, 1, P_GAM, RCODE )
+                            IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'P_GAM', NCDOUBLE, 1, P_GAM )
 
-                            IF ( RCODE .NE. 0 ) THEN
+                            IF ( IERR .NE. 0 ) THEN
                                 WRITE( MESG, 94000 )
-     &                          'Error', RCODE, 'redefining P_GAM in "'
+     &                          'Error', IERR, 'redefining P_GAM in "'
      &                          // TRIM( INAME ) // '"'
                                 CALL M3WARN( PNAME, 0, 0, MESG )
                             ELSE
@@ -319,12 +321,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( XCENT .NE. XCENT3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'XCENT', NCDOUBLE,
-     &                              1, XCENT, RCODE )
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'XCENT', NCDOUBLE, 1, XCENT )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining XCENT in "' //
+     &                      'Error', IERR, 'redefining XCENT in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -339,12 +341,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( YCENT .NE. YCENT3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'YCENT', NCDOUBLE,
-     &                              1, YCENT, RCODE )
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'YCENT', NCDOUBLE, 1, YCENT )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining YCENT in "' //
+     &                      'Error', IERR, 'redefining YCENT in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -363,12 +365,12 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( XORIG .NE. XORIG3D ) THEN
 
-                    CALL NCAPT( FID, NCGLOBAL, 'XORIG', NCDOUBLE,
-     &                          1, XORIG, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'XORIG', NCDOUBLE, 1, XORIG )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining XORIG in "' //
+     &                  'Error', IERR, 'redefining XORIG in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -383,12 +385,12 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( YORIG .NE. YORIG3D ) THEN
 
-                    CALL NCAPT( FID, NCGLOBAL, 'YORIG', NCDOUBLE,
-     &                          1, YORIG, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'YORIG', NCDOUBLE, 1, YORIG )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining YORIG in "' //
+     &                  'Error', IERR, 'redefining YORIG in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -403,12 +405,12 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( XCELL .NE. XCELL3D ) THEN
 
-                    CALL NCAPT( FID, NCGLOBAL, 'XCELL', NCDOUBLE,
-     &                          1, XCELL, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'XCELL', NCDOUBLE, 1, XCELL )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining XCELL in "' //
+     &                  'Error', IERR, 'redefining XCELL in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -423,12 +425,12 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( YCELL .NE. YCELL3D ) THEN
 
-                    CALL NCAPT( FID, NCGLOBAL, 'YCELL', NCDOUBLE,
-     &                          1, YCELL, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'YCELL', NCDOUBLE, 1, YCELL )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining YCELL in "' //
+     &                  'Error', IERR, 'redefining YCELL in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -453,12 +455,12 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( VGTYP .NE. VGTYP3D ) THEN
 
-                    CALL NCAPT( FID, NCGLOBAL, 'VGTYP', NCLONG,
-     &                          1, VGTYP, RCODE )
+                    IERR = NF_PUT_ATT_INT( FID, NCGLOBAL,
+     &                             'VGTYP', NF_INT, 1, VGTYP )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining VGTYP in "' //
+     &                  'Error', IERR, 'redefining VGTYP in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -476,12 +478,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( VGTOP .NE. VGTOP3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'VGTOP',
-     &                              NCFLOAT, 1, VGTOP, RCODE )
+                        IERR = NF_PUT_ATT_REAL( FID, NCGLOBAL,
+     &                              'VGTOP', NCFLOAT, 1, VGTOP )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining VGTOP in "'
+     &                      'Error', IERR, 'redefining VGTOP in "'
      &                      // TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -506,12 +508,12 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( CFLAG ) THEN
 
-                    CALL NCAPT( FID, NCGLOBAL, 'VGLVLS',
-     &                          NCFLOAT, NLAYS3D+1, VGLVS, RCODE )
+                    IERR = NF_PUT_ATT_REAL( FID, NCGLOBAL,
+     &                          'VGLVLS', NCFLOAT, NLAYS3D+1, VGLVS )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining VGLVS in "'
+     &                  'Error', IERR, 'redefining VGLVS in "'
      &                  // TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -538,12 +540,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( SDATE .NE. SDATE3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'SDATE', NCLONG,
-     &                              1, SDATE, RCODE )
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'SDATE',
+     &                              NF_INT, 1, SDATE )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining SDATE in "' //
+     &                      'Error', IERR, 'redefining SDATE in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -557,12 +559,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( STIME .NE. STIME3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'STIME', NCLONG,
-     &                              1, STIME, RCODE )
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'STIME',
+     &                              NF_INT, 1, STIME )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining STIME in "' //
+     &                      'Error', IERR, 'redefining STIME in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -576,12 +578,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( TSTEP .NE. TSTEP3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'TSTEP', NCLONG,
-     &                              1, TSTEP, RCODE )
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'TSTEP',
+     &                              NF_INT, 1, TSTEP )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining TSTEP in "' //
+     &                      'Error', IERR, 'redefining TSTEP in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -599,12 +601,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( SDATE .NE. SDATE3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'SDATE', NCLONG,
-     &                              1, SDATE, RCODE )
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'SDATE',
+     &                              NF_INT, 1, SDATE )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining SDATE in "' //
+     &                      'Error', IERR, 'redefining SDATE in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -618,12 +620,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( STIME .NE. STIME3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'STIME', NCLONG,
-     &                              1, STIME, RCODE )
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'STIME',
+     &                              NF_INT, 1, STIME )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining STIME in "' //
+     &                      'Error', IERR, 'redefining STIME in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
@@ -637,12 +639,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( TSTEP .NE. TSTEP3D ) THEN
 
-                        CALL NCAPT( FID, NCGLOBAL, 'TSTEP', NCLONG,
-     &                              1, TSTEP, RCODE )
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'TSTEP',
+     &                              NF_INT, 1, TSTEP )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining TSTEP in "' //
+     &                      'Error', IERR, 'redefining TSTEP in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         END IF  !  if ncapt() failed
@@ -668,26 +670,25 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( NAMBUF .NE. VNAME3D( V ) ) THEN
 
-                        CALL NCVREN( FID, VINDX3( V,FNUM ),
-     &                               NAMBUF, RCODE )
+                        IERR = NF_RENAME_VAR( FID, VINDX3( V,FNUM ),
+     &                               NAMBUF )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'renaming variable in "' //
+     &                      'Error', IERR, 'renaming variable in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             VNAME3D( V ) = NAMBUF
                         END IF  !  if ncapt() failed
 
-                        CALL NCAPTC( FID, VINDX3( V,FNUM ),
-     &                               'long_name', NCCHAR,
-     &                               NAMLEN3, VNAME3D( V ), RCODE )
-                        IF ( RCODE .NE. 0 ) THEN
+                        IERR = NF_PUT_ATT_TEXT( FID, VINDX3( V,FNUM ),
+     &                           'long_name', NAMLEN3, NAMBUF )
+                        IF ( IERR .NE. 0 ) THEN
                             SCRBUF = 'setting "long-name" to "' //
      &                               TRIM( NAMBUF ) // '" in "' //
      &                               TRIM( INAME ) // '"'
-                            WRITE( MESG, 94000 ) 'Error', RCODE, SCRBUF
+                            WRITE( MESG, 94000 ) 'Error', IERR, SCRBUF
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         END IF              !  ierr nonzero:  NCAPTC() failed
                     END IF      !  if vname(v) changed
@@ -697,12 +698,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( NAMBUF .NE. UNITS3D( V ) ) THEN
 
-                        CALL NCAPTC( FID, VINDX3( V,FNUM ), 'units',
-     &                               NCCHAR, NAMLEN3, NAMBUF, RCODE )
+                        IERR = NF_PUT_ATT_TEXT( FID, VINDX3( V,FNUM ),
+     &                           'units', NAMLEN3, NAMBUF )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE, 'redefining UNITS for "' //
+     &                      'Error', IERR, 'redefining UNITS for "' //
      &                      TRIM( VNAME3D( V ) ) // '" in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
@@ -718,12 +719,12 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( SCRBUF .NE. VDESC3D( V ) ) THEN
 
-                        CALL NCAPTC( FID, VINDX3( V,FNUM ), 'var_desc',
-     &                               NCCHAR, MXDLEN3, SCRBUF, RCODE )
+                        IERR = NF_PUT_ATT_TEXT( FID, VINDX3( V,FNUM ),
+     &                           'var_desc', MXDLEN3, SCRBUF )
 
-                        IF ( RCODE .NE. 0 ) THEN
+                        IF ( IERR .NE. 0 ) THEN
                             WRITE( MESG, 94000 )
-     &                      'Error', RCODE,
+     &                      'Error', IERR,
      &                      'redefining DESCRIPTION for "' //
      &                      TRIM( VNAME3D( V ) ) // '" in "' //
      &                      TRIM( INAME ) // '"'
@@ -736,13 +737,12 @@ C.......   Head of loop:  choose next edit operation.
 
 33              CONTINUE        !  end loop revising variables
 
-                CALL NCAPTC( FID, NCGLOBAL, 'VAR-LIST',
-     &                       NCCHAR, NAMLEN3 * NVARS3D,
-     &                       VNAME3D, RCODE )
-                IF ( RCODE .NE. 0 ) THEN
+                IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'VAR-LIST',
+     &                       NAMLEN3 * NVARS3D, VNAME3D )
+                IF ( IERR .NE. 0 ) THEN
 
                     WRITE( MESG,94000 )
-     &              'Error', RCODE, 'updating variable-names in "' //
+     &              'Error', IERR, 'updating variable-names in "' //
      &              TRIM( INAME ) // '"'
                     CALL M3WARN( PNAME, 0, 0, MESG )
 
@@ -757,48 +757,48 @@ C.......   Head of loop:  choose next edit operation.
 
                 ELSE    !  else not a lat-lon grid
 
-                    CALL NCAPT( FID, NCGLOBAL, 'XORIG', NCDOUBLE,
-     &                          1, 1.0D3 * XORIG3D, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'XORIG', NCDOUBLE, 1, XORIG3D )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining XORIG in "' //
+     &                  'Error', IERR, 'redefining XORIG in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         XORIG3D = 1.0D3 * XORIG3D
                     END IF      !  if ncapt() failed
 
-                    CALL NCAPT( FID, NCGLOBAL, 'YORIG', NCDOUBLE,
-     &                          1, 1.0D3 * YORIG3D, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'YORIG', NCDOUBLE, 1, YORIG3D )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining YORIG in "' //
+     &                  'Error', IERR, 'redefining YORIG in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         YORIG3D = 1.0D3 * YORIG3D
                     END IF      !  if ncapt() failed
 
-                    CALL NCAPT( FID, NCGLOBAL, 'XCELL', NCDOUBLE,
-     &                          1, 1.0D3 * XCELL3D, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                     'XCELL', NCDOUBLE, 1, 1.0D3 * XCELL3D )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining XCELL in "' //
+     &                  'Error', IERR, 'redefining XCELL in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         XCELL3D = 1.0D3 * XCELL3D
                     END IF      !  if ncapt() failed
 
-                    CALL NCAPT( FID, NCGLOBAL, 'YCELL', NCDOUBLE,
-     &                          1, 1.0D3 * YCELL3D, RCODE )
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                     'YCELL', NCDOUBLE, 1, 1.0D3 * YCELL3D )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'redefining YCELL in "' //
+     &                  'Error', IERR, 'redefining YCELL in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -810,12 +810,13 @@ C.......   Head of loop:  choose next edit operation.
             ELSE IF ( CHOICE .EQ. 7 ) THEN      !  centers ~~~> corner based
 
                 XORIG = XORIG - 0.5D0 * XCELL3D
-                CALL NCAPT( FID, NCGLOBAL, 'XORIG', NCDOUBLE,
-     &                      1, XORIG, RCODE )
 
-                IF ( RCODE .NE. 0 ) THEN
+                IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'XORIG', NCDOUBLE, 1, XORIG )
+
+                IF ( IERR .NE. 0 ) THEN
                     WRITE( MESG, 94000 )
-     &              'Error', RCODE, 'redefining XORIG in "' //
+     &              'Error', IERR, 'redefining XORIG in "' //
      &              TRIM( INAME ) // '"'
                     CALL M3WARN( PNAME, 0, 0, MESG )
                 ELSE
@@ -823,12 +824,13 @@ C.......   Head of loop:  choose next edit operation.
                 END IF      !  if ncapt() failed
 
                 YORIG = YORIG - 0.5D0 * YCELL3D
-                CALL NCAPT( FID, NCGLOBAL, 'YORIG', NCDOUBLE,
-     &                      1, YORIG, RCODE )
 
-                IF ( RCODE .NE. 0 ) THEN
+                IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+     &                             'YORIG', NCDOUBLE, 1, YORIG )
+
+                IF ( IERR .NE. 0 ) THEN
                     WRITE( MESG, 94000 )
-     &              'Error', RCODE, 'redefining YORIG in "' //
+     &              'Error', IERR, 'redefining YORIG in "' //
      &              TRIM( INAME ) // '"'
                     CALL M3WARN( PNAME, 0, 0, MESG )
                 ELSE
@@ -842,12 +844,12 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( NAMBUF .NE. GDNAM3D ) THEN
 
-                    CALL NCAPTC( FID, NCGLOBAL, 'GDNAM',
-     &                           NCCHAR, NAMLEN3, NAMBUF, RCODE )
+                    IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'GDNAM',
+     &                           NAMLEN3, NAMBUF )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'renaming grid in "' //
+     &                  'Error', IERR, 'renaming grid in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
@@ -871,7 +873,7 @@ C.......   Head of loop:  choose next edit operation.
                     WRITE( MESG,'( A, I3, 2X, 4 A )' )
      &                'Enter description line', L,
      &                '["', FDESC3D( L )( 1:K ), '"]', '>> '
-                    CALL M3PROMPT( MESG, SCRBUF, RCODE )
+                    CALL M3PROMPT( MESG, SCRBUF, IERR )
 
                     IF ( STATUS .GT. 0 ) THEN
                         WRITE( MESG, '( A, I10, 2X, A )' )
@@ -891,12 +893,12 @@ C.......   Head of loop:  choose next edit operation.
                     FDESC3D( K ) = BLANK
                 END DO
 
-                CALL NCAPTC( FID, NCGLOBAL, 'FILEDESC', NCCHAR,
-     &                       MXDLEN3 * MXDESC3, FDESC3D, RCODE )
+                IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'FILEDESC',
+     &                       MXDLEN3 * MXDESC3, FDESC3D )
 
-                    IF ( RCODE .NE. 0 ) THEN
+                    IF ( IERR .NE. 0 ) THEN
                         WRITE( MESG, 94000 )
-     &                  'Error', RCODE, 'changing FDESC3D in "' //
+     &                  'Error', IERR, 'changing FDESC3D in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     END IF  !  if ncapt() failed

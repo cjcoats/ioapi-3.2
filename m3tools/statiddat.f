@@ -4,14 +4,16 @@
      &                         INNAME, VNAMES, VTYPES, LOGDEV )
 
 C***********************************************************************
-C Version "$Id: statiddat.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: statiddat.f 163 2015-02-24 06:48:57Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems, LLC
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine body starts at line  70
+C  subroutine body starts at line  73
 C
 C  FUNCTION:
 C       Statistics report to LOGDEV on variables VNAMES  from file
@@ -33,6 +35,7 @@ C
 C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C       Version 12/2013 by CJC:  INTENT for arguments
+C       Version  02/2015 by CJC: Support for M3INT8 variables
 C***********************************************************************
 
       USE M3UTILIO
@@ -98,6 +101,14 @@ C   begin body of subroutine  STATIDDAT
      &                          NTHRES( V ), THRES( 1,V ),
      &                          VNAMES( V ), LOGDEV )
                     W = W + GSIZ
+
+                ELSE IF ( VTYPES( V ) .EQ. M3INT8 ) THEN
+
+                    CALL INT82REAL( GSIZ, VV( 1,1,W ), GG )
+                    CALL STATI( NROWS, NLAYS, N, ID, GG,
+     &                          NTHRES( V ), THRES( 1,V ),
+     &                          VNAMES( V ), LOGDEV )
+                    W = W + 2 * GSIZ
 
                 ELSE IF ( VTYPES( V ) .EQ. M3DBLE ) THEN
 

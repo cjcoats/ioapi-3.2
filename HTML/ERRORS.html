@@ -1,28 +1,27 @@
 
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<HTML> 
+<HTML>
 <HEAD>
-<!-- "$Id: ERRORS.html 132 2015-01-26 19:18:10Z coats $" -->
-<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
-<TITLE> 
+<!-- "$Id: ERRORS.html 281 2015-12-10 20:24:32Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE>
     I/O API Troubleshooting
 </TITLE>
 </HEAD>
-   
-<BODY BGCOLOR="#FFFFFF" 
-      TOPMARGIN="15" 
-      MARGINHEIGHT="15" 
-      LEFTMARGIN="15" 
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
       MARGINWIDTH="15">
-<!--#include virtual="/INCLUDES/header.html" -->
 
 <H1>
     EDSS/Models-3 I/O&nbsp;API Troubleshooting
 </H1>
 
-<H2><A NAME="contents"> 
+<H2><A NAME="contents">
 
-    Contents 
+    Contents
 
 </A></H2>
 
@@ -30,28 +29,29 @@
          <LI>  <A HREF="AVAIL.html#ncf4">netCDF Version&nbsp;4 issues</A>
          <LI>  <A HREF="AVAIL.html#gfort"><VAR>gfortran</VAR> build issues</A>
          <LI>  <A HREF="#ccfc">Compiler/system-library compatibility issues</A>
+         <LI>  <A HREF="#intern">&quot;Internal compiler error&quot; Problems</A>
          <LI>  <A HREF="#pgi">Link errors with <VAR>pgf90</VAR> and
                 <VAR>ifort</VAR> on <VAR>Linux</VAR></A>
          <LI>  <A HREF="#reloc"><VAR>relocation error</VAR> link issues
                 for <VAR>x86_64</VAR></A>
          <LI>  <A HREF="#gcc"><VAR>gcc/g77</VAR> on <VAR>x86_64</VAR>
                 Problems</A>
-         <LI>  <A HREF="#irix">IRIX 7.4 Problems</A>
+         <LI>  <A HREF="#irix"  >IRIX 7.4 Problems</A>
          <LI>  <A HREF="#ncferr"> netCDF Error Troubleshooting </A>
          <LI>  <A HREF="#ncf331"> netCDF 3.3.1 Error Numbers list </A>
          <LI>  <A HREF="#other">  Other Problems </A>
     </UL>
 
 <H3>NOTE</H3>
-    
-    If you run into troubles with I/O&nbsp;API related programs, it is 
+
+    If you run into troubles with I/O&nbsp;API related programs, it is
     useful to know the versions of all the software components.  The
     CVS-related program <VAR>ident</VAR> can report to you versioning
-    keywords in the various components of object, library, or executable
-    files. For example, I can run the following sequence of commands on 
-    my desktop machine to find out the versioning information of various
-    components:
-    <PRE>
+    keywords in the various components of (binary) object, library, or
+    executable files. For example, I can run the following sequence of
+    commands on my desktop machine to find out the versioning
+    information of various binary components:
+    <BLOCKQUOTE><PRE>
 % cd $HOME/apps/$BIN
 % ident init3.o
     &mdash;reports the INIT3 version:  init3.F 87 2015-01-07 17:37:58Z coats
@@ -59,13 +59,18 @@
     &mdash;reports the INIT3 and M3UTILIO versions
 % ident m3stat
     &mdash;reports the INIT3, M3UTILIO, and netCDF versions
+    </PRE></BLOCKQUOTE>
+    Each I/O&nbsp;API source file will have its version embedded in the file's
+    header-comment, e.g.
+    <PRE>
+    !! Version "$Id: ERRORS.html 281 2015-12-10 20:24:32Z coats $"
     </PRE>
 <P>
 
 
 <HR> <!----------------------------------------------------------------->
 
-<H2><A NAME="ccfc"> 
+<H2><A NAME="ccfc">
 
      Compiler/system-library compatibility issues
 
@@ -81,37 +86,20 @@
     at link time; others at run-time. In particular, the following are
     known to have problems:
     <UL>
-         <LI>  Builds with mixed <VAR>g77</VAR>, <VAR>g95</VAR>, and/or
-               <VAR>gfortran</VAR>:  these seem to link correctly, but
-               Fortran I/O gets messed up because they use different
-               unit-number systems behind the scenes and give you
-               troubles.  
-               <EM>Thanks to Erick Jones, BSI, for this one.</EM>
-         <P>
 
          <LI>  Linux-distribution-supplied <VAR>libnetcdf.a</VAR>
-               rarely works with CMAS-supported compiler sets.
-               It is best to build your own, with the same compilers
-               and compiler-flags as your <VAR>libioapi.a</VAR>
-               and models.
+               rarely works with CMAS-supported compiler sets. It is
+               best to build your own netCDF library, with the same
+               compilers and compiler-flags as your
+               <VAR>libioapi.a</VAR> and models.
          <P>
 
-         <LI>  NetCDF Version&nbsp;4.x have lots of changes; see
-               <A HREF="AVAIL.htmlo#ncf4">this note about it in
+         <LI>  NetCDF Versions&nbsp;4.x have lots of changes; see
+               <A HREF="AVAIL.html#ncf4">this note about it in
                the build instructions.</A>
          <P>
 
-         <LI>  Builds with mixed <VAR>f77</VAR> <VAR>f90</VAR> on
-               various systems including Sun and SGI (troubles similar
-               to the above...)
-         <P>
-
-         <LI>  Builds with mixed <VAR>f77</VAR> <VAR>f90</VAR> on
-               various systems including Sun and SGI (troubles similar
-               to the above...)
-         <P>
-
-         <LI>  Compiler-version to compiler-version library troubles. 
+         <LI>  Compiler-version to compiler-version library troubles.
                These are known to happen in particular between versions
                for the Sun and Intel compiler sets.  It is likely an
                issue with mixed GNU 3.x and 4.x systems as well.
@@ -119,6 +107,27 @@
 
          <LI>  <A HREF="#pgi">Link errors  with <VAR>pgf90</VAR> and
                 <VAR>ifort</VAR> on <VAR>Linux</VAR></A> (below)
+         <P>
+         <EM>The following are not relevant for I/O&nbsp;API-3.0 or
+         later, since Fortan-77 support has been dropped:</EM>
+         <P>
+
+         <LI>  Builds with mixed <VAR>g77</VAR>, <VAR>g95</VAR>, and/or
+               <VAR>gfortran</VAR>:  these seem to link correctly, but
+               Fortran I/O gets messed up because they use different
+               unit-number systems behind the scenes and give you
+               troubles.
+               <EM>Thanks to Erick Jones, BSI, for this one.</EM>
+         <P>
+
+         <LI>  Builds with mixed <VAR>f77</VAR> <VAR>f90</VAR> on
+               various systems including Sun and SGI (troubles similar
+               to the above...)
+         <P>
+
+         <LI>  Builds with mixed <VAR>f77</VAR> <VAR>f90</VAR> on
+               various systems including Sun and SGI (troubles similar
+               to the above...)
          <P>
     </UL>
 
@@ -130,7 +139,56 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2><A NAME="pgi"> 
+<H2><A NAME="intern">
+
+     &quot;Internal compiler error&quot; Problems
+
+</A></H2>
+
+    At least some versions of the Intel compilers <VAR>icc</VAR> and
+    <VAR>ifort</VAR> cannot handle the internal complexity of some
+    routines (usually <VAR>iobin3.c</VAR>) when compiling with full
+    optimization:  one will see error messages like the following when
+    running <VAR>make</VAR> for the I/O&nbsp;API  (where I've used
+    backslashes to fold the compile-line to make it readable):
+
+    <BLOCKQUOTE><PRE>
+cd /nas01/depts/ie/cempd/apps/CMAQ/v5.1/Linux2_x86_64ifortopenmpi;     \
+  icc -c -DIOAPI_PNCF=1 -DAUTO_ARRAYS=1 -DF90=1 -DFLDMN=1 -DFSTR_L=int \
+  -DIOAPI_NO_STDOUT=1 -DAVOID_FLUSH=1 -DBIT32=1  -O3 -traceback -xHost \
+  -DVERSION='3.2-nocpl' /nas01/depts/ie/cempd/apps/CMAQ/v5.1/ioapi/iobin3.c
+/nas01/depts/ie/cempd/apps/CMAQ/v5.1/ioapi/iobin3.c(1111) (col. 29): internal error: 0_1529
+
+compilation aborted for /nas01/depts/ie/cempd/apps/CMAQ/v5.1/ioapi/iobin3.c (code 4)
+make: *** [iobin3.o] Error 4
+    </PRE></BLOCKQUOTE>
+    <P>
+
+    A measure that generally works is to re-do the last compile-command,
+    but with a lower optimization, and then re-do the <VAR>make</VAR>.
+    It is useful to cut-and-paste the last command into a sub-shell
+    (enclosing the command by parentheses), with the &quot;-O3&quot;
+    eliminated or reduced to &quot;-O&quot;, as in the following example:
+    <BLOCKQUOTE><PRE>
+( cd /nas01/depts/ie/cempd/apps/CMAQ/v5.1/Linux2_x86_64ifortopenmpi;   \
+  icc -c -DIOAPI_PNCF=1 -DAUTO_ARRAYS=1 -DF90=1 -DFLDMN=1 -DFSTR_L=int \
+  -DIOAPI_NO_STDOUT=1 -DAVOID_FLUSH=1 -DBIT32=1 -traceback -xHost      \
+  -DVERSION='3.2-nocpl' /nas01/depts/ie/cempd/apps/CMAQ/v5.1/ioapi/iobin3.c )
+! make
+    </PRE></BLOCKQUOTE>
+    <P>
+
+    This trick is also useful when trying to do highly-optimized builds
+    of other models (WRF, CMAQ, ...)
+    <P>
+
+    <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2><A NAME="pgi">
 
      Link errors with <VAR>pgf90</VAR> and <VAR>ifort</VAR> on <VAR>Linux</VAR>
 
@@ -152,18 +210,18 @@
     can either remove the <CODE>-Msecond_underscore</CODE> flag
     from <CODE>FOPTFLAGS</CODE> in the <VAR>Makeinclude.Linux2_x86_64pg_gcc*</VAR>
     or else change the line <CODE>CC&nbsp;=&nbsp;pgcc</CODE> to
-    <CODE>CC&nbsp;=&nbsp;gcc</CODE> in the 
+    <CODE>CC&nbsp;=&nbsp;gcc</CODE> in the
     <VAR>Makeinclude.Linux2_x86_64pg_pgcc*</VAR> files.  These
-    modifications have been made to the 2/24/2009 release of the 
+    modifications have been made to the 2/24/2009 release of the
     <VAR>Makeinclude.Linux2_x86_64pg_gcc*</VAR>, with the older
     flags commented out, for use by those who need them.
     <P>
 
     In particular, Gnu Fortrans (<VAR>g77</VAR> and <VAR>g95</VAR>)
-    have different name mangling behavior than is 
+    have different name mangling behavior than is
     the default with Portland Group <VAR>pgf90</VAR>.  Vendor supplied
     NetCDF librararies <CODE>libnetcdf.a</CODE> <EM>always</EM> use
-    the Gnu Fortran conventions, and as such are incompatible with 
+    the Gnu Fortran conventions, and as such are incompatible with
     the default compilation flags for <VAR>SMOKE</VAR> or <VAR>CMAQ</VAR>.
     For the Linux/Portland Group/<VAR>SMOKE</VAR> or <VAR>CMAQ</VAR>
     combination, you have two choices:
@@ -180,7 +238,7 @@
               use these libraries.
     </UL>
     <P>
-    
+
     This Portland Group  inconsistency is exactly why the I/O&nbsp;API
     is supplied with multiple <CODE>/Makeinclude.Linux2_x86pg*</CODE>
     files in the first place...  Note that the I/O&nbsp;API supplies a
@@ -197,7 +255,7 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2><A NAME="gcc"> 
+<H2><A NAME="gcc">
 
      <VAR>gcc/g77</VAR> on <VAR>x86_64</VAR> problems
 
@@ -251,7 +309,7 @@ class `AREG'
 
 <HR> <!----------------------------------------------------------------->
 
-<H2><A NAME="reloc"> 
+<H2><A NAME="reloc">
 
      <CODE>relocation error</CODE> link issues for <VAR>x86_64</VAR> Linux
 
@@ -259,12 +317,12 @@ class `AREG'
 
     If sizes of individual arrays or of <CODE>COMMON</CODE> blocks
     exceed 2GB on the <VAR>x86_64</VAR> platforms, Intel <VAR>ifort</VAR>
-    and <VAR>icc</VAR> will give you failures, with messages about 
+    and <VAR>icc</VAR> will give you failures, with messages about
     <CODE>relocation error</CODE>s at link-time.  The problem is that
     the default &quot;memory model&quot; doesn't support huge arrays and
     huge code-sets properly.  The &quot;medium&quot; memory model
     supports huge arrays, and the &quot;medium&quot; memory model
-    supports both huge arrays and huge code-sets.  To get around 
+    supports both huge arrays and huge code-sets.  To get around
     this, you will <STRONG>need to add</STRONG>
     <BLOCKQUOTE><VAR>
         -mcmodel=medium -shared-intel
@@ -294,7 +352,7 @@ class `AREG'
 
 <HR> <!----------------------------------------------------------------->
 
-<H2><A NAME="irix"> 
+<H2><A NAME="irix">
 
     IRIX 7.4 Problems
 
@@ -304,7 +362,7 @@ class `AREG'
     <STRONG>SGI F90 compiler-flag problems:</STRONG>  It seems that
     SGI version 7.4 and later Fortran compilers demand a different set
     of <CODE>TARG</CODE> flags than do 7.3.x and before.  For example,
-    for an Origin 3800 (where <VAR>hinv</VAR> reports 
+    for an Origin 3800 (where <VAR>hinv</VAR> reports
     <BLOCKQUOTE><CODE>
     24 400 MHZ IP35 Processors
     CPU: MIPS R12000 Processor Chip Revision: 3.5
@@ -334,7 +392,7 @@ class `AREG'
                will not correctly build the netCDF library used by the
                I/O&nbsp;API.  Although the <VAR>make</VAR>
                <STRONG>seems</STRONG> to succeed on that platform,
-               <VAR>make&nbsp;test</VAR> fails almost immediately;  
+               <VAR>make&nbsp;test</VAR> fails almost immediately;
                attempts to use the <CODE>libnetcdf.a</CODE> that
                was built will also lead to program crashes.<BR>
                <EM>At present, the only workaround we have is to use a
@@ -361,7 +419,7 @@ class `AREG'
                show up in scrambled order.  (Note that
                industry-standard mapping of  <CODE>WRITE(*,...)</CODE>
                onto unbuffered UNIX standard output still happens with
-               version&nbsp;7.3 and must be preserved, but fails with 
+               version&nbsp;7.3 and must be preserved, but fails with
                version&nbsp;7.4.)
                <P>
     </UL>
@@ -371,7 +429,7 @@ class `AREG'
 
 <HR> <!----------------------------------------------------------------->
 
-<H2><A NAME="ncferr"> 
+<H2><A NAME="ncferr">
 
     NetCDF Error Troubleshooting
 
@@ -383,29 +441,29 @@ class `AREG'
                will not correctly build the netCDF library used by the
                I/O&nbsp;API.  Although the <VAR>make</VAR>
                <EM>seems</EM> to succeed on that platform,
-               <VAR>make&nbsp;test</VAR> fails almost immediately;  
+               <VAR>make&nbsp;test</VAR> fails almost immediately;
                attempts to use the <CODE>libnetcdf.a</CODE> that
                was built will also lead to program crashes.
                <P>
          <LI>  NetCDF Error Troubleshooting <STRONG>Generalities:</STRONG>
                <P>
                All the netCDF &quot;magic numbers&quot; are defined
-               in the I/O&nbsp;API <CODE>NETCDF.EXT</CODE> file (which 
+               in the I/O&nbsp;API <CODE>NETCDF.EXT</CODE> file (which
                is the I/O API name for the file netCDF calls
                <CODE>src/fortran/netcdf.inc</CODE>. Errors defined
                in netCDF 2.x have positive values in the range 1...32
                (except for <CODE>NCSYSERR</CODE> which is -1); errors
                newly defined for netCDF 3.x are in the range -60...-1.
                General methodology:  find the error-number and then try
-               to figure out what's wrong from the name of the 
-               corresponding <CODE>PARAMETER</CODE>.  
+               to figure out what's wrong from the name of the
+               corresponding <CODE>PARAMETER</CODE>.
                <P>
-               Note that UCAR re-defined some of these errors between 
-               versions 3.3.1 and 3.4 of netCDF (while leaving the 
+               Note that UCAR re-defined some of these errors between
+               versions 3.3.1 and 3.4 of netCDF (while leaving the
                various library versions link-compatible), so you may
-               have to look at the <CODE>src/fortran/netcdf.inc</CODE> 
+               have to look at the <CODE>src/fortran/netcdf.inc</CODE>
                for the version of the netCDF <CODE>libnetcdf.a</CODE>
-               you are linking with, if this is different from the 
+               you are linking with, if this is different from the
                version used to build your <CODE>libioapi.a</CODE>
                <P>
                Martin Otte, US EPA, reports that there are similar
@@ -418,39 +476,39 @@ class `AREG'
                I get &quot;netCDF error -1&quot;</A>
                <P>
                This is <CODE>NCSYSERR</CODE>, meaning the system wouldn't
-               give you permission for what you wanted to do.  Most 
+               give you permission for what you wanted to do.  Most
                probably it means you need to check permissions on either
-               the file you're trying to create or access, or on the 
+               the file you're trying to create or access, or on the
                directories in its directory path.
                <P>
-         <LI>  <A NAME="ncferr2"> 
+         <LI>  <A NAME="ncferr2">
                I get &quot;netCDF error 2&quot;</A>
                <P>
                &quot;Not a netcdf id&quot;, which can happen both if the
                file honestly <EM>isn't</EM> a netCDF file, and also if it
                is a netCDF file, but wasn't shut correctly.  (unless you've
-               declared a file &quot;volatile&quot; by 
+               declared a file &quot;volatile&quot; by
                <CODE>setenv&nbsp;&lt;file&gt;&nbsp;&lt;path&gt;&nbsp;-v</CODE>,
                netCDF doesn't update the file header until you call
                <CODE>SHUT3()</CODE> or <CODE>M3EXIT()</CODE>.)
                <P>
-         <LI>  <A NAME="ncferr4"> 
+         <LI>  <A NAME="ncferr4">
                I get &quot;netCDF error 4&quot;</A>
                <P>
                &quot;Invalid Argument&quot;, but almost certainly this
                means you're using netCDF library 2.x with an I/O&nbsp;API
-               library built for netCDF version 3.x (NCAR accidentally 
+               library built for netCDF version 3.x (NCAR accidentally
                changed one of the &quot;magic numbers&quot; used in
                opening files when they upgraded netCDF from 2.x to 3.x).
                <P>
-         <LI>  <A NAME="ncferr31"> 
+         <LI>  <A NAME="ncferr31">
                I get &quot;netCDF error -31&quot;</A>
                <P>
                This is a variant of the system permission problem.
                A directory spec of with an extra nonexistent
-               component, e.g., <CODE>/foo/bar/qux/zorp</CODE> when 
+               component, e.g., <CODE>/foo/bar/qux/zorp</CODE> when
                you really mean <CODE>/foo/bar/zorp</CODE> and the
-               <CODE>/foo/bar/qux</CODE> doesn't exist seems to cause 
+               <CODE>/foo/bar/qux</CODE> doesn't exist seems to cause
                Error -31.  Can also happen by trying to open too many
                netCDF files simultaneously (although the I/O&nbsp;API
                has additional traps around this).
@@ -458,28 +516,28 @@ class `AREG'
                Or on a Cray vector machine, this may mean you're
                running up against your memory limit. (On Crays, netCDF v3.x
                dynamically-allocates a fairly large buffer to optimize
-               I/O for each file; this allocation may well push you over 
+               I/O for each file; this allocation may well push you over
                your (interactive or queue) memory limit.  For netCDF v3.4,
                there are tricks you can play with environment variables
                to manipulate these buffer sizes.  This error also has
-               turned up with some of the more obscure file-permission 
+               turned up with some of the more obscure file-permission
                problems.
                <P>
-         <LI>  <A NAME="ncferr40"> 
+         <LI>  <A NAME="ncferr40">
                I get &quot;netCDF error -40&quot;</A>
                <P>
-               Probably means you tried to read data past the last 
+               Probably means you tried to read data past the last
                date-and-time on the file (the I/O&nbsp;API runs
                netCDF in &quot;verbose mode&quot;, so that netCDF
-               will always print <EM>all</EM> error messages, 
+               will always print <EM>all</EM> error messages,
                including this one.  Also can happen when the calling
-               program is running in parallel, but a non-MP-enabled 
+               program is running in parallel, but a non-MP-enabled
                version of the I/O&nbsp;API library was linked in.
                <P>
-         <LI>  <A NAME="ncf331">List of netCDF 3.3.1 errors</A>, 
+         <LI>  <A NAME="ncf331">List of netCDF 3.3.1 errors</A>,
                with attempted annotations
                <UL>
-                   <LI> <STRONG>ncnoerr = nf_noerr = 0: </STRONG>:  
+                   <LI> <STRONG>ncnoerr = nf_noerr = 0: </STRONG>:
                         no error has been detected at this time.
                    <LI> <STRONG>ncenfile = nc_syserr = -31: </STRONG>
                         <A HREF="#ncferr31">see above</A>
@@ -529,11 +587,11 @@ class `AREG'
                         a bug in I/O&nbsp;API internals)
                    <LI> <STRONG>ncebadty = nf_ebadtype = -45: </STRONG>
                         not a netcdf data type:  you are trying to
-                        create a file for which some value of 
+                        create a file for which some value of
                         <CODE>VGTYP3D(&lt;variable&gt;)</CODE> in
-                        <CODE>FDESC3</CODE> is not one of 
+                        <CODE>FDESC3</CODE> is not one of
                         <CODE>M3INT</CODE>. <CODE>M3REAL</CODE>, or
-                        <CODE>M3DBLE</CODE> 
+                        <CODE>M3DBLE</CODE>
                    <LI> <STRONG>ncebadd = nf_ebaddim = -46: </STRONG>
                         invalid dimension ID  (would indicate a bug in
                         I/O&nbsp;API internals)
@@ -557,7 +615,7 @@ class `AREG'
                         action prohibited on ncglobal varid (would
                         indicate a bug in I/O&nbsp;API internals)
                    <LI> <STRONG>ncenotnc = nf_enotnc = -51: </STRONG>
-                        not a netcdf file:  File not recognized as a 
+                        not a netcdf file:  File not recognized as a
                         netCDF file (possibly empty; possibly not
                         closed  properly (e.g., no <CODE>SHUT3()</CODE>
                         or <CODE>M3EXIT()</CODE>).
@@ -575,7 +633,7 @@ class `AREG'
                    attempting to time-step a time-independent file;
                    would indicate a bug in  I/O&nbsp;API internals
                    <LI> <STRONG>nf_echar = -56: </STRONG>
-                   Attempt to convert between text and numbers (would 
+                   Attempt to convert between text and numbers (would
                    indicate a bug in I/O&nbsp;API internals)
                    <LI> <STRONG>nf_eedge = -57: </STRONG>
                    subscript out-of-bounds error  (would indicate
@@ -594,7 +652,7 @@ class `AREG'
                    Something is messed up, and netCDF doesn't have
                    an error number for it, or doesn't understand how/why
                    the messup happened
-                   <LI> <STRONG>other errors: </STRONG> should be 
+                   <LI> <STRONG>other errors: </STRONG> should be
                    OS errors, as defined in the system's
                    <CODE>/usr/include/sys/errno.h</CODE>
                </UL>
@@ -606,7 +664,7 @@ class `AREG'
 
 <HR> <!----------------------------------------------------------------->
 <H2> <A NAME="other">
-Other Problems 
+Other Problems
 </A></H2>
 
     <UL>
@@ -615,27 +673,27 @@ Other Problems
                This is only relevant for users at NCEP, where local
                politics forbids any copy of <VAR>libnetcdf.a</VAR>
                on their systems.  <VAR>libnotcdf.a</VAR>  is a
-               library that satisfies linker references to 
+               library that satisfies linker references to
                <VAR>libnetcdf.a</VAR> with &quot;stub&quot; routines
                that merely report that the user is trying to use
                NCEP-forbidden netCDF file mode instead of NCEP-required
                native-binary file mode.
                <P>
-               
+
          <LI>  Why does <EM>something</EM> with log output, netCDF
                crashes, netCDF failures, etc. happen with the SGI
                Version&nbsp;7.4 compilers?
                <P>
                <A HREF="#irix">See above.</A>
                <P>
-               
+
          <LI>  Why does <EM>something</EM> with log output, netCDF
                crashes, netCDF failures, etc. happen with the SGI
                Version&nbsp;7.4 compilers?
                <P>
                <A HREF="#irix">See above.</A>
                <P>
-               
+
          <LI>  Why does the I/O&nbsp;API &quot;hang&quot; inside
                <VAR>env*()</VAR> calls on my Linux box, using the
                Portland compilers?
@@ -648,7 +706,7 @@ Other Problems
                <U>with</U>  this flag (as is the I/O&nbsp;API default),
                the program will hang (i.e., appear to freeze, consuming
                all available computational resources but making no
-               evident progress). 
+               evident progress).
                <P>
                <STRONG>Solution:</STRONG> either use the
                <CODE>&nbsp;-mp&nbsp;</CODE> compile flag for all
@@ -680,7 +738,7 @@ Other Problems
                </CODE></BLOCKQUOTE>
                in either the main program or in other subroutines that
                are called should ensure that <CODE>BLOCK&nbsp;DATA&nbsp;FOOBLOCK</CODE>
-               is linked into the final executable.  This does not 
+               is linked into the final executable.  This does not
                happen with SGI &nbsp;<VAR>f90</VAR> Version&nbsp;7.4,
                even in very simple test cases.
                Note that <CODE>BLOCK&nbsp;DATA&nbsp;INITBLK3</CODE> is needed to
@@ -705,12 +763,12 @@ Other Problems
                <P>
 
          <LI>  &quot;Why do I get messages about unresolved symbols
-               with names like <CODE>__mp_getlock</CODE>, 
+               with names like <CODE>__mp_getlock</CODE>,
                <CODE>__mp_unlock</CODE>, or something else with
                <CODE>_mp</CODE> in it?&quot;
                <P>
                This probably means that you are using a version of the
-               <CODE>libioapi.a</CODE> that is enabled for 
+               <CODE>libioapi.a</CODE> that is enabled for
                <A HREF = "NEWSTUFF.html#taskp"> OpenMP parallel</A>
                usage, but have not activated the system parallel
                libraries.  On SGI, this means that you need to add a
@@ -721,22 +779,21 @@ Other Problems
                your machine/compiler's <VAR>Makeinclude.${BIN}</VAR>.
                <P>
 
-         <LI>  &quot;Why are my program log and my Fortran-style files 
+         <LI>  &quot;Why are my program log and my Fortran-style files
                missing or screwed up?  And where did these
                <CODE>fort.&lt;nn&gt;</CODE> files come from?&quot;
                <P>
-               On some systems (notably Sun and SGI), there are 
-               incompatibilities in run-time libraries between 
-               <CODE>f77</CODE> and <CODE>f90</CODE>.
-               The upshot is that on these systems, you can link 
-               together Fortran-77 and C using <CODE>f77</CODE>, 
-               or Fortran-90  and C using <CODE>f90</CODE>, but
-               you can't link together Fortran-77 and Fortran-90.
-               The default I/O&nbsp;API distribution is built using
-               <CODE>f77</CODE> and runs into this problem when your
-               model code is built using <CODE>f90</CODE>.  The 
-               solution is to rebuild the I/O&nbsp;API using
-               <CODE>f90</CODE>.
+               On some systems (notably Sun and SGI), there are
+               incompatibilities in run-time libraries between
+               <CODE>f77</CODE> and <CODE>f90</CODE>. The upshot is that
+               on these systems, you can link  together Fortran-77 and C
+               using <CODE>f77</CODE>,  or Fortran-90  and C using
+               <CODE>f90</CODE>, but you can't link together Fortran-77
+               and Fortran-90. The default I/O&nbsp;API distribution for
+               I/O&nbsp;API-3.0 or later is built using <CODE>f90</CODE>
+               and runs into this problem when your model code is built
+               using <CODE>f77</CODE>.  The  solution is to rebuild the
+               model code using <CODE>f90</CODE>.
                <P>
 
          <LI>  Problems with RedHat 7.0 Linux  (thanks to Zion Wang for
@@ -756,7 +813,7 @@ Other Problems
                <P>
 
          <LI>  &quot;My program does a <CODE>segmentation fault</CODE>
-               on the <CODE>OPEN3</CODE> call when I attempt to create a 
+               on the <CODE>OPEN3</CODE> call when I attempt to create a
                new file!&quot;
                <P>
                Probably the file description was not completely filled
@@ -769,11 +826,11 @@ Other Problems
                just ASCII zeros correctly).
                <P>
 
-         <LI>  &quot;My program wrote the data out but I can't 
+         <LI>  &quot;My program wrote the data out but I can't
                read/<CODE>ncdump</CODE>/<CODE>PAVE</CODE> it now!&quot;
                <P>
-               Probably the file wasn't shut correctly.  (Unless 
-               you've declared a file &quot;volatile&quot; by 
+               Probably the file wasn't shut correctly.  (Unless
+               you've declared a file &quot;volatile&quot; by
                <CODE>setenv&nbsp;&lt;file&gt;&nbsp;&lt;path&gt;&nbsp;-v</CODE>,
                netCDF doesn't update the file header until you call
                <CODE>SHUT3()</CODE> or <CODE>M3EXIT()</CODE>.)
@@ -784,7 +841,7 @@ Other Problems
                the physical file name.&quot;
                <P>
                This usually means that the script which ran your program
-               failed to execute correctly the <VAR>setenv</VAR> to define 
+               failed to execute correctly the <VAR>setenv</VAR> to define
                the logical name for the file.  Try using the <VAR>env</VAR>
                command in the script before you run the program, in order
                to get started debugging your script.
@@ -804,7 +861,7 @@ Other Problems
                          be defined, and don't go backwards.  E.g., if
                          you have
                          <BLOCKQUOTE><CODE>
-                         !!!  INCORRECT !!! f77 -o foo foo.o ...
+                         !!!  INCORRECT !!! f90 -o foo foo.o ...
                          -lnetcdf -lioapi
                          </CODE></BLOCKQUOTE>
                          the linker
@@ -812,7 +869,7 @@ Other Problems
                          functions that are called in the I/O&nbsp;API;
                          instead, if you use
                          <BLOCKQUOTE><CODE>
-                         !! CORRECT: f77 -o foo foo.o ... -lioapi -lnetcdf
+                         !! CORRECT: f90 -o foo foo.o ... -lioapi -lnetcdf
                          </CODE></BLOCKQUOTE>
                          then
                          the linker will scan &quot;-lnetcdf&quot; to
@@ -822,14 +879,14 @@ Other Problems
                          using maybe &quot;cc&quot; or  &quot;g++&quot;
                          or something else to do the link step. If so,
                          you need to explicitly list the libraries that
-                         f77 would include.  The list of these is vendor
-                         dependent but frequently looks something like 
+                         <VAR>f90</VAR> would include.  The list of these is vendor
+                         dependent but frequently looks something like
                          <BLOCKQUOTE><CODE>
-                         ... -lf77 -lU77 -lm
+                         ... -lf90 -lU90 -lm
                          </CODE></BLOCKQUOTE>
                          One way to find out is to try to use
-                         <VAR>f77</VAR> in verbose mode
-                         (<CODE>f77&nbsp;-v ...</CODE> on most UNIX
+                         the Fortrtan comp;iler in verbose mode, e.g.,
+                         (<CODE>f90&nbsp;-v ...</CODE> on most UNIX
                          systems) to do the linking:  it may not find
                          the needed C++  libraries, but it will tell
                          you what libraries it needed for the Fortran
@@ -848,7 +905,7 @@ Other Problems
                          on  Linux systems that come with a
                          system-installed <CODE>libnetcdf.a</CODE>
                          (which will have been built with
-                         <CODE>gcc/g77</CODE>).</EM>  
+                         <CODE>gcc/g77</CODE>).</EM>
                          <P>
                          The precise mangling behavior depends upon the
                          compiler, your system defaults file for the
@@ -884,8 +941,8 @@ Other Problems
                          <CODE>nm_test.csh</CODE> to help you with this:
                          run</VAR>
                          <BLOCKQUOTE><CODE>
-                         nm_test.csh  &lt;obj-file&gt; 
-                         &lt;lib-file&gt;  &lt;symbol&gt; 
+                         nm_test.csh  &lt;obj-file&gt;
+                         &lt;lib-file&gt;  &lt;symbol&gt;
                          </CODE></BLOCKQUOTE>
                          <P>
                    <LI>  <STRONG>Bad compiler
@@ -894,7 +951,7 @@ Other Problems
                          Sometimes you'll find that the missing
                          symbol was in a system routine that the
                          compiler should have known about but somehow
-                         (maybe bad compiler-installation) didn't. 
+                         (maybe bad compiler-installation) didn't.
                          That one happened to me earlier this week
                          (as I write this May&nbsp;3, 2002) on an HP
                          system.
@@ -905,13 +962,13 @@ Other Problems
          <LI>  &quot;PAVE reports bad values -- -9.xxE37 or something!&quot;
                <P>
                This is a PAVE bug, not an I/O&nbsp;API bug:  the original
-               person who wrote the file-reader for PAVE couldn't be 
+               person who wrote the file-reader for PAVE couldn't be
                bothered to use the I/O&nbsp;API, but instead used raw
                netCDF reads without proper data-structure and error
                checking.  NetCDF fills in &quot;holes&quot; in its files
                with a particular fill-value that you are seeing, and this
-               is an indication that the data for that variable and time 
-               step was never written to the file.  This happens, for 
+               is an indication that the data for that variable and time
+               step was never written to the file.  This happens, for
                example, at the starting time for an <A HREF = "MCPL.html">
                MM5/MCPL</A> run, for some of the variables which aren't
                calculated until after the run is in progress.
@@ -922,12 +979,12 @@ Other Problems
          <LI>  &quot;I get an error message that looks something like&quot;
                <PRE>
      &gt;&gt;&gt; WARNING in subroutine CHKFIL3 &lt;&lt;&lt;
-     Inconsistent file attribute NVARS for file FOO   
+     Inconsistent file attribute NVARS for file FOO
      Value from file:          6
      Value from caller:        9
                 </PRE>
                <P>
-               This means that 
+               This means that
                <OL>
                    <LI>  File <CODE>FOO</CODE> already exists
                    <LI>  You are trying to open it as &quot;unknown&quot;
@@ -965,14 +1022,14 @@ Other Problems
 
 <HR> <!----------------------------------------------------------------->
 
-<A HREF = "AA.html"> 
-To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
 </A><P>
 
-Send comments to 
-<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS> 
-          Carlie J. Coats, Jr. <br> 
-          cjcoats@email.unc.edu  </ADDRESS> </A><P> 
+Send comments to
+<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS>
+          Carlie J. Coats, Jr. <br>
+          cjcoats@email.unc.edu  </ADDRESS> </A><P>
 
 <!--#include virtual="/INCLUDES/footer.html" -->
 </BODY>      <!--end body  -->

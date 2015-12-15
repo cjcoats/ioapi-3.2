@@ -2,14 +2,16 @@
         PROGRAM  M3XTRACT
 
 C***********************************************************************
-C Version "$Id: m3xtract.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: m3xtract.f 163 2015-02-24 06:48:57Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  114
+C  program body starts at line  126
 C
 C  FUNCTION:
 C       extracts a subset of variables from the input file for a
@@ -48,7 +50,10 @@ C       Version 06/2011 by CJC:  Bug-fix from Christian Hogrefe at line 314 &ff
 C
 C       Version 09/2012 by CJC:  Bug-fix from Sarika Kulkarni, CA ARB
 C
-C       Version 11/2013 by CJC:  support for M3INT, M3DBLE
+C       Version 11/2013 by CJC:  support for M3INT, M3DBLE variables.
+C
+C       Version  02/2015 by CJC: Support for M3INT8 variables;
+C       bug-fix for multi-layer case
 C***********************************************************************
 
       USE M3UTILIO
@@ -101,7 +106,7 @@ C...........   LOCAL VARIABLES and their descriptions:
         INTEGER         TSTEP   !  time step, from INAME header
         INTEGER         RUNLEN  !  duration, HHMMSS from user
         INTEGER         NSTEPS  !  duration in TSTEPs
-        INTEGER         I, L, V !  scratch variables
+        INTEGER         I, L, M, V !  scratch variables
         INTEGER         VMAX    !  string length for names
         INTEGER         UMAX    !  string length for units
         INTEGER         DMAX    !  string length for descriptions
@@ -110,9 +115,10 @@ C...........   LOCAL VARIABLES and their descriptions:
 
         LOGICAL :: EFLAG = .FALSE.
 
-        INTEGER, ALLOCATABLE :: IBUF( :,: )
-        REAL   , ALLOCATABLE :: RBUF( :,: )
-        REAL*8 , ALLOCATABLE :: DBUF( :,: )
+        INTEGER  , ALLOCATABLE :: IBUF( :,: )
+        INTEGER*8, ALLOCATABLE :: LBUF( :,: )
+        REAL     , ALLOCATABLE :: RBUF( :,: )
+        REAL*8   , ALLOCATABLE :: DBUF( :,: )
 
 C.........................................................................
 C   begin body of program  M3XTRACT
@@ -154,7 +160,7 @@ C   begin body of program  M3XTRACT
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3xtract.f 101 2015-01-16 16:52:50Z coats               $',
+     &'$Id:: m3xtract.f 163 2015-02-24 06:48:57Z coats               $',
      &' '
 
         ARGCNT = IARGC()
@@ -254,6 +260,7 @@ C   begin body of program  M3XTRACT
 C...............   Allocate I/O Buffer:
 
         ALLOCATE ( IBUF( SIZE, LAY2-LAY1+1 ),
+     &             LBUF( SIZE, LAY2-LAY1+1 ),
      &             RBUF( SIZE, LAY2-LAY1+1 ),
      &             DBUF( SIZE, LAY2-LAY1+1 ), STAT = ISTAT )
 
@@ -426,8 +433,9 @@ C.......   Process this period in the input file:
                    IF ( VTYPE( V ) .EQ. M3REAL ) THEN
 
                        DO L = LAY1, LAY2
+                           M = L - LAY1 + 1
                            IF ( .NOT.READ3( INAME, VNAMEI(V), L,
-     &                               JDATE, JTIME, RBUF(1,L) ) ) THEN
+     &                               JDATE, JTIME, RBUF(1,M) ) ) THEN
                                 EFLAG = .TRUE.
                                 CYCLE
                             END IF
@@ -442,8 +450,9 @@ C.......   Process this period in the input file:
                    ELSE IF ( VTYPE( V ) .EQ. M3INT ) THEN
 
                        DO L = LAY1, LAY2
+                           M = L - LAY1 + 1
                            IF ( .NOT.READ3( INAME, VNAMEI(V), L,
-     &                               JDATE, JTIME, IBUF(1,L) ) ) THEN
+     &                               JDATE, JTIME, IBUF(1,M) ) ) THEN
                                 EFLAG = .TRUE.
                                 CYCLE
                             END IF
@@ -455,11 +464,29 @@ C.......   Process this period in the input file:
                                 CYCLE
                         END IF
 
+                   ELSE IF ( VTYPE( V ) .EQ. M3INT8 ) THEN
+
+                       DO L = LAY1, LAY2
+                           M = L - LAY1 + 1
+                           IF ( .NOT.READ3( INAME, VNAMEI(V), L,
+     &                               JDATE, JTIME, LBUF(1,M) ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                            END IF
+                        END DO
+
+                        IF ( .NOT. WRITE3( ONAME, VNAMEO(V),
+     &                                     JDATE, JTIME, LBUF ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                        END IF
+
                    ELSE IF ( VTYPE( V ) .EQ. M3DBLE ) THEN
 
                        DO L = LAY1, LAY2
+                           M = L - LAY1 + 1
                            IF ( .NOT.READ3( INAME, VNAMEI(V), L,
-     &                               JDATE, JTIME, DBUF(1,L) ) ) THEN
+     &                               JDATE, JTIME, DBUF(1,M) ) ) THEN
                                 EFLAG = .TRUE.
                                 CYCLE
                             END IF

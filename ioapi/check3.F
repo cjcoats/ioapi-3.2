@@ -2,14 +2,16 @@
         LOGICAL   FUNCTION CHECK3( FNAME, VNAME, JDATE, JTIME )
 
 C***********************************************************************
-C Version "$Id: check3.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: check3.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2011 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and 
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  107
+C  function body starts at line  110
 C
 C  FUNCTION:  returns TRUE iff time step for (JDATE,JTIME) and variable
 C       VNAME is available in file with logical name FNAME.  If FNAME 
@@ -50,15 +52,16 @@ C
 C       Modified 11/2004 by CJC:  new "verbose-flag" argument to RDTFLAG
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 03/2010 by CJC: eliminate unused NETCDF.EXT
 C***********************************************************************
 
-      IMPLICIT NONE
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 #ifdef IOAPICPL
         INCLUDE 'STATE3V.EXT'
 #endif
@@ -74,8 +77,7 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        INTEGER, EXTERNAL :: INDEX1     !  look up names in name tables
-        INTEGER, EXTERNAL :: INIT3      !  initialize I/O system files.
+        INTEGER, EXTERNAL :: INDEX1
         INTEGER, EXTERNAL :: NAME2FID   !  fname~~> fid lookup
         LOGICAL, EXTERNAL :: RDTFLAG    !  check time step record availability
         
@@ -120,7 +122,7 @@ C   begin body of function  CHECK3
             MESG  = 'Invalid file "'// FNAME // 
      &             '" or variable "'// VNAME //'"'
             CALL M3WARN( 'CHECK3', JDATE, JTIME, MESG )
-	    CHECK3 = .FALSE.
+            CHECK3 = .FALSE.
             RETURN
         END IF
         

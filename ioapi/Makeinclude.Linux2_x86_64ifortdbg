@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64ifortdbg 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64ifortdbg 193 2015-06-18 13:01:22Z coats $"
 #
 #  Michael Bane (UManchester UK) reports that for ifort version 9,
 #  -stack_temps -safe_cray_ptr are not supported and that there are
@@ -32,5 +32,5 @@ ARCHFLAGS = \
 PARFLAGS  =
 ARCHLIB   = -Vaxlib -Bstatic
 
-M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
-PVMLIBS   = -lpvm3
+M4DEFFILE = # $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = # -lpvm3

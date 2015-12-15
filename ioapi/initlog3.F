@@ -2,7 +2,7 @@
         INTEGER FUNCTION INITLOG3 ( CALLER )
 
 C***********************************************************************
-C Version "$Id: initlog3.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: initlog3.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
@@ -34,7 +34,6 @@ C***********************************************************************
 
 C...........   INCLUDES:
 
-        INCLUDE 'NETCDF.EXT'
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
 

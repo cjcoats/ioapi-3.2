@@ -2,14 +2,16 @@
       LOGICAL FUNCTION RDBUF3( FID, VID, LAYER, JDATE, JTIME, BUFFER )
 
 C***********************************************************************
-C Version "$Id: rdbuf3.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: rdbuf3.f 219 2015-08-17 18:05:54Z coats $"
 C BAMS/MCNC/EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2011 Baron Advanced Meteorological Systems
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (c) 2004-2007 Baron Advanced Meteorological Systems,
+C (c) 2007-2013 Carlie J. Coats, Jr., and (C) 2014 UNC Institute
+C for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  83
+C  function body starts at line  87
 C
 C  FUNCTION:  reads data from Models-3 BUFFEREd "file" with M3 file
 C       index FID for variable with name VNAME and layer LAYER, 
@@ -42,6 +44,8 @@ C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1; fix by David Wong
 C       wrong arguments to the BUFGET*()
 C
 C       Modified 08/2011 by CJC: bug-fixes for "all-variables" case
+C
+C       Modified 02/2015 by CJC for I/O API 3.2: Support for M3INT8
 C***********************************************************************
 
       IMPLICIT NONE
@@ -133,6 +137,11 @@ C   begin body of function  RDBUF3
      &                                      NLAYS3( FID ),
      &                                      BSIZE3( FID ), STEP,
      &                                      BUFFER ) )
+            ELSE IF ( VTYPE3( VID,FID ) .EQ. M3INT8 ) THEN
+                RDBUF3 = ( 0 .NE. BUFGET3D( FID, VID, LAYER,
+     &                                      NLAYS3( FID ),
+     &                                      BSIZE3( FID ), STEP,
+     &                                      BUFFER ) )
             END IF
 
         ELSE                            !  read all variables
@@ -191,6 +200,11 @@ C   begin body of function  RDBUF3
      &                                BSIZE3( FID ), STEP,
      &                                BUFFER( IOFF ) )
                     IOFF  = IOFF + 2 * SIZE             !!  for double
+                ELSE IF ( VTYPE3( VAR,FID ) .EQ. M3INT8 ) THEN
+                    ISTAT = BUFGET3D( FID, VAR, LAYER, NLAYS3( FID ),
+     &                                BSIZE3( FID ), STEP,
+     &                                BUFFER( IOFF ) )
+                    IOFF  = IOFF + 2 * SIZE             !!  for INTEGER*8
                 ELSE
                     CALL M3MESG( 'RDBUF3:  Unsupported variable-type' )
                     ISTAT = 0

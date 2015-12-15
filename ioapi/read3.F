@@ -1,15 +1,17 @@
-
-      LOGICAL FUNCTION READ3(FNAME, VNAME, LAYER, JDATE, JTIME, BUFFER)
+ 
+      LOGICAL FUNCTION READ3( FNAME, VNAME, LAYER, JDATE,JTIME, BUFFER)
 
 C***********************************************************************
-C Version "$Id: read3.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: read3.F 230 2015-10-08 20:44:26Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014-2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  135
+C  function body starts at line  138
 C
 C  FUNCTION:
 C       reads data from Models-3 data file with logical name FNAME for
@@ -30,7 +32,7 @@ C
 C  PRECONDITIONS REQUIRED:
 C       FNAME is a Models-3 data file already opened by OPEN3()
 C
-C  REVISION  HISTORY:  
+C  REVISION  HISTORY:
 C       prototype 3/1992 by CJC
 C
 C       Modified  7/1994 by CJC to handle restart files (tstep < 0)
@@ -68,15 +70,19 @@ C
 C       Modified 11/2004 by CJC:  new "verbose-flag" argument to RDTFLAG
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 08/2015 by CJC: USE MODNCFIO, NF_*() for I/O API v3.2
+C       Support for MPI/PnetCDF files.
 C***********************************************************************
 
-      IMPLICIT NONE
+        USE MODNCFIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 #ifdef IOAPICPL
         INCLUDE 'STATE3V.EXT'
 #endif
@@ -94,8 +100,7 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        INTEGER, EXTERNAL :: INIT3      !  initialize I/O API
-        INTEGER, EXTERNAL :: INDEX1     !  look up names in name tables
+        INTEGER, EXTERNAL :: INDEX1
         INTEGER, EXTERNAL :: NAME2FID   !  fname~~> fid lookup
         LOGICAL, EXTERNAL :: RDDICT3    !  read records for    DCTNRY3  files
         LOGICAL, EXTERNAL :: RDBUF3     !  read time steps for BUFFERED files
@@ -144,13 +149,13 @@ C......,....   subscript for FNAME; check length of vname argument
      &          'Max vble name length 16; actual:', VLEN
             CALL M3MSG2( MESG )
         END IF          !  if len( vname ) > 16
-        
+
         IF ( EFLAG ) THEN
             MESG  = 'File "'// FNAME// '" Variable "'// VNAME//'"'
             CALL M3MSG2( MESG )
             MESG = 'Invalid variable or file name arguments'
             CALL M3WARN( 'READ3', JDATE, JTIME, MESG )
-	    READ3 = .FALSE.
+            READ3 = .FALSE.
             RETURN
         END IF          !  if len( fname ) > 16, or if len( vname ) > 16
 
@@ -160,15 +165,15 @@ C.......   Check availability of requested  layer, variable:
 
             READ3 = RDDICT3( FID, VNAME )
             RETURN
-        
+
         ELSE IF ( VNAME .EQ. ALLVAR3 ) THEN
-            
+
             VID = ALLAYS3
-        
-        ELSE 
-            
+
+        ELSE
+
             VID = INDEX1 ( VNAME, NVARS3( FID ), VLIST3( 1,FID ) )
-            
+
             IF ( VID .EQ. 0 ) THEN
                  MESG = 'File ' // FNAME( 1:FLEN ) //' contains vbles'
                  CALL M3MSG2( MESG )
@@ -177,7 +182,7 @@ C.......   Check availability of requested  layer, variable:
      &              (VLIST3( V,FID ),V=VAR,MIN( VAR+2, NVARS3( FID ) ) )
                     CALL M3MSG2( MESG )
                  END DO
-                 MESG = 'Requested variable "' //  VNAME( 1: VLEN ) // 
+                 MESG = 'Requested variable "' //  VNAME( 1: VLEN ) //
      &                  '" not available'
                 CALL M3WARN( 'READ3', JDATE, JTIME, MESG )
                 READ3 = .FALSE.
@@ -186,13 +191,13 @@ C.......   Check availability of requested  layer, variable:
 
         END IF          !  end check on VNAME
 
-        IF ( ( LAYER .NE. ALLAYS3 ) 
-     &      .AND. ( LAYER .LT. 1  .OR.  
+        IF ( ( LAYER .NE. ALLAYS3 )
+     &      .AND. ( LAYER .LT. 1  .OR.
      &              LAYER .GT. NLAYS3( FID ) ) ) THEN
 
             WRITE( MESG,91010 ) 'Requested layer:', LAYER
             CALL M3MSG2( MESG )
-	    WRITE( MESG,91010 )
+            WRITE( MESG,91010 )
      &          'Layers in the file:  1 ...', NLAYS3( FID )
             CALL M3MSG2( MESG )
             MESG = 'LAYER not available in file ' // FNAME
@@ -202,20 +207,20 @@ C.......   Check availability of requested  layer, variable:
 
         END IF          !  end check on layer-number
 
-                
+
 C.......   If buffered file, use RDBUF3():
 
         IF ( CDFID3( FID ) .EQ. BUFFIL3 ) THEN     !  BUFFERED "file"
 
             READ3 = RDBUF3( FID, VID, LAYER, JDATE, JTIME, BUFFER )
             RETURN
-        
+
 #ifdef IOAPICPL
 
 C.......   If virtual file, use READ3V():
 
         ELSE IF ( CDFID3( FID ) .EQ. VIRFIL3 ) THEN     !  virtual "file"
-           
+
             IF ( TSTEP3( FID ) .NE. 0 ) THEN
                 F1    = JDATE
                 F2    = JTIME
@@ -246,14 +251,14 @@ C.......   If virtual file, use READ3V():
             END IF
 
             RETURN
-        
+
 #endif
 
         END IF                  !  if buffered, or virtual, or volatile
 
 
 C...........   Compute record number, and check availability:
-C...........   Note:  rdtflag() calls NCSNC()
+C...........   Note:  rdtflag() calls NF_SYNC()
 
         IF ( .NOT. RDTFLAG( FID,VID, JDATE,JTIME, STEP, .TRUE. ) ) THEN
 
@@ -273,6 +278,10 @@ C...........   Read data from file into BUFFER()
             READ3 = RDCUSTOM( FID, VID, LAYER, STEP, BUFFER )
 
         ELSE IF ( FTYPE3( FID ) .EQ. GRDDED3 ) THEN
+
+            READ3 = RDGRDDED( FID, VID, LAYER, STEP, BUFFER )
+
+        ELSE IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
 
             READ3 = RDGRDDED( FID, VID, LAYER, STEP, BUFFER )
 
@@ -297,9 +306,9 @@ C...........   Read data from file into BUFFER()
             READ3 = RDSMATRX( FID, VID, STEP, BUFFER )
 
         ELSE IF ( FTYPE3( FID ) .EQ. TSRIES3 ) THEN
- 
+
             READ3 = RDGRDDED( FID, VID, LAYER, STEP, BUFFER )
- 
+
         ELSE IF ( FTYPE3( FID ) .EQ. PTRFLY3 ) THEN
 
             READ3 = RDGRDDED( FID, VID, LAYER, STEP, BUFFER )
@@ -321,13 +330,7 @@ C******************  FORMAT  STATEMENTS   ******************************
 
 C...........   Error and warning message formats..... 91xxx
 
-91000   FORMAT ( 5A )
-
 91010   FORMAT ( 3 ( A , :, I5, :, 2X ) )
-
-91020   FORMAT ( A , I9, ':' , I6.6, :, A )
-
-91030   FORMAT ( A , I6.6 )
 
 91040   FORMAT ( 3 ( '"', A16, '"', :, 4X ) )
 

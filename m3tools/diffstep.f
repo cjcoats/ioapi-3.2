@@ -6,10 +6,12 @@
      &                         NAMEC,  VNAME, JDATEC, JTIMEC )
 
 C***********************************************************************
-C Version "$Id: diffstep.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: diffstep.f 163 2015-02-24 06:48:57Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
@@ -46,6 +48,8 @@ C       Version   7/2014 by CJC:  BUGFIX for case JDATEB:JTIMEB different
 C       from JDATEA:JTIMEA
 C
 C       Version   8/2014 by CJC:  allow <ndigits> up to 9
+C
+C       Version  02/2015 by CJC: Support for M3INT8 variables.
 C***********************************************************************
 
       USE M3UTILIO
@@ -84,6 +88,8 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
         DOUBLE PRECISION DBLE2( NCOLS, NROWS, NLAYS )
         INTEGER          INTG1( NCOLS, NROWS, NLAYS )
         INTEGER          INTG2( NCOLS, NROWS, NLAYS )
+        INTEGER*8        INT81( NCOLS, NROWS, NLAYS )
+        INTEGER*8        INT82( NCOLS, NROWS, NLAYS )
 
         LOGICAL         FLAG1, FLAG2
 
@@ -253,6 +259,12 @@ C   begin body of subroutine  DIFFSTEP
      &                         JDATEA, JTIMEA, INTG1 )
                 CALL INTG2REAL( SIZE, INTG1, GRID1 )
 
+            ELSE IF ( WTYPES( 1,V ) .EQ. M3INT8 ) THEN
+
+                FLAG1 = READ3( NAMEA,  WNAMES( 1,V ), ALLAYS3,
+     &                         JDATEA, JTIMEA, INT81 )
+                CALL INT82REAL( SIZE, INT81, GRID1 )
+
             ELSE
 
                 FLAG1 = .FALSE.
@@ -275,6 +287,12 @@ C   begin body of subroutine  DIFFSTEP
                 FLAG2 = READ3( NAMEB,  WNAMES( 2,V ), ALLAYS3,
      &                         JDATEB, JTIMEB, INTG2 )
                 CALL INTG2REAL( SIZE, INTG2, GRID2 )
+
+            ELSE IF ( WTYPES( 2,V ) .EQ. M3INT8 ) THEN
+
+                FLAG2 = READ3( NAMEB,  WNAMES( 2,V ), ALLAYS3,
+     &                         JDATEB, JTIMEB, INT82 )
+                CALL INT82REAL( SIZE, INT82, GRID2 )
 
             ELSE
 

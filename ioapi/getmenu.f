@@ -2,14 +2,16 @@
         INTEGER FUNCTION GETMENU( ITEMCNT, DEFAULT, PROMPT, CHOICES )
 
 C...............................................................
-C Version "$Id: getmenu.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: getmenu.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C       function body starts at line  83
+C       function body starts at line  87
 C
 C       CALLS:
 C       RETURNS:    user-selected item number from menu choices.
@@ -46,7 +48,9 @@ C       of log-messages.
 C       Revised 6/2003 by CJC:  factor through M3PROMPT to ensure flush()
 C       of PROMPT for IRIX F90v7.4  
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
-C...............................................................
+C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO.
+C       Fix MH violation of coding-standards:  check status IOS from  ENVYN!!
+C***********************************************************************
 
         IMPLICIT NONE
 
@@ -57,11 +61,9 @@ C.......   ARGUMENTS:
         CHARACTER*(*), INTENT(IN   ) :: PROMPT          !  prompt string
         CHARACTER*(*), INTENT(IN   ) :: CHOICES ( * )   !  array of choice strings
 
-
 C.......   EXTERNAL FUNCTION:
 
         LOGICAL, EXTERNAL :: ENVYN
-
 
 C.......   LOCAL VARIABLES:
 
@@ -77,6 +79,8 @@ C.......   LOCAL VARIABLES:
         LOGICAL, SAVE :: PROMPTON
         LOGICAL, SAVE :: FIRSTIME = .TRUE.
 
+        CHARACTER*16, PARAMETER :: PNAME = 'GETMENU'
+
 C...............................................................
 C   begin body of GETMENU
 
@@ -84,6 +88,9 @@ C   begin body of GETMENU
 
             PROMPTON = ENVYN( 'PROMPTFLAG', 'Prompt for input flag',
      &                      .TRUE., IOS )
+            IF ( IOS .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "PROMPTFLAG"', 2 )
+            END IF
             FIRSTIME = .FALSE.
  
         END IF

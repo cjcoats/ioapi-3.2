@@ -4,10 +4,12 @@
      &                        INNAME, VNAMES, VTYPES, RDEV )
 
 C***********************************************************************
-C Version "$Id: statcust.f 101 2015-01-16 16:52:50Z coats $"
-C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems, LLC
+C Version "$Id: statcust.f 163 2015-02-24 06:48:57Z coats $"
+C EDSS/Models-3 M3TOOLS
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
@@ -36,7 +38,9 @@ C       Version 02/2010 by CJC:  SIZE bug-fix
 C
 C       Version 06/2011 by CJC:  in-line STATC()
 C
-C       Version 12/2013 by CJC:  INTENT for agtuments
+C       Version 12/2013 by CJC:  INTENT for arguments
+C
+C       Version  02/2015 by CJC: Support for M3INT8 variables
 C***********************************************************************
 
       USE M3UTILIO
@@ -67,6 +71,7 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
         REAL            GRID( NCOLS, NLAYS )
         DOUBLEPRECISION DGRD( NCOLS, NLAYS )
         INTEGER         IGRD( NCOLS, NLAYS )
+        INTEGER*8       LGRD( NCOLS, NLAYS )
         INTEGER         C, L, M, N, V, SIZE
         INTEGER         MC, ML      !  indexes for maximum
         INTEGER         NC, NL      !  indexes for minimum
@@ -126,6 +131,21 @@ C   begin body of subroutine  STATCUST
                 END IF              !  if read3() worked, or not
 
                 CALL INTG2REAL( SIZE, IGRD, GRID )
+
+            ELSE IF ( VTYPES( V ) .EQ. M3INT8 ) THEN
+
+                IF ( .NOT. READ3( INNAME, VNAMES( V ), ALLAYS3,
+     &                            JDATE, JTIME, LGRD ) ) THEN
+
+                    MESG = 'Read failure:  file ' // INNAME //
+     &                     ' variable ' // VNAMES( V )
+                    CALL M3EXIT( PNAME, JDATE, JTIME,
+     &                           MESG, 2 )
+                    GO TO 111
+
+                END IF              !  if read3() worked, or not
+
+                CALL INT82REAL( SIZE, LGRD, GRID )
 
             ELSE IF ( VTYPES( V ) .EQ. M3DBLE ) THEN
 

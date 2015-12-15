@@ -2,7 +2,7 @@
 PROGRAM  M3TPROC
 
     !!***********************************************************************
-    !! Version "$Id: m3tproc.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: m3tproc.f90 231 2015-10-08 20:45:24Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -63,9 +63,9 @@ PROGRAM  M3TPROC
     !!      Version 10/2014 by CJC:  Check status of ENV*() calls.
     !!      PARAMETER menu-arguments.
     !!
-    !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source;
+    !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
     !!      AGGVAR ~~> TIMEAGG;  now CONTAINs  SUBROUTINE TIMEAGG.
-    !!      Corrected/improved error-status behavior.
+    !!      Corrected/improved error-status behavior. Support for M3INT8 variables.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -183,7 +183,7 @@ PROGRAM  M3TPROC
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tproc.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: m3tproc.f90 231 2015-10-08 20:45:24Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -335,6 +335,8 @@ PROGRAM  M3TPROC
             VDESC( N ) = VDESC3D( V )
             VTYPE( N ) = VTYPE3D( V )
 
+            NVARS   = N
+
        END DO   !  to head of loop
 
 199     CONTINUE        !  end loop getting variables-list for analysis
@@ -344,7 +346,6 @@ PROGRAM  M3TPROC
     IF ( N .EQ. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'No variables selected', 2 )
     ELSE
-        NVARS   = N
         NVARS3D = NVARS
     END IF
 
@@ -489,6 +490,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         REAL            RSCR ( VSIZE )
         REAL*8          DGRD ( VSIZE )
         REAL*8          DSCR ( VSIZE )
+        INTEGER*8       LGRD ( VSIZE )
+        INTEGER*8       LSCR ( VSIZE )
 
 
         !!***********************************************************************
@@ -556,6 +559,70 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
             END IF
 
             IF ( .NOT.WRITE3( OFILE, ONAME, JDATE, JTIME, IGRD ) ) THEN
+                MESG = 'Write failure:  file "' // TRIM( OFILE ) // '" and variable "'
+                CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+                EFLAG = .TRUE.
+                RETURN
+            END IF
+
+        ELSE IF ( VTYPE .EQ. M3INT8 ) THEN
+
+            IF( ATYPE .EQ. M3MAX ) THEN
+!$OMP           PARALLEL DO DEFAULT( NONE ), SHARED( VSIZE, LGRD ), PRIVATE( I )
+                DO I = 1, VSIZE
+                    LGRD( I ) = -1999999999
+                END DO
+            ELSE IF( ATYPE .EQ. M3MIN ) THEN
+!$OMP           PARALLEL DO DEFAULT( NONE ), SHARED( VSIZE, LGRD ), PRIVATE( I )
+                DO I = 1, VSIZE
+                    LGRD( I ) = 1999999999
+                END DO
+            ELSE
+                WRITE( MESG, '( A, I12, 2X, A )' ) 'Aggregation type', ATYPE, 'not supported for INT'
+                CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+                EFLAG = .TRUE.
+                RETURN
+            END IF
+
+            DO ISTEP = 1, ASTEPS
+
+                N = N + 1
+
+                IF ( .NOT. READ3( IFILE, INAME, ALLAYS3, IDATE, ITIME, LSCR ) ) THEN
+
+                    MESG = 'Read failure:  file "' // TRIM( IFILE ) // '" variable "' // TRIM( INAME ) // '"'
+                    CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+                    EFLAG = .TRUE.
+                    RETURN
+
+                ELSE IF( ATYPE .EQ. M3MAX ) THEN
+
+!$OMP               PARALLEL DO DEFAULT( NONE ), SHARED( VSIZE, LGRD, LSCR ), PRIVATE( I )
+                    DO I = 1, VSIZE
+                        LGRD( I ) = MAX( LGRD( I ), LSCR( I ) )
+                    END DO
+
+                ELSE IF( ATYPE .EQ. M3MIN ) THEN
+
+!$OMP               PARALLEL DO DEFAULT( NONE ), SHARED( VSIZE, LGRD, LSCR ), PRIVATE( I )
+                    DO I = 1, VSIZE
+                        LGRD( I ) = MIN( LGRD( I ), LSCR( I ) )
+                    END DO
+
+                END IF              !  if read3() worked, or atype=max or min
+
+                CALL NEXTIME( IDATE, ITIME, TSTEP )
+
+            END DO              !  end loop on time steps
+
+            IF ( N .EQ. 0 ) THEN
+                WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'No data starting at', JDATE, ':', JTIME
+                CALL M3WARN( ANAME, JDATE, JTIME, MESG )
+                EFLAG = .TRUE.
+                RETURN
+            END IF
+
+            IF ( .NOT.WRITE3( OFILE, ONAME, JDATE, JTIME, LGRD ) ) THEN
                 MESG = 'Write failure:  file "' // TRIM( OFILE ) // '" and variable "'
                 CALL M3WARN( ANAME, JDATE, JTIME, MESG )
                 EFLAG = .TRUE.

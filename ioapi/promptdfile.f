@@ -3,14 +3,16 @@
      &                                DEFAULT, CALLER )
 
 C***********************************************************************
-C Version "$Id: promptdfile.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: promptdfile.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line 91
+C  function body starts at line 88
 C
 C       Prompts user for logical file name, then opens the direct 
 C	access Fortran file associated with it, for read-only or not, 
@@ -39,9 +41,11 @@ C       Revised 6/2003 by CJC:  factor through M3MSG2, M3PROMPT, and
 C       M3FLUSH to ensure flush() of PROMPT and of log-messages for
 C       IRIX F90v7.4  
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
+C       Modified 02/2015 by CJC for I/O API 3.2:  Fix MH violation
+C       of coding-standards:  check status IOS from  ENVYN!!
 C***********************************************************************
 
-      IMPLICIT NONE
+        IMPLICIT NONE
 
 C...........   ARGUMENTS and their descriptions:
         
@@ -52,15 +56,14 @@ C...........   ARGUMENTS and their descriptions:
         CHARACTER*(*), INTENT(IN   ) :: DEFAULT        !  default logical file name
         CHARACTER*(*), INTENT(IN   ) :: CALLER         !  caller-name for logging messages
 
-
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
         INTEGER, EXTERNAL :: GETDFILE
         LOGICAL, EXTERNAL :: ENVYN, GETYN
 
-
 C...........   PARAMETER
 
+        CHARACTER*16, PARAMETER :: PNAME   = 'PROMPTDFILE'
         CHARACTER*16, PARAMETER :: BLANK16 = ' '
         CHARACTER*16, PARAMETER :: NONE16  = 'NONE'
         CHARACTER*16, PARAMETER :: ALL16   = 'ALL'
@@ -89,6 +92,9 @@ C   begin body of function  PROMPTDFILE
 
             PROMPTON = ENVYN( 'PROMPTFLAG', 'Prompt for input flag',
      &                        .TRUE., IOS )
+            IF ( IOS .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "PROMPTFLAG"', 2 )
+            END IF
             FIRSTIME = .FALSE.
 
         ENDIF

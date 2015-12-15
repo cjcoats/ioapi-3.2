@@ -1,15 +1,17 @@
-         
+
         LOGICAL FUNCTION WRITE3( FNAME, VNAME, JDATE, JTIME, BUFFER )
 
 C***********************************************************************
-C Version "$Id: write3.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: write3.F 226 2015-08-20 13:09:59Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2013 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2014-2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  158
+C  function body starts at line  159
 C
 C  FUNCTION:  writes all the data from BUFFER() for timestep JDATE:JTIME
 C             (formatted YYYYDDD and HHMMSS) to the Models-3 data file
@@ -44,8 +46,8 @@ C
 C       Modified 10/1995 by CJC to handle files of type TSRIES3
 C
 C       Modified  8/1996 by CJC to determine whether to log successful
-C	WRITEs according to the value of environment variable
-C	'IOAPI_LOG_WRITE'
+C       WRITEs according to the value of environment variable
+C       'IOAPI_LOG_WRITE'
 C
 C       Modified 2/1997  by CJC for OpenMP:  make it thread-safe to
 C       call WRITE3 on distinct files in task-parallel.
@@ -64,22 +66,27 @@ C       Modified 7/2003 by CJC:  bugfix -- clean up critical sections
 C       associated with INIT3()
 C
 C       Modified 10/2003 by CJC for I/O API version 3:  support for
-C       native-binary BINFIL3 file type; uses new INTEGER NAME2FID, 
+C       native-binary BINFIL3 file type; uses new INTEGER NAME2FID,
 C       LOGICAL SYNCFID
 C
 C       Modified 9/2004 by CJC for virtual INTERP bug-fix: change to
 C       READ3V / WRITE3V interfaces
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C       Modified 05/2011 by CJC:  better error-messages
+C
+C       Modified 08/2015 by CJC for I/O API 3.2:  USE MODNCFIO.
+C       Support for MPI/PnetCDF files via WRMPIGRD()
 C***********************************************************************
 
-      IMPLICIT NONE
+        USE MODNCFIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 #ifdef IOAPICPL
         INCLUDE 'STATE3V.EXT'
 #endif
@@ -96,16 +103,15 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        LOGICAL, EXTERNAL :: ENVYN      !  get YES/NO environment variable
-        INTEGER, EXTERNAL :: INDEX1     !  look up names in name tables
-        INTEGER, EXTERNAL :: INIT3      !  initialize I/O system files.
-        INTEGER, EXTERNAL :: JSTEP3     !  compute time step record numbers
+        INTEGER, EXTERNAL :: INDEX1, JSTEP3
+        LOGICAL, EXTERNAL :: ENVYN
         INTEGER, EXTERNAL :: NAME2FID   !  fname~~> fid lookup
         LOGICAL, EXTERNAL :: SYNCFID    !  disk-synch
         LOGICAL, EXTERNAL :: WRDICT3    !  read time steps for  DCTNRY3 files
         LOGICAL, EXTERNAL :: WRBUF3     !  read time steps for BUFFERED files
         LOGICAL, EXTERNAL :: WRCUSTOM   !  read time steps for CUSTOM3 files
         LOGICAL, EXTERNAL :: WRGRDDED   !  read time steps for GRDDED3 files
+        LOGICAL, EXTERNAL :: WRMPIGRD   !  read time steps for MPIGRD3 files
         LOGICAL, EXTERNAL :: WRBNDARY   !  read time steps for BNDARY3 files
         LOGICAL, EXTERNAL :: WRIDDATA   !  read time steps for IDDATA3 files
         LOGICAL, EXTERNAL :: WRPROFIL   !  read time steps for PROFIL3 files
@@ -179,7 +185,7 @@ C......,....   subscript for FNAME; check length of vname argument
                 EFLAG = .TRUE.
                 CALL M3MSG2( 'Bad environment vble "IOAPI_LOG_WRITE"' )
             END IF
-        END IF		!  firstime
+        END IF          !  firstime
 !$OMP   END CRITICAL( WRITE3_INIT )
 
         IF ( VLEN .GT. NAMLEN3 ) THEN
@@ -190,13 +196,13 @@ C......,....   subscript for FNAME; check length of vname argument
      &          'Max vble name length 16; actual:', VLEN
             CALL M3MSG2( MESG )
         END IF          !  if len( vname ) > 16
-        
+
         IF ( RONLY3( FID ) ) THEN
             EFLAG = .TRUE.
             MESG = 'File:  ' // FNAME // ' IS READ-ONLY.'
             CALL M3MSG2( MESG )
         END IF          !  if len( vname ) > 16
-        
+
 
         IF ( EFLAG ) THEN
             MESG = 'Invalid arguments: file="' // FNAME //
@@ -220,43 +226,42 @@ C......,....   subscript for FNAME; check length of vname argument
         END IF          !  if file not opened, or if readonly, or if volatile
 
 
-        ITYP = FTYPE3( FID )
-        IF ( ITYP .EQ. DCTNRY3 ) THEN
-
-            WRITE3 = WRDICT3 ( FID, VNAME )
-            RETURN
-
-        END IF          !  if file is a dictionary
-
-
-C...........   Else file is a data file:
-            
 C...........   Get ID for variable(s) to be written.  Note subcases
-C...........   that 'ALL' must be the VNAME for non-(gridded | boundary 
+C...........   that 'ALL' must be the VNAME for non-(gridded | boundary
 C...........   | custom) files.
-            
+
+        ITYP = FTYPE3( FID )
+
         IF ( VNAME .EQ. ALLVAR3 ) THEN
-            
+
             VID = ALLAYS3
-        
+
         ELSE IF ( ITYP .EQ. CUSTOM3  .OR.
      &            ITYP .EQ. GRDDED3  .OR.
+     &            ITYP .EQ. MPIGRD3  .OR.
      &            ITYP .EQ. BNDARY3  .OR.
-     &            ITYP .EQ. SMATRX3 ) THEN
-            
+     &            ITYP .EQ. SMATRX3  .OR.
+     &            ITYP .EQ. TSRIES3  .OR.
+     &            ITYP .EQ. PTRFLY3 ) THEN
+
             VID = INDEX1( VNAME, NVARS3( FID ) , VLIST3( 1,FID ) )
-        
+
             IF ( VID .EQ. 0 ) THEN
-            
+
                 MESG = 'Variable ' // VNAME //' not in file:  '//FNAME
                 CALL M3WARN( 'WRITE3', JDATE, JTIME, MESG )
                 WRITE3 = .FALSE.
                 RETURN
-                   
+
             END IF
-        
+
+        ELSE IF ( ITYP .EQ. DCTNRY3 ) THEN
+
+            WRITE3 = WRDICT3( FID, VNAME )
+            RETURN
+
         ELSE
-            
+
             IF ( ITYP .LT. -3  .OR.  ITYP .GT. SMATRX3 ) ITYP = -3
             MESG =
      &          'File '//FNAME//' of type ' //TYPNAMES( ITYP ) //
@@ -264,9 +269,9 @@ C...........   | custom) files.
                 WRITE3 = .FALSE.
                 CALL M3WARN( 'WRITE3', JDATE, JTIME, MESG )
                 RETURN
-        
+
         END IF          !  if VNAME is 'ALL', or if var-granularity, or not.
-        
+
 C...........   Compute record number for this time step.  Update
 C...........   max step number if necessary.  Then read data
 C...........   from file into BUFFER(), selecting by file type:
@@ -275,8 +280,8 @@ C...........   from file into BUFFER(), selecting by file type:
      &                 SDATE3( FID ),
      &                 STIME3( FID ),
      &                 ABS( TSTEP3( FID ) ) )
-        
-        IF ( STEP .LT. 0 ) THEN      
+
+        IF ( STEP .LT. 0 ) THEN
 
             WRITE( MESG, 93020 )
      &      'Requested date & time:', JDATE, JTIME
@@ -291,7 +296,7 @@ C...........   from file into BUFFER(), selecting by file type:
             RETURN
 
         END IF
-            
+
         IF ( TSTEP3( FID ) .LT. 0 ) THEN
             STEP2 = 1 + MOD( STEP-1, 2 )
             TFLAG( 1 ) = JDATE
@@ -307,9 +312,9 @@ C...........   from file into BUFFER(), selecting by file type:
         END IF
 
         IF ( CDFID3( FID ) .EQ. BUFFIL3 ) THEN     !  BUFFERED "file"
-        
+
             WFLAG = WRBUF3( FID, VID, JDATE, JTIME, STEP2, BUFFER )
- 
+
 #ifdef IOAPICPL
         ELSE IF ( CDFID3( FID ) .EQ. VIRFIL3 ) THEN
 
@@ -329,47 +334,51 @@ C...........   from file into BUFFER(), selecting by file type:
            END IF
 #endif
 
-        ELSE IF ( FTYPE3( FID ) .EQ. CUSTOM3 ) THEN
+        ELSE IF ( ITYP .EQ. CUSTOM3 ) THEN
 
             WFLAG = WRCUSTOM( FID, VID, TFLAG, STEP2, BUFFER )
 
-        ELSE IF ( FTYPE3( FID ) .EQ. GRDDED3 ) THEN
+        ELSE IF ( ITYP .EQ. GRDDED3 ) THEN
 
             WFLAG = WRGRDDED( FID, VID, TFLAG, STEP2, BUFFER )
 
-        ELSE IF ( FTYPE3( FID ) .EQ. BNDARY3 ) THEN
+        ELSE IF ( ITYP .EQ. MPIGRD3 ) THEN
+
+            WFLAG = WRMPIGRD( FID, VID, TFLAG, STEP2, BUFFER )
+
+        ELSE IF ( ITYP .EQ. BNDARY3 ) THEN
 
             WFLAG = WRBNDARY( FID, VID, TFLAG, STEP2, BUFFER )
 
-        ELSE IF ( FTYPE3( FID ) .EQ. IDDATA3 ) THEN
+        ELSE IF ( ITYP .EQ. IDDATA3 ) THEN
 
             WFLAG = WRIDDATA( FID, TFLAG, STEP2, BUFFER )
 
-        ELSE IF ( FTYPE3( FID ) .EQ. PROFIL3 ) THEN
+        ELSE IF ( ITYP .EQ. PROFIL3 ) THEN
 
             WFLAG = WRPROFIL( FID, TFLAG, STEP2, BUFFER )
 
-        ELSE IF ( FTYPE3( FID ) .EQ. GRNEST3 ) THEN
+        ELSE IF ( ITYP .EQ. GRNEST3 ) THEN
 
             WFLAG = WRGRNEST( FID, TFLAG, STEP2, BUFFER )
 
-        ELSE IF ( FTYPE3( FID ) .EQ. SMATRX3 ) THEN
+        ELSE IF ( ITYP .EQ. SMATRX3 ) THEN
 
             WFLAG = WRSMATRX( FID, TFLAG, STEP2, BUFFER )
 
-        ELSE IF ( FTYPE3( FID ) .EQ. TSRIES3 ) THEN
- 
+        ELSE IF ( ITYP .EQ. TSRIES3 ) THEN
+
             WFLAG = WRGRDDED( FID, VID, TFLAG, STEP2, BUFFER )
- 
-        ELSE IF ( FTYPE3( FID ) .EQ. PTRFLY3 ) THEN
- 
+
+        ELSE IF ( ITYP .EQ. PTRFLY3 ) THEN
+
             WFLAG = WRGRDDED( FID, VID, TFLAG, STEP2, BUFFER )
- 
+
         ELSE    !  illegal file type
 
             WRITE( MESG, '( 3 A, I5 )' )
      &      'File:  ', FNAME, ' of unknown type:', FTYPE3( FID )
-	    CALL M3WARN( 'WRITE3', JDATE, JTIME, MESG )
+            CALL M3WARN( 'WRITE3', JDATE, JTIME, MESG )
             WRITE3 = .FALSE.
 
             RETURN
@@ -378,33 +387,33 @@ C...........   from file into BUFFER(), selecting by file type:
                         !  custom, gridded, ..., or unknown.
         WRITE3 = WFLAG
 
-        IF ( .NOT. WFLAG ) THEN		!  failure
+        IF ( .NOT. WFLAG ) THEN         !  failure
 
             IF( TSTEP3( FID ) .EQ. 0 ) THEN
-                MESG =  
-     &          'Error writing "' // VNAME( 1:VLEN ) //  
+                MESG =
+     &          'Error writing "' // VNAME( 1:VLEN ) //
      &         '" to "'           // FNAME( 1:FLEN ) // '"'
             ELSE
-                WRITE( MESG, "( 5 A, I9.7, A, I6.6 )" ) 
+                WRITE( MESG, "( 5 A, I9.7, A, I6.6 )" )
      &          'Error writing "', VNAME( 1:VLEN ),
      &          '" to "',          FNAME( 1:FLEN ),
      &          '" for', JDATE, ':', JTIME
             END IF
-	    CALL M3WARN( 'WRITE3', JDATE, JTIME, MESG )
+            CALL M3WARN( 'WRITE3', JDATE, JTIME, MESG )
 
             RETURN
 
-        END IF				!  if failure
-        
+        END IF              !  if failure
+
         MXREC3( FID ) = MAX( MXREC3( FID ), ABS( STEP ) )
 
         IF ( LOGFLAG ) THEN  !  message to log on successful writes:
             IF ( VID .GT. 0 ) THEN  !  single variable written:
                 IF( TSTEP3( FID ) .EQ. 0 ) THEN
-                    MESG = VNAME( 1:VLEN ) //   
+                    MESG = VNAME( 1:VLEN ) //
      &              ' written to ' // FNAME( 1:FLEN )
                 ELSE
-                    WRITE( MESG, '( 4 A, I9.7, A, I6.6 )' ) 
+                    WRITE( MESG, '( 4 A, I9.7, A, I6.6 )' )
      &                  VNAME( 1:VLEN ), ' written to ',
      &                  FNAME( 1:FLEN ), ' for ', JDATE, ':', JTIME
                 END IF
@@ -412,12 +421,12 @@ C...........   from file into BUFFER(), selecting by file type:
                 IF( TSTEP3( FID ) .EQ. 0 ) THEN
                     MESG = 'Record written to ' // FNAME( 1:FLEN )
                 ELSE
-                    WRITE( MESG, '( 3 A, I9.7, A, I6.6 )' ) 
+                    WRITE( MESG, '( 3 A, I9.7, A, I6.6 )' )
      &                  'Timestep written to ', FNAME( 1:FLEN ),
      &                  ' for date and time ', JDATE, ':', JTIME
                 END IF
             END IF          !  if single-variable-write, or timestep-write.
-	    CALL M3MSG2( MESG )
+            CALL M3MSG2( MESG )
         END IF          !  if logflag
 
         RETURN

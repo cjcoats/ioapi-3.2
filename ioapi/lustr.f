@@ -2,7 +2,7 @@
         SUBROUTINE LUSTR( STRING )
 
 C***********************************************************************
-C Version "$Id: lustr.f 122 2015-01-20 22:25:11Z coats $"
+C Version "$Id: lustr.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.

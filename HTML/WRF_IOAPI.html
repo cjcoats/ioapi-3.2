@@ -3,7 +3,7 @@
 
 <HTML> 
 <HEAD>
-<!-- "$Id: WRF_IOAPI.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: WRF_IOAPI.html 183 2015-04-15 19:04:15Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> 
     DRAFT: WRF/Models-3/EDSS I/O&nbsp;API
@@ -508,7 +508,7 @@
     file is still in the definition phase.
     <BLOCKQUOTE>
     <DL>
-        <DT> <CODE> DOMAIN_NAME <EM> (character(len&leq;32)) </EM> </CODE>
+        <DT> <CODE> DOMAIN_NAME <EM> (character(len&le;32)) </EM> </CODE>
         <DD>  
         <P>
 
@@ -719,12 +719,12 @@
         or must agree with global attribute <CODE>TIME_STEP</CODE>.
         <P>
 
-        <DT> <CODE>VAR_UNITS <EM>(character(len&leq;32)&nbsp;)</EM></CODE>
+        <DT> <CODE>VAR_UNITS <EM>(character(len&le;32)&nbsp;)</EM></CODE>
         <DD> Units specification for the indicated variable; should
         be MKS&nbsp;/&nbsp;UDUNITS compliant.
         <P>
 
-        <DT> <CODE>VAR_DESC <EM>(character(len&leq;80)&nbsp;)</EM></CODE>
+        <DT> <CODE>VAR_DESC <EM>(character(len&le;80)&nbsp;)</EM></CODE>
         <DD> one-line text description of the variable.
         <P>
 
@@ -738,7 +738,7 @@
              REAL8</CODE>).
         <P>
 
-        <DT> <CODE>VAR_STAGGER <EM> (character(len&leq;32)&nbsp;) </EM> </CODE>
+        <DT> <CODE>VAR_STAGGER <EM> (character(len&le;32)&nbsp;) </EM> </CODE>
         <DD> NEW:  Stagger specification for the indicated variable;
         should be one of the following:  &quot;&quot;, &quot;X&quot;,
         &quot;Y&quot;, &quot;Z&quot;, &quot;XY&quot;, &quot;XZ&quot;,

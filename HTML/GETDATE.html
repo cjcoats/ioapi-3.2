@@ -2,15 +2,15 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GETDATE.html 103 2015-01-16 16:55:45Z coats $" -->
-<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<!-- "$Id: GETDATE.html 175 2015-02-27 12:57:33Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> GETDATE() </TITLE>
 </HEAD>
 
-<BODY BGCOLOR="#FFFFFF" 
-      TOPMARGIN="15" 
-      MARGINHEIGHT="15" 
-      LEFTMARGIN="15" 
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
       MARGINWIDTH="15">
 <H1>    GETDATE() </H1>
 
@@ -19,78 +19,101 @@
     INTEGER FUNCTION GETDATE( DEFAULT , PROMPT )
         INTEGER      , INTENT(IN   ) :: DEFAULT ! Default return value
         CHARACTER*(*), INTENT(IN   ) :: PROMPT  ! Prompt for user
-</PRE><P>    
+</PRE><P>
 
 <H2> NO C version: </H2>
-<P> 
+<P>
 
 <H2> Summary: </H2>
 
+    <BLOCKQUOTE>
     Display the  <CODE>PROMPT</CODE>  to standard output for a date
     in either of two formats: <CODE>YYYYDDD</CODE> or
     <CODE>YYYYMMDD</CODE>, and get the user's response and convert it
-    into the corresponding value according to EDSS/Models-3
-    <A HREF = "DATETIME.html">date and time conventions</A>.  Returns
-    <CODE>DEFAULT</CODE> if the user hits &lt;RET&gt;.   Reprompts on
-    error for up to 5 attempts; exits in case of more than  5 entry
-    errors. Logs the value returned, for tracking and validation
+    into the corresponding value in Julian format YYYYDDD, according to
+    EDSS/Models-3 <A HREF = "DATETIME.html">date and time conventions</A>.
+    Returns <CODE>DEFAULT</CODE> if the user hits &lt;RET&gt;.
+    Insists that the result be in the date-range [1970001,2100365],
+    so <EM>NOT APPROPRIATE FOR LONG-PERIOD MODELING.</EM>
+    Reprompts on error for up to 5 attempts; exits in case of more than
+    5 entry errors. Logs the value returned, for tracking and validation
     purposes.
     <P>
 
     The default is displayed in square brackets at the end of the
     prompt [LIKE THIS].
-    <P> 
+    <P>
 
-    For Fortran-90 declarations and interface checking:    
+    For Fortran-90 declarations and interface checking:
     <PRE>
     <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
     </PRE><P>
 
-    See also <A HREF = "GETNUM.html"><VAR>GETNUM()</VAR></A>.
-    <P> 
+    See also
+    <A HREF = "GETDTTIME.html">GETDTTIME()</A> for current (wall-clock)
+    date and time,
+    <A HREF = "GETVAL.html">GETVAL()</A>,
+    <A HREF = "GETDBLE.html">GETDBLE()</A>,
+    <A HREF = "GETMENU.html">GETMENU()</A>,
+    <A HREF = "GETNUM.html" >GETNUM()</A>,
+    <A HREF = "GETREAL.html">GETREAL()</A>,
+    <A HREF = "GETSTR.html" >GETSTR()</A>, and
+    <A HREF = "GETYN.html"  >GETYN()</A>.
+    <P>
+    </BLOCKQUOTE>
 
-        
-<H2> Preconditions:</H2>  none 
-<P> 
 
-    
+<H2> Preconditions:</H2>
+
+    <BLOCKQUOTE>
+    none
+    </BLOCKQUOTE>
+
+
 <H2> Fortran Usage: </H2>
- 
-    (See <A HREF = "SAMPLE.html">sample</A> programs
+
+    <BLOCKQUOTE>
+    See <A HREF = "SAMPLE.html">sample</A> programs
     <A HREF = "LATLON.txt">LATLON</A> or
     <A HREF = "PRESZ.txt">PRESZ</A>
-    for additional usage examples.)
+    for additional usage examples.
+    </BLOCKQUOTE>
 
 <PRE>
     ...
-    INTEGER        L, M
-    INTEGER        GETDATE
+    USE M3UTILIO    !! else:  INTEGER, EXTERNAL :: GETDATE
+    ...
+    INTEGER     L
     ...
     L = GETDATE( 1993201, 'Enter the starting date for the run' )
     ...
-</PRE><P> 
-    
-<H2> C Usage: </H2>  don't
-<P>         
+</PRE><P>
+
+<H2> C Usage: </H2>
+
+    <BLOCKQUOTE>
+    Don't, unless you're already very comfortable with mixed-language programming.
+    </BLOCKQUOTE>
+    <P>
 
 
 <HR> <!----------------------------------------------------------------->
 
 <A HREF = "DT2STR.html" >
 Previous:  <STRONG>DT2STR</STRONG>
-</A><P> 
+</A><P>
 
 <A HREF = "GETDTTIME.html" >
 Next:  <STRONG>GETDTTIME</STRONG>
-</A><P> 
+</A><P>
 
-<A HREF = "AA.html#datestuff"> 
-Up: <STRONG>Date and Time Manipulation Routines</STRONG> 
-</A><P> 
+<A HREF = "AA.html#datestuff">
+Up: <STRONG>Date and Time Manipulation Routines</STRONG>
+</A><P>
 
-<A HREF = "AA.html"> 
-To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
-</A><P> 
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
+</A><P>
 
 </BODY>
 </HTML>

@@ -1,6 +1,6 @@
 
 C.........................................................................
-C Version "$Id: gctp.f 111 2015-01-16 22:17:07Z coats $"
+C Version "$Id: gctp.f 219 2015-08-17 18:05:54Z coats $"
 C Adapted from USGS general cartographic transformation package, version 2.0.2
 C with portability and F90-related enhancements
 C EDSS/Models-3 I/O API.  Modifications copyright (C) 1992-2000 MCNC
@@ -264,7 +264,7 @@ C      OTHERWISE , ERROR CODE FROM PROJECTION COMPUTATIONAL MODULE.
       SAVE
 
       CHARACTER*72, SAVE :: SVN_ID =
-     &'$Id:: gctp.f 111 2015-01-16 22:17:07Z coats                   $'
+     &'$Id:: gctp.f 219 2015-08-17 18:05:54Z coats                   $'
 
       INTEGER   NAD27(134), NAD83(134), NADUT(54), SPTYPE(134)
       INTEGER   SYSUNT(24), SWITCH(23), ITER
@@ -1139,7 +1139,7 @@ C **********************************************************************
       REAL SECS(5)
       INTEGER   IERROR,IPEMSG,IPELUN,IPPARM,IPPLUN,ITEMP
       INTEGER   LAND, PATH, LIMIT, IND02, IND06, IND09, ISYS, KEEPZN
-      INTEGER   SWITCH(23),I,ZONE,DEGS(5),MINS(5)
+      INTEGER   SWITCH(23),I,IZ, ZONE,DEGS(5),MINS(5)
       INTEGER   ID, IND, ITYPE, MODE, N, MSYS
       INTEGER   ISPHER, LUNIT, LU27, LU83, LEN, NAD27(134), NAD83(134)
       CHARACTER*128 DATUM, FILE27, FILE83
@@ -1239,18 +1239,18 @@ C ......................................................................
          IF (SWITCH(9).NE.0.AND.SWITCH(9).EQ.ZONE.AND.DATA(14).EQ.SAVE)
      .   RETURN
          KEEPZN = ZONE
-         ZONE = IABS(ZONE)
+         IZ   = IABS(ZONE)
          SAVE = DATA(1)
-         IF (ZONE .EQ. 0) THEN
-            ZONE = IDINT( ( (DATA(1) * 180.0D0 / PI)
+         IF (IZ .EQ. 0) THEN
+            IZ  = IDINT( ( (DATA(1) * 180.0D0 / PI)
      .             + (TOL09 / 3600.D0) ) / 6.D0 )
             IND = 1
             IF (DATA(1) .LT. ZERO) IND = 0
-            ZONE = MOD ((ZONE + 30), 60) + IND
-            KEEPZN = ZONE
-            IF (DATA(2) .LT. ZERO) KEEPZN = -ZONE
+            IZ = MOD ((IZ + 30), 60) + IND
+            KEEPZN = IZ
+            IF (DATA(2) .LT. ZERO) KEEPZN = -IZ
          END IF
-         IF (ZONE.LT.1 .OR. ZONE.GT.60) THEN
+         IF (IZ.LT.1 .OR. IZ.GT.60) THEN
             IF (IPEMSG .EQ. 0) WRITE (IPELUN,140) KEEPZN
   140       FORMAT ('0ERROR PJ01Z0'/
      .              ' ILLEGAL ZONE NO. : ',I10)
@@ -5488,19 +5488,18 @@ C       check is inadequate, and should be removed:
 C       -- CJC, 1/18/2004
 C      IF (PARM(1).NE.ZERO.AND.IPROJ.NE.1) RETURN
 
-      ISPH = IABS(ISPH)
-      IF ( ISPH.GT.21 ) THEN
+      I = IABS(ISPH)
+      IF ( I.GT.21 ) THEN
           IERROR = 999
           IF (IPEMSG .EQ. 0) WRITE (IPELUN,1) ISPH
     1     FORMAT('0ERROR SPHDZ0:  SPHEROID CODE OF ',I5,' RESET TO 0')
-          ISPH = 0
-          ISPH = 0
+          I = 0
       END IF
 
 C     RETRIEVE A AND B AXES FOR SELECTED SPHEROID
 
-   10 A = AXIS(ISPH)
-      B = BXIS(ISPH)
+   10 A = AXIS(I)
+      B = BXIS(I)
       ES = ONE - (B / A)**2
 
 C     SET COMMON BLOCK PARAMETERS FOR SELECTED SPHEROID

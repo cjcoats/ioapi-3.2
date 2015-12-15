@@ -2,14 +2,16 @@
         LOGICAL FUNCTION WRGRDDED( FID, VID, TSTAMP, STEP2, BUFFER )
 
 C***********************************************************************
-C Version "$Id: wrgrdded.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: wrgrdded.f 230 2015-10-08 20:44:26Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  69
+C  function body starts at line  70
 C
 C  FUNCTION:  writes data from Models-3 GRIDDED data file with STATE3
 C             index FID, for all variables and layers, for the time step
@@ -23,22 +25,21 @@ C             file type is GRDDED3.
 C
 C  SUBROUTINES AND FUNCTIONS CALLED:  WRVARS
 C
-C  REVISION  HISTORY:  
+C  REVISION  HISTORY:
 C       prototype 3/92 by CJC
 C
-C       revised  10/94 by CJC:  allow write-by-variable; record 
+C       revised  10/94 by CJC:  allow write-by-variable; record
 C       time-step number as time step flag; restart files.
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C***********************************************************************
 
-      IMPLICIT NONE
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
         INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'NETCDF.EXT'
 
 
 C...........   ARGUMENTS and their descriptions:
@@ -58,9 +59,9 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
-        INTEGER         DELTA           !  d(INDX) / d(NCVGTcall)
-        INTEGER         DIMS ( 5 )      !  corner arg array for NCVGT()
-        INTEGER         DELTS( 5 )      !  corner arg array for NCVGT()
+        INTEGER         DELTA           !  d(INDX) / d(NF_PUT_VARA call)
+        INTEGER         DIMS ( 5 )      !  corner arg array for NF_PUT_VARA()
+        INTEGER         DELTS( 5 )      !  corner arg array for NF_PUT_VARA()
 
 
 C***********************************************************************
@@ -82,7 +83,7 @@ C   begin body of function  WRGRDDED
 
 C...........   Perform the writes, according to VID
 
-        WRGRDDED = WRVARS( FID, VID, TSTAMP, STEP2, 
+        WRGRDDED = WRVARS( FID, VID, TSTAMP, STEP2,
      &                     DIMS, DELTS, DELTA, BUFFER )
 
         RETURN

@@ -2,26 +2,26 @@
 PROGRAM VERTIMEPROC
 
     !!***************************************************************
-    !!  Version "$Id: vertimeproc.f90 101 2015-01-16 16:52:50Z coats $"
+    !!  Version "$Id: vertimeproc.f90 176 2015-03-02 16:20:06Z coats $"
     !!  Copyright (c) 2014 UNC Institute for the Environment
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!  See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  Program body starts at line  128
+    !!  Program body starts at line  73
     !!
-    !!  DESCRIPTION:
+    !!  DESCRIPTION:  see splash screen
     !!
-    !!  PRECONDITIONS:
+    !!  PRECONDITIONS:  see splash screen
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  11/2014 by Carlie J. Coats, Jr., UNC IE
+    !!      Version    03/2015 by CJC:  call RUNSPEC() for SDATE:STIME:TSTEP:NRECS
     !!***************************************************************
 
     USE M3UTILIO
     IMPLICIT NONE
 
     !!......  PARAMETERS and their descriptions:
-
 
     CHARACTER*16, PARAMETER ::  PNAME = 'VERTIMEPROC'
     CHARACTER*1,  PARAMETER ::  BLANK = ' '
@@ -49,13 +49,8 @@ PROGRAM VERTIMEPROC
     INTEGER         NROWS1
     INTEGER         NLAYS1
     INTEGER         NVARS1
-    INTEGER         NRECS1
-    INTEGER         GDTYP1
-    INTEGER         SDATE1
-    INTEGER         STIME1
-    INTEGER         EDATE1
-    INTEGER         ETIME1
     INTEGER         TSTEP1
+    INTEGER         GDTYP1
     REAL*8          P_ALP1      ! first, second, third map
     REAL*8          P_BET1      ! projection descriptive
     REAL*8          P_GAM1      ! parameters.
@@ -119,7 +114,7 @@ PROGRAM VERTIMEPROC
 '    Chapel Hill, NC 27599-1105'  ,                                             &
 '',                                                                             &
 'Program version:',                                                             &
-'$Id: vertimeproc.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: vertimeproc.f90 176 2015-03-02 16:20:06Z coats $',&
 ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -148,9 +143,6 @@ PROGRAM VERTIMEPROC
         NROWS1 = NROWS3D
         NLAYS1 = NLAYS3D
         NVARS1 = NVARS3D
-        NRECS1 = MXREC3D
-        SDATE1 = SDATE3D
-        STIME1 = STIME3D
         TSTEP1 = TSTEP3D
         GDTYP1 = GDTYP3D
         P_ALP1 = P_ALP3D
@@ -163,10 +155,8 @@ PROGRAM VERTIMEPROC
         XCELL1 = XCELL3D
         YCELL1 = YCELL3D
 
-        TSECS1 = TIME2SEC( TSTEP1 )
+        TSECS1 = TIME2SEC( TSTEP3D )
         TFAC   = TIMEFAC( UNITS3D(1), TSECS1 )
-
-        CALL LASTTIME( SDATE1, STIME1, TSTEP1, NRECS1, EDATE1, ETIME1 )
 
         FDESC1( 1:NVARS1 ) =   FDESC3D( 1:NVARS1 )
         VNAME1( 1:NVARS1 ) =   VNAME3D( 1:NVARS1 )
@@ -180,70 +170,9 @@ PROGRAM VERTIMEPROC
     END IF
 
 
-    !!...............  Get environment
+    !!...............  Get run-specifications from environment
 
-    SDATE = ENVINT( 'SDATE', 'Starting date (YYYYDDD)', SDATE1, ISTAT )
-    IF ( ISTAT .GT. 0 ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'Bad environment variable "SDATE"'
-        CALL M3MESG( MESG )
-    END IF
-
-    STIME = ENVINT( 'STIME', 'Starting time (HHMMSS)', STIME1, ISTAT )
-    IF ( ISTAT .GT. 0 ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'Bad environment variable "STIME"'
-        CALL M3MESG( MESG )
-    END IF
-
-    TSTEP = ENVINT( 'TSTEP', 'Aggregation-timestep (HHMMSS)', 240000, ISTAT )
-    IF ( ISTAT .GT. 0 ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'Bad environment variable "TSTEP"'
-        CALL M3MESG( MESG )
-    END IF
-
-    !!  Find last available aggregation-step for the SDATE:STIME:TSTEP sequence:
-
-    JDATE = EDATE1
-    JTIME = ETIME1
-    CALL NEXTIME( JDATE, JTIME, -TSTEP1 )
-    NRECS = CURREC( JDATE, JTIME, SDATE, STIME, TSTEP, KDATE, KTIME )
-
-    EDATE = ENVINT( 'EDATE', 'Ending date (YYYYDDD)', JDATE, ISTAT )
-    IF ( ISTAT .GT. 0 ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'Bad environment variable "EDATE"'
-        CALL M3MESG( MESG )
-    END IF
-
-    ETIME = ENVINT( 'ETIME', 'Ending time (HHMMSS)', ETIME1, ISTAT )
-    IF ( ISTAT .GT. 0 ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'Bad environment variable "ETIME"'
-        CALL M3MESG( MESG )
-    END IF
-
-    NRECS = CURREC( EDATE, ETIME, SDATE, STIME, TSTEP1, JDATE, JTIME )
-    IF ( NRECS .LT. 0 ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'Inconsistent SDATE:STIME:TSTEP1 and EDATE:ETIME'
-        CALL M3MESG( MESG )
-    END IF
-
-    TSECS  = TIME2SEC( TSTEP )
-    IF ( MOD( TSECS, TSECS1 ) .NE. 0 ) THEN
-        EFLAG = .TRUE.
-        MESG  = 'Inconsistent TSTEP and input-file time step'
-        CALL M3MESG( MESG )
-    ELSE
-        NAGGS = TSECS / TSECS1
-    END IF
-
-
-    IF ( EFLAG ) THEN
-        CALL M3EXIT( PNAME, 0, 0, 'Fatal environment error(s)', 2 )
-    END IF
+    CALL RUNSPEC( 'INPFILE', .TRUE., SDATE, STIME, TSTEP, NRECS )
 
 
     !!...............  Allocate work arrays:

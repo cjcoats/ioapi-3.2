@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: SORTI.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: SORTI.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> SORTI*() </TITLE>
 </HEAD>
@@ -17,13 +17,21 @@
 
 
 <H2> Fortran version: </H2>
-<STRONG>Generic version:</STRONG>  compiler selects the appropriate
-type-specific form depending upon the number and types of the 
-<CODE>INTEGER</CODE>, <CODE>INTEGER*8</CODE> or <CODE>REAL</CODE> key-lists.
-Note that the <CODE>SORTIN*(&nbsp;N[8],&nbsp;M[8],&nbsp;INDX[8],&nbsp;CLIST&nbsp;)</CODE> forms do the sort
-on  the basis of the first <CODE>M</CODE> or <CODE>M8</CODE> characters in the strings
-in the <CODE>CLIST></CODE> array and ignore the remainder of each
-table-entry.
+
+    <BLOCKQUOTE>
+    <STRONG>Fortran-90 generic routine <VAR>SORTI()</VAR> for
+    I/O&nbsp;API-3.2:</STRONG>:  compiler selects the appropriate
+    type-specific form depending upon the number and types of the 
+    <CODE>INTEGER</CODE>, <CODE>INTEGER*8</CODE> or <CODE>REAL</CODE> key-lists.
+    Note that the <CODE>SORTIN*(&nbsp;N[8],&nbsp;M[8],&nbsp;INDX[8],&nbsp;CLIST&nbsp;)</CODE> forms do the sort
+    on  the basis of the first <CODE>M</CODE> or <CODE>M8</CODE> characters in the strings
+    in the <CODE>CLIST</CODE> array and ignore the remainder of each
+    table-entry.
+    <P>
+    For I/O&nbsp;API Versions&nbsp;3.1 and before, the generic form
+    <VAR>SORTI()</VAR>, <VAR>SORTIC8()</VAR>, the <VAR>SORTL*()</VAR>
+    and the <VAR>SORTINC*()</VAR> are not available.
+    </BLOCKQUOTE>
 
 <PRE>
     SUBROUTINE SORTI( N,      INDX,  LIST1[, ... ] )
@@ -282,7 +290,7 @@ To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: SORTI.html 103 2015-01-16 16:55:45Z coats $
+    $Id: SORTI.html 175 2015-02-27 12:57:33Z coats $
     </PRE>
 
 </BODY>

@@ -3,14 +3,16 @@
       LOGICAL FUNCTION DDTVAR3V( FID, VID, JDATE, JTIME, BUFFER )
 
 C***********************************************************************
-C Version "$Id: ddtvar3v.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: ddtvar3v.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+C (C) 2003-2010 Baron Advanced Meteorological Systems,
+C (C) 2007-2013 Carlie J. Coats, Jr., and 
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine body starts at line  77
+C  subroutine body starts at line  79
 C
 C  FUNCTION:
 C       Wrapper for coupling-mode DDTVAR3()
@@ -24,13 +26,16 @@ C  REVISION  HISTORY:
 C       Prototype  5/1999 by Atanas L Trayanov, MCNC
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO
 C***********************************************************************
 
-      IMPLICIT NONE
+        USE M3UTILIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
-      INCLUDE 'PARMS3.EXT'
       INCLUDE 'STATE3.EXT'
 
 
@@ -47,9 +52,6 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
       INTEGER, EXTERNAL :: BUFVGT3     !  alloc/interp from circ. bufs. (C)
       INTEGER, EXTERNAL :: BUFDDT3     !  alloc/ddt from circ. bufs. (C)
-      LOGICAL, EXTERNAL :: CURRSTEP    !  finds start of timestep
-      INTEGER, EXTERNAL :: SECSDIFF    !  computes date&time differences
-      INTEGER, EXTERNAL :: TIME2SEC    !  converts time to seconds
       LOGICAL, EXTERNAL :: VIR2BUF
 
 

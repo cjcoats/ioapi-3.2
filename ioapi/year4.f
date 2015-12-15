@@ -2,14 +2,16 @@
         INTEGER FUNCTION YEAR4 ( YY )
 
 C********************************************************************
-C Version "$Id: year4.f 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: year4.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (c) 2004-2007 Baron Advanced Meteorological Systems,
+C (c) 2007-2013 Carlie J. Coats, Jr., and (C) 2014 UNC Institute
+C for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C       function body starts at line  52
+C       function body starts at line  59
 C
 C  FUNCTION:
 C
@@ -21,6 +23,9 @@ C
 C       Create by M Houyoux: 5/97
 C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 02/2014 by CJC: Fix MH violation of coding-standards:
+C       check status IOS from  ENVINT()!!
 C****************************************************************************
 
         IMPLICIT NONE
@@ -46,6 +51,8 @@ C.......   LOCAL VARIABLES:
         INTEGER, SAVE :: BASEYR, PIVOTYR
         LOGICAL, SAVE :: FIRSTIME = .TRUE.
 
+        CHARACTER*16, PARAMETER :: PNAME = 'YEAR4'
+
 C......................................................................
 C       begin YEAR4
 
@@ -54,6 +61,9 @@ C       begin YEAR4
             BASEYR = ENVINT( 'YEAR4_BASE',
      &                        'Base century year for YEAR4 algorithm',
      &                        1900, ISTAT )
+            IF ( ISTAT .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "YEAR4_BASE"', 2)
+            END IF
             IF ( BASEYR .GT. 100 ) THEN
                 BASEYR = BASEYR / 100
             END IF
@@ -61,6 +71,9 @@ C       begin YEAR4
             PIVOTYR = ENVINT( 'YEAR4_PIVOT',
      &                        'Pivot year for YEAR4 algorithm',
      &                        BASEYR + 70, ISTAT )
+            IF ( ISTAT .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "YEAR4_PIVOT"', 2)
+            END IF
             PIVOTYR = MOD( PIVOTYR , 100 )
         END IF
         

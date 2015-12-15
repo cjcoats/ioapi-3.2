@@ -2,7 +2,7 @@
         PROGRAM MTXCPLE
 
 C***********************************************************************
-C Version "$Id: mtxcple.f 121 2015-01-20 22:24:38Z coats $"
+C Version "$Id: mtxcple.f 158 2015-02-16 19:51:12Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -39,13 +39,13 @@ C       Version 11/2005 by CJC:  eliminate unused vbles
 C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C       Version 01/2013 by CJC:  use new LASTTIME() to find EDATE:ETIME
-C       Version 12/2014 by CJC for I/O API v3.2:  USE M3ATTS::GETMTXATT();
+C       Version 12/2014 by CJC for I/O API v3.2:  USE MODATTS3::GETMTXATT();
 C       consistency checking with FILCHK3(), GRDCHK3(); OpenMP parallel
 C       matrix-multiply
 C***********************************************************************
 
       USE M3UTILIO
-      USE M3ATTS
+      USE MODATTS3
       IMPLICIT NONE
 
 C...........   PARAMETERS and their descriptions:
@@ -181,7 +181,7 @@ C   begin body of program MTXCPLE
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: mtxcple.f 121 2015-01-20 22:24:38Z coats                $',
+     &'$Id:: mtxcple.f 158 2015-02-16 19:51:12Z coats                $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN

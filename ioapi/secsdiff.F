@@ -2,7 +2,7 @@
         INTEGER  FUNCTION SECSDIFF ( ADATE, ATIME, ZDATE, ZTIME )
 
 C***********************************************************************
-C Version "$Id: secsdiff.F 100 2015-01-16 16:52:16Z coats $"
+C Version "$Id: secsdiff.F 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems
@@ -17,8 +17,8 @@ C
 C  PRECONDITION:  normalized dates and times (0 <= SS <= 59, etc.)
 C                 stored in format YYYYDDD:HHMMSS.
 C
-C  REVISION  HISTORY:  
-C       Prototype   5/1992 by Carlie J. Coats, Jr., 
+C  REVISION  HISTORY:
+C       Prototype   5/1992 by Carlie J. Coats, Jr.,
 C       MCNC Environmental Programs
 C
 C       Version     2/1993 by CJC for CRAY, etc.
@@ -26,7 +26,7 @@ C
 C       Unification 2/2002 by CJC with global-climate SECSDIFF, which
 C       uses a 360-day "year"
 C
-C       Version 1/2007 by CJC:  simplification; handle negative 
+C       Version 1/2007 by CJC:  simplification; handle negative
 C       *DATE arguments correctly
 C
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
@@ -78,7 +78,7 @@ C   begin body of function  SECSDIFF
 C.......   Start with day, hour, min, sec differences:
 
         DAYS  = MOD( YDATE,     1000 ) -  MOD( BDATE,   1000 )
-        HOURS =      ZTIME /   10000   -       ATIME / 10000 
+        HOURS =      ZTIME /   10000   -       ATIME / 10000
         MINS  = MOD( ZTIME/100, 100 )  -  MOD( ATIME/100, 100 )
         SECS  = MOD( ZTIME,     100 )  -  MOD( ATIME,     100 )
 
@@ -118,7 +118,7 @@ C.......   Now add corrections for differences in years:
             ELSE IF ( MOD( ZYEAR, 400 ) .NE. 0 ) THEN   !  nonleap century
                 TOTAL = TOTAL - YDAYS * 86400
             ELSE                                        !  leap century
-                TOTAL = TOTAL - LDAYS * 86400     
+                TOTAL = TOTAL - LDAYS * 86400
             END IF
             ZYEAR = ZYEAR + 1
 

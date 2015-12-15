@@ -1,15 +1,16 @@
 
-        LOGICAL FUNCTION CKFILE3( FID )
+        LOGICAL FUNCTION CKFILE3( FID )  RESULT( CKFLAG )
 
 C***********************************************************************
-C Version "$Id: ckfile3.f 100 2015-01-16 16:52:16Z coats $"
-C EDSS/Models-3 I/O API.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2011 Baron Advanced Meteorological Systems
+C Version "$Id: ckfile3.f 219 2015-08-17 18:05:54Z coats $"
+C BAMS/MCNC/EDSS/Models-3 I/O API.
+C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C (C) 2003-2011 Baron Advanced Meteorological Systems, and
+C (C) 2015 UNC Institute for the Environment
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  89
+C  function body starts at line  92
 C
 C  RETURNS:
 C       If environment variable IOAPI_CHECK_HEADERS begins with 'Y' or 'y',
@@ -31,16 +32,21 @@ C       Modified  6/06 by CJC: modification to support WRF vertical
 C       coordinates, from Tanya Otte
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C       Bug-fix  04/2011 in format 94030  from Matt Turner, UC Boulder.
+C       Modified 02/2015 by CJC for I/O API 3.2: Support for M3INT8.
+C       USE M3UTILIO
+C       Modified 07-08/2015 by CJC:  bug reported by Mogesh Naidoo:
+C       Add support for EQMGRD3, TRMGRD3, ALBGRD3, LEQGRD3, SINIGRD3.
+C       Eliminate unused NETCDF.EXT.  MPIGRD3 type for MPI/PnetCDF
+C       distributed I/O
 C***********************************************************************
 
-      IMPLICIT NONE
+        USE M3UTILIO
+
+        IMPLICIT NONE
 
 C...........   INCLUDES:
 
-        INCLUDE 'PARMS3.EXT'
         INCLUDE 'STATE3.EXT'
-        INCLUDE 'FDESC3.EXT'
-        INCLUDE 'NETCDF.EXT'
 
 
 C...........   ARGUMENTS and their descriptions:
@@ -50,9 +56,7 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        LOGICAL, EXTERNAL :: CKNAME  !  checks legality of variable-names
-        LOGICAL, EXTERNAL :: ENVYN   !  get Y/N from environment
-        INTEGER, EXTERNAL :: INDEX1  !  name-table lookup
+        LOGICAL, EXTERNAL :: CKNAME     !  checks legality of variable-names
 
 
 C...........   PARAMETER
@@ -104,7 +108,7 @@ C   begin body of function  CKFILE3
 C.......   If not chkhdr, just return TRUE:
 
         IF ( .NOT. CHKHDR ) THEN
-            CKFILE3 = .TRUE.
+            CKFLAG = .TRUE.
             RETURN
         END IF          !  if not chkhdr
 
@@ -114,12 +118,12 @@ C...........   First:  file type and type-specific dimension checks:
 
         IF ( FTYPE3( FID ) .EQ. DGRAPH3 ) THEN
 
-            CKFILE3 = .TRUE.
+            CKFLAG = .TRUE.
             RETURN
 
         ELSE IF ( FTYPE3( FID ) .EQ. DCTNRY3 ) THEN
 
-            CKFILE3 = .TRUE.
+            CKFLAG = .TRUE.
             RETURN
 
         ELSE IF ( FTYPE3( FID ) .EQ. CUSTOM3 ) THEN
@@ -129,11 +133,12 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad blob-size NCOLS', NCOLS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
         ELSE IF ( FTYPE3( FID ) .EQ. GRDDED3  .OR.
+     &            FTYPE3( FID ) .EQ. MPIGRD3  .OR.
      &            FTYPE3( FID ) .EQ. TSRIES3  .OR.              !  "exotic"
      &            FTYPE3( FID ) .EQ. PTRFLY3     ) THEN         !  grdded3's
 
@@ -142,7 +147,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad NCOLS', NCOLS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -151,7 +156,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad NROWS', NROWS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -163,7 +168,7 @@ C...........   First:  file type and type-specific dimension checks:
      &              'PTRFLY3-type file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                     CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                    CKFILE3 = .FALSE.
+                    CKFLAG = .FALSE.
                     RETURN
                 END IF
 
@@ -173,7 +178,7 @@ C...........   First:  file type and type-specific dimension checks:
      &              'PTRFLY3-type file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                     CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                    CKFILE3 = .FALSE.
+                    CKFLAG = .FALSE.
                     RETURN
                 END IF
 
@@ -183,7 +188,7 @@ C...........   First:  file type and type-specific dimension checks:
      &              'PTRFLY3-type file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                     CALL M3WARN( 'CKFILE', 0, 0, MESG )
-                    CKFILE3 = .FALSE.
+                    CKFLAG = .FALSE.
                     RETURN
                 END IF
 
@@ -196,7 +201,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad NCOLS', NCOLS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -205,7 +210,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad NROWS', NROWS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -216,7 +221,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -228,7 +233,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -240,7 +245,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -250,7 +255,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -262,7 +267,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -272,7 +277,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -284,7 +289,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -293,7 +298,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad matrix NROWS', NROWS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -303,7 +308,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -314,7 +319,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad NCOLS', NCOLS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -323,7 +328,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad NROWS', NROWS3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -332,7 +337,7 @@ C...........   First:  file type and type-specific dimension checks:
      &          'Bad NTHIK', NTHIK3( FID ), 'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -342,7 +347,7 @@ C...........   First:  file type and type-specific dimension checks:
      &      'Illegal file type:', FTYPE3( FID ), 'for file "' //
      &      TRIM( FLIST3( FID ) ) // '"'
             CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-            CKFILE3 = .FALSE.
+            CKFLAG = .FALSE.
             RETURN
 
         END IF
@@ -357,7 +362,7 @@ C...........   Next, checks on the variable-list
      &          'for file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
             CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-            CKFILE3 = .FALSE.
+            CKFLAG = .FALSE.
             RETURN
 
         ELSE IF ( NVARS3( FID ) .EQ. 0 ) THEN    !  _is_ legal, but unusual
@@ -377,12 +382,12 @@ C...........   Next, checks on the variable-list
      &              'Illegal variable name "' , VLIST3( U,FID ) ,
      &              '" in file ' , FLIST3( FID )
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
-            IF ( VTYPE3( U,FID ) .LT. M3INT  .OR.
-     &           VTYPE3( U,FID ) .GT. M3DBLE ) THEN
+            V = INDEXINT1( VTYPE3( U,FID ), NM3TYPES, M3TYPES )
+            IF ( V .LE. 0 ) THEN
 
                 WRITE( MESG, 94010 )
      &              'Illegal data type ', VTYPE3( U,FID ),
@@ -391,7 +396,7 @@ C...........   Next, checks on the variable-list
      &              '" in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
 
             END IF      !  end check on variable-type
@@ -409,7 +414,7 @@ C...........   Next, checks on the variable-list
      &              TRIM( FLIST3( FID ) ) // '"'
 
                     CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                    CKFILE3 = .FALSE.
+                    CKFLAG = .FALSE.
                     RETURN
 
                 END IF
@@ -429,7 +434,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad grid origin', XORIG3( FID ), 'in file "' //
      &               TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -439,7 +444,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad grid origin', YORIG3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -451,7 +456,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad X-Y origin', XCENT3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -462,7 +467,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -472,7 +477,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -482,7 +487,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-BETA', P_BET3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -492,7 +497,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -518,7 +523,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -528,7 +533,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-BETA', P_BET3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -538,7 +543,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -550,7 +555,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad X-Y origin', XCENT3( FID), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -560,7 +565,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad X-Y origin', YCENT3( FID), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -570,7 +575,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-ALPHA', P_ALP3( FID), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -580,7 +585,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-BETA', P_BET3( FID), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -590,7 +595,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-GAMMA', P_GAM3( FID), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -602,7 +607,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad X-Y origin', XCENT3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -612,7 +617,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad X-Y origin', YCENT3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -622,7 +627,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -632,7 +637,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-BETA', P_BET3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -642,7 +647,7 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -656,7 +661,201 @@ C...........   Checks on the horizontal coordinate description:
      &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+        ELSE IF ( GDTYP3( FID ) .EQ. EQMGRD3 ) THEN
+
+            IF ( XCENT3( FID ) .LT. -180.0D0 .OR.
+     &           XCENT3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', XCENT3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( YCENT3( FID ) .LT. -90.0D0 .OR.
+     &           YCENT3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', YCENT3( FID ),
+     &              'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_ALP3( FID ) .LT. -90.0D0 .OR.
+     &           P_ALP3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_GAM3( FID ) .LT. -180.0D0 .OR.
+     &           P_GAM3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+        ELSE IF ( GDTYP3( FID ) .EQ. TRMGRD3 ) THEN
+
+            IF ( XCENT3( FID ) .LT. -180.0D0 .OR.
+     &           XCENT3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', XCENT3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( YCENT3( FID ) .LT. -90.0D0 .OR.
+     &           YCENT3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', YCENT3( FID ),
+     &              'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_ALP3( FID ) .LT. -90.0D0 .OR.
+     &           P_ALP3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_GAM3( FID ) .LT. -180.0D0 .OR.
+     &           P_GAM3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+        ELSE IF ( GDTYP3( FID ) .EQ. ALBGRD3 ) THEN
+
+            IF ( XCENT3( FID ) .LT. -180.0D0 .OR.
+     &           XCENT3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', XCENT3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( YCENT3( FID ) .LT. -90.0D0 .OR.
+     &           YCENT3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', YCENT3( FID ),
+     &              'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_ALP3( FID ) .LT. -90.0D0 .OR.
+     &           P_ALP3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_BET3( FID ) .LT. P_ALP3( FID ) .OR.
+     &           P_BET3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-BETA', P_BET3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_GAM3( FID ) .LT. -180.0D0 .OR.
+     &           P_GAM3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+        ELSE IF ( GDTYP3( FID ) .EQ. LEQGRD3 ) THEN
+
+            IF ( P_ALP3( FID ) .LT. -90.0D0 .OR.
+     &           P_ALP3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-ALPHA', P_ALP3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_GAM3( FID ) .LT. -180.0D0 .OR.
+     &           P_GAM3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+        ELSE IF ( GDTYP3( FID ) .EQ. SINUGRD3 ) THEN
+
+            IF ( XCENT3( FID ) .LT. -180.0D0 .OR.
+     &           XCENT3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', XCENT3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( YCENT3( FID ) .LT. -90.0D0 .OR.
+     &           YCENT3( FID ) .GT.  90.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad X-Y origin', YCENT3( FID ),
+     &              'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+            END IF
+
+            IF ( P_GAM3( FID ) .LT. -180.0D0 .OR.
+     &           P_GAM3( FID ) .GT.  180.0D0 ) THEN
+                WRITE( MESG, 94020 )
+     &              'Bad PROJ-GAMMA', P_GAM3( FID ), 'in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
                 RETURN
             END IF
 
@@ -676,7 +875,7 @@ C...........   Checks on the horizontal coordinate description:
      &          GDTYP3( FID ), 'in file "' //
      &          TRIM( FLIST3( FID ) ) // '"'
             CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-            CKFILE3 = .FALSE.
+            CKFLAG = .FALSE.
             RETURN
 
         END IF  !  if  gdtyp3d = lamgrd3, etc.
@@ -692,54 +891,35 @@ C...........   Checks on the vertical coordinate description:
      &         'in file "' //
      &         TRIM( FLIST3( FID ) ) // '"'
             CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-            CKFILE3 = .FALSE.
+            CKFLAG = .FALSE.
             RETURN
 
         ELSE IF ( NLAYS3( FID ) .GT. 1 ) THEN
 
-            CALL NCAGT( CDFID3( FID ), NCGLOBAL, 'VGTYP', VGTYP, IERR )
-            IF ( IERR .NE. 0 ) THEN
-                WRITE( MESG,94010 )
-     &          'netCDF error', IERR, 'reading VGTYP for file "' //
-     &          TRIM( FLIST3( FID ) ) // '"'
-                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
-            END IF          !  ierr nonzero:  NCAGT() failed
+            INCREASING = ( VGLVS3( 2,FID ) .GT. VGLVS3( 1,FID ) )
 
-            CALL NCAGT( CDFID3( FID ), NCGLOBAL, 'VGLVLS', VGLVS, IERR )
-            IF ( IERR .NE. 0 ) THEN
-                WRITE( MESG,94010 )
-     &          'netCDF error', IERR, 'reading VGLVLS for file "' //
-     &          TRIM( FLIST3( FID ) ) // '"'
-                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
-                RETURN
-            END IF          !  ierr nonzero:  NCAGT() failed
-
-            INCREASING = ( VGLVS( 2 ) .GT. VGLVS( 1 ) )
-
-            DO  111  L = 2, MIN( NLAYS3( FID ), MXLAYS3 )
+            DO  L = 2, MIN( NLAYS3( FID ), MXLAYS3 )
 
                 IF ( INCREASING .NEQV.
-     &               ( VGLVS( L+1 ) .GT. VGLVS( L ) ) ) THEN
+     &               ( VGLVS3( L+1,FID ) .GT. VGLVS3( L,FID ) ) ) THEN
 
                     WRITE( MESG, 94010 )
      &              'Bad layer monotonicity at layer', L, 'in file "'//
      &              TRIM( FLIST3( FID ) ) // '"'
 
                     CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                    CKFILE3 = .FALSE.
+                    CKFLAG = .FALSE.
                     RETURN
 
                 END IF
 
-111         CONTINUE
+            END DO
 
-            IF ( VGTYP .EQ. IMISS3  ) THEN   !  "other" -- legal but unusual
+            IF ( VGTYP3(FID) .EQ. IMISS3  ) THEN   !  "other" -- legal but unusual
 
                 WRITE( MESG, 94010 )
      &              'WARNING:  Vertical grid/coordinate type:',
-     &              VGTYP,
+     &              VGTYP3(FID),
      &              '"MISSING" in file "' //
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
@@ -754,11 +934,10 @@ C...........   Checks on the vertical coordinate description:
      &                ( VGTYP .NE. VGWRFNM ) ) THEN
 
                 WRITE( MESG, 94010 )
-     &         'Unknown vertical grid/coordinate type:', VGTYP,
-     &         'in file "' //
-     &          TRIM( FLIST3( FID ) ) // '"'
+     &             'Unknown vertical grid/coordinate type:', VGTYP,
+     &             'in file "' // TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFILE3 = .FALSE.
+                CKFLAG = .FALSE.
                 RETURN
 
             END IF  !  if  vgtyp3d = vgsgph3, etc.
@@ -767,7 +946,7 @@ C...........   Checks on the vertical coordinate description:
 
 C...........   If you get to here:  all checks passed:
 
-        CKFILE3 = .TRUE.
+        CKFLAG = .TRUE.
         RETURN
 
 C******************  FORMAT  STATEMENTS   ******************************

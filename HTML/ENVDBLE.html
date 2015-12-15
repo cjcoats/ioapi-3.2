@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVDBLE.html 132 2015-01-26 19:18:10Z coats $" -->
+<!-- "$Id: ENVDBLE.html 175 2015-02-27 12:57:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> ENVDBLE() and envdblec() </TITLE>
 </HEAD>
@@ -16,12 +16,15 @@
 
 <H2> Fortran version: </H2>
 <BLOCKQUOTE>
+        <A HREF="ENVGETS.html"><CODE>ENVGET()</CODE></A> is the
+        Fortran-90-generic (I/O&nbsp;API-3.2 or later only) that
+        calls the following (or various other routines), as determined
+        by the argument-list:
+        <P>
         <CODE>ENVDBLE()</CODE> is a Fortran wrapper calling the C
         <CODE>envdblec()</CODE><BR>
         <CODE>BENVDBLE()</CODE> also has <CODE>MINVALO, MAXVAL</CODE>
-        arguments (I/O&nbsp;API-3.2 or later only)<BR>
-        <A HREF="ENVGETS.html"><CODE>ENVGET()</CODE></A> is the
-        Fortran-90-generic (I/O&nbsp;API-3.2 or later only)
+        arguments <EM>(I/O&nbsp;API-3.2 or later only)</EM><BR>
 </BLOCKQUOTE><P> 
 <PRE>
 DOUBLE PRECISION FUNCTION ENVDBLE( LNAME, DESCRIP, DEFAULT, STATUS )
