@@ -2,7 +2,7 @@
 LOGICAL FUNCTION  OPEN3( FNAME, FSTATUS, PGNAME )
 
     !!***********************************************************************
-    !! Version "$Id: open3.F90 237 2015-10-14 19:53:37Z coats $"
+    !! Version "$Id: open3.F90 285 2015-12-19 10:44:12Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -70,6 +70,8 @@ LOGICAL FUNCTION  OPEN3( FNAME, FSTATUS, PGNAME )
     !!      Modified 08/2015 by CJC for PnetCDF distributed I/O.  USE MODNCFIO,
     !!      USE MODPDATA; free F90 source format; use NF_ interfaces;
     !!      free F90 source format
+    !!      Modified 12/2015 by CJC:  Move PN_SETUP() here from INIT3()
+    !!      because of infinite recursion-loop problem
     !!***********************************************************************
 
     USE MODNCFIO
@@ -124,11 +126,23 @@ LOGICAL FUNCTION  OPEN3( FNAME, FSTATUS, PGNAME )
     CHARACTER*512   EQNAME  !  environment value of FNAME
     CHARACTER*8     BNAME   !  for "BUFFERED", etc.
     CHARACTER*16    PRG16   !  scratch  pgm-name buffer
-
+    LOGICAL, SAVE :: FIRSTIME = .TRUE.
     CHARACTER*512   MESG    !  for m3msg2, m3warn
 
     !!.............................................................................
     !!   begin body of subroutine  OPEN3
+
+!$OMP   CRITICAL( S_NC )
+    IF ( FIRSTIME ) THEN
+#ifdef IOAPI_PNCF
+        CALL PN_SETUP( )
+        PN_MODE = .TRUE.
+#else
+        PN_MODE = .FALSE.
+#endif
+        FIRSTIME = .FALSE.
+    END IF
+!$OMP   END CRITICAL( S_NC )
 
     !!.......   Find STATE3 index for the file:
 

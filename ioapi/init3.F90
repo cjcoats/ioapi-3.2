@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 255 2015-11-06 14:55:40Z coats $"
+    !! Version "$Id: init3.F90 285 2015-12-19 10:44:12Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ INTEGER FUNCTION INIT3 ( )
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  subroutine body starts at line  154
+    !!  subroutine body starts at line  146
     !!
     !!  FUNCTION:
     !!      Initialize state for Models-3 I/O.
@@ -135,7 +135,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'$Id: init3.F90 255 2015-11-06 14:55:40Z coats   $'
+'$Id: init3.F90 285 2015-12-19 10:44:12Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 
@@ -166,17 +166,6 @@ INTEGER FUNCTION INIT3 ( )
     NCFVER = NF_INQ_LIBVERS()
 !$OMP   END CRITICAL( S_NC )
 
-#ifdef IOAPI_PNCF
-    CALL PN_SETUP( )
-    PN_MODE = .TRUE.
-#else
-    PN_MODE = .FALSE.
-#endif
-
-#ifdef IOAPICPL
-    CALL GET_IOCPL_VERSION( IOCPLVER )
-    CALL GET_PVM_VERSION  ( PVMVER )
-#endif
     VERSN3 = IOAPILIBVER
     WRITE( VARVER, '( A, I5 )' ) 'Version with PARMS3.EXT/PARAMETER::MXVARS3=', MXVARS3
 
@@ -184,7 +173,9 @@ INTEGER FUNCTION INIT3 ( )
             ( NOTICE( I ), I = 1, 17 ),             &
             TRIM( VERSN3 ),                         &
             TRIM( VARVER )
-#ifdef          IOAPICPL
+#ifdef IOAPICPL
+    CALL GET_IOCPL_VERSION( IOCPLVER )
+    CALL GET_PVM_VERSION  ( PVMVER )
     WRITE( LOGDEV,'( 5X, A )' )                     &
             'IOCPL version '// TRIM( IOCPLVER ),    &
             'PVM   version '// TRIM( PVMVER   )

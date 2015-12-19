@@ -1,7 +1,7 @@
 MODULE MODPDATA
 
     !!***********************************************************************
-    !! Version "$Id: modpdata.F90 280 2015-12-10 15:56:21Z coats $"
+    !! Version "$Id: modpdata.F90 285 2015-12-19 10:44:12Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -205,7 +205,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MESG = '"' // TRIM( PNAME ) // '":  Version'
         CALL M3MESG( MESG )
         CALL M3MESG( &
-'$Id: modpdata.F90 280 2015-12-10 15:56:21Z coats $' )
+'$Id: modpdata.F90 285 2015-12-19 10:44:12Z coats $' )
 
         CALL ENVSTR( 'NPCOL_NPROW', 'Processor decomposition: npcol x nprow', BLANK, EBUF, IERR )
         IF ( IERR .NE. 0 ) THEN
@@ -223,7 +223,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         PN_NPROCS = PN_NPCOL * PN_NPROW
-        WRITE( MESG, '( A, 2( 2X, A, I7 ) )' )  &
+        WRITE( MESG, '( A, I7, 2X, A, I7 )' )  &
             'Processor-grid dimensions:  COLS=', PN_NPCOL, 'ROWS=', PN_NPROW
         CALL M3MESG( MESG )
 
