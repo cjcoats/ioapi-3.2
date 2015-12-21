@@ -2,10 +2,11 @@
         PROGRAM  M3EDHDR
 
 C***********************************************************************
-C Version "$Id: m3edhdr.f 243 2015-10-21 20:06:21Z coats $"
+C Version "$Id: m3edhdr.f 287 2015-12-21 21:29:58Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
@@ -147,7 +148,7 @@ C   begin body of program  M3EDHDR
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3edhdr.f 243 2015-10-21 20:06:21Z coats                $',
+     &'$Id:: m3edhdr.f 287 2015-12-21 21:29:58Z coats                $',
      &' '
 
         ARGCNT = IARGC()

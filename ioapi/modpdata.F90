@@ -1,7 +1,7 @@
 MODULE MODPDATA
 
     !!***********************************************************************
-    !! Version "$Id: modpdata.F90 285 2015-12-19 10:44:12Z coats $"
+    !! Version "$Id: modpdata.F90 287 2015-12-21 21:29:58Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -120,8 +120,8 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         QC =      NCOLS / NPCOL
         RC = MOD( NCOLS , NPCOL )
-        QC =      NROWS / NPROW
-        RC = MOD( NROWS , NPROW )
+        QR =      NROWS / NPROW
+        RR = MOD( NROWS , NPROW )
 
         DO R = 1, NPROW
         DO C = 1, NPCOL
@@ -205,7 +205,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MESG = '"' // TRIM( PNAME ) // '":  Version'
         CALL M3MESG( MESG )
         CALL M3MESG( &
-'$Id: modpdata.F90 285 2015-12-19 10:44:12Z coats $' )
+'$Id: modpdata.F90 287 2015-12-21 21:29:58Z coats $' )
 
         CALL ENVSTR( 'NPCOL_NPROW', 'Processor decomposition: npcol x nprow', BLANK, EBUF, IERR )
         IF ( IERR .NE. 0 ) THEN
@@ -250,7 +250,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                   PN_NROWS_PE( PN_NPROCS ),     &
                 PN_COLSX_PE( 2,PN_NPROCS ),     &
                 PN_ROWSX_PE( 2,PN_NPROCS ),     &
-                         RANKS( PN_NPROW ),     &
+                         RANKS( PN_NPROW ),   &
                PN_AGG_NROWS_PE( PN_NPROW ),     &
                PN_AGG_NCOLS_PE( PN_NPROW ),     &
              PN_AGG_COLSX_PE( 2,PN_NPROW ),     &
@@ -261,11 +261,12 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         END IF
 
-        DO K = 1, PN_NPROCS, PN_NPCOL
-            RANKS(K/PN_NPCOL+1) = K - 1
-        END DO
 
         IF ( PN_NPROCS .GT. 1 ) THEN
+
+            DO K = 1, PN_NPROCS, PN_NPCOL
+                RANKS(K/PN_NPCOL+1) = K - 1
+            END DO
 
             CALL MPI_COMM_RANK( MPI_COMM_WORLD, PN_MYPE, IERR )
             IF ( IERR .NE. 0 ) THEN
@@ -309,6 +310,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END IF
 
         ELSE
+             RANKS(1) = 0
             CALL MPI_COMM_DUP( MPI_COMM_WORLD, PN_COL_IO_COMM, IERR )
             IF ( IERR .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10 )' ) 'MPI_COMM_DUP(...PN_COL_IO_COMM...) failure.  IERR=', IERR
@@ -327,10 +329,10 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         DEALLOCATE( RANKS )
 
-        CALL SETUP_DECOMP( PN_NPROCS, PN_NPCOL, PN_NPROW,  NCOLS3D, NROWS3D,    &
+        CALL SETUP_DECOMP( PN_NPROCS, PN_NPCOL, PN_NPROW,  NCOLS, NROWS,        &
                            PN_NCOLS_PE, PN_NROWS_PE, PN_COLSX_PE, PN_ROWSX_PE )
 
-        CALL SETUP_DECOMP( PN_NPROW, 1, PN_NPROW, NCOLS3D, NROWS3D,             &
+        CALL SETUP_DECOMP( PN_NPROW, 1, PN_NPROW, NCOLS, NROWS,                 &
                            PN_AGG_NCOLS_PE, PN_AGG_NROWS_PE, PN_AGG_COLSX_PE, PN_AGG_ROWSX_PE )
         CALL M3MESG( BLANK )
 

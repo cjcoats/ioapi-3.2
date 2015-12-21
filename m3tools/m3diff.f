@@ -2,14 +2,15 @@
         PROGRAM  M3DIFF
 
 C***********************************************************************
-C Version "$Id: m3diff.f 121 2015-01-20 22:24:38Z coats $"
+C Version "$Id: m3diff.f 287 2015-12-21 21:29:58Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
+C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  121
+C  program body starts at line  124
 C
 C  FUNCTION:
 C       For a user-specified pair of GRIDDED Models-3 file and lists of
@@ -32,6 +33,8 @@ C       Version   1/2006 by CJC:  bug-fix for VARMODE file output
 C
 C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
+C
+C       Version 02/2010 by CJC for I/O API v3.2:  Use FIKCHK3(), GRDCHK3()
 C***********************************************************************
 
       USE M3UTILIO
@@ -155,7 +158,7 @@ C   begin body of program  M3DIFF
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3diff.f 121 2015-01-20 22:24:38Z coats                 $',
+     &'$Id:: m3diff.f 287 2015-12-21 21:29:58Z coats                 $',
      &' '
 
         ARGCNT = IARGC()
@@ -286,30 +289,9 @@ C.......   variables-listing:
         IF ( .NOT. DESC3( NAMEB ) ) THEN
             MESG = 'Could not get description of input file ' // NAMEB
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        END IF
-        IF ( FTYPE3D .NE. FTYPE ) THEN
-            WRITE( MESG, '( A, I9, 2X, 3A, I9, 2X, 3A )' )
-     &             'Input file types', FTYPE, 'for "', NAMEA,
-     &             '" and', FTYPE3D, 'for "', NAMEB,
-     &             '" do not match'
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        ELSE IF ( NCOLS .NE. NCOLS3D ) THEN
-            WRITE( MESG,94010 )
-     &              'Incompatible column dimensions:',
-     &              NCOLS, ' in ' // NAMEA,
-     &              NCOLS3D, ' in ' // NAMEB
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        ELSE IF ( NROWS .NE. NROWS3D ) THEN
-            WRITE( MESG,94010 )
-     &              'Incompatible row dimensions:',
-     &              NROWS, ' in ' // NAMEA,
-     &              NROWS3D, ' in ' // NAMEB
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        ELSE IF ( NLAYS .NE. NLAYS3D ) THEN
-            WRITE( MESG,94010 )
-     &              'Incompatible layer dimensions:',
-     &              NLAYS, ' in ' // NAMEA,
-     &              NLAYS3D, ' in ' // NAMEB
+        ELSE IF ( .NOT.FILCHK3( NAMEB,  FTYPE,
+     &                  NCOLS, NROWS, NLAYS, NTHIK3D ) ) THEN
+            MESG = 'Inconsistent dimensions  for ' // NAMEB
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         END IF
 

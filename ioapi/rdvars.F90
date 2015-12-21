@@ -2,7 +2,7 @@
 LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
 
     !!***********************************************************************
-    !!Version "$Id: rdvars.F90 264 2015-11-19 16:33:55Z coats $"
+    !!Version "$Id: rdvars.F90 287 2015-12-21 21:29:58Z coats $"
     !!EDSS/Models-3 I/O API.
     !!Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !!(C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -138,7 +138,7 @@ LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
     IF ( VID .GT. 0 )  THEN
         VNAME = VLIST3( VID,FID )
         VTYPE = VTYPE3( VID,FID )
-        VINDX = VINDX3( VAR,FID )
+        VINDX = VINDX3( VID,FID )
     ELSE
         VNAME = ALLVAR3
     END IF
@@ -339,13 +339,13 @@ LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
 !$OMP       CRITICAL( S_NC )
             IERR = NF_NOERR
             IF (      VTYPE .EQ. M3INT  ) THEN
-                IERR = NF_GET_VARA_INT(    CDFID, VINDX, DIMS, DELS, BUFFER( INDX ) )
+                IERR = NF_GET_VARA_INT(    CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
             ELSE IF ( VTYPE .EQ. M3REAL ) THEN
-                IERR = NF_GET_VARA_REAL(   CDFID, VINDX, DIMS, DELS, BUFFER( INDX ) )
+                IERR = NF_GET_VARA_REAL(   CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
             ELSE IF ( VTYPE .EQ. M3DBLE ) THEN
-                IERR = NF_GET_VARA_DOUBLE( CDFID, VINDX, DIMS, DELS, BUFFER( INDX ) )
+                IERR = NF_GET_VARA_DOUBLE( CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
             ELSE IF ( VTYPE .EQ. M3INT8 ) THEN
-                IERR = NF_GET_VARA_INT64( CDFID, VINDX, DIMS, DELS, BUFFER( INDX ) )
+                IERR = NF_GET_VARA_INT64(  CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
             ELSE
                 IERR = NF_EBADTYPE
             END IF
