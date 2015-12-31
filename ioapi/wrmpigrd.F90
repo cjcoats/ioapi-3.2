@@ -2,14 +2,14 @@
 LOGICAL FUNCTION WRMPIGRD( FID, VID, TSTAMP, STEP2, BUFFER )
 
     !!***********************************************************************
-    !! Version "$Id: wrmpigrd.F90 263 2015-11-19 16:20:27Z coats $"
+    !! Version "$Id: wrmpigrd.F90 289 2015-12-31 16:29:08Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !! (C) 2003-2010 Baron Advanced Meteorological Systems
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  function body starts at line  73
+    !!  function body starts at line  79
     !!
     !!  FUNCTION:  writes data from Models-3 GRIDDED data file with STATE3
     !!             index FID, for all variables and layers, for the time step
@@ -26,6 +26,8 @@ LOGICAL FUNCTION WRMPIGRD( FID, VID, TSTAMP, STEP2, BUFFER )
     !!  REVISION  HISTORY:
     !!      Adapted  08/2010 by CJC I/O from "ioapi/wrvars.F" for MPIGRD3 files
     !!      using MPI/PnetCDF distributed I/O
+    !!
+    !!      Version 12/2015 by CJC, responding to some issues from D. Wong.
     !!***********************************************************************
 
 #ifdef IOAPI_PNCF
@@ -53,12 +55,16 @@ LOGICAL FUNCTION WRMPIGRD( FID, VID, TSTAMP, STEP2, BUFFER )
 
     LOGICAL, EXTERNAL :: PN_WRINT, PN_WRREAL, PN_WRDBLE, PN_WRINT8
 
+    !!...........   PARAMETER:
+
+    INTEGER, PARAMETER :: TYPSIZE( 10 ) = (/ 1, 1, 1, 1, 1, 2, 1, 1, 1, 2 /)
+
 
     !!...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
     INTEGER         DELTA           !  d(INDX) / d(NCVGTcall)
     INTEGER         NLAYS, V,  PE,  IERR
-    INTEGER         VTYPE, VINDX
+    INTEGER         VTYPE, VINDX, INDX, SIZE
     INTEGER         STATUS( MPI_STATUS_SIZE )
     LOGICAL         SFLAG, EFLAG
     CHARACTER*16    FNAME, VNAME
@@ -70,30 +76,13 @@ LOGICAL FUNCTION WRMPIGRD( FID, VID, TSTAMP, STEP2, BUFFER )
     !!***********************************************************************
     !!   begin body of function  PN_WRGRDDED
 
-    IF ( PN_IO_PE ) THEN
-
-        DO PE = PN_MYPE_P1, PN_MYPE + PN_NPCOL - 1
-
-            CALL MPI_SEND( NLAYS3( FID ), 1, MPI_INTEGER, PE, PE, PN_WORLD_COMM, IERR )
-            IF ( IERR .NE. 0 ) THEN
-                WRITE( MESG, '(A,I9)' ) 'WRMPIGRD:  MPI_SEND error=', IERR
-                CALL M3MESG( MESG )
-                WRMPIGRD = .FALSE.
-                RETURN
-            END IF
-
-        END DO
-        NLAYS = NLAYS3( FID )
-    ELSE
-
-        CALL MPI_RECV( NLAYS, 1, MPI_INTEGER, PN_AGG_MYPE_G, PN_MYPE, PN_WORLD_COMM, STATUS, IERR )
-        IF ( IERR .NE. 0 ) THEN
-            WRITE( MESG, '(A,I9)' ) 'WRMPIGRD:  MPI_RECV error=', IERR
-            CALL M3MESG( MESG )
-            WRMPIGRD = .FALSE.
-            RETURN
-        END IF
-
+    NLAYS = NLAYS3( FID )
+    CALL MPI_BCAST( NLAYS, 1, MPI_INTEGER, 0, PN_WORLD_COMM, IERR )
+    IF ( IERR .NE. 0 ) THEN
+       WRITE( MESG, '(A,I9)' ) 'WRMPIGRD:  MPI_BCAST error=', IERR
+       CALL M3MESG( MESG )
+       WRMPIGRD = .FALSE.
+       RETURN
     END IF
 
     DIMS( 1 ) = PN_AGG_COLSX_PE( 1, PN_AGG_MYPE_P1 )
@@ -116,16 +105,18 @@ LOGICAL FUNCTION WRMPIGRD( FID, VID, TSTAMP, STEP2, BUFFER )
 
     IF ( VID .EQ. ALLAYS3 ) THEN        !!  "all variables"
         EFLAG = .FALSE.
+        INDX  = 1
+        SIZE  = PN_NCOLS_PE( PN_MYPE_P1 ) * PN_NROWS_PE( PN_MYPE_P1 ) * DELS(3)
         DO V = 1, NVARS3( FID )
             VTYPE = VTYPE3( V,FID )
             IF ( VTYPE .EQ. M3INT ) THEN
-                EFLAG = ( EFLAG .OR. PN_WRINT(  FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER ) )
+                EFLAG = ( EFLAG .OR. PN_WRINT(  FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER( INDX ) ) )
             ELSE IF ( VTYPE .EQ. M3REAL ) THEN
-                EFLAG = ( EFLAG .OR. PN_WRREAL( FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER ) )
+                EFLAG = ( EFLAG .OR. PN_WRREAL( FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER( INDX ) ) )
             ELSE IF ( VTYPE .EQ. M3DBLE ) THEN
-                EFLAG = ( EFLAG .OR. PN_WRDBLE( FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER ) )
+                EFLAG = ( EFLAG .OR. PN_WRDBLE( FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER( INDX ) ) )
             ELSE IF ( VTYPE .EQ. M3INT8 ) THEN
-                EFLAG = ( EFLAG .OR. PN_WRINT8( FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER ) )
+                EFLAG = ( EFLAG .OR. PN_WRINT8( FID, V, TSTAMP, STEP2, DIMS, DELS, DELTA, BUFFER( INDX ) ) )
             ELSE
                 FNAME = FLIST3(FID)
                 VNAME = VLIST3(V,FID)
@@ -133,6 +124,7 @@ LOGICAL FUNCTION WRMPIGRD( FID, VID, TSTAMP, STEP2, BUFFER )
                 CALL M3MESG( MESG )
                 EFLAG = .TRUE.
             END IF
+            INDX = INDX + SIZE * TYPSIZE( VTYPE )
         END DO
         SFLAG = ( .NOT.EFLAG )
     ELSE IF ( VTYPE .EQ. M3INT ) THEN

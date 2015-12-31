@@ -2,7 +2,7 @@
 LOGICAL   FUNCTION DESC3( FNAME )
 
     !!***********************************************************************
-    !! Version "$Id: desc3.F90 286 2015-12-21 14:29:58Z coats $"
+    !! Version "$Id: desc3.F90 289 2015-12-31 16:29:08Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2011 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ LOGICAL   FUNCTION DESC3( FNAME )
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  function body starts at line 124
+    !!  function body starts at line 126
     !!
     !!  FUNCTION:
     !!       puts description of FNAME into file description commons,
@@ -60,6 +60,8 @@ LOGICAL   FUNCTION DESC3( FNAME )
     !!
     !!      Modified 08/2015 by CJC for I/O API 3.2:  F90 "free" source-format;
     !!      support for MPI/PnetCDF; USE MODNCFIO, MODPDATA, NF_*() interfaces
+    !!
+    !!      Modified 12/2015 by CJC:  bug CDF ~~> FID
     !!***********************************************************************
 
     USE MODNCFIO
@@ -239,7 +241,7 @@ LOGICAL   FUNCTION DESC3( FNAME )
 
 !$OMP CRITICAL( S_NC )
 
-    IF ( FTYPE3( CDF ) .EQ. MPIGRD3 ) THEN      !!  MPI/PnetCDF file
+    IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN      !!  MPI/PnetCDF file
 
         FTYPE3D = GRDDED3
 

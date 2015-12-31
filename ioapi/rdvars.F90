@@ -2,7 +2,7 @@
 LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
 
     !!***********************************************************************
-    !!Version "$Id: rdvars.F90 287 2015-12-21 21:29:58Z coats $"
+    !!Version "$Id: rdvars.F90 289 2015-12-31 16:29:08Z coats $"
     !!EDSS/Models-3 I/O API.
     !!Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !!(C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
     !!Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !! function body starts at line  136
+    !! function body starts at line  138
     !!
     !! FUNCTION:
     !!      reads "variables" part of time step records from Models-3 file
@@ -56,6 +56,8 @@ LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
     !!
     !!      Version  11/2015 by CJC: replace MPI_OFFSET_KIND by hard-coded INTEGER(8)
     !!      because OpenMPI-1.4.x does not follow the MPOI "standard" competently.
+    !!
+    !!      Version  12/2015 by CJC: Fixed bug found by D Wong for single-vble cases
     !!***********************************************************************
 
     USE M3UTILIO
@@ -222,8 +224,8 @@ LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
 
         IF ( VID .EQ. ALLAYS3 ) THEN
 
-            INDX = 1    !  starting subscript for BUFFER(*)
             IERR = NF_NOERR
+            INDX = 1    !  starting subscript for BUFFER(*)
 
             DO  VAR = 1 , NVARS3( FID )
 
@@ -265,13 +267,13 @@ LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
 
 !$OMP       CRITICAL( S_NC )
             IF (      VTYPE .EQ. M3INT  ) THEN
-                IERR = NFMPI_GET_VARA_INT(    CDFID, VINDX, DIMP, DELP, BUFFER( INDX ) )
+                IERR = NFMPI_GET_VARA_INT(    CDFID, VINDX, DIMP, DELP, BUFFER )
             ELSE IF ( VTYPE .EQ. M3REAL ) THEN
-                IERR = NFMPI_GET_VARA_REAL(   CDFID, VINDX, DIMP, DELP, BUFFER( INDX ) )
+                IERR = NFMPI_GET_VARA_REAL(   CDFID, VINDX, DIMP, DELP, BUFFER )
             ELSE IF ( VTYPE .EQ. M3DBLE ) THEN
-                IERR = NFMPI_GET_VARA_DOUBLE( CDFID, VINDX, DIMP, DELP, BUFFER( INDX ) )
+                IERR = NFMPI_GET_VARA_DOUBLE( CDFID, VINDX, DIMP, DELP, BUFFER )
             ELSE IF ( VTYPE .EQ. M3INT8 ) THEN
-                IERR = NFMPI_GET_VARA_INT8(   CDFID, VINDX, DIMP, DELP, BUFFER( INDX ) )
+                IERR = NFMPI_GET_VARA_INT8(   CDFID, VINDX, DIMP, DELP, BUFFER )
             ELSE
                 IERR = NF_EBADTYPE
             END IF
@@ -339,13 +341,13 @@ LOGICAL FUNCTION RDVARS( FID, VID, DIMS, DELS, DELTA, BUFFER )  RESULT( RDFLAG )
 !$OMP       CRITICAL( S_NC )
             IERR = NF_NOERR
             IF (      VTYPE .EQ. M3INT  ) THEN
-                IERR = NF_GET_VARA_INT(    CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
+                IERR = NF_GET_VARA_INT(    CDFID, VINDX, DIMS, DELS, BUFFER )
             ELSE IF ( VTYPE .EQ. M3REAL ) THEN
-                IERR = NF_GET_VARA_REAL(   CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
+                IERR = NF_GET_VARA_REAL(   CDFID, VINDX, DIMS, DELS, BUFFER )
             ELSE IF ( VTYPE .EQ. M3DBLE ) THEN
-                IERR = NF_GET_VARA_DOUBLE( CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
+                IERR = NF_GET_VARA_DOUBLE( CDFID, VINDX, DIMS, DELS, BUFFER )
             ELSE IF ( VTYPE .EQ. M3INT8 ) THEN
-                IERR = NF_GET_VARA_INT64(  CDFID, VINDX, DIMS, DELS, BUFFER( VINDX ) )
+                IERR = NF_GET_VARA_INT64(  CDFID, VINDX, DIMS, DELS, BUFFER )
             ELSE
                 IERR = NF_EBADTYPE
             END IF

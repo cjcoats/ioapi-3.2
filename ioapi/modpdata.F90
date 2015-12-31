@@ -1,7 +1,7 @@
 MODULE MODPDATA
 
     !!***********************************************************************
-    !! Version "$Id: modpdata.F90 287 2015-12-21 21:29:58Z coats $"
+    !! Version "$Id: modpdata.F90 289 2015-12-31 16:29:08Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -19,7 +19,7 @@ MODULE MODPDATA
     !!      and modularity, general clean-up. 
     !!
     !!      Version  12/2015 by Carlie J. Coats, Jr., UNC IE: Do list-based
-    !!      read for NPCOL_NPROW-values
+    !!      read for NPCOL_NPROW-values.  Bug-fixes and changes from D.Wong.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -201,11 +201,11 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IF ( .NOT.FIRSTIME ) GO TO  99
 
-        FIRSTIME = .TRUE.
+        FIRSTIME = .FALSE.
         MESG = '"' // TRIM( PNAME ) // '":  Version'
         CALL M3MESG( MESG )
         CALL M3MESG( &
-'$Id: modpdata.F90 287 2015-12-21 21:29:58Z coats $' )
+'$Id: modpdata.F90 289 2015-12-31 16:29:08Z coats $' )
 
         CALL ENVSTR( 'NPCOL_NPROW', 'Processor decomposition: npcol x nprow', BLANK, EBUF, IERR )
         IF ( IERR .NE. 0 ) THEN
@@ -372,23 +372,15 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IF ( PN_INIT ) THEN
             EFLAG = .TRUE. 
-        ELSE IF ( PN_IO_PE ) THEN
-            CALL MPI_SEND( FLAG, 1, MPI_LOGICAL, PN_AGG_MYPE_G, PN_RETVAL, PN_COL_IO_COMM, IERR )
+        ELSE
+            CALL MPI_ALLREDUCE( FLAG, EFLAG, 1, MPI_LOGICAL, MPI_LAND, PN_COL_IO_COMM, IERR )
             IF ( IERR .NE. 0 ) THEN
-                WRITE( MESG, '(A,I9)' ) 'WRTFLAG:  MPI_SEND(EFLAG) error:  IERR=', IERR
+                WRITE( MESG, '(A,I9)' ) 'WRTFLAG:  MPI_SEND(EFLAG) error: IERR=', IERR
                 CALL M3MSG2( MESG )
-                EFLAG = .TRUE.          
-            END IF
-        ELSE 
-            CALL MPI_RECV( FLAG, 1, MPI_LOGICAL, PN_AGG_MYPE_G, PN_RETVAL, PN_COL_IO_COMM, IERR )
-            IF ( IERR .NE. 0 ) THEN
-                WRITE( MESG, '(A,I9)' ) 'WRTFLAG:  MPI_RECV(EFLAG) error:  IERR=', IERR
-                CALL M3MSG2( MESG )
-                EFLAG = .TRUE.          
             END IF
         END IF
 
-        PN_FLAG = ( .NOT.EFLAG )
+        PN_FLAG = EFLAG
 
 #endif                  /*  ifdef IOAPI_PNCF   */
 

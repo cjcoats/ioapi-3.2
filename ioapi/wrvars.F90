@@ -272,13 +272,13 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             VNAME = VLIST3( VAR,FID )
 
             WRITE( L, '(5X, 4A )' ) 'WRVARS:  Error writing variable ', VNAME, ' to file ' // FNAME
-            WRITE( L,'(5X,A, I4)' ) 'Error number', IERR
-            WRITE( L,'(5X,A, I4)' ) 'IOAPI ID    ', FID
-            WRITE( L,'(5X,A, I4)' ) 'netCDF ID   ', CDFID
-            WRITE( L,'(5X,A, I4)' ) 'vble        ', VINDX
-            WRITE( L,'(5X,A,5I4)' ) 'dims array  ', DIMS
-            WRITE( L,'(5X,A,5I4)' ) 'delts array ', DELS
-            WRITE( L,'(5X,A, I4)' ) 'offset      ', INDX
+            WRITE( L,'(5X,A, I7)' ) 'Error number', IERR
+            WRITE( L,'(5X,A, I7)' ) 'IOAPI ID    ', FID
+            WRITE( L,'(5X,A, I7)' ) 'netCDF ID   ', CDFID
+            WRITE( L,'(5X,A, I7)' ) 'vble        ', VINDX
+            WRITE( L,'(5X,A,5I7)' ) 'dims array  ', DIMS
+            WRITE( L,'(5X,A,5I7)' ) 'delts array ', DELS
+            WRITE( L,'(5X,A, I7)' ) 'offset      ', INDX
 
         END SUBROUTINE LOGERR
 
