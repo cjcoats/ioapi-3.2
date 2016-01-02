@@ -1,7 +1,7 @@
 MODULE MODPDATA
 
     !!***********************************************************************
-    !! Version "$Id: modpdata.F90 289 2015-12-31 16:29:08Z coats $"
+    !! Version "$Id: modpdata.F90 292 2016-01-02 19:54:35Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -205,7 +205,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MESG = '"' // TRIM( PNAME ) // '":  Version'
         CALL M3MESG( MESG )
         CALL M3MESG( &
-'$Id: modpdata.F90 289 2015-12-31 16:29:08Z coats $' )
+'$Id: modpdata.F90 292 2016-01-02 19:54:35Z coats $' )
 
         CALL ENVSTR( 'NPCOL_NPROW', 'Processor decomposition: npcol x nprow', BLANK, EBUF, IERR )
         IF ( IERR .NE. 0 ) THEN
@@ -360,6 +360,10 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     LOGICAL FUNCTION PN_FLAG( FLAG )
     
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !!   True iff FLAG true on all related threads
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         LOGICAL, INTENT( INOUT ) :: FLAG
 
 #ifdef IOAPI_PNCF
@@ -370,8 +374,8 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         EFLAG = .FALSE.
 
-        IF ( PN_INIT ) THEN
-            EFLAG = .TRUE. 
+        IF ( .NOT.PN_INIT ) THEN
+            EFLAG = .FALSE. 
         ELSE
             CALL MPI_ALLREDUCE( FLAG, EFLAG, 1, MPI_LOGICAL, MPI_LAND, PN_COL_IO_COMM, IERR )
             IF ( IERR .NE. 0 ) THEN
@@ -384,7 +388,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 #endif                  /*  ifdef IOAPI_PNCF   */
 
-#ifndef IOAPI_PNCF     /*  IOAPI_PNCF not defined:   */
+#ifndef IOAPI_PNCF      /*  IOAPI_PNCF not defined:   */
         PN_FLAG = .FALSE.
         CALL M3EXIT(  'MODPDATA:PN_FLAG',0,0, 'MPI/PnetCDF "IOAPI_PNCF" not defined for this build', 2 )
 #endif                  /*  ifndef IOAPI_PNCF   */
