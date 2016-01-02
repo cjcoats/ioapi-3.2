@@ -2,7 +2,7 @@
 LOGICAL FUNCTION WRTFLAG( FID, VID, FLAGS, STEP2 )
 
     !!***********************************************************************
-    !! Version "$Id: wrtflag.F90 264 2015-11-19 16:33:55Z coats $"
+    !! Version "$Id: wrtflag.F90 290 2016-01-02 19:39:56Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2010 by Baron Advanced Meteorological Systems,
@@ -68,7 +68,7 @@ LOGICAL FUNCTION WRTFLAG( FID, VID, FLAGS, STEP2 )
     !!...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
     INTEGER         IERR            !  netCDF error status return
-    LOGICAL         EFLAG
+    LOGICAL         EFLAG, SFLAG
 
 #ifdef IOAPI_PNCF
     INCLUDE 'mpif.h'
@@ -171,10 +171,11 @@ LOGICAL FUNCTION WRTFLAG( FID, VID, FLAGS, STEP2 )
 
     END IF
 
+    SFLAG = ( .NOT.EFLAG )
     IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
-        IF ( .NOT.PN_FLAG( EFLAG ) ) THEN
+        IF ( .NOT.PN_FLAG( SFLAG ) ) THEN
             CALL M3MSG2( 'WRTFLAG:  MPI_SEND(EFLAG) error' )
-            EFLAG = .TRUE.          
+            SFLAG = .FALSE.          
         END IF
     END IF
 
@@ -191,7 +192,7 @@ LOGICAL FUNCTION WRTFLAG( FID, VID, FLAGS, STEP2 )
         CALL M3PARAG( 9, PARAG )
     END IF
 
-    WRTFLAG = ( .NOT.EFLAG )
+    WRTFLAG = SFLAG
 
     RETURN
 

@@ -2,7 +2,7 @@
 LOGICAL FUNCTION PN_OPNFIL3( EQNAME, FID, FSTATUS, PGNAME )
 
     !!***********************************************************************
-    !! Version "$Id: pn_opnfil3.F90 230 2015-10-08 20:44:26Z coats $"
+    !! Version "$Id: pn_opnfil3.F90 290 2016-01-02 19:39:56Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2014-2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -459,7 +459,8 @@ LOGICAL FUNCTION PN_OPNFIL3( EQNAME, FID, FSTATUS, PGNAME )
 !$OMP END CRITICAL( S_NC )
 
     IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
-        IF ( .NOT.PN_FLAG( EFLAG ) ) THEN
+        AFLAG = ( .NOT.EFLAG )
+        IF ( .NOT.PN_FLAG( AFLAG ) ) THEN
             CALL M3MSG2( 'WRTFLAG:  MPI_SEND(EFLAG) error' )
             EFLAG = .TRUE.          
         END IF
@@ -472,10 +473,9 @@ LOGICAL FUNCTION PN_OPNFIL3( EQNAME, FID, FSTATUS, PGNAME )
         CDFID3( FID ) = IMISS3
         FLIST3( FID ) = CMISS3
 !$OMP   END CRITICAL( S_NC )
-    ELSE
-        PN_OPNFIL3 = .TRUE.
     END IF
 
+    PN_OPNFIL3 = ( .NOT.EFLAG )
 
 #endif
 #ifndef IOAPI_PNCF

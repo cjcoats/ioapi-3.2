@@ -2,7 +2,7 @@
 LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
 
     !!***********************************************************************
-    !! Version "$Id: wratt3.F90 264 2015-11-19 16:33:55Z coats $"
+    !! Version "$Id: wratt3.F90 290 2016-01-02 19:39:56Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2010 by Baron Advanced Meteorological Systems and
@@ -88,7 +88,7 @@ LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
     INTEGER         FLEN, VLEN      !  name lengths for file, vble
     INTEGER         IERR            !  netCDF error status return
     INTEGER         ITYPE, ILEN
-    LOGICAL         EFLAG
+    LOGICAL         EFLAG, SFLAG
     CHARACTER*16    FIL16           !  scratch file-name buffer
     CHARACTER*16    VAR16           !  scratch vble-name buffer
     CHARACTER*256   MESG            !  message-buffer
@@ -318,11 +318,13 @@ LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
 
 999 CONTINUE
 
+    SFLAG = ( .NOT. EFLAG )
+
 #ifdef IOAPI_PNCF
     IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
-        IF ( .NOT.PN_FLAG( EFLAG ) ) THEN
+        IF ( .NOT.PN_FLAG( SFLAG ) ) THEN
             CALL M3MSG2( 'WRATT3:  MPI_SEND(EFLAG) error' )
-            EFLAG = .TRUE.
+            SFLAG = .FALSE.
         END IF
     END IF
 #endif
@@ -334,9 +336,9 @@ LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
         CALL M3WARN( 'WRATT3', 0, 0, MESG )
     END IF          !  ierr nonzero:  operation failed
     IF ( ITYPE .EQ. NF_CHAR ) THEN
-        WRATTC = ( .NOT. EFLAG )
+        WRATTC = SFLAG
     ELSE
-        WRATT3 = ( .NOT. EFLAG )
+        WRATT3 = SFLAG
     END IF
 
     RETURN

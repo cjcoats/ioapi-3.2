@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 284 2015-12-15 18:38:33Z coats $" -->
+<!-- "$Id: AVAIL.html 291 2016-01-02 19:40:22Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -43,8 +43,8 @@
     software we will refrain from naming here.  There are very few
     upward compatibility issues between Versions&nbsp;3.1 and 3.2,
     mostly coming from the renaming and generalization of
-    <CODE>MODULE&nbsp;MATXATTS<CODE> as 
-    <CODE>MODULE&nbsp;MODATTS3<CODE>.
+    <CODE>MODULE&nbsp;MATXATTS</CODE> as 
+    <CODE>MODULE&nbsp;MODATTS3</CODE>.
     <P>
 
     In general, you are best off if you can build your whole modeling
@@ -432,9 +432,10 @@ m3stat:
                   <DT><STRONG><CODE>make binclean</CODE></STRONG>
                   <DD>  builds everything for several choices
                         of Linux architectures and compilers.
-                  <DT><STRONG><CODE>make fix</CODE></STRONG>
+                  <DT><STRONG><CODE>make fix</CODE></STRONG> or<BR>
+                        <STRONG><CODE>cd ioapi; make fixed_src</CODE></STRONG>
                   <DD>  builds pre-version-5.0-CMAQ and SMOKE &quot;fixed-132&quot;
-                        Fortran source form <CODE>INCLUDE</CODE>-files.
+                        non-ISO-Standard Fortran source form <CODE>INCLUDE</CODE>-files.
               </DL>
         <P>
     </DL>
@@ -1347,7 +1348,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 284 2015-12-15 18:38:33Z coats $
+    $Id: AVAIL.html 291 2016-01-02 19:40:22Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
