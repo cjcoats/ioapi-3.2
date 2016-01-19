@@ -2,7 +2,7 @@
 LOGICAL FUNCTION SHUT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: shut3.F90 235 2015-10-14 15:44:39Z coats $"
+    !! Version "$Id: shut3.F90 293 2016-01-19 15:17:48Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2010 by Baron Advanced Meteorological Systems.
@@ -83,7 +83,7 @@ LOGICAL FUNCTION SHUT3 ( )
 
             FID = CDFID3( FILE )
             
-            IF( PN_IO_PE .AND. FTYPE3( FILE ) .EQ. MPIGRD3 ) THEN
+            IF( FTYPE3( FILE ) .EQ. MPIGRD3 ) THEN
 
 #ifdef IOAPI_PNCF
                 IERR =  NFMPI_CLOSE( FID )

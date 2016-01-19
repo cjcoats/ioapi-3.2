@@ -2,7 +2,7 @@
 LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
     !!***********************************************************************
-    !! Version "$Id: pn_crtfil3.F90 264 2015-11-19 16:33:55Z coats $"
+    !! Version "$Id: pn_crtfil3.F90 293 2016-01-19 15:17:48Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2014-2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -134,7 +134,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
             CALL INITCF()
         END IF
 
-        CALL ENVSTR( 'IOAPI_CMAQMETA', 'Fiel for CMAQ-convention metadata or "NONE"?', 'NONE', NAMBUF, IERR )
+        CALL ENVSTR( 'IOAPI_CMAQMETA', 'File for CMAQ-convention metadata or "NONE"?', 'NONE', NAMBUF, IERR )
         IF ( IERR .GT. 0 ) THEN
             CALL M3MSG2( 'Bad environment vble "IOAPI_CMAQMETA"' )
         ELSE IF ( NAMBUF .EQ. 'NONE' ) THEN
@@ -143,7 +143,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
             EFLAG = INITCMAQ()
         END IF
 
-        CALL ENVSTR( 'IOAPI_SMOKEMETA', 'Fiel for SMOKE-convention metadata or "NONE"?', 'NONE', NAMBUF, IERR )
+        CALL ENVSTR( 'IOAPI_SMOKEMETA', 'File for SMOKE-convention metadata or "NONE"?', 'NONE', NAMBUF, IERR )
         IF ( IERR .GT. 0 ) THEN
             CALL M3MSG2( 'Bad environment vble "IOAPI_SMOKEMETA"' )
         ELSE IF ( NAMBUF .EQ. 'NONE' ) THEN
@@ -158,12 +158,13 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 !$OMP   END CRITICAL( WRITE3_INIT )
 
     IF ( NVARS3D .GT. MXVARS3 ) THEN
-        CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Max NVARS exceeded' )
+        MESG = 'Max NVARS for this build exceeded:  file' // FLIST3( FID )
+        CALL M3WARN( 'OPEN3/PN_CRTFIL3', 0,0, NAMBUF )
         CFLAG3 = .FALSE.
         RETURN
     ELSE IF ( FTYPE3D .NE. GRDDED3 ) THEN
-        MESG = 'PN_CRTFIL3:  Non-GRIDDED files not supported'
-        CALL M3ABORT( FLIST3( FID ), FNUM, IERR, MESG )
+        MESG = 'PN_CRTFIL3:  Non-GRIDDED files not supported for PnetCDF mode'
+        CALL M3WARN( 'OPEN3/PN_CRTFIL3', 0,0, NAMBUF )
         CFLAG3 = .FALSE.
         RETURN
     ELSE IF ( NCOLS3D .NE. GRID_COLS  .OR.  NROWS3D .NE. GRID_ROWS ) THEN
@@ -172,7 +173,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         WRITE( MESG, '( 2( A, I6, 2X ))' ) 'Master-grid NROWS=', GRID_ROWS, 'file-grid NROWS=', NROWS3D
         CALL M3MESG( MESG )
         MESG = 'PN_CRTFIL3:  File dimensions must match master-grid dimensions'
-        CALL M3ABORT( FLIST3( FID ), FNUM, IERR, MESG )
+        CALL M3WARN( 'OPEN3/PN_CRTFIL3', 0,0, NAMBUF )
         CFLAG3 = .FALSE.
         RETURN
     END IF
