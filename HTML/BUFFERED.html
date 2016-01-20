@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BUFFERED.html 238 2015-10-14 20:21:03Z coats $" -->
+<!-- "$Id: BUFFERED.html 294 2016-01-20 18:01:28Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> 
 REAL FILES, PARALLEL FILES,  AND &quot;VIRTUAL FILES&quot;
@@ -76,28 +76,35 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     I/O&nbsp;API Version&nbsp;3.2 introduces support for distributed
     parallel I/O using 
     <A HREF="https://trac.mcs.anl.gov/projects/parallel-netcdf"><VAR>PnetCDF</VAR></A>
-    from Argonne National Laboratory, for use in CMAQ-5.1 and later.
+    from Argonne National Laboratory, for use in CMAQ-5.1 and later. The
+    original concept and the prototype code are due to Dr.&nbsp;David
+    Wong, US&nbsp;EPA.  This code has been extensively extended and
+    revised, to meet the needs of proper I/O&nbsp;API integration and
+    software engineering standards.
+    <P>
     There are a number of restrictions:
     <UL>
         <LI> Only GRIDDED files are supported.
         <LI> All distributed-I/O files must be on the same grid
         (matching the CMAQ cross-point grid).
         <LI>There is one fixed data-distribution and processor-map,
-        which is the one specified by CMAQ.
+        which is the same as the one specified by CMAQ.
     </UL>
     Additionally, the following environment variables are needed
     for setting up how the data is distributed over the processors:
     <BLOCKQUOTE>
     <DL>
         <DT><CODE>GRIDDESC</CODE></DT>
-        <DD>Path name for the <A HRERF="">GRIDDESC file</A></DD>
+        <DD>Path name for the <A HREF="">GRIDDESC file</A></DD>
         <P>
         <DT><CODE>GRID_NAME</CODE></DT>
         <DD><CODE>GRIDDESC</CODE>-name for the data grid</DD>
         <P>
         <DT><CODE>NPCOL_NPROW</CODE></DT>
-        <DD>Comma list with the column- and row-dimensions
-        for the processor-grid</DD>
+        <DD>Blank-delimited list with the column- and row-dimensions
+        for the processor-grid<BR>
+        <EM>Note that this list needs to be enclosed by quotes
+        (either single or double).</DD>
         <P>
     </DL>
     </BLOCKQUOTE>

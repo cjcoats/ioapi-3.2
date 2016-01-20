@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: INCLUDE.html 159 2015-02-16 19:51:39Z coats $" -->
+<!-- "$Id: INCLUDE.html 294 2016-01-20 18:01:28Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> MODULES AND PUBLIC INCLUDE FILES </TITLE>
 </HEAD>
@@ -15,7 +15,7 @@
 <H1> MODULES AND PUBLIC INCLUDE FILES </H1>
         
 
-    <A NAME = "contents">There</A> are three Fortran <VAR>MODULE</VAR>s,
+    <A NAME = "contents">There</A> are four Fortran <VAR>MODULE</VAR>s,
     and three public Fortran and C matching pairs of include files in the
     I/O&nbsp;API, with  the following sorts of content:
 
@@ -30,12 +30,23 @@
                                   code.</STRONG>
         <LI> <A HREF = "MODATTS3.html"><VAR>MODULE MODATTS3</VAR></A>:
                                   parameters and routines for saving
-                                  metadata for CF complance, geospatial
+                                  metadata for CF compliance, geospatial
                                   transforms, and CMAQ and SMOKE runs.
         <LI> <A HREF = "MODGCTP.html"><VAR>MODULE MODGCTP</VAR></A>:
                                   <CODE>PARAMETER</CODE>s and routines
                                   for geospatial transforms and
                                   interpolation.
+        <LI> <A HREF = "MODNCFIO.html"><VAR>MODULE MODNCFIO</VAR></A>:
+                                  <CODE>PARAMETER</CODE>s and function
+                                  declarations for netCDF and for
+                                  PnetCDF, if <A HREF="BUFFERED.html#pncf">
+                                  PnetCDF/MPI distributed-I/O</A> is
+                                  enabled.<BR>
+                                  Can be used to replace
+                                  <CODE>INCLUDE</CODE>-files
+                                  <VAR>NETCDF.EXT</VAR>,
+                                  <VAR>netcdf.inc</VAR>, and/or
+                                  <VAR>pnetcdf.inc</VAR>.
                                   <P>
         <LI> <A HREF = "#parms">  <VAR>PARMS3.EXT</VAR> and <VAR>parms3.h</VAR>:</A> 
                                   dimensions and constants
@@ -67,8 +78,8 @@
     <P>
 
     As of Novenber,&nbsp;2004, new <A HREF = "M3UTILIO.html">
-    Fortran-9x <CODE>MODULE M3UTILIO</CODE></A> is the recommended way to
-    provide an (alternate) interface to these <CODE>INCLUDE</CODE>
+    Fortran-9x <CODE>MODULE M3UTILIO</CODE></A> is the recommended way
+    to provide an (alternate) interface to these <CODE>INCLUDE</CODE>
     files, as well as explicit interfaces to a large number of
     additional I/O&nbsp;API public routines, in a way that gets around
     difficulties caused by the interaction of Fortran-9x
@@ -153,48 +164,43 @@
     The <A NAME = "magic"> &quot;magic number parameters&quot; </A> are:
     <BLOCKQUOTE>
     <DL>
-        <DT> <STRONG>CUSTOM3</STRONG>  <A HREF = "DATATYPES.html">
+        <DT> <STRONG>CUSTOM3</STRONG>  <A HREF="DATATYPES.html">
                                        file type</A>:  
-                                       <A HREF =
-                                       "DATATYPES.html#custom">
+                                       <A HREF="DATATYPES.html#custom">
                                        user-structured custom</A>
-        <DT> <STRONG>GRDDED3</STRONG>  <A HREF =
-                                       "DATATYPES.html#grdded">
+        <DT> <STRONG>GRDDED3</STRONG>  <A HREF="DATATYPES.html#grdded">
                                        ...gridded data</A>
-        <DT> <STRONG>BNDARY3</STRONG>  <A HREF =
-                                       "DATATYPES.html#bndary">
+        <DT> <STRONG>BNDARY3</STRONG>  <A HREF="DATATYPES.html#bndary">
                                        ...boundary-condition data</A>
-        <DT> <STRONG>IDDATA3</STRONG>  <A HREF =
-                                       "DATATYPES.html#iddata">
+        <DT> <STRONG>IDDATA3</STRONG>  <A HREF="DATATYPES.html#iddata">
                                        ...ID-referenced (e.g., 
                                        observational) data</A>
-        <DT> <STRONG>PROFIL3</STRONG>  <A HREF =
-                                       "DATATYPES.html#profil">
+        <DT> <STRONG>PROFIL3</STRONG>  <A HREF="DATATYPES.html#profil">
                                        ...rawinsonde vertical profile</A>
-        <DT> <STRONG>GRNEST3</STRONG>  <A HREF =
-                                       "DATATYPES.html#grnes">
+        <DT> <STRONG>GRNEST3</STRONG>  <A HREF="DATATYPES.html#grnes">
                                        ...nested-grid or  multi-grid data</A>
-        <DT> <STRONG>SMATRX3</STRONG>  <A HREF =
-                                       "DATATYPES.html#smatrx">
+        <DT> <STRONG>SMATRX3</STRONG>  <A HREF="DATATYPES.html#smatrx">
                                        ...sparse matrix</A>
-        <DT> <STRONG>DCTNRY3</STRONG>  <A HREF =
-                                       "DATATYPES.html#dctnry">
+        <DT> <STRONG>DCTNRY3</STRONG>  <A HREF="DATATYPES.html#dctnry">
                                        ...file-structure-template 
                                        dictionary</A>
-        <DT> <STRONG>M3INT</STRONG>    <A HREF = "DATATYPES.html#basic"> 
+        <DT> <STRONG>M3INT</STRONG>    &nbsp;<A HREF="DATATYPES.html#basic"> 
                                        basic data type </A> integer
         <DT> <STRONG>M3REAL</STRONG>   ... real
         <DT> <STRONG>M3DBLE</STRONG>   ... double precision
-        <DT> <STRONG>FSREAD3</STRONG>  open file as old read-only
+        <DT> <STRONG>M3INT8</STRONG>   ... 64-bit integer
+                                       <EM>(I/O&nbsp;API-3.2 or later
+                                       only)</EM>
+        <DT> <STRONG>FSREAD3</STRONG>  &nbsp;open file as old read-only
         <DT> <STRONG>FSRDWR3</STRONG>  ...old read-write
         <DT> <STRONG>FSNEW3</STRONG>   ...new (read-write)
         <DT> <STRONG>FSUNKN3</STRONG>  ...unknown 
                                        (read_write)
         <DT> <STRONG>FSCREA3</STRONG>  ...create/truncate 
                                        (read_write)
-        <DT> <STRONG>LATGRD3</STRONG>  <A HREF = "GRIDS.html#horiz">
-                                       horizontal</A> coordinate system 
-                                       type:  lat-lon coordinates
+        <DT> <STRONG>LATGRD3</STRONG>  &nbsp;<A HREF="GRIDS.html#horiz">
+                                       horizontal coordinate system 
+                                       type</A>:  lat-lon coordinates
         <DT> <STRONG>LAMGRD3</STRONG>  ...Lambert Conformal Conic coordinates
         <DT> <STRONG>MERGRD3</STRONG>  ...Mercator coordinates
         <DT> <STRONG>STEGRD3</STRONG>  ...(general tangent) Stereographic coordinates
@@ -208,8 +214,11 @@
                                        coordinates
         <DT> <STRONG>ALBGRD3</STRONG>  ...Albers Equal-Area Conic coordinates
         <DT> <STRONG>LEQGRD3</STRONG>  ...Lambert Equal-Area coordinates
-        <DT> <STRONG>VGSGPH3</STRONG>  <A HREF = "GRIDS.html#vert">
-                                       Vertical</A> coordinate type:  
+        <DT> <STRONG>SINUGRD3</STRONG> ...Sinusoidal Equal-Area coordinates
+                                       <EM>(I/O&nbsp;API-3.1 or 3.2,
+                                       post-May&nbsp;5, 2015)</EM>.
+        <DT> <STRONG>VGSGPH3</STRONG>  &nbsp;<A HREF="GRIDS.html#vert">
+                                       Vertical coordinate type</A>:  
                                        hydrostatic sigma-P
         <DT> <STRONG>VGSGPN3</STRONG>  ...nonhydrostatic sigma-P
         <DT> <STRONG>VGSIGZ3</STRONG>  ...sigma-Z
@@ -218,16 +227,20 @@
         <DT> <STRONG>VGHVAL3</STRONG>  ...H (m above sea level)
         <DT> <STRONG>VGWRFEM</STRONG>  ...WRF EM dry sigma-P
         <DT> <STRONG>VGWRFNM</STRONG>  ...WRF NMM vertical coordinate
-        <DT> <STRONG>ALLAYS3</STRONG>  read or write &quot;all layers&quot;
-        <DT> <STRONG>ALLVAR3</STRONG>  &quot;...all variables&quot;
-        <DT> <STRONG>BADVAL3</STRONG>  &quot;bad&quot; or &quot;missing&quot;
-                                       REAL value
-        <DT> <STRONG>AMISS3</STRONG>   test value:  
-                                       &quot;bad&quot; iff &lt; AMISS3
-        <DT> <STRONG>IMISS3</STRONG>   &quot;bad&quot; or &quot;missing&quot;
-                                       INTEGER value
-        <DT> <STRONG>CMISS3</STRONG>   &quot;bad&quot; or &quot;missing&quot;
-                                       CHARACTER STRING value
+        <DT> <STRONG>ALLAYS3</STRONG>  &nbsp;read or write &quot;all layers&quot;
+        <DT> <STRONG>ALLVAR3</STRONG>  &nbsp;... &quot;all variables&quot;
+        <DT> <STRONG>BADVAL3</STRONG>  &nbsp;&quot;bad&quot; or &quot;missing&quot;
+                                       <CODE>REAL</CODE> fill value
+        <DT> <STRONG>AMISS3</STRONG>   &nbsp;test value: &quot;bad&quot; iff
+                                       &lt;value&gt;&nbsp;&lt;&nbsp;<CODE>AMISS3</CODE>
+        <DT> <STRONG>IMISS3</STRONG>   &nbsp;&quot;bad&quot; or &quot;missing&quot;
+                                       <CODE>INTEGER</CODE> value
+        <DT> <STRONG>CMISS3</STRONG>   &nbsp;&quot;bad&quot; or &quot;missing&quot;
+                                       <CODE>CHARACTER</CODE> string value
+        <DT> <STRONG>LITTLE_ENDIAN=1234, BIG_ENDIAN=4321,
+             PDP_ENDIAN=3412</STRONG>:  byte-order tokens for function
+             <A HREF="GET_ENDIAN.html"><CODE>GET_ENDIAN()</CODE></A>,
+             which returns the current-machine byte-order.
     </DL>
     </BLOCKQUOTE>
     <P>

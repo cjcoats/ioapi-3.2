@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 277 2015-12-03 18:49:20Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 294 2016-01-20 18:01:28Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 277 2015-12-03 18:49:20Z coats $
+    $Id: NEWSTUFF.html 294 2016-01-20 18:01:28Z coats $
     </EM>
     <HR>
 
@@ -530,6 +530,13 @@
     lists.
     <P>
 
+    New <VAR>m3tools</VAR> program
+    <A HREF = "GRIDPROBE.html"><VAR>gridprobe</VAR></A> interpolates
+    time series for a specified layer of a REAL variable to a specified
+    set of Lat-Lon points from a GRIDDED input file, and write the
+    resulting time series as columns to a human-readable ASCII REPORT-file.
+    <P>
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
     <P>
@@ -641,7 +648,7 @@
     for CMAQ-5.1, netCDF-4, and for MS-Windows:
     <DL>
         <DT><STRONG><VAR>PnetCDF</VAR> for CMAQ-5.1</STRONG></DT>
-        <DD>CMAQ-5.1 uses
+        <DD>CMAQ-5.1 can use
         <A HREF="https://trac.mcs.anl.gov/projects/parallel-netcdf"><VAR>PnetCDF</VAR></A>
         for distributed-parallel I/O.  Note that this is for gridded
         files only, with the fixed data-distribution specified for CMAQ.
@@ -661,6 +668,11 @@
         routines are found in new <CODE>MODULE&nbsp;MODPDATA</CODE>.
         See <A HREF="BUFFERED.html#pncf">this section on environment
         variables needed for using distributed-parallel I/O</A>.
+        <P>
+        The original concept and the prototype code are due to
+        Dr.&nbsp;David Wong, US&nbsp;EPA.  This code has been
+        extensively extended and revised, to meet the needs of proper
+        I/O&nbsp;API integration and software engineering standards.
         </DD>
         <P>
 
@@ -5640,7 +5652,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 277 2015-12-03 18:49:20Z coats $
+    $Id: NEWSTUFF.html 294 2016-01-20 18:01:28Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
