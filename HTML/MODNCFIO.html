@@ -1,0 +1,78 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: MODNCFIO.html 296 2016-01-21 17:45:25Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE>MODULE MODNCFIO</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+
+<!--#include virtual="/INCLUDES/header.html" -->
+
+<H1>    Fortran-90 <CODE>MODULE MODNCFIO</CODE> </H1>
+
+<BLOCKQUOTE>
+
+    <EM>New for I/O&nbsp;API-3.2!!</EM>  Developed from (and extends)
+    I/O&nbsp;API/netCDF/PnetCDF INCLUDE-files <CODE>NETCDF.EXT</CODE>
+    and <CODE>pnetcdf.inc</CODE>,
+    <P>
+
+    This module is purely a &quot;declarations-module&quot;, which is
+    used to resolve various incompatibilities between  different
+    versions of netCDF and (if <A HREF="BUFFERED.html#pncf">PnetCDF/MPI
+    distributed I/O</A> is enabled)_PnetCDF INCLUDE-files.  The options
+    are controlled by preprocessor symbols at <VAR>libioapi.a</VAR>
+    build-time:
+    <UL>
+        <LI> If <CODE>IOAPI_PNCF</CODE> is defined (as it is in
+             <VAR>Makefile.pncf</VAR>), then <U>PnetCDF/MPI distributed
+             I/O</U> is enabled.
+             <P>
+        <LI> If <CODE>IOAPI_NCF4</CODE> is defined (it is commented-out
+             in the <VAR>Makefile.*</VAR>), then the <U>new NetCDF-4
+             features</U> are enabled (including 64-bit-<CODE>INTEGER</CODE>
+             variables and attributes, and HDF file-formats).
+             <P>
+        <LI> Otherwise, only the &quot;traditional&quot; netCDF-3
+             routines and parameters are turned on.
+             64-bit-<CODE>INTEGER</CODE> operations will return failure,
+             and write an appropriate error message.
+    </UL>
+    This of course leads to four (link-incompatible!) distinct
+    netCDF-version related versions of the I/O&nbsp;API library (and
+    PVM-enabled or not option, as distinguished by preprocessor symbol
+    <CODE>IOAPICPL</CODE> defined in <VAR>Makefile.cpl</VAR> turns it
+    into a total of 8 versions in all).
+    <P>
+
+    It is also hoped that the source code for this module is somewhat
+    more readable than the original <CODE>INCLUDE</CODE>-files&nbsp;:-)
+    <P>
+
+</BLOCKQUOTE>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:  The Help Pages</STRONG>
+</A><P>
+
+
+Send comments to
+<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS>
+          Carlie J. Coats, Jr. <br>
+          cjcoats@email.unc.edu  </ADDRESS> </A><P>
+
+<!--#include virtual="/INCLUDES/footer.html" -->
+
+
+</BODY>
+</HTML>
+
