@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 294 2016-01-20 18:01:28Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 301 2016-01-29 19:00:36Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 294 2016-01-20 18:01:28Z coats $
+    $Id: NEWSTUFF.html 301 2016-01-29 19:00:36Z coats $
     </EM>
     <HR>
 
@@ -50,15 +50,15 @@
 </A></H2>
 
     <UL>
-         <LI>  <A HREF = "#dec032015">
-               New <CODE>DBLLIST()</CODE>; bug-fixes and support for
-               blank-delimited lists in <CODE>*LIST()</CODE> routines
+         <LI>  <A HREF = "#jan292016">
+               New  &quot;raw netCDF&quot; routines in <CODE>MODULE
+               MODNCFIO</CODE> </A>
          <LI>  <A HREF = "#nov202015">
                I/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
-               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>
+               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR> </A>
          <LI>  <A HREF = "#nov112015">
                I/O&nbsp;API v3.2 support for 365-day (no leap-year)
-               climate modeling year
+               climate modeling year</A>
          <LI>  <A HREF = "#nov062015">
                I/O&nbsp;API v3.2 <CODE>Makefile</CODE>s</A>
          <LI>  <A HREF = "#oct302015">
@@ -380,14 +380,14 @@
                                    program <CODE>M3TPROC</CODE></A>
         <LI>  <A HREF = "#oct1504">Bug fix; version in  <CODE>CRTFIL3</CODE></A>
         <LI>  <A HREF = "#sep072004">Bug fixes; virtual-mode <CODE>INTERP3</CODE></A>
-        <LI>  <A HREF = "#sep032004">Bug fixes; program <CODE>m3interp<I/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
-               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>
-               and finite-element data in a way upwardly compatible with
-               the existing API and its library.
+        <LI>  <A HREF = "#sep032004">Bug fixes; program
+               <CODE>m3interp</CODE>; I/O&nbsp;API v3.2
+               <VAR>m3tools</VAR> programs <VAR>wrfgriddesc</VAR> and
+               <VAR>wrftom3</VAR></A>
         <LI>  <A HREF = "#check3">Bug-fix in <CODE>&nbsp;CHECK3()</CODE>,
               <VAR>Makefile</VAR></A>
         <LI>  <A HREF = "#mercs"> More I/O&nbsp;API map projection
-                                  support</A>/CODE></A>
+                                  support</A>
         <LI>  <A HREF = "#aug042004">Bug fix in <CODE>currstepc()</CODE></A>
         <LI>  <A HREF = "#jul302004">Bug fix in <CODE>M3COMBO</CODE></A>
         <LI>  <A HREF = "#jul262004">Bug fixes in <CODE>M3MSG2</CODE>
@@ -444,8 +444,7 @@
               compatibility.
         <LI>  <A HREF = "#apr142003">Bugfix</A> for  <CODE>SETTRM()</CODE>;
               and new spheroid-selection routines <CODE>SETSPHERE()</CODE>,
-              <CODE>INITSPHERES()</CODI/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
-               <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>E>, and <CODE>SPHEREDAT()</CODE>.
+              <CODE>INITSPHERES()</CODE>, and <CODE>SPHEREDAT()</CODE>.
          <LI> <A HREF = "#feb03b">Bugfixes</A> for I/O&nbsp;API Version&nbsp;2.2
               Cray versions of routines <CODE>rdatt3c()</CODE>
               and <CODE>wratt3c()</CODE>, and for &quot;worker
@@ -516,9 +515,40 @@
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "dec032015">
-    New <CODE>DBLLIST()</CODE>; bug-fixes and support for blank-delimited lists
-    in <A HREF="LISTS.html"><CODE>*LIST()</CODE></A> routines
+    New  &quot;raw netCDF&quot; routines in <CODE>MODULE MODNCFIO</CODE>
 </A></H2>
+
+    Add new routines <CODE>DESCNCVAR()</CODE> and <CODE>READNCVAR()</CODE>
+    to <A HREF = "MODNCFIO.html"><CODE>MODULE MODNCFIO</CODE></A>:
+    <DL>
+        <DT> <VAR>DESCNCVAR(&nbsp;FNAME,&nbsp;MXVAR,&nbsp;NVARS,&nbsp;VNAMES,&nbsp;VTYPES,&nbsp;VNDIMS,&nbsp;VDIMS&nbsp;)</VAR>
+        <DD> Returns lists giving the names, data-types, numbers of
+             dimensions, and dimensions for the variables in the netCDF
+             file with logical name <CODE>FNAME</CODE>
+        <P>
+        <DT> <VAR>READNCVAR(&nbsp;FNAME,&nbsp;VNAME,&nbsp;NCOLS,&nbsp;[NROWS,&nbsp;[NLAYS,]]&nbsp;GRID&nbsp;)</VAR>
+        <DD> Reads the specified 1-D, 2-D, or 3-D netCDF variable named
+             <CODE>VNAME</CODE>from the netCDF file with logical name
+             <CODE>FNAME</CODE> (with dimension-checking).<BR>
+             <EM>Generic, for 1-D, 2-D, and 3-D variables of type
+             <CODE>{M3INT,M3REAL,M3DBLE}</CODE>, and both fully-dimensioned
+             and single-indexed output array <CODE>GRID</CODE>.</EM>
+        <P>
+    </DL>
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "dec032015">
+    New <CODE>DBLLIST()</CODE>;</A>
+    bug-fixes and support for blank-delimited lists
+    in <A HREF="LISTS.html"><CODE>*LIST()</CODE></A> routines
+</H2>
 
     Add new routine <CODE>DBLLIST()</CODE> for <CODE>REAL*8</CODE>
     valued lists, with support as part of the <CODE>ENVLIST()</CODE> 
@@ -538,7 +568,6 @@
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
-    <P>
     <P>
 
 
@@ -5652,7 +5681,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 294 2016-01-20 18:01:28Z coats $
+    $Id: NEWSTUFF.html 301 2016-01-29 19:00:36Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
