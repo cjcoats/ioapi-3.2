@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 298 2016-01-29 17:22:38Z coats $" -->
+<!-- "$Id: MODNCFIO.html 300 2016-01-29 18:07:12Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -116,6 +116,15 @@
     LOGICAL FUNCTION READNCVAR3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, IGRID3 )
     LOGICAL FUNCTION READNCVAR3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, RGRID3 )
     LOGICAL FUNCTION READNCVAR3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, DGRID3 )
+    LOGICAL FUNCTION READNCVEC2DI( FNAME, VNAME, NCOLS, NROWS, IVEC2 )
+    LOGICAL FUNCTION READNCVEC2DR( FNAME, VNAME, NCOLS, NROWS, RVEC2 )
+    LOGICAL FUNCTION READNCVEC2DD( FNAME, VNAME, NCOLS, NROWS, DVEC2 )
+    LOGICAL FUNCTION READNCVEC2DI( FNAME, VNAME, NCOLS, NROWS, IVEC2 )
+    LOGICAL FUNCTION READNCVEC2DR( FNAME, VNAME, NCOLS, NROWS, RVEC2 )
+    LOGICAL FUNCTION READNCVEC2DD( FNAME, VNAME, NCOLS, NROWS, DVEC2 )
+    LOGICAL FUNCTION READNCVEC3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, IVEC3 )
+    LOGICAL FUNCTION READNCVEC3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, RVEC3 )
+    LOGICAL FUNCTION READNCVEC3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, DVEC3 )
         CHARACTER*(*), INTENT(IN   ) :: FNAME                !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME                !!  variable name
         INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS  !!  dimensions
@@ -129,6 +138,12 @@
         INTEGER      , INTENT(  OUT) :: IGRID3( NCOLS, NROWS, NLAYS )
         REAL         , INTENT(  OUT) :: RGRID3( NCOLS, NROWS, NLAYS )
         REAL*8       , INTENT(  OUT) :: DGRID3( NCOLS, NROWS, NLAYS )
+        INTEGER      , INTENT(  OUT) ::  IVEC2( NCOLS*NROWS )
+        REAL         , INTENT(  OUT) ::  RVEC2( NCOLS*NROWS )
+        REAL*8       , INTENT(  OUT) ::  DVEC2( NCOLS*NROWS )
+        INTEGER      , INTENT(  OUT) ::  IVEC3( NCOLS*NROWS*NLAYS )
+        REAL         , INTENT(  OUT) ::  RVEC3( NCOLS*NROWS*NLAYS )
+        REAL*8       , INTENT(  OUT) ::  DVEC3( NCOLS*NROWS*NLAYS )
     </PRE>
     Generic and type/dimension-count specific routines for reading 1-D,
     2-D, and 3-D <CODE>M3INT, M3REAL</CODE> and <CODE>M3DBLE</CODE>
@@ -138,9 +153,11 @@
     <STRONG>Preconditions and Limitations:</STRONG>:<BR>
     <VAR>setenv &lt;logical-name&gt; &lt;path-name&gt;</VAR><BR>
     <CODE>VNAME</CODE> must exactly match the name of a variable in the file.<BR>
-    The dimensions must exactly match the dimensions for that variable in that file.<BR>
-    Does not support time stepped variables (or variables having netCDF-unlimited
-    as a dimension).<BR>
+    The dimensions given as arguments must exactly match the dimensions
+    for that variable in that file.<BR>
+    Does not support time stepped variables (or variables having
+    netCDF-unlimited as a dimension).<BR>
+    Output-array must be dimensioned as shown above.
     <P>
 
 </BLOCKQUOTE>
