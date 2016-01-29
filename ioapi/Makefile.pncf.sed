@@ -309,6 +309,7 @@ modatts3.o   modatts3.mod  :  m3utilio.mod modncfio.mod modpdata.mod
 modgctp.o    modgctp.mod   :  m3utilio.mod
 modpdata.o   modpdata.mod  :  m3utilio.mod modncfio.mod
 modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
+modncfio.o   modncfio.mod  :  m3utilio.mod
 
 chkfil3.o     :  m3utilio.mod
 ckdesc.o      :  m3utilio.mod

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 296 2016-01-21 17:45:25Z coats $" -->
+<!-- "$Id: MODNCFIO.html 298 2016-01-29 17:22:38Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -17,14 +17,27 @@
 
 <H1>    Fortran-90 <CODE>MODULE MODNCFIO</CODE> </H1>
 
+<H2>Summary</H2>
+
 <BLOCKQUOTE>
 
-    <EM>New for I/O&nbsp;API-3.2!!</EM>  Developed from (and extends)
+    <EM>New for I/O&nbsp;API-3.2!!</EM>
+    <P>
+    Developed from (extends, and resolves inconsistencies in) the
     I/O&nbsp;API/netCDF/PnetCDF INCLUDE-files <CODE>NETCDF.EXT</CODE>
-    and <CODE>pnetcdf.inc</CODE>,
+    and <CODE>pnetcdf.inc</CODE> (which declare [p]netCDF  routines
+    and related constants), and also includes new routines for
+    inquiring about, and reading, variables from &quot;raw&quot; netCDF
+    files.
     <P>
 
-    This module is purely a &quot;declarations-module&quot;, which is
+</BLOCKQUOTE>
+
+<H2>Declarations</H2>
+
+<BLOCKQUOTE>
+
+    This module is mostly a &quot;declarations-module&quot;, which is
     used to resolve various incompatibilities between  different
     versions of netCDF and (if <A HREF="BUFFERED.html#pncf">PnetCDF/MPI
     distributed I/O</A> is enabled)_PnetCDF INCLUDE-files.  The options
@@ -47,13 +60,87 @@
     </UL>
     This of course leads to four (link-incompatible!) distinct
     netCDF-version related versions of the I/O&nbsp;API library (and
-    PVM-enabled or not option, as distinguished by preprocessor symbol
-    <CODE>IOAPICPL</CODE> defined in <VAR>Makefile.cpl</VAR> turns it
-    into a total of 8 versions in all).
+    the additional option for PVM-enabled or not, as distinguished by
+    preprocessor symbol <CODE>IOAPICPL</CODE> defined in
+    <VAR>Makefile.cpl</VAR>, turns it into a total of 8 versions in
+    all).
     <P>
 
     It is also hoped that the source code for this module is somewhat
     more readable than the original <CODE>INCLUDE</CODE>-files&nbsp;:-)
+    <P>
+
+</BLOCKQUOTE>
+
+<H2>New Routines:</H2>
+
+<BLOCKQUOTE>
+
+    <H3><CODE>DESCNCVAR</CODE></H3>
+    <PRE>
+    LOGICAL FUNCTION DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VTYPES, VNDIMS, VDIMS )
+        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
+        INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returnede
+        INTEGER      , INTENT(  OUT) :: NVARS           !!  max( MXVAR, actual # of bles )
+        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable name
+        INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
+        INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
+        INTEGER      , INTENT(  OUT) :: VDIMS(7,MXVAR ) !!  dimensions
+    </PRE>
+    For a given netCDF file with logical name <CODE>FNAME</CODE> and maximum
+    list-size <CODE>MXVAR</CODE>, returns lists giving the names, data-types,
+    numbers of dimensions, and dimensions for the variables in that file.
+    Opens the file before inquiring from its header, and closes it before
+    return to the caller.
+    <P>
+
+    <STRONG>Preconditions:</STRONG>:<BR>
+    <VAR>setenv &lt;logical-name&gt; &lt;path-name&gt;</VAR><BR>
+    Also make sure the string-length for <CODE>VNAMES(*)</CODE> is long enough
+    to hold the variable-names that occur in the file.
+    <P>
+
+
+    <H3><CODE>READNCVAR</CODE></H3>
+    <PRE>
+    LOGICAL FUNCTION READNCVAR( FNAME, VNAME, NCOLS, [NROWS, [NLAYS,]] GRID )
+    LOGICAL FUNCTION READNCVAR1DI( FNAME, VNAME, NCOLS, IGRID1 )
+    LOGICAL FUNCTION READNCVAR1DR( FNAME, VNAME, NCOLS, RGRID1 )
+    LOGICAL FUNCTION READNCVAR1DD( FNAME, VNAME, NCOLS, DGRID1 )
+    LOGICAL FUNCTION READNCVAR2DI( FNAME, VNAME, NCOLS, NROWS, IGRID2 )
+    LOGICAL FUNCTION READNCVAR2DR( FNAME, VNAME, NCOLS, NROWS, RGRID2 )
+    LOGICAL FUNCTION READNCVAR2DD( FNAME, VNAME, NCOLS, NROWS, DGRID2 )
+    LOGICAL FUNCTION READNCVAR2DI( FNAME, VNAME, NCOLS, NROWS, IGRID2 )
+    LOGICAL FUNCTION READNCVAR2DR( FNAME, VNAME, NCOLS, NROWS, RGRID2 )
+    LOGICAL FUNCTION READNCVAR2DD( FNAME, VNAME, NCOLS, NROWS, DGRID2 )
+    LOGICAL FUNCTION READNCVAR3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, IGRID3 )
+    LOGICAL FUNCTION READNCVAR3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, RGRID3 )
+    LOGICAL FUNCTION READNCVAR3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, DGRID3 )
+        CHARACTER*(*), INTENT(IN   ) :: FNAME                !!  logical file name
+        CHARACTER*(*), INTENT(IN   ) :: VNAME                !!  variable name
+        INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS  !!  dimensions
+        &lt;type&gt;       , INTENT(  OUT) ::  GRID ( NCOLS, [NROWS, [NLAYS,]] )
+        INTEGER      , INTENT(  OUT) :: IGRID1( NCOLS )
+        REAL         , INTENT(  OUT) :: RGRID1( NCOLS )
+        REAL*8       , INTENT(  OUT) :: DGRID1( NCOLS )
+        INTEGER      , INTENT(  OUT) :: IGRID2( NCOLS, NROWS )
+        REAL         , INTENT(  OUT) :: RGRID2( NCOLS, NROWS )
+        REAL*8       , INTENT(  OUT) :: DGRID2( NCOLS, NROWS )
+        INTEGER      , INTENT(  OUT) :: IGRID3( NCOLS, NROWS, NLAYS )
+        REAL         , INTENT(  OUT) :: RGRID3( NCOLS, NROWS, NLAYS )
+        REAL*8       , INTENT(  OUT) :: DGRID3( NCOLS, NROWS, NLAYS )
+    </PRE>
+    Generic and type/dimension-count specific routines for reading 1-D,
+    2-D, and 3-D <CODE>M3INT, M3REAL</CODE> and <CODE>M3DBLE</CODE>
+    variables from &quot;raw&quot; netCDF files.
+    <P>
+
+    <STRONG>Preconditions and Limitations:</STRONG>:<BR>
+    <VAR>setenv &lt;logical-name&gt; &lt;path-name&gt;</VAR><BR>
+    <CODE>VNAME</CODE> must exactly match the name of a variable in the file.<BR>
+    The dimensions must exactly match the dimensions for that variable in that file.<BR>
+    Does not support time stepped variables (or variables having netCDF-unlimited
+    as a dimension).<BR>
     <P>
 
 </BLOCKQUOTE>

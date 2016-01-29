@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 291 2016-01-02 19:40:22Z coats $" -->
+<!-- "$Id: AVAIL.html 295 2016-01-21 17:42:47Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -170,12 +170,31 @@ m3stat:
                        <CODE>tar</CODE>-file; for previous versions, the
                        untar-operation above will undo your
                        customization.
-                       <BR>
+                       <P>
                        In particular, you will need to customize
                        <VAR>make</VAR>-variables <CODE>BASEDIR</CODE> 
                        in all <VAR>Makefile</VAR>s, and <CODE>LIBS</CODE>
                        in  <VAR>m3tools/Makefile</VAR> to deal with
                        <A HREF="#ncf4">netCDF-4 library issues.</A>
+                       <P>
+                       You may also need to customize the <CODE>Makeinclude.*</CODE>
+                       configuration-files for the configurations) you
+                       want to build.  It may be useful to make a new
+                       copy with its own <CODE>${BIN}</CODE> extension,
+                       so that your changes don't get wiped out if you
+                       do an update&mdash;e.g.,
+                       <BLOCKQUOTE>
+                       <VAR>
+                       cp Makeinclude.Linux2_x86_64ifort Makeinclude.Linux2_x86_64intel<BR>
+                       setenv BIN Linux2_x86_64intel<BR>
+                       ...
+                       </VAR>
+                       </BLOCKQUOTE>
+                       This is especially true of PnetCDF enabled
+                       I/O&nbsp;API configurations (below), for which
+                       the names (etc.) of the MPI based compilers are
+                       highly dependent upon the details of individual
+                       installations.
                   <P>
                   <LI> <EM>I/O&nbsp;API 3.2 only</EM> If you want to enable the
                         <A HREF="BUFFERED.html#pncf">PnetCDF
@@ -214,15 +233,16 @@ m3stat:
                                  <STRONG>OpenMPI-1.4.x is not even
                                  source-code  compatible with
                                  OpenMPI-1.6.x&nbsp;;-(</STRONG>
-                            <LI> The I/O&nbsp;API source code had to be
-                                 hacked badly to deal with the above.
+                            <LI> This part of the I/O&nbsp;API source code
+                                 had to be hacked badly to deal with the above.
                         </OL>
                  <P>
                   <LI> If you want to disable the <A HREF="BUFFERED.html#pvm">coupling-mode
-                        </A> configuration (which is enabled by default),
-                        <EM>cd&nbsp;ioapi</EM>  and then
-                        <EM>cp&nbsp;Makefile.nocpl&nbsp;Makefile</EM>,
-                        and similarly for the <EM>m3tools</EM> directory.
+                        </A> configuration (which is enabled by
+                        default), <EM>cd&nbsp;ioapi</EM>  and then
+                        <EM>cp&nbsp;Makefile.nocpl&nbsp;Makefile</EM>
+                        and customize it, and similarly for the
+                        <EM>m3tools</EM> directory.
                   <P>
                   <P>
                   <LI> If you want to enable the <STRONG>360-day or 365-day 
@@ -257,8 +277,8 @@ m3stat:
                         platforms <A HREF="LIBS.html#platforms">can
                         be found here.</A>
                         <P>
-                        Linux versions 2 and 3 are binary-compatible,
-                        so <CODE>Linux2</CODE> is used for both of these
+                        Linux versions 2, 3, and 4 are binary-compatible,
+                        so <CODE>Linux2</CODE> is used for all of these
                         (and similarly for recent versions of <CODE>SunOS</CODE>).
                         <P>
                         Note,  for example,
@@ -284,7 +304,7 @@ m3stat:
                                 becomes <VAR>icc</VAR> for the Itanium (IA64)
                                 platform, and both   <VAR>efc</VAR> and
                                 <VAR>ifc</VAR> become <VAR>ifort</VAR>; you
-                                may need to edit the
+                                may need to edit v3.0 and earlier
                                 <CODE>Makeinclude.$BIN</CODE>
                                 accordingly.
                            <LI> There are problems with the Fortran
@@ -426,12 +446,12 @@ m3stat:
                         <CODE>Makefile</CODE> customizations!</STRONG>
                   <DT><STRONG><CODE>make bins</CODE></STRONG>
                   <DD>  builds everything for several choices
-                        of Linux architectures and compilers.
+                        of (Linux) architectures and compilers.
                         <BR>
                         <EM>Note:  easily customized for your system.</EM>
                   <DT><STRONG><CODE>make binclean</CODE></STRONG>
-                  <DD>  builds everything for several choices
-                        of Linux architectures and compilers.
+                  <DD>  cleans everything for several choices
+                        of architectures and compilers.
                   <DT><STRONG><CODE>make fix</CODE></STRONG> or<BR>
                         <STRONG><CODE>cd ioapi; make fixed_src</CODE></STRONG>
                   <DD>  builds pre-version-5.0-CMAQ and SMOKE &quot;fixed-132&quot;
@@ -668,7 +688,7 @@ or (PGI)
               Linux-distribution-vendor supplied <VAR>libnetcdf.a</VAR>
               rarely works with CMAS-supported compiler sets.
               <P>
-        <DT>  Recommendation &nbsp;3
+        <DT>  Note &nbsp;3 (appliocable for v3.0 and earlier only)
         <DD>  On at least Sun Solaris and SGI IRIX platforms, <VAR>f77</VAR>
               and <VAR>f90</VAR> are known not to be link compatible; you will
               need to keep builds for them separate (which is the original
@@ -710,7 +730,7 @@ or (PGI)
 
     <A HREF="NEWSTUFF.html#jan2015">NOTE, January 15, 2015:</A>
     Version&nbsp;3.2-<VAR>beta</VAR> of the I/O&nbsp;API library source
-    code is available from the CMASA Center web site for download in
+    code is available from the CMAS Center web site for download in
     <VAR>tar-gzip</VAR>ped form
     <A HREF ="../../../download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
     or is available on GitHub from 
@@ -826,7 +846,7 @@ or (PGI)
 
     Due to the changes in <CODE>MXVARS3</CODE>. Version&nbsp;3.1 is a
     &quot;Jubilee Day&quot; release:  it should completely replace
-    previous versions; <STRONG>object files produced using
+    previous versions; <STRONG>object and library files produced using
     Version&nbsp;3.1 should not be mixed with previous versions.
     <P>
 
@@ -842,7 +862,7 @@ or (PGI)
     if support of such a modified installation is requested.
     <P>
 
-    This release is current as of September&nbsp;28, 2011 and includes all
+    This release is current as of October&nbsp;1, 2015 and includes all
     bug-fixes up through that date.
     <P>
 
@@ -852,6 +872,10 @@ or (PGI)
 <HR> <!----------------------------------------------------------------->
 
 <H3> <A NAME="v30">I/O&nbsp;API Version&nbsp;3.0 Availability</A></H3>
+
+    <STRONG>Version&nbsp;3.0 of the I/O&nbsp;API library source code
+    should be considered obsolescent, and used only if necessary.</STRONG>
+    <P>
 
     Version&nbsp;3.0 of the I/O&nbsp;API library source code is
     <A HREF ="../../../download/ioapi-3.0.tar.gz">available here for
@@ -1044,6 +1068,10 @@ or (PGI)
 <HR> <!----------------------------------------------------------------->
 
 <H3> <A NAME="v22">I/O&nbsp;API Version&nbsp;2.2 Availability</A></H3>
+
+    <STRONG>Version&nbsp;2.2 of the I/O&nbsp;API library source code
+    should be considered obsolete.</STRONG>
+    <P>
 
     Version&nbsp;2.2 of the I/O&nbsp;API library source code is
     <A HREF = "ioapi_22.tar.gz">available here for download</A>
@@ -1348,7 +1376,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 291 2016-01-02 19:40:22Z coats $
+    $Id: AVAIL.html 295 2016-01-21 17:42:47Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

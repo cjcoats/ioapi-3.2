@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.cpl.sed 267 2015-11-20 17:04:37Z coats $"
+# VERSION "$Id: Makefile.cpl.sed 297 2016-01-29 17:22:02Z coats $"
 #    EDSS/Models-3 I/O API Version 3.
 #.........................................................................
 # COPYRIGHT
@@ -314,6 +314,7 @@ modatts3.o   modatts3.mod  :  m3utilio.mod modncfio.mod modpdata.mod
 modgctp.o    modgctp.mod   :  m3utilio.mod
 modpdata.o   modpdata.mod  :  m3utilio.mod modncfio.mod
 modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
+modncfio.o   modncfio.mod  :  m3utilio.mod
 
 chkfil3.o     :  m3utilio.mod
 ckdesc.o      :  m3utilio.mod
