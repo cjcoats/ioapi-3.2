@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 303 2016-02-02 16:29:49Z coats $" -->
+<!-- "$Id: MODNCFIO.html 306 2016-02-02 18:16:44Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -82,7 +82,8 @@
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vbles returned
         INTEGER      , INTENT(  OUT) :: NVARS           !!  min( MXVAR, actual # of vbles )
-        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable name
+        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable names
+        CHARACTER*(*), INTENT(  OUT) :: VUNITS( MXVAR ) !!  variable units
         INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
         INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
         INTEGER      , INTENT(  OUT) :: VDIMS(7,MXVAR ) !!  dimensions

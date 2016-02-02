@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 302 2016-02-02 16:29:04Z coats $"
+    !!  Version "$Id: modncfio.F90 305 2016-02-02 18:15:52Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -16,13 +16,14 @@ MODULE MODNCFIO
     !!      PnetCDF copyright status unknown; see
     !!      <https://trac.mcs.anl.gov/projects/parallel-netcdf>
     !!
-    !!  ALSO CONTAINS: "raw" netCDF access-routines:
+    !!  ALSO CONTAINS: "raw" netCDF access-routines starting at line 1781:
     !!
     !!      DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VTYPES, VNDIMS, VDIMS )
     !!        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
     !!        INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returnede
     !!        INTEGER      , INTENT(  OUT) :: NVARS           !!  min( MXVAR, actual # of bles )
     !!        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable name
+    !!        CHARACTER*(*), INTENT(  OUT) :: VUNITS( MXVAR ) !!  variable units, or CMISS3
     !!        INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
     !!        INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
     !!        INTEGER      , INTENT(  OUT) :: VDIMS(7,MXVAR ) !!  dimensions for variables
@@ -53,15 +54,9 @@ MODULE MODNCFIO
     !!      LOGICAL FUNCTION READNCVAR2DI( FNAME, VNAME, NCOLS, NROWS, IGRID2 )
     !!      LOGICAL FUNCTION READNCVAR2DR( FNAME, VNAME, NCOLS, NROWS, RGRID2 )
     !!      LOGICAL FUNCTION READNCVAR2DD( FNAME, VNAME, NCOLS, NROWS, DGRID2 )
-    !!      LOGICAL FUNCTION READNCVAR2DI( FNAME, VNAME, NCOLS, NROWS, IGRID2 )
-    !!      LOGICAL FUNCTION READNCVAR2DR( FNAME, VNAME, NCOLS, NROWS, RGRID2 )
-    !!      LOGICAL FUNCTION READNCVAR2DD( FNAME, VNAME, NCOLS, NROWS, DGRID2 )
     !!      LOGICAL FUNCTION READNCVAR3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, IGRID3 )
     !!      LOGICAL FUNCTION READNCVAR3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, RGRID3 )
     !!      LOGICAL FUNCTION READNCVAR3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, DGRID3 )
-    !!      LOGICAL FUNCTION READNCVEC2DI( FNAME, VNAME, NCOLS, NROWS, IVEC2 )
-    !!      LOGICAL FUNCTION READNCVEC2DR( FNAME, VNAME, NCOLS, NROWS, RVEC2 )
-    !!      LOGICAL FUNCTION READNCVEC2DD( FNAME, VNAME, NCOLS, NROWS, DVEC2 )
     !!      LOGICAL FUNCTION READNCVEC2DI( FNAME, VNAME, NCOLS, NROWS, IVEC2 )
     !!      LOGICAL FUNCTION READNCVEC2DR( FNAME, VNAME, NCOLS, NROWS, RVEC2 )
     !!      LOGICAL FUNCTION READNCVEC2DD( FNAME, VNAME, NCOLS, NROWS, DVEC2 )
@@ -1783,18 +1778,19 @@ MODULE MODNCFIO
 CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 
 
-    LOGICAL FUNCTION DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VTYPES, VNDIMS, VDIMS )
+    LOGICAL FUNCTION DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VUNITS, VTYPES, VNDIMS, VDIMS )
         USE M3UTILIO
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returnede
         INTEGER      , INTENT(  OUT) :: NVARS           !!  max( MXVAR, actual # of vbles )
-        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable name
+        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable names
+        CHARACTER*(*), INTENT(  OUT) :: VUNITS( MXVAR ) !!  variable units
         INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
         INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
         INTEGER      , INTENT(  OUT) :: VDIMS(7,MXVAR ) !!  dimensions
 
-        INTEGER         FID, VID, V, N
+        INTEGER         FID, VID, V, N, ATYP, ALEN
         INTEGER         ISTAT, DIMIDS( 7 ), VCOUNT, ITYPE, NATTS
         LOGICAL         EFLAG
         CHARACTER*512   ANAME, EQNAME, MESG
@@ -1847,6 +1843,33 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
                 EFLAG = .TRUE.
                 CYCLE
             END IF          !!  ierr nonzero:  NF_INQ_VAR() failed
+
+            ISTAT = NF_INQ_ATT( FID, V, 'units', ATYP, ALEN )
+            IF ( ISTAT .EQ. NF_EEXIST .OR. ISTAT .EQ. NF_ENOTATT ) THEN
+                VUNITS(V) = CMISS3
+            ELSE IF ( ISTAT .NE. 0 ) THEN
+                MESG = 'Error reading "units" for  "' // TRIM( VNAMES(V) ) // '" in "' // TRIM( FNAME ) // '"'
+                CALL M3MESG( MESG )
+                MESG = NF_STRERROR()
+                CALL M3MESG( MESG )
+                EFLAG = .TRUE.
+            ELSE IF ( ATYP .NE. NF_CHAR ) THEN
+                MESG = 'non-CHARACTER "units" for  "' // TRIM( VNAMES(V) ) // '" in "' // TRIM( FNAME ) // '"'
+                CALL M3MESG( MESG )
+                MESG = NF_STRERROR()
+                CALL M3MESG( MESG )
+                EFLAG = .TRUE.
+            ELSE
+                ISTAT = NF_GET_ATT_TEXT( FID, V, 'units', VUNITS(V) )
+                IF ( ISTAT .NE. 0 ) THEN
+                    MESG = 'Error reading "units" for  "' // TRIM( VNAMES(V) ) // '" in "' // TRIM( FNAME ) // '"'
+                    CALL M3MESG( MESG )
+                    MESG = NF_STRERROR()
+                    CALL M3MESG( MESG )
+                    EFLAG = .TRUE.
+                    VUNITS(V) = CMISS3
+                END IF
+            END IF
 
             DO N = 1, VNDIMS(V)
 
