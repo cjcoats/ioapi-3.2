@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 305 2016-02-02 18:15:52Z coats $"
+    !!  Version "$Id: modncfio.F90 307 2016-02-02 19:48:31Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -18,7 +18,7 @@ MODULE MODNCFIO
     !!
     !!  ALSO CONTAINS: "raw" netCDF access-routines starting at line 1781:
     !!
-    !!      DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VTYPES, VNDIMS, VDIMS )
+    !!      DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VUNITS, VTYPES, VNDIMS, VDIMS )
     !!        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
     !!        INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returnede
     !!        INTEGER      , INTENT(  OUT) :: NVARS           !!  min( MXVAR, actual # of bles )

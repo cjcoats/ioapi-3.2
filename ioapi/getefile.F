@@ -2,16 +2,16 @@
       INTEGER FUNCTION GETEFILE( LNAME, RDONLY, FMTFLAG, CALLER )
 
 C***********************************************************************
-C Version "$Id: getefile.F 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: getefile.F 307 2016-02-02 19:48:31Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2013 Baron Advanced Meteorological Systems,
 C (C) 2007-2013 Carlie J. Coats, Jr., and
-C (C) 2014 UNC Institute for the Environment.
+C (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  77
+C  function body starts at line  78
 C
 C  DESCRIPTION:
 C    Gets value of logical name LNAME from the environment, checks for
@@ -41,6 +41,8 @@ C
 C       Modified 11/2004 by CJC:  IOSTAT check for INQUIRE
 C
 C       Modified 03/2010, 09/2014 by CJC: F9x changes for I/O API v3.1
+C
+C       Modified 02/2016 by CJC: eliminate non-F90 cases.
 C***********************************************************************
 
         IMPLICIT NONE
@@ -61,7 +63,6 @@ C...........   LOCAL VARIABLES and their descriptions:
 
         INTEGER     IUNIT
         INTEGER		ISTAT, JSTAT
-
         LOGICAL     LCHECK
 
         CHARACTER*512   PNAME
@@ -116,29 +117,11 @@ C.......   Check for existence of files ---
 
           IUNIT = JUNIT()
 
-#if _CRAY || _AIX || F90
           OPEN( UNIT   = IUNIT,
      &          FILE   = PNAME,
      &          FORM   = FMTSTRING,
      &          ACTION = 'READ',
      &          IOSTAT = ISTAT )
-#endif
-#if ( __alpha || sgi ) && ( !F90 )
-          OPEN( UNIT   = IUNIT,
-     &          FILE   = PNAME,
-     &          FORM   = FMTSTRING,
-     &          STATUS = 'OLD',
-     &          READONLY,
-     &          IOSTAT = ISTAT )
-#endif
-#if !( __alpha || sgi || _CRAY || _AIX || F90 )
-          OPEN( UNIT   = IUNIT,
-     &          FILE   = PNAME,
-     &          FORM   = FMTSTRING,
-     &          STATUS = 'OLD',
-     &          IOSTAT = ISTAT )
-#endif
-
           IF ( ISTAT .NE. 0 ) THEN
               CALL PERROR( 'ERROR: file not opened successfully')
               WRITE( LOGDEV, 9100, IOSTAT=JSTAT, ERR=9999 )
