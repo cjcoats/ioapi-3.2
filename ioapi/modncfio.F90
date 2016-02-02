@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 299 2016-01-29 18:06:46Z coats $"
+    !!  Version "$Id: modncfio.F90 302 2016-02-02 16:29:04Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -9,13 +9,90 @@ MODULE MODNCFIO
     !!
     !!  DESCRIPTION:
     !!      This is a merge of netCDF version 3.x/4.x (version 3.6.2) "fortran/netcdf.inc"
-    !!      with PnetCDF (version 1.6.1), but under another INCLUDE-file naming convention.
+    !!      with PnetCDF (version 1.6.1) "pnetcdf.inc", but under another INCLUDE-file 
+    !       naming convention.
     !!      NetCDF copyright 1990-2008 University Corporation for Atmospheric Research;
     !!      see URL  http://www.unidata.ucar.edu/packages/netcdf/index.html
+    !!      PnetCDF copyright status unknown; see
+    !!      <https://trac.mcs.anl.gov/projects/parallel-netcdf>
     !!
-    !!  ALSO CONTAINS:
-    !!      Routines  DESCNCVAR() to get lists of variables and their descriptions and
-    !!      READNCVAR*() to read 1-D, 2-D, and 3-D variables from "raw" netCDF files
+    !!  ALSO CONTAINS: "raw" netCDF access-routines:
+    !!
+    !!      DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VTYPES, VNDIMS, VDIMS )
+    !!        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
+    !!        INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returnede
+    !!        INTEGER      , INTENT(  OUT) :: NVARS           !!  min( MXVAR, actual # of bles )
+    !!        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable name
+    !!        INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
+    !!        INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
+    !!        INTEGER      , INTENT(  OUT) :: VDIMS(7,MXVAR ) !!  dimensions for variables
+    !!      returns the number NVARS of netCDF variables on the file FNAME, 
+    !!      together with lists of their names, types, numbers of dimensions,
+    !!      and sizes of dimensions:  e.g., if NVARS==5, then the third
+    !!      variable has names VNAMES(3), type VTYPES(3) [M3REAL, M3INT, etc],
+    !!      VNDIMS(3) dimensions.  If variable-3 is 2-D (so VNDIMS(3)==2), then
+    !!      VDIMS(1,3) is the number of columns and VDIMS(2,3) is the number of
+    !!      rows for that variable.
+    !!
+    !!      READNCVAR() is a generic "read-a-variable" routine; the compiler looks
+    !!      at the function-call and selects among the following, where the naming
+    !!      scheme is:
+    !!
+    !!          READNCVAR*() return a result with the same dimensioning as on the file, and 
+    !!          READNCVEC*() returns a single-indexed (e.g., GRID(NCOLS*NROWS) result
+    !!          READNC*1D*() are for 1-D netCDF variables
+    !!          READNC*2D*() are for 2-D netCDF variables
+    !!          READNC*3D*() are for 3-D netCDF variables
+    !!          READNC*I()   are for INTEGER         netCDF variables
+    !!          READNC*I()   are for REAL            netCDF variables
+    !!          READNC*I()   are for DOUBLEPRECISION netCDF variables
+    !!
+    !!      LOGICAL FUNCTION READNCVAR1DI( FNAME, VNAME, NCOLS, IGRID1 )
+    !!      LOGICAL FUNCTION READNCVAR1DR( FNAME, VNAME, NCOLS, RGRID1 )
+    !!      LOGICAL FUNCTION READNCVAR1DD( FNAME, VNAME, NCOLS, DGRID1 )
+    !!      LOGICAL FUNCTION READNCVAR2DI( FNAME, VNAME, NCOLS, NROWS, IGRID2 )
+    !!      LOGICAL FUNCTION READNCVAR2DR( FNAME, VNAME, NCOLS, NROWS, RGRID2 )
+    !!      LOGICAL FUNCTION READNCVAR2DD( FNAME, VNAME, NCOLS, NROWS, DGRID2 )
+    !!      LOGICAL FUNCTION READNCVAR2DI( FNAME, VNAME, NCOLS, NROWS, IGRID2 )
+    !!      LOGICAL FUNCTION READNCVAR2DR( FNAME, VNAME, NCOLS, NROWS, RGRID2 )
+    !!      LOGICAL FUNCTION READNCVAR2DD( FNAME, VNAME, NCOLS, NROWS, DGRID2 )
+    !!      LOGICAL FUNCTION READNCVAR3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, IGRID3 )
+    !!      LOGICAL FUNCTION READNCVAR3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, RGRID3 )
+    !!      LOGICAL FUNCTION READNCVAR3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, DGRID3 )
+    !!      LOGICAL FUNCTION READNCVEC2DI( FNAME, VNAME, NCOLS, NROWS, IVEC2 )
+    !!      LOGICAL FUNCTION READNCVEC2DR( FNAME, VNAME, NCOLS, NROWS, RVEC2 )
+    !!      LOGICAL FUNCTION READNCVEC2DD( FNAME, VNAME, NCOLS, NROWS, DVEC2 )
+    !!      LOGICAL FUNCTION READNCVEC2DI( FNAME, VNAME, NCOLS, NROWS, IVEC2 )
+    !!      LOGICAL FUNCTION READNCVEC2DR( FNAME, VNAME, NCOLS, NROWS, RVEC2 )
+    !!      LOGICAL FUNCTION READNCVEC2DD( FNAME, VNAME, NCOLS, NROWS, DVEC2 )
+    !!      LOGICAL FUNCTION READNCVEC3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, IVEC3 )
+    !!      LOGICAL FUNCTION READNCVEC3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, RVEC3 )
+    !!      LOGICAL FUNCTION READNCVEC3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, DVEC3 )
+    !!        CHARACTER*(*), INTENT(IN   ) :: FNAME                !!  logical file name
+    !!        CHARACTER*(*), INTENT(IN   ) :: VNAME                !!  variable name
+    !!        INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS  !!  dimensions
+    !!        &lt;type&gt;       , INTENT(  OUT) ::  GRID ( NCOLS, [NROWS, [NLAYS,]] )
+    !!        INTEGER      , INTENT(  OUT) :: IGRID1( NCOLS )
+    !!        REAL         , INTENT(  OUT) :: RGRID1( NCOLS )
+    !!        REAL*8       , INTENT(  OUT) :: DGRID1( NCOLS )
+    !!        INTEGER      , INTENT(  OUT) :: IGRID2( NCOLS, NROWS )
+    !!        REAL         , INTENT(  OUT) :: RGRID2( NCOLS, NROWS )
+    !!        REAL*8       , INTENT(  OUT) :: DGRID2( NCOLS, NROWS )
+    !!        INTEGER      , INTENT(  OUT) :: IGRID3( NCOLS, NROWS, NLAYS )
+    !!        REAL         , INTENT(  OUT) :: RGRID3( NCOLS, NROWS, NLAYS )
+    !!        REAL*8       , INTENT(  OUT) :: DGRID3( NCOLS, NROWS, NLAYS )
+    !!        INTEGER      , INTENT(  OUT) ::  IVEC2( NCOLS*NROWS )
+    !!        REAL         , INTENT(  OUT) ::  RVEC2( NCOLS*NROWS )
+    !!        REAL*8       , INTENT(  OUT) ::  DVEC2( NCOLS*NROWS )
+    !!        INTEGER      , INTENT(  OUT) ::  IVEC3( NCOLS*NROWS*NLAYS )
+    !!        REAL         , INTENT(  OUT) ::  RVEC3( NCOLS*NROWS*NLAYS )
+    !!        REAL*8       , INTENT(  OUT) ::  DVEC3( NCOLS*NROWS*NLAYS )
+    !!
+    !!      In all cases, the routine will check the caller-supplied
+    !!      dimensions (NCOLS, etc.) against the dimensions on the file,
+    !!      and the return-array type against the variable-type from
+    !!      the file.  If OK, will read the variable into the user supplied
+    !!      array.
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  10/2015 by Carlie J. Coats, Jr., UNC IE

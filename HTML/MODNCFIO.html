@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 300 2016-01-29 18:07:12Z coats $" -->
+<!-- "$Id: MODNCFIO.html 303 2016-02-02 16:29:49Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -80,8 +80,8 @@
     <PRE>
     LOGICAL FUNCTION DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VTYPES, VNDIMS, VDIMS )
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returnede
-        INTEGER      , INTENT(  OUT) :: NVARS           !!  max( MXVAR, actual # of bles )
+        INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vbles returned
+        INTEGER      , INTENT(  OUT) :: NVARS           !!  min( MXVAR, actual # of vbles )
         CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable name
         INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
         INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
