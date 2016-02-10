@@ -153,7 +153,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
             CALL INITCF()
         END IF
 
-        CALL ENVSTR( 'IOAPI_CMAQMETA', 'File for CMAQ-convention metadata or "NONE"?', 'NONE', NAMBUF, IERR )
+        CALL ENVSTR( 'IOAPI_CMAQMETA', 'File for CMAQ-convention metadata, "ENV", or "NONE"?', 'NONE', NAMBUF, IERR )
         CALL UPCASE( NAMBUF )
         IF ( IERR .GT. 0 ) THEN
             CALL M3MSG2( 'Bad environment vble "IOAPI_CMAQMETA"' )

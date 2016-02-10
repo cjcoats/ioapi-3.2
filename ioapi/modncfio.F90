@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 307 2016-02-02 19:48:31Z coats $"
+    !!  Version "$Id: modncfio.F90 310 2016-02-10 19:20:15Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -1809,7 +1809,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             RETURN
         END IF          !  istat nonzero:  NF_OPEN() failed
 
-        ISTAT = NF_INQ_NVARS( FID, NF_NOWRITE, VCOUNT )
+        ISTAT = NF_INQ_NVARS( FID, VCOUNT )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error getting NVARS for "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
@@ -1817,9 +1817,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO  999
-        END IF          !  istat nonzero:  NF_INQ_NVARS() failed
-
-        IF ( VCOUNT .GT. MXVAR ) THEN
+        ELSE IF ( VCOUNT .GT. MXVAR ) THEN
             WRITE( MESG, '( 2( A, I3, 2X ), 3A )' )     &
                 'Actual NVARS=', VCOUNT, 'exceeds MXVAR=', MXVAR, 'in "', TRIM( FNAME ), '"'
             CALL M3WARN( 'READNCVAR/DESCNCVAR', 0,0, MESG )

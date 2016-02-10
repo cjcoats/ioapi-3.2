@@ -3,7 +3,18 @@
         SUBROUTINE SPLITLINE( LINE, NMAX, N, FIELD, EFLAG )
 
         ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !   Split LINE into fields FIELD( N )
+        !! Version "$Id: splitline.f 309 2016-02-10 17:40:07Z coats $"
+        !! Copyright (c) 2014-2015 UNC Institute for the Environment
+        !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
+        !! See file "LGPL.txt" for conditions of use.
+        !!...................................................................
+        !  DESCRIPTION:
+        !       Split LINE into fields FIELD( N )
+        !
+        !  REVISION  HISTORY:
+        !       Version 1/2001 (?) for I/O API 3.1
+        !       Modified 2/2016 for I/O API 3.2:  remove implicit
+        !       max-line-length-256 restriction
         ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IMPLICIT NONE
@@ -29,7 +40,7 @@
 
         !!  LOCAL VARIABLES and their descriptions:
 
-        INTEGER         I, J, K, L
+        INTEGER         I, J, K, L, M
         CHARACTER*1     CC, DD
         CHARACTER*256   MESG
 
@@ -47,6 +58,7 @@
         ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         EFLAG = .FALSE.
+        M     = LEN( LINE )
         J     = 0
         N     = 0
 
@@ -72,7 +84,7 @@
 
             IF ( CC .EQ.QUOTE ) THEN
 
-                DO K = L+1, 256
+                DO K = L+1, M
                     CC = LINE( K:K )
                     IF ( CC .EQ.QUOTE ) THEN
                         N = N + 1           !!  n=I<=NMAX by construction
@@ -84,7 +96,7 @@
 
             ELSE IF ( CC .EQ.QUOTES ) THEN
 
-                DO K = L+1, 256
+                DO K = L+1, M
                     CC = LINE( K:K )
                     IF ( CC .EQ.QUOTES ) THEN
                         N = N + 1           !!  n=I<=NMAX by construction
@@ -96,7 +108,7 @@
 
             ELSE
 
-                DO K = L+1, 256
+                DO K = L+1, M
                     CC = LINE( K:K )
                     IF ( ISSEP( CC ) ) THEN
                         N = N + 1           !!  n=I<=NMAX by construction

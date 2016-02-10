@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODATTS3.html 254 2015-11-05 17:39:26Z coats $" -->
+<!-- "$Id: MODATTS3.html 311 2016-02-10 19:21:29Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODATTS3</TITLE>
 </HEAD>
@@ -69,26 +69,174 @@ Contents of <CODE>MODULE MODATTS3</CODE>
         <DT> &nbsp;
 
         <DT> <CODE>TYPE CMETA_T</CODE>
-        <DD> Derived data type for standard CMAQ metadata objects.
+        <DD> Derived data type for standard CMAQ metadata objects.<BR>
              The fields are the following:
              <DL>
-                <DT><CODE>INTEGER :: VERSION</CODE>
+                <DT><CODE>INTEGER :: VERSION3</CODE>
                 <DD>Version-number for the CMAQ-metadata data dictionary
+
+                <DT><CODE>CHARACTER*32 :: PROJECT</CODE>
+                <DD>Current modeling-project name
+
+                <DT><CODE>CHARACTER*32 :: CASE</CODE>
+                <DD>Current modeling-case name
+
+                <DT><CODE>CHARACTER*32 :: EPISODE</CODE>
+                <DD>Current modeling-episode name
+
+                <DT><CODE>CHARACTER*32 :: SPONSOR</CODE>
+                <DD>Current modeling-project sponsor's name
+
+                <DT><CODE>CHARACTER*32 :: CMAQVERS</CODE>
+                <DD>CMAQ model version
+
+                <DT><CODE>CHARACTER*32 :: MCIPVERS</CODE>
+                <DD>MCIP model version
+
+                <DT><CODE>CHARACTER*32 :: EMISVERS</CODE>
+                <DD>Current emissions model name and version
+
+                <DT><CODE>CHARACTER*256 :: METVERS</CODE>
+                <DD>Current meteorology-model name and version
+
+                <DT><CODE>CHARACTER*256 :: CMAQCFG</CODE>
+                <DD>CMAQ configuration (as text)
+
+                <DT><CODE>CHARACTER*256 :: MCIPCFG</CODE>
+                <DD>MCIP configuration (as text)
+
+                <DT><CODE>CHARACTER*256 :: EMISCFG</CODE>
+                <DD>Emissions-model configuration (as text)
+
+                <DT><CODE>CHARACTER*256 :: ICBCCFG</CODE>
+                <DD>IC/BC configuration (as text)
+
+                <DT><CODE>CHARACTER*256 :: METCFG</CODE>
+                <DD>Meteorology-model configuration (as text)
+
+                <DT><CODE>REAL :: SYNC_TOP</CODE>
+                <DD>Value of CMAQ environment variable <CODE>SIGMA_SYNC_TOP</CODE>:<BR>
+                top sigma level thru which sync step determined
+
+                <DT><CODE>INTEGER :: MAXSYNC</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_MAXSYNC</CODE>:<BR>
+                max sync time step (sec)
+
+                <DT><CODE>INTEGER :: MINSYNC</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_MINSYNC</CODE>:<BR>
+                min sync time step (sec)
+
+                <P>
+
+                <EM>For the following,
+                <BLOCKQUOTE>
+                <CODE>1</CODE> represents <CODE>LOGICAL TRUE</CODE>
+                <CODE>0</CODE> represents <CODE>LOGICAL FALSE</CODE>
+                <CODE>IMISS3=-9999</CODE> represents &quot;Missing&quot;
+                </BLOCKQUOTE></EM>
+
+                <DT><CODE>INTEGER :: WB_DUST</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_WB_DUST</CODE>:<BR>
+                Flag &quot;  use in-line wind-borne dust computation?&quot;
+
+                <DT><CODE>INTEGER :: ERODE_AGLAND</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_ERODE_AGLAND</CODE>:<BR>
+                Flag &quot; use in-line wind-borne dust computation?&quot;
+
+                <DT><CODE>CHARACTER*8 :: WBDUST_BELD</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_WBDUST_BELD</CODE>:<BR>
+                Flag &quot; landuse database for identifying dust source regions [ default: BELD3 ]&quot;
+
+                <DT><CODE>INTEGER :: LTNG_NO</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_LTNG_NO</CODE>:<BR>
+                Flag &quot; Is lighning NOx active?&quot;
+
+                <DT><CODE>INTEGER :: KZMIN</CODE>
+                <DD>Value of CMAQ environment variable <CODE>KZMIN</CODE>:<BR>
+                Flag &quot; use Min Kz option in edyintb?&quot;
+
+                <DT><CODE>INTEGER :: ILDEPV</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_ILDEPV</CODE>:<BR>
+                Flag &quot; Is in-line deposition-velocity calculation active?&quot;
+
+                <DT><CODE>INTEGER :: MOSAIC</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_MOSAIC</CODE>:<BR>
+                Flag &quot; use landuse specific deposition velocities?&quot;
+
+                <DT><CODE>INTEGER :: ABFLUX</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_ABFLUX</CODE>:<BR>
+                Flag &quot; Use Ammonia bi-directional flux for in-line deposition velocities?&quot;
+
+                <DT><CODE>INTEGER :: HGBIDI</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_HGBIDI</CODE>:<BR>
+                Flag &quot; use Mercury bi-directional flux for in-line deposition velocities?&quot;
+
+                <DT><CODE>INTEGER :: SFC_HONO</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_SFC_HONO</CODE>:<BR>
+                Flag &quot; Use Surface HONO interaction in deposition velocities?&quot;
+
+                <DT><CODE>INTEGER :: BIOGEMIS</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_BIOGEMIS</CODE>:<BR>
+                Flag &quot; Are in-line biogenic emissions active?&quot;
+
+                <DT><CODE>INTEGER :: PT3DEMIS</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_PT3DEMIS</CODE>:<BR>
+                Flag &quot;  Is in-line plume rise active?&quot;
+
+                <DT><CODE>INTEGER :: CLD_DIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CLD_DIAG</CODE>:<BR>
+                Flag &quot; write cloud diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: AERDIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_AERDIAG</CODE>:<BR>
+                Flag &quot; write aerosol diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: PHOTDIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_PHOTDIAG</CODE>:<BR>
+                Flag &quot; write photolysis diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: SSEMDIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_SSEMDIAG</CODE>:<BR>
+                Flag &quot; write sea-salt emissions diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: DUSTEM_DIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_DUSTEM_DIAG</CODE>:<BR>
+                Flag &quot; write windblown dust emissions diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: LTNGDIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>LTNGDIAG</CODE>:<BR>
+                Flag &quot; write lightning diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: B3GTS_DIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>B3GTS_DIAG</CODE>:<BR>
+                Flag &quot; write beis mass emissions diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: PT3DDIAG</CODE>
+                <DD>Value of CMAQ environment variable <CODE>PT3DDIAG</CODE>:<BR>
+                Flag &quot; write 3d point source emissions diagnostic file?&quot;
+
+                <DT><CODE>INTEGER :: PT3DFRAC</CODE>
+                <DD>Value of CMAQ environment variable <CODE>PT3DFRAC</CODE>:<BR>
+                Flag &quot; write layer fractions diagnostic?&quot;
+
              </DL>
              <P>
+
         <DT> <CODE>TYPE SMETA_T</CODE>
         <DD> Derived data type for standard SMOKE metadata objects, if
-             that ever happens (currently, only a dummy implementation).
+             that ever happens (currently, only a dummy implementation).<BR>
              The fields are the following:
              <DL>
                 <DT><CODE>INTEGER :: VERSION</CODE>
                 <DD>Version-number for the SMOKE-metadata data dictionary
              </DL>
              <P>
+
         <DT> <CODE>TYPE( CMETA_T ), PUBLIC, PROTECTED :: CMAQ_MDATA</CODE>
         <DD> Module state-object for CMAQ metadata.  If <CODE>CMAQMETA</CODE>,
              holds standard CMAQ metadata.
              <P>
+
         <DT> <CODE>TYPE( SMETA_T ), PUBLIC, PROTECTED :: SMOKE_MDATA</CODE>
         <DD> Module state-object for SMOKE metadata.  If <CODE>SMOKEMETA</CODE>,
              holds standard SMOKE metadata.
@@ -488,7 +636,8 @@ Contents of <CODE>MODULE MODATTS3</CODE>
 
     Initializes internal state variables holding CMAQ-standard metadata
     from either the standard-format text file with logical name
-    <CODE>IOAPI_CMAQMETA</CODE> or from the argument <CODE>MDATA</CODE>.
+    <CODE>IOAPI_CMAQMETA</CODE>, from the program-environment if
+    <CODE>IOAPI_CMAQMETA=="ENV"</CODE> or from the argument <CODE>MDATA</CODE>.
     <P>
     <CODE>IOAPI_CMAQMETA</CODE> should be either <CODE>NONE</CODE> to
     turn off CMAQ metadata (the default), or the path for a
@@ -514,7 +663,7 @@ Contents of <CODE>MODULE MODATTS3</CODE>
 
     Reads CMAQ-standard metadata from the header of file
     <CODE>FNAME</CODE> and puts it either into CMAQ-metadata object
-    <CODE>MDATA</CODE> (if available) or into CMAQ-metadata module
+    <CODE>MDATA</CODE> (if present) or into CMAQ-metadata module
     variable <CODE>CMAQ_MDATA</CODE>.  If successful, sets
     <CODE>CMAQMETA</CODE> to <CODE>TRUE</CODE>.
     <P>
@@ -543,14 +692,14 @@ Contents of <CODE>MODULE MODATTS3</CODE>
     </PRE>
 
     Writes CMAQ-standard metadata either from metadata-object
-    <CODE>MDATA</CODE> (if available) or CMAQ-metadata module variable
-    <CODE>CMAQ_MDATA</CODE> (otherwise) either to a structure-ASCII
-    output file <CODE>FNAME</CODE> (if available) or to the program log
+    <CODE>MDATA</CODE> (if present) or CMAQ-metadata module variable
+    <CODE>CMAQ_MDATA</CODE> (otherwise) either to a structured-ASCII
+    output file <CODE>FNAME</CODE> (if present) or to the program log
     (otherwise).
     <P>
 
-    If present, <CODE>FNAME</CODE> must be the logical name for the structured-ASCII
-    output file.
+    If present, <CODE>FNAME</CODE> must be the logical name for the
+    structured-ASCII output file.
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -574,15 +723,15 @@ Contents of <CODE>MODULE MODATTS3</CODE>
 
     Writes CMAQ-standard metadata either from metadata-object
     <CODE>MDATA</CODE> (if available) or CMAQ-metadata module variable
-    <CODE>CMAQ_MDATA</CODE> (otherwise) to the header of I/O&nbsp;API file
-    with either logical name <CODE>FNAME</CODE> or file-index
-    <CODE>FID</CODE>.<BR>
+    <CODE>CMAQ_MDATA</CODE> (otherwise) to the header of I/O&nbsp;API
+    file with either logical name <CODE>FNAME</CODE> or
+    <CODE>STATE3</CODE> file-index <CODE>FID</CODE>.<BR>
     <EM>NOTE:  the last two forms are the ones intended for
     modeler-use; the first should be considered as internal
-    to the I/O API, and is the one called automatically.</EM>
+    to the I/O&nbsp;API, and is the one called automatically.</EM>
     <P>
-    If <CODE>CMAQMETA</CODE> is <CODE>TRUE</CODE>, the first form is
-    called automatically as part of the file-creation process.
+    If <CODE>IOAPI_CMAQMETA</CODE> is not <CODE>NONE</CODE>, the first
+    form is called automatically as part of the file-creation process.
     <P>
     PRECONDITION:   <CODE>FNAME</CODE> must be the logical name of an
     I/O&nbsp;API file being opened or currently open for output.

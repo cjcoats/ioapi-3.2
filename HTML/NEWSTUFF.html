@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 301 2016-01-29 19:00:36Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 311 2016-02-10 19:21:29Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 301 2016-01-29 19:00:36Z coats $
+    $Id: NEWSTUFF.html 311 2016-02-10 19:21:29Z coats $
     </EM>
     <HR>
 
@@ -25,34 +25,20 @@
     What's New with the I/O&nbsp;API
 </H1>
 
-<H2> <A NAME = "ncf">
-    Note on <VAR>netCDF</VAR> Versions and Large Files.
-</A></H2>
-
-    <BLOCKQUOTE>
-    <STRONG>
-    Starting with I/O&nbsp;API Version&nbsp;3.1, the
-    <VAR>Makefile</VAR>s are configured to use netCDF Version 4, which
-    separates the Fortran library <VAR>libnetcdff.a</VAR> from the
-    C&nbsp;library <VAR>libnetcdf.a</VAR>.  To match this, the
-    <CODE>LIBS</CODE> in the <VAR>m3tools/Makefile</VAR> uses
-    <CODE>-lnetcdff&nbsp;-lnetcdf</CODE> .  If you use these versions of
-    netCDF, you must also modify build-systems for  CMAQ, MCIP, SMOKE,
-    and all your models that use netCDF similarly. If using a previous
-    version of netCDF, you must modify <VAR>m3tools/Makefile</VAR>s to
-    use just <CODE>-lnetcdf</CODE>.
-    </STRONG>
-    <P>
-    </BLOCKQUOTE>
-
 <H2> <A NAME = "contents">
     Contents
 </A></H2>
 
     <UL>
+         <LI>  <A HREF = "#ncf">Note on <VAR>netCDF</VAR> Versions and Large Files.</A>,
+               <P>
+
+         <LI>  <A HREF = "#feb102016">
+               CMAQ metadata routines now implemented in
+               <CODE>MODULE&nbsp;MODATTS3</CODE> </A>,
          <LI>  <A HREF = "#jan292016">
-               New  &quot;raw netCDF&quot; routines in <CODE>MODULE
-               MODNCFIO</CODE> </A>
+               New  &quot;raw netCDF&quot; routines in
+               <CODE>MODULE&nbsp;MODNCFIO</CODE> </A>
          <LI>  <A HREF = "#nov202015">
                I/O&nbsp;API v3.2 <VAR>m3tools</VAR> programs
                <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR> </A>
@@ -69,7 +55,7 @@
          <LI>  <A HREF = "#jun182015">
                Fix in <CODE>GCTP()</CODE>for Intel <VAR>ifort</VAR> v-11 and later.</A>
          <LI>  <A HREF = "#may052015">
-               More <VAR>gfortran</VAR> hacks; <CODE>SINUGRD3</CODE>
+               More <VAR>gfortran</VAR> hacks; new <CODE>SINUGRD3</CODE>
                map projection</A>
          <LI>  <A HREF = "#mar0232015">
                New routine RUNSPEC()</A>
@@ -170,7 +156,6 @@
          <LI>  <A HREF = "#feb0910">
                Bug fix:  declaration of  <VAR>IOPARMS3</VAR></A> in
                <VAR>m3tools</VAR> program <CODE>PROJTOOL</CODE>
-               <CODE>iodecl3.h</CODE>
          <LI>  <A HREF = "#oct2809">
                NetCDF flag-changes from Martin Otte, US EPA, for netCDF4
                compatibility; bug fix in <VAR>m3tools</VAR> program
@@ -514,8 +499,79 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> <A NAME = "dec032015">
-    New  &quot;raw netCDF&quot; routines in <CODE>MODULE MODNCFIO</CODE>
+<H2> <A NAME = "ncf">
+    Note on <VAR>netCDF</VAR> Versions and Large Files.
+</A></H2>
+
+    <BLOCKQUOTE>
+    <STRONG>
+    Starting with I/O&nbsp;API Version&nbsp;3.1, the
+    <VAR>Makefile</VAR>s are configured to use netCDF Version 4, which
+    separates the Fortran library <VAR>libnetcdff.a</VAR> from the
+    C&nbsp;library <VAR>libnetcdf.a</VAR>.  To match this, the
+    <CODE>LIBS</CODE> in the <VAR>m3tools/Makefile</VAR> uses
+    <CODE>-lnetcdff&nbsp;-lnetcdf</CODE> .  If you use these versions of
+    netCDF, you must also modify build-systems for  CMAQ, MCIP, SMOKE,
+    and all your models that use netCDF similarly. If using a previous
+    version of netCDF, you must modify <VAR>m3tools/Makefile</VAR>s to
+    use just <CODE>-lnetcdf</CODE>.
+    </STRONG>
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "feb102016">
+    CMAQ metadata routines now implemented in <CODE>MODULE&nbsp;MODATTS3</CODE> </A></H2>
+
+    The following routines are now implemented and &quot;active&quot;
+    in <A HREF = "MODATTS3.html"><CODE>MODATTS3&nbsp;MODATTS3</CODE></A>:
+    <DL>
+        <DT> <VAR>INITCMAQ()</VAR>
+        <DD> Initializes internal state variables holding CMAQ-standard metadata
+             from either the standard-format text file with logical name
+             <CODE>IOAPI_CMAQMETA</CODE>, from the program-environment
+             if <CODE>IOAPI_CMAQMETA=="ENV"</CODE> or from the argument
+             <CODE>MDATA</CODE>.
+        <P>
+        <DT> <VAR>GETCMAQ()</VAR>
+        <DD> Reads CMAQ-standard metadata from the header of file
+             <CODE>FNAME</CODE> and puts it either into CMAQ-metadata
+             object <CODE>MDATA</CODE> (if present) or into
+             CMAQ-metadata module variable <CODE>CMAQ_MDATA</CODE>.
+        <P>
+        <DT> <VAR>LOGCMAQ()</VAR>
+        <DD> Writes CMAQ-standard metadata either from metadata-object
+             <CODE>MDATA</CODE> (if present) or CMAQ-metadata module
+             variable <CODE>CMAQ_MDATA</CODE> (otherwise) either to a
+             structured-ASCII output file <CODE>FNAME</CODE> (if
+             present) or to the program log
+        <P>
+        <DT> <VAR>SETCMAQ()</VAR>
+        <DD> Writes CMAQ-standard metadata either from metadata-object
+             <CODE>MDATA</CODE> (if present) or CMAQ-metadata module
+             variable <CODE>CMAQ_MDATA</CODE> (otherwise) to the header
+             of the specified I/O&nbsp;API file
+        <P>
+        <DT> <VAR>ENDCMAQ()</VAR>
+        <DD> Turns off CMAQ-standard metadata
+        <P>
+    </DL>
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jan292016">
+    New  &quot;raw netCDF&quot; routines in <CODE>MODULE&nbsp;MODNCFIO</CODE>
 </A></H2>
 
     Add new routines <CODE>DESCNCVAR()</CODE> and <CODE>READNCVAR()</CODE>
@@ -538,7 +594,6 @@
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
-    <P>
     <P>
 
 
@@ -2127,7 +2182,7 @@ Bug fix:  declaration of  <VAR>IOPARMS3()</VAR> in <CODE>iodecl3.h</CODE>
     <P>
     <BLOCKQUOTE>
 
-    Dr. M. Talat Odman, of the School of Civil & Environmental Engineering
+    Dr. M. Talat Odman, of the School of Civil &amp; Environmental Engineering
     at Georgia Institute of Technology points out a bug in the
     consistency-checking code for <A HREF = "M3COMBO.html"><VAR>m3tools</VAR>
     program <VAR>M3COMBO</VAR></A>.
@@ -5681,7 +5736,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 301 2016-01-29 19:00:36Z coats $
+    $Id: NEWSTUFF.html 311 2016-02-10 19:21:29Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

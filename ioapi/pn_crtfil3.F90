@@ -2,7 +2,7 @@
 LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
     !!***********************************************************************
-    !! Version "$Id: pn_crtfil3.F90 293 2016-01-19 15:17:48Z coats $"
+    !! Version "$Id: pn_crtfil3.F90 310 2016-02-10 19:20:15Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2014-2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -134,7 +134,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
             CALL INITCF()
         END IF
 
-        CALL ENVSTR( 'IOAPI_CMAQMETA', 'File for CMAQ-convention metadata or "NONE"?', 'NONE', NAMBUF, IERR )
+        CALL ENVSTR( 'IOAPI_CMAQMETA', 'File for CMAQ-convention metadata, "ENV", or "NONE"?', 'NONE', NAMBUF, IERR )
         IF ( IERR .GT. 0 ) THEN
             CALL M3MSG2( 'Bad environment vble "IOAPI_CMAQMETA"' )
         ELSE IF ( NAMBUF .EQ. 'NONE' ) THEN
