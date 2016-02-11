@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODATTS3.html 311 2016-02-10 19:21:29Z coats $" -->
+<!-- "$Id: MODATTS3.html 314 2016-02-11 16:50:46Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODATTS3</TITLE>
 </HEAD>
@@ -35,25 +35,160 @@
     Note that adding metadata to a file to which data have already been
     written may entail substantial overhead (both of time and
     disk-space):  the &quot;system&quot; will have to make a new copy of
-    the file with the new metadata and the existing data, and then
+    the file with both the new metadata and the existing data, and then
     rename it behind the scenes.
     <P>
     </BLOCKQUOTE>
 
 <HR> <!- ------------------------------------------------------------- ->
 
-<H3> <A NAME="contents">
-Contents of <CODE>MODULE MODATTS3</CODE>
+<H3> <A NAME="usage">
+USAGE of <CODE>MODULE MODATTS3</CODE>
 </A></H3>
 
     <BLOCKQUOTE>
     <DL>
-        <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: CFMETA</CODE>
-        <DD> <CODE>TRUE</CODE> if and only if CF-metadata is
-             turned on, and available in the module
+        <DT> <STRONG>Matrix Attributes</STRONG> for geospatial-transform
+             matrices
+        <DD> Geospatial-transform metadata gives the grid description
+             for both the input and the output map projection and grid
+             for a matrix:
+             <BLOCKQUOTE><CODE>
+                GDTYP, P_ALP, P_BET, P_GAM, XCENT, YCENT,
+                XORIG, YORIG, XCELL, YCELL, NCOLS, NROWS,
+             </CODE></BLOCKQUOTE>
+             This module contains generic routines for setting,
+             retrieving, and checking input-grid,  output-grid, or both
+             input- and output-grid metadata for files used to store
+             geospatial transform matrices:
+              <DL "compact">
+                    <DT> <CODE>INITMTXATT()</CODE>
+                    <DD>  stores input and/or output grid description to
+                          internal state variables.
+                    <DT> <CODE>SETMTXATT()</CODE>
+                    <DD>  stores input and/or output grid description to
+                          an M3IO file-header.
+                    <DT> <CODE>GETMTXATT()</CODE>
+                    <DD> retrieves input and/or output grid description
+                         (as stored by <CODE>SETMTXATT()</CODE>) from 
+                          an M3IO file-header.
+                    <DT> <CODE>CHKMTXATT()</CODE>
+                    <DD> compares input and/or output grid description
+                         (as stored by <CODE>SETMTXATT()</CODE>) from 
+                         an M3IO file-header with grid description(s)
+                         supplied as arguments.
+              </DL>
+        <P>
+
+        <DT> <STRONG>CF-Convention Metadata</STRONG>
+        <DD> See <A HREF="http://cfconventions.org/">http://cfconventions.org/</A>.
+        <BR>
+             CF metadata is used by the global climate community
+             as well as by a number of third-party applications.
              <P>
+             Turned on by <STRONG><VAR>setenv IOAPI_CFMETA
+             YES</VAR></STRONG> [default
+             <STRONG><CODE>NO</CODE></STRONG>]. If turned on, all
+             newly-created files will be given this metadata in their
+             file headers and in CF specified auxilliary variables.
+             (These last should not  have been necessary if the CF
+             authors had actually known what they were doing with
+             netCDF; it is the reason for the restrictions on
+             <CODE>SETCF()</CODE> below.).
+             <P>
+             Also, <CODE>LOGICAL FUNCTION SETCF(FNAME)</CODE> creates CF
+             metadata in the file with logical name <CODE>FNAME</CODE>,
+             provided it is opened for output.<BR>
+             <EM>This routine needs to be called before any data is
+             written to the file.</EM>
+             <P>
+             
+        <P>
+
+        <DT> <STRONG>&quot;Standard&quot; CMAQ Metadata</STRONG>
+        <DD> Turned on/off by <STRONG><VAR>setenv&nbsp;IOAPI_CFMETA...</VAR></STRONG>
+             with the following values:             
+             <BLOCKQUOTE><DL "compact">
+                    <DT> <STRONG><CODE>NONE</CODE></STRONG>:  turned off [default]
+                    <P>
+                    <DT> <STRONG><CODE>ENV</CODE></STRONG>:  get metadata from
+                    environment variables.  These include both
+                    the standard CMAQ environment variables, as
+                    well as the following new environment variables
+                    (whose values are described below):
+                    <BLOCKQUOTE><CODE>
+                    PROJECT, CASE, EPISODE, SPONSOR, CMAQVERS, MCIPVERS, 
+                    EMISVERS, METVERS, CMAQCFG, MCIPCFG, EMISCFG, ICBCCFG, 
+                    METCFG
+                    </CODE></BLOCKQUOTE>
+                    Note that the values of these in <VAR>setenv</VAR> 
+                    statements need to be quoted, in order to preserve
+                    blanks and other white-space.
+                    <P>
+                    <DT> <STRONG><VAR>path-name</VAR></STRONG>:  get metadata from
+                    the indicated structured ASCII file.  This file should consist
+                    of lines of the form
+                    <BLOCKQUOTE><CODE>
+                    &lt;name&gt; = &lt;value&gt; 
+                    </CODE></BLOCKQUOTE>
+                    for the following set of names (also described
+                    below):
+                    <BLOCKQUOTE><CODE>
+                    PROJECT, CASE, EPISODE, SPONSOR, CMAQVERS, MCIPVERS, 
+                    EMISVERS, METVERS, CMAQCFG, MCIPCFG, EMISCFG, ICBCCFG, 
+                    METCFG,SYNC_TOP, MAXSYNC, MINSYNC, WB_DUST, ERODE_AGLAND,
+                    WBDUST_BELD, LTNG_NO, KZMIN, ILDEPV, MOSAIC, ABFLUX,
+                    HGBIDI, SFC_HONO, BIOGEMIS, PT3DEMIS, CLD_DIAG, AERDIAG,
+                    PHOTDIAG, SSEMDIAG, DUSTEM_DIAG, LTNGDIAG, B3GTS_DIAG,
+                    PT3DDIAG, PT3DFRAC
+                    </CODE></BLOCKQUOTE>
+             </DL></BLOCKQUOTE>
+             This module contains definitions for CMAQ metadata-objects,
+             and generic routines for setting,
+             retrieving, and logging such metadata:
+             <BLOCKQUOTE> <DL "compact">
+                    <DT> <CODE>INITCMAQ()</CODE>
+                    <DD>  stores metadata into internal state variables,
+                          and turns on CMAQ-metadata output for newly
+                          created files.  Can be called automatically
+                          (as above) or manually, optionally with 
+                          user specified metadata-object.
+                    <DT> <CODE>GETCMAQ()</CODE>
+                    <DD>  Retrieves CMAQ metadata from an M3IO
+                          file-header, and optionally places it
+                          in a user supplied CMAQ-metadata object.
+                    <DT> <CODE>SETCMAQ()</CODE>
+                    <DD> Stores CMAQ metadata to an M3IO file-header,
+                         optionally from a user supplied CMAQ-metadata object.
+                    <DT> <CODE>LOGCMAQ()</CODE>
+                    <DD> Writes structured ASCII <CODE>IOAPI_CFMETA</CODE>-format
+                         metadata to either program-log or to a user
+                         specified output file, optionally from a user
+                         supplied CMAQ-metadata object.
+              </DL></BLOCKQUOTE>
+        <P>
+
+        <DT> <STRONG>&quot;Standard&quot; SMOKE Metadata</STRONG>
+        <DD> Not yet implemented.
+        <P>
+
+    </DL>
+    </BLOCKQUOTE>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="contents">
+Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
+</A></H3>
+
+    <BLOCKQUOTE>
+    <DL>
         <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: MATXMETA</CODE>
         <DD> <CODE>TRUE</CODE> if and only if matrix-metadata is
+             turned on, and available in the module
+             <P>
+        <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: CFMETA</CODE>
+        <DD> <CODE>TRUE</CODE> if and only if CF-metadata is
              turned on, and available in the module
              <P>
         <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: CMAQMETA</CODE>
@@ -126,14 +261,24 @@ Contents of <CODE>MODULE MODATTS3</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_MINSYNC</CODE>:<BR>
                 min sync time step (sec)
 
+                <DT><CODE>CHARACTER*8 :: WBDUST_BELD</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_WBDUST_BELD</CODE>:<BR>
+                Flag &quot; landuse database for identifying dust source regions [ default: BELD3 ]&quot;
+
                 <P>
 
-                <EM>For the following,
+             </DL>
+
+                <EM>For the following, environment values should be
+                &quot;T&quot; or &quot;F&quot;, Internally, these
+                values are stored accordng to C conventions:
                 <BLOCKQUOTE>
-                <CODE>1</CODE> represents <CODE>LOGICAL TRUE</CODE>
-                <CODE>0</CODE> represents <CODE>LOGICAL FALSE</CODE>
+                <CODE>1</CODE> represents <CODE>LOGICAL TRUE</CODE><BR>
+                <CODE>0</CODE> represents <CODE>LOGICAL FALSE</CODE><BR>
                 <CODE>IMISS3=-9999</CODE> represents &quot;Missing&quot;
                 </BLOCKQUOTE></EM>
+
+             <DL>
 
                 <DT><CODE>INTEGER :: WB_DUST</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_WB_DUST</CODE>:<BR>
@@ -142,10 +287,6 @@ Contents of <CODE>MODULE MODATTS3</CODE>
                 <DT><CODE>INTEGER :: ERODE_AGLAND</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_ERODE_AGLAND</CODE>:<BR>
                 Flag &quot; use in-line wind-borne dust computation?&quot;
-
-                <DT><CODE>CHARACTER*8 :: WBDUST_BELD</CODE>
-                <DD>Value of CMAQ environment variable <CODE>CTM_WBDUST_BELD</CODE>:<BR>
-                Flag &quot; landuse database for identifying dust source regions [ default: BELD3 ]&quot;
 
                 <DT><CODE>INTEGER :: LTNG_NO</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_LTNG_NO</CODE>:<BR>
@@ -561,6 +702,7 @@ Contents of <CODE>MODULE MODATTS3</CODE>
     Turns off input and output grid description attributes
     from <CODE>INITMTXATT()</CODE> or <CODE>SETMTXATT()</CODE>:
     sets <CODE>MATXMETA&nbsp;=&nbsp;.FALSE.</CODE>.
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -713,6 +855,7 @@ Contents of <CODE>MODULE MODATTS3</CODE>
     <PRE>
     GENERIC INTERFACE:
     LOGICAL FUNCTION  SETCMAQ( FID )
+    LOGICAL FUNCTION  SETCMAQ( FID, MDATA  )
     LOGICAL FUNCTION  SETCMAQ( FNAME )
     LOGICAL FUNCTION  SETCMAQ( FNAME, MDATA )
 
@@ -727,7 +870,7 @@ Contents of <CODE>MODULE MODATTS3</CODE>
     file with either logical name <CODE>FNAME</CODE> or
     <CODE>STATE3</CODE> file-index <CODE>FID</CODE>.<BR>
     <EM>NOTE:  the last two forms are the ones intended for
-    modeler-use; the first should be considered as internal
+    modeler-use; the first two should be considered as internal
     to the I/O&nbsp;API, and is the one called automatically.</EM>
     <P>
     If <CODE>IOAPI_CMAQMETA</CODE> is not <CODE>NONE</CODE>, the first
