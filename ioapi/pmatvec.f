@@ -10,9 +10,9 @@
         !! See file "LGPL.txt" for conditions of use.
         !!.........................................................................
         !!  subroutine  PMATVEC11  body starts at line  52:  1-D to 1-D
-        !!  subroutine  PMATVEC12  body starts at line  52:  1-D to 2-D
-        !!  subroutine  PMATVEC21  body starts at line  52:  2-D to 1-D
-        !!  subroutine  PMATVEC22  body starts at line  52:  2-D to 2-D
+        !!  subroutine  PMATVEC12  body starts at line  87:  1-D to 2-D
+        !!  subroutine  PMATVEC21  body starts at line 147:  2-D to 1-D
+        !!  subroutine  PMATVEC22  body starts at line 207:  2-D to 2-D
         !!
         !!  FUNCTION:  multiply a sparse incidence matrix <N,I> by a vector U and
         !!             return the result V

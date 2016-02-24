@@ -3,7 +3,7 @@
 
 <HTML> 
 <HEAD>
-<!-- "$Id: WRF_IOAPI.html 183 2015-04-15 19:04:15Z coats $" -->
+<!-- "$Id: WRF_IOAPI.html 315 2016-02-24 17:47:08Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> 
     DRAFT: WRF/Models-3/EDSS I/O&nbsp;API
@@ -515,7 +515,7 @@
         <DT> <CODE> PROJ_TYPE <EM>(integer)</EM></CODE>
         <DD> Identifier-Token for the horizontal map-projection type, as
              documented at URL <EM><A HREF =
-        "/products/ioapi/GRIDS.html#horiz">
+        "GRIDS.html#horiz">
         /products/ioapi/GRIDS.html#horiz</A></EM> 
         <UL>
             <LI>  <STRONG>1:</STRONG>  <VAR>Lat-Lon</VAR>
@@ -597,7 +597,7 @@
         <DT> <CODE>DOMAIN_VTYPE <EM>(integer)</EM></CODE>
         <DD> Vertical coordinate type for the domain,  as
              documented at URL <EM><A HREF =
-        "/products/ioapi/GRIDS.html#horiz">
+        "GRIDS.html#horiz">
         /products/ioapi/GRIDS.html#horiz</A></EM>
         and to be extended for WRF below: 
         <UL>
@@ -1176,7 +1176,7 @@
         <DT>  <STRONG>New &quot;extra-attribute&quot; M3IO
               routines</STRONG><BR>
         <DD>  <CODE>
-              <A HREF="/products/ioapi/INQATT3.html">
+              <A HREF="INQATT3.html">
               LOGICAL INQATT3</A>(FNAME,VNAME,NATTS,ANAMES,ATYPES,ASIZES)
               <BR>
               <BLOCKQUOTE>
@@ -1186,13 +1186,13 @@
         INTEGER         ATYPES( MXATTS3 ) !  " types (M3REAL,M3INT,M3DBLE)<BR>
         INTEGER         ASIZES( MXATTS3 ) !  " sizes/lengths<BR>
               </BLOCKQUOTE>
-              <A HREF="/products/ioapi/RDATT3.html">
+              <A HREF="RDATT3.html">
               LOGICAL RDATT3</A>(FNAME,VNAME,ANAME,ATYPE,AMAX,ASIZE,AVAL)<BR>
-              <A HREF="/products/ioapi/RDATT3.html">
+              <A HREF="RDATT3.html">
               LOGICAL RDATTC</A>(FNAME,VNAME,ANAME,CVAL )<BR>
-              <A HREF="/products/ioapi/WRATT3.html">
+              <A HREF="WRATT3.html">
               LOGICAL WRATT3</A>(FNAME,VNAME,ANAME,ATYPE,AMAX,AVAL)<BR>
-              <A HREF="/products/ioapi/WRATT3.html">
+              <A HREF="WRATT3.html">
               LOGICAL WRATTC</A>(FNAME,VNAME,ANAME,CVAL )<BR>
               <BLOCKQUOTE>
         CHARACTER*(*)   FNAME         !  logical file name<BR>
@@ -1218,7 +1218,7 @@
         <DT>  <STRONG>New &quot;disk-synchronization&quot; M3IO
               routine</STRONG><BR>
         <DD>  <CODE>
-              <A HREF="/products/ioapi/SYNC3.html">
+              <A HREF="SYNC3.html">
               LOGICAL SYNC3</A>(FNAME)
               <BR>
               <BLOCKQUOTE>

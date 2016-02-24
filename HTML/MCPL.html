@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML> 
 <HEAD>
-<!-- "$Id: MCPL.html 239 2015-10-16 13:13:35Z coats $" -->
+<!-- "$Id: MCPL.html 315 2016-02-24 17:47:08Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> 
     MM5 MCPL()
@@ -19,7 +19,7 @@
 
 <H1>
     The MM5 MCPL() Meteorology-Coupler 
-    <A HREF = "/products/ioapi/index.html">I/O&nbsp;API</A> Module
+    <A HREF = "index.html">I/O&nbsp;API</A> Module
 </H1>
 <H2> <A NAME = "contents">Contents</A> </H2>
 <UL>  
@@ -137,7 +137,7 @@ Back to <A HREF = "#contents"><STRONG>Contents</STRONG></A>
 
     Conceptually, MCPL() is a drop-in MM5 output module designed for
     coupling MM5 to other environmental models, using the 
-    <A HREF = "/products/ioapi/index.html">EDSS/Models-3 I/O&nbsp;API</A>.  
+    <A HREF = "index.html">EDSS/Models-3 I/O&nbsp;API</A>.  
     It fits into MM5 as a subroutine called every output  time step by
     the MM5v2 driver or from the SOLVE routine.   It can either be
     called every simulation-hour, as is traditional for MM5 output, or
@@ -185,7 +185,7 @@ Back to <A HREF = "#contents"><STRONG>Contents</STRONG></A>
     <STRONG>any combination</STRONG> of the following twelve 
     time-independent and  time-stepped <A HREF = "mcpl.files.html">output 
     files</A> (which are
-    <A HREF = "/products/ioapi/index.html">EDSS/Models-3 I/O&nbsp;API</A>
+    <A HREF = "index.html">EDSS/Models-3 I/O&nbsp;API</A>
     selective direct-access files, rather than being sequential
     Fortran binary (unformatted) files as are &quot;normal&quot; MM5
     outputs).  For the time-stepped output files, each output window 
@@ -270,7 +270,7 @@ Back to <A HREF = "#contents"><STRONG>Contents</STRONG></A>
     means that output for the grid is turned off); then definitions for 
     the AQM cross and dot point grids either from 
     <A HREF = "mcpl.script.html#env">environment variables</A> or the 
-    <A HREF = "/products/ioapi/H.GRIDDESC.html">I/O&nbsp;API GRIDDESC</A>
+    <A HREF = "GRIDDESC.html">I/O&nbsp;API GRIDDESC</A>
     file, checks the defining parameters for the AQM dot-point grid,
     and  computes the parameters for the boundary structure.  If the 
     GRIDDESC file does not yet exist, it constructs it on the basis
@@ -291,7 +291,7 @@ Back to <A HREF = "#contents"><STRONG>Contents</STRONG></A>
     
     For each relevant time step, <CODE>MCPL()</CODE> copies/computes/re-orders 
     the relevant variables from MM5 internal data structures into 
-    <A HREF = "/products/ioapi/H.DATATYPES.html">I/O&nbsp;API storage 
+    <A HREF = "DATATYPES.html">I/O&nbsp;API storage 
     order</A> in an internal buffer, and writes the result to the 
     appropriate output file.  Additionally if the MCPL-KF module is 
     activated, it detects the inception of each Kain-Fritsch convective 
@@ -415,7 +415,7 @@ C     STOP 99999                                                                
     current simulation date and time.  Note that it uses environment
     variable <CODE>MCPL_START_DATE</CODE>, if available, or the current
     wall clock (if not) to determine the century component for the
-    <A HREF = "/products/ioapi/H.DATETIME.html">EDSS/Models-3 dates 
+    <A HREF = "DATETIME.html">EDSS/Models-3 dates 
     and times</A> it uses internally.  Consequently, MCPL itself is
     Y2K-compliant if used with user-specified <CODE>MCPL_START_DATE</CODE>,
     although MM5v2 itself is not.  <EM>Because of this, there will be
@@ -436,7 +436,7 @@ C     STOP 99999                                                                
     2-D variables), decouple them (MM5 keeps most 3-D variables in the form
     <CODE>PSTAR&nbsp;*&nbsp;&lt;variable&gt;</CODE>) and perform units
     conversions where appropriate, and re-order them into <A HREF =
-    "/products/ioapi/H.DATATYPES.html#grdded">standard  EDSS/Models-3
+    "DATATYPES.html#grdded">standard  EDSS/Models-3
     I/O&nbsp;API <EM>column-row-layer</EM></A>  subscript order.
     <P>
     
@@ -768,10 +768,10 @@ Back to <A HREF = "#contents"><STRONG>Contents</STRONG></A>
     <P>
       
     In addition to the MCPL source, you will also need the 
-    <A HREF = "http:/products/ioapi/index.html">EDSS/Models3 
+    <A HREF = "http:index.html">EDSS/Models3 
     I/O&nbsp;API</A>, which is contained downloadable tar-file
     described above, as well as
-    <A HREF = "ftp:/products/ioapi/ioapi.src.tar.gz">from here</A>, 
+    <A HREF = "AVAIL.html">from here</A>, 
     and the netCDF library from UCAR, available as a UNIX-compressed
     tar file 
     <A HREF = "http://www.unidata.ucar.edu/packages/netcdf/index.html">
