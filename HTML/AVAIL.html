@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 315 2016-02-24 17:47:08Z coats $" -->
+<!-- "$Id: AVAIL.html 317 2016-02-25 16:40:18Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -92,6 +92,9 @@ m3stat:
               Linux, <A HREF="ERRORS.html#pgi"><EM><U>please read
               this!</U></EM></A></STRONG>
               <P>
+        <LI>  <STRONG><A HREF = "#medium">Notes on <CODE>Linux2_x86_64</CODE> 
+              memory models</STRONG>
+              <P>
         <LI>  <STRONG><A HREF = "#large"><VAR>netCDF</VAR> and Large Files</A></STRONG>
               <P>
         <LI>  <STRONG><A HREF = "#warn">Other Notes and Warnings</A></STRONG>
@@ -105,7 +108,8 @@ m3stat:
         <LI>  <A HREF = "#v22">I/O&nbsp;API Version&nbsp;2.2</A>
         <LI>  <A HREF = "#v21">I/O&nbsp;API Version&nbsp;2.0 and 2.1</A>
                <P>
-        <LI>  Release notes are <A HREF="NEWSTUFF.html">available here.</A>
+        <LI>  Release Notes&nbsp;/ Change Log are
+              <A HREF="NEWSTUFF.html">available here.</A>
               <P>
         <LI>  <A HREF = "#note">NOTE on File Types</A>
         <LI>  <A HREF = "#disc">DISCLAIMER</A>
@@ -626,6 +630,87 @@ or (PGI)
 
 <HR> <!----------------------------------------------------------------->
 
+    <H3><A NAME="medium">Notes on <CODE>Linux2_x86_64</CODE>
+                         memory models</A></H3>
+
+
+    <BLOCKQUOTE>
+    There are three different binary-incompatible &quot;memory
+    models&quot; available for 64-bit <CODE>x86</CODE> Linux:
+    <DL>
+        <DT> <CODE>small</CODE>
+        <DD> At most 2 GB each for static data (<CODE>COMMON</CODE>s,
+             etc.), <CODE>ALLOCATE</CODE>d arrays, program-stack, and 
+             program machine-code.
+        <P>
+        <DT> <CODE>medium</CODE>
+        <DD> Program machine-code at most 2 GB; no restrictions on
+             data.
+        <P>
+        <DT><CODE>large</CODE>
+        <DD> No restrictions on code or data.
+        <P>
+    </DL>
+    <P>
+
+    The <CODE>small</CODE> memory model basically is a 32-bit
+    programming model that uses the full 64-bit instruction
+    set (which has more registers, and is in other ways more
+    powerful than the 32-bit <CODE>x86</CODE> instruction set).
+    It is the default for most (Intel, GNU, Portland Group) compilers.
+    Since most programs don't use more than 2 GB of total memory,
+    it is adequate for most environmental modeling needs.
+    <P>
+
+    The <CODE>medium</CODE> memory model is fully 64-bit for
+    data, but 32-bit for the instruction-part of programs.
+    Given enough RAM, it can handle virtually all environmental
+    programming needs.  It is the default for Sun/Oracle's 
+    Linux compilers; for Intel, GNU, Portland Group compilers,
+    you need to add the following option to the compile and
+    link commands
+    <BLOCKQUOTE><CODE>
+    -mcmodel=medium
+    </CODE></BLOCKQUOTE>
+    <P>
+
+    The <CODE>large</CODE> memory model is rarely needed (who
+    writes models that compile into object files larger than
+    2 GB, anyway??), and seems to be supported only by the Intel
+    compilers and the latest versions of the GNU compilers
+    <EM>provided that the compiler itself is compiled with
+    this option</EM>.
+    You will need the following compile-option for it:
+    <BLOCKQUOTE><CODE>
+    -mcmodel=large
+    </CODE></BLOCKQUOTE>
+    <P>
+
+    <STRONG>Note that program-codes compiled with the different
+    memory models are binary-incompatible</STRONG>. Binary type
+    <CODE>${BIN}=Linux2_x86_64ifort_medium</CODE> is provided for
+    medium-memory-model use with the Intel compilers; it is simple
+    (but as yet un-tested) to adapt similar binary-types for GNU
+    or PGI compilers.  Note also that the Intel and PGI compilers do
+    not support static linking for the medium (or large, for Intel)
+    memory model.
+    <P>
+
+    See <A HREF="http://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models">
+    http://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models</A>
+    for a somewhat readable and very detailed account of the issues, 
+    and also
+    <A HREF="https://software.intel.com/en-us/node/525162">
+    https://software.intel.com/en-us/node/525162</A>
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
     <H3><A NAME="large"><VAR>netCDF</VAR> and Large Files</A></H3>
 
 
@@ -647,7 +732,8 @@ or (PGI)
     I/O&nbsp;API to use the new 64-bit netCDF format.
     <P>
 
-    For more information, see URL<A HREF="http://my.unidata.ucar.edu/content/software/netcdf/docs/netcdf/Large-File-Support.html#Large-File-Support">
+    For more information, see URL
+    <A HREF="http://my.unidata.ucar.edu/content/software/netcdf/docs/netcdf/Large-File-Support.html#Large-File-Support">
     http://my.unidata.ucar.edu/content/software/netcdf/docs/netcdf/Large-File-Support.html#Large-File-Support</A>
     <P>
     </BLOCKQUOTE>
@@ -1371,7 +1457,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 315 2016-02-24 17:47:08Z coats $
+    $Id: AVAIL.html 317 2016-02-25 16:40:18Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
