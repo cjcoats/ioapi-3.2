@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 317 2016-02-25 16:40:18Z coats $" -->
+<!-- "$Id: AVAIL.html 318 2016-02-26 15:44:47Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -19,9 +19,56 @@
     Availability/Download/Installation of the EDSS/Models-3 I/O&nbsp;API
 </H1>
 
-    Go to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<H2>
+    <A NAME="contents">Contents</A>
+</H2>
+
+    <UL>
+        <LI>  <STRONG><A HREF = "#build">Build and installation
+               instructions</A></STRONG> for I/O&nbsp;API Versions&nbsp;3.0,
+               3.1, and 3.2
+              <P>
+        <LI>  <STRONG><A HREF = "#ncf4">NOTE on <VAR>netCDF</VAR> Version&nbsp;4</A></STRONG>
+              <P>
+        <LI>  <STRONG><A HREF = "#gfort">NOTES on <VAR>gfortran</VAR></A></STRONG>
+              <P>
+        <LI>  <STRONG>Users of Portland Group <VAR>pgf90</VAR> under
+              Linux, <A HREF="ERRORS.html#pgi"><EM><U>please read
+              this!</U></EM></A></STRONG>
+              <P>
+        <LI>  <STRONG><A HREF = "#medium">Notes on <CODE>Linux2_x86_64</CODE> 
+              memory models</A></STRONG>
+              <P>
+        <LI>  <STRONG><A HREF = "#large"><VAR>netCDF</VAR> and Large Files</A></STRONG>
+              <P>
+        <LI>  <STRONG><A HREF = "#warn">Other Notes and Warnings</A></STRONG>
+              <P>
+        <LI>  <A HREF = "#v32">I/O&nbsp;API
+              Version&nbsp;3.2-<VAR>beta</VAR></A>: download and notes
+        <LI>  <A HREF = "#v31">I/O&nbsp;API Version&nbsp;3.1</A>:
+              download and notes
+        <LI>  <A HREF = "#v30">I/O&nbsp;API Version&nbsp;3.0</A>:
+        Download and notes
+        <LI>  <A HREF = "#v22">I/O&nbsp;API Version&nbsp;2.2</A>
+        <LI>  <A HREF = "#v21">I/O&nbsp;API Version&nbsp;2.0 and 2.1</A>
+               <P>
+        <LI>  Release Notes&nbsp;/ Change Log are
+              <A HREF="NEWSTUFF.html">available here.</A>
+              <P>
+        <LI>  <A HREF = "#note">NOTE on File Types</A>
+        <LI>  <A HREF = "#disc">DISCLAIMER</A>
+        <LI>  <A HREF = "#docs">I/O&nbsp;API Documents</A>
+    </UL>
     <P>
 
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
+Foreword
+</H2>
+
+    <BLOCKQUOTE>
     <STRONG>
     Please read <A HREF = "NOTICES.html">the copyright, licensing, and
     acknowledgements page</A>:  The I/O&nbsp;API library is available
@@ -74,47 +121,9 @@ m3stat:
      &#36;Id:: init3.F 1 2014-03-14 20:22:54Z coats                    &#36;
      &#36;Id: @(#) netcdf library version 3.6.1 of Feb  7 2014 15:05:22 &#36;
     </PRE>
+    </BLOCKQUOTE>
 
-<H2>
-    <A NAME="contents">Contents</A>
-</H2>
-
-    <UL>
-        <LI>  <STRONG><A HREF = "#build">Build and installation
-               instructions</A></STRONG> for I/O&nbsp;API Versions&nbsp;3.0,
-               3.1, and 3.2
-              <P>
-        <LI>  <STRONG><A HREF = "#ncf4">NOTE on <VAR>netCDF</VAR> Version&nbsp;4</A></STRONG>
-              <P>
-        <LI>  <STRONG><A HREF = "#gfort">NOTES on <VAR>gfortran</VAR></A></STRONG>
-              <P>
-        <LI>  <STRONG>Users of Portland Group <VAR>pgf90</VAR> under
-              Linux, <A HREF="ERRORS.html#pgi"><EM><U>please read
-              this!</U></EM></A></STRONG>
-              <P>
-        <LI>  <STRONG><A HREF = "#medium">Notes on <CODE>Linux2_x86_64</CODE> 
-              memory models</STRONG>
-              <P>
-        <LI>  <STRONG><A HREF = "#large"><VAR>netCDF</VAR> and Large Files</A></STRONG>
-              <P>
-        <LI>  <STRONG><A HREF = "#warn">Other Notes and Warnings</A></STRONG>
-              <P>
-        <LI>  <A HREF = "#v32">I/O&nbsp;API
-              Version&nbsp;3.2-<VAR>beta</VAR></A>: download and notes
-        <LI>  <A HREF = "#v31">I/O&nbsp;API Version&nbsp;3.1</A>:
-              download and notes
-        <LI>  <A HREF = "#v30">I/O&nbsp;API Version&nbsp;3.0</A>:
-        Download and notes
-        <LI>  <A HREF = "#v22">I/O&nbsp;API Version&nbsp;2.2</A>
-        <LI>  <A HREF = "#v21">I/O&nbsp;API Version&nbsp;2.0 and 2.1</A>
-               <P>
-        <LI>  Release Notes&nbsp;/ Change Log are
-              <A HREF="NEWSTUFF.html">available here.</A>
-              <P>
-        <LI>  <A HREF = "#note">NOTE on File Types</A>
-        <LI>  <A HREF = "#disc">DISCLAIMER</A>
-        <LI>  <A HREF = "#docs">I/O&nbsp;API Documents</A>
-    </UL>
+    Go to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
 
@@ -135,9 +144,9 @@ m3stat:
         <DD>  <OL>
                   <LI> Download the <EM>gzip</EM>ped tar-file
                        of the source code for the version you want:
-                       <A HREF="#v32"><VAR>ioapi-3.2.tar.gz</VAR></A>
-                       <A HREF="#v31"><VAR>ioapi-3.1.tar.gz</VAR></A>, or
-                       <A HREF="#v30"><VAR>ioapi-3.0.tar.gz</VAR></A>.
+                       <A HREF="https://www.cmascenter.org/ioapi/download/ioapi-3.2.tar.gz"><VAR>ioapi-3.2.tar.gz</VAR></A>
+                       <A HREF="https://www.cmascenter.org/ioapi/download/ioapi-3.1.tar.gz"><VAR>ioapi-3.1.tar.gz</VAR></A>, or
+                       <A HREF="https://www.cmascenter.org/ioapi/download/ioapi-3..tar.gz"><VAR>ioapi-3.0.tar.gz</VAR></A>.
                        It contains directories <CODE>ioapi</CODE> for
                        the I/O&nbsp;API library source code,
                        <CODE>HTML</CODE> for the documentation,
@@ -818,7 +827,7 @@ or (PGI)
     Version&nbsp;3.2-<VAR>beta</VAR> of the I/O&nbsp;API library source
     code is available from the CMAS Center web site for download in
     <VAR>tar-gzip</VAR>ped form
-    <A HREF ="../../../download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
+    <A HREF ="https://www.cmascenter.org/ioapi/download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
     or is available on GitHub from 
     <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
     To install it from GitHub, go to the directory under which do the
@@ -846,7 +855,7 @@ or (PGI)
 <H3> <A NAME="v31">I/O&nbsp;API Version&nbsp;3.1 Availability</A></H3>
 
     Version&nbsp;3.1 of the I/O&nbsp;API library source code is
-    <A HREF ="../../../download/ioapi-3.1.tar.gz">available here
+    <A HREF ="https://www.cmascenter.org/ioapi/download/ioapi-3.1.tar.gz">available here
     for download</A> in <VAR>tar-gzip</VAR>ped  form. This version is
     upwardly source-code compatible with previous versions; however, it
     is <EM>not</EM> object-code compatible, nor is it compatible with
@@ -964,12 +973,12 @@ or (PGI)
     <P>
 
     Version&nbsp;3.0 of the I/O&nbsp;API library source code is
-    <A HREF ="../../../download/ioapi-3.0.tar.gz">available here for
-    download</A> in <VAR>tar-gzip</VAR>ped  form. New features of this release
-    are <A HREF = "NEWSTUFF.html#may17">documented here</A>, and include
-    additional support for WRF, a new native-binary-format lower layer,
-    a file-set lower layer, some new routines, and enhancements for
-    portability and OpenMP thread-safety.
+    <A HREF="https://www.cmascenter.org/ioapi/download/ioapi-3.0.tar.gz">available
+    here for download</A> in <VAR>tar-gzip</VAR>ped  form. New features
+    of this release are <A HREF = "NEWSTUFF.html#may17">documented
+    here</A>, and include additional support for WRF, a new
+    native-binary-format lower layer, a file-set lower layer, some new
+    routines, and enhancements for portability and OpenMP thread-safety.
     <P>
     This release is current as of June&nbsp;11, 2007 and includes all
     bug-fixes up through that date.  <STRONG>It should be considered
@@ -1160,11 +1169,11 @@ or (PGI)
     <P>
 
     Version&nbsp;2.2 of the I/O&nbsp;API library source code is
-    <A HREF = "ioapi_22.tar.gz">available here for download</A>
-    in <VAR>tar-gzip</VAR>ped form. New features of this release are
-    <A HREF = "NEWSTUFF.html"> documented here</A>.  The build
-    procedure is the same as that for Version&nbsp;2.1, documented
-    below, except for the following:
+    <A HREF = "https://www.cmascenter.org/ioapi/download/ioapi_22.tar.gz">available
+    here for download</A> in <VAR>tar-gzip</VAR>ped form. New features
+    of this release are <A HREF = "NEWSTUFF.html"> documented here</A>. 
+    The build procedure is the same as that for Version&nbsp;2.1,
+    documented below, except for the following:
     <UL>
         <LI>  The default object library directory is directly
               <EM>under</EM> the source code directory.  To change
@@ -1200,7 +1209,8 @@ or (PGI)
     <P>
     Source code for Release Version 2.1 of the I/O&nbsp;API  and the
     I/O&nbsp;-related tool and sample programs is
-    <A HREF = "ioapi_21.tar.gz">available here for download</A> in
+    <A HREF = "https://www.cmascenter.org/ioapi/download/ioapi_21.tar.gz">available
+    here for download</A> in
     <VAR>tar-gzip</VAR>ped form.  New features of this release are
     <A HREF = "NEWSTUFF.html">documented here</A>. <CODE>Makeinclude</CODE>
     files are available for the following platforms (and some debug- and
@@ -1427,7 +1437,7 @@ or (PGI)
     A <VAR>gzip</VAR>ped
     <VAR>tar</VAR>-file snapshot for I/O&nbsp;API Version&nbsp;2.1 
     documentation is
-    <A HREF = "../../../ioapi_doc.tar.gz">available here.</A>;
+    <A HREF = "https://www.cmascenter.org/ioapi/download/ioapi_doc.tar.gz">available here.</A>;
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -1457,7 +1467,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 317 2016-02-25 16:40:18Z coats $
+    $Id: AVAIL.html 318 2016-02-26 15:44:47Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
