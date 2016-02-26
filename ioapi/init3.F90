@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 285 2015-12-19 10:44:12Z coats $"
+    !! Version "$Id: init3.F90 319 2016-02-26 15:51:32Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -116,7 +116,7 @@ INTEGER FUNCTION INIT3 ( )
       'Copyright (C) 1992-2002 MCNC,                                 ',     &
       '(C) 1992-2013 Carlie J. Coats, Jr.,                           ',     &
       '(C) 2003-2012 Baron Advanced Meteorological Systems, LLC, and ',     &
-      '(C) 2014-2015 UNC Institute for the Environment.              ',     &
+      '(C) 2014-2016 UNC Institute for the Environment.              ',     &
       'Released under the GNU LGPL  License, version 2.1.  See URL   ',     &
       '                                                              ',     &
       '    https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html   ',     &
@@ -135,7 +135,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'$Id: init3.F90 285 2015-12-19 10:44:12Z coats $'
+'$Id: init3.F90 319 2016-02-26 15:51:32Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 
