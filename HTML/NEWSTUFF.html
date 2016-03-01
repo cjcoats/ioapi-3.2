@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 318 2016-02-26 15:44:47Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 322 2016-03-01 14:18:04Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 318 2016-02-26 15:44:47Z coats $
+    $Id: NEWSTUFF.html 322 2016-03-01 14:18:04Z coats $
     </EM>
     <HR>
 
@@ -30,7 +30,7 @@
 </A></H2>
 
     <UL>
-         <LI>  <A HREF = "#ncf">Note on <VAR>netCDF</VAR> Versions and Large Files.</A>,
+         <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
          <LI>  <A HREF = "#feb102016">
@@ -500,7 +500,7 @@
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "ncf">
-    Note on <VAR>netCDF</VAR> Versions and Large Files.
+    Notes on <VAR>netCDF-4</VAR>
 </A></H2>
 
     <BLOCKQUOTE>
@@ -510,14 +510,46 @@
     separates the Fortran library <VAR>libnetcdff.a</VAR> from the
     C&nbsp;library <VAR>libnetcdf.a</VAR>.  To match this, the
     <CODE>LIBS</CODE> in the <VAR>m3tools/Makefile</VAR> uses
-    <CODE>-lnetcdff&nbsp;-lnetcdf</CODE> .  If you use these versions of
+    <CODE>-lnetcdff&nbsp;-lnetcdf</CODE>.  If you use these versions of
     netCDF, you must also modify build-systems for  CMAQ, MCIP, SMOKE,
     and all your models that use netCDF similarly. If using a previous
     version of netCDF, you must modify <VAR>m3tools/Makefile</VAR>s to
     use just <CODE>-lnetcdf</CODE>.
     </STRONG>
     <P>
-    </BLOCKQUOTE>
+
+    Evidently, starting with netCDF-Fortran&nbsp;4.4.2, UCAR in their
+    wisdom decided to silently eliminate the
+    <BLOCKQUOTE><CODE>
+        CALL NC*()      
+    </CODE></BLOCKQUOTE>
+    Fortran interfaces, e.g.,
+    <CODE>CALL&nbsp;NCCLOS(CDFID,&nbsp;IERR)</CODE>,
+    in terms of which the I/O&nbsp;API was originally
+    implemented, in favor of the
+    <BLOCKQUOTE><CODE>
+        IERR = NF_*()  
+    </CODE></BLOCKQUOTE>
+    forms introduced with netCDF-3.  [If you can find any documentation 
+    on the web indicating that they were making this change I would
+    enjoy seeing it; I can't find any.]<P>
+    I/O&nbsp;API Version 3.2 was tediously re-coded to replace all 943
+    of these calls by the newer  <CODE>IERR=NF_*()</CODE>  Fortran calls
+    that are still supported.  Prior editions of the I/O&nbsp;API will
+    have link errors with netCDF-Fortran 4.4.2 or later, because
+    routines such as  <CODE>NCCLOS()</CODE>  are no longer in that
+    library.  An easy check to see if you are affected by this is to
+    use the <VAR>nm</VAR> system-utility to see if <CODE>NCCLOS</CODE>
+    is present.  If the library works with 3.1 or earlier versions of
+    the I/O&nbsp;API, you should see if you see a line with a
+    &quot;<CODE>T</CODE>&quot; like the following (ignore the leading
+    number-field); if it is missing, you will need I/O&nbsp;API-3.2
+    or later, or an older version of netCDF.
+    <BLOCKQUOTE><VAR>
+        % nm libnetcdff.a | grep ncclos<BR>
+        0000000000001440 T ncclos_
+    </VAR></BLOCKQUOTE>
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -5737,7 +5769,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 318 2016-02-26 15:44:47Z coats $
+    $Id: NEWSTUFF.html 322 2016-03-01 14:18:04Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
