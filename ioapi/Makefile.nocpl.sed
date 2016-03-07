@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.nocpl.sed 312 2016-02-10 19:28:33Z coats $"
+# VERSION "$Id: Makefile.nocpl.sed 323 2016-03-07 22:51:18Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
@@ -395,44 +395,29 @@ xtbuf3.o      :  m3utilio.mod
 #  non-standard source code formatting:
 
 ${FIXDIR}:
-	mkdir ${FIXDIR}
+	mkdir -p ${FIXDIR}
 
 ${FIXDIR}/ATDSC3.EXT: ATDSC3.EXT
-	chmod u+w ${FIXDIR}/ATDSC3.EXT
 	${IODIR}/fix_src.csh ATDSC3.EXT ${FIXDIR}/ATDSC3.EXT
-	chmod a-w ${FIXDIR}/ATDSC3.EXT
 
 ${FIXDIR}/CONST3.EXT: CONST3.EXT
-	chmod u+w ${FIXDIR}/CONST3.EXT
 	${IODIR}/fix_src.csh CONST3.EXT ${FIXDIR}/CONST3.EXT
-	chmod a-w ${FIXDIR}/CONST3.EXT
 
 ${FIXDIR}/FDESC3.EXT: FDESC3.EXT
-	chmod u+w ${FIXDIR}/FDESC3.EXT
 	${IODIR}/fix_src.csh FDESC3.EXT ${FIXDIR}/FDESC3.EXT
-	chmod a-w ${FIXDIR}/FDESC3.EXT
 
 ${FIXDIR}/IODECL3.EXT: IODECL3.EXT
-	chmod u+w ${FIXDIR}/IODECL3.EXT
 	${IODIR}/fix_src.csh IODECL3.EXT ${FIXDIR}/IODECL3.EXT
-	chmod a-w ${FIXDIR}/IODECL3.EXT
 
 ${FIXDIR}/NETCDF.EXT: NETCDF.EXT
-	chmod u+w ${FIXDIR}/NETCDF.EXT
 	${IODIR}/fix_src.csh NETCDF.EXT ${FIXDIR}/NETCDF.EXT
-	chmod a-w ${FIXDIR}/NETCDF.EXT
 
 ${FIXDIR}/NOTICE.EXT: NOTICE.EXT
-	chmod u+w ${FIXDIR}/NOTICE.EXT
 	${IODIR}/fix_src.csh NOTICE.EXT ${FIXDIR}/NOTICE.EXT
-	chmod a-w ${FIXDIR}/NOTICE.EXT
 
 ${FIXDIR}/PARMS3.EXT: PARMS3.EXT
-	chmod u+w ${FIXDIR}/PARMS3.EXT
 	${IODIR}/fix_src.csh PARMS3.EXT ${FIXDIR}/PARMS3.EXT
-	chmod a-w ${FIXDIR}/PARMS3.EXT
 
 ${FIXDIR}/STATE3.EXT: STATE3.EXT
-	chmod u+w ${FIXDIR}/ATDSC3.EXT
 	${IODIR}/fix_src.csh STATE3.EXT ${FIXDIR}/STATE3.EXT
 

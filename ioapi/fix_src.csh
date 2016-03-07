@@ -1,8 +1,10 @@
 #!/bin/csh -f
 #!/usr/local/bin/tcsh
 #.........................................................................
-# Version "$Id: fix_src.csh 100 2015-01-16 16:52:16Z coats $"
-# EDSS/Models-3 I/O API.  Copyright (C) 2002 MCNC
+# Version "$Id: fix_src.csh 323 2016-03-07 22:51:18Z coats $"
+# EDSS/Models-3 I/O API.
+# Copyright (C) 2002 MCNC and
+#           (C) 2016 UNC Institute for the Environment
 # Distributed under the GNU Lesser PUBLIC LICENSE version 2.1
 # See file "LGPL.txt" for conditions of use.
 #.........................................................................
@@ -26,10 +28,18 @@ switch ( $#argv )
         exit( 2 ) 
 endsw
 
+if ( -e $2 ) chmod u+w $2
 sed -e 's/ *& *$//' < $1 > $2
 
 set foo=$status
-if ( ${foo} != 0 )  echo "ERROR ${foo} in script fix_src.csh \n\n"
+chmod a-w $2
 
-exit( ${foo} )
+if ( ${foo} != 0 )  then
+    echo "ERROR ${foo} in script fix_src.csh \n\n"
+    exit( ${foo} )
+endif
+
+chmod a-w $2
+exit( 0 )
+
 
