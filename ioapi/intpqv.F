@@ -1,5 +1,5 @@
 C.........................................................................
-C Version "$Id: intpqv.F 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: intpqv.F 326 2016-03-08 00:12:12Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -8,8 +8,8 @@ C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  INTPQV  function body starts at line   75
-C  VIR2BUF function body starts at line  175
+C  INTPQV  function body starts at line   79
+C  VIR2BUF function body starts at line  180
 C
 C  FUNCTION:
 C       For virtual files, initialize buffers maintained by "bufint3.c"
@@ -32,6 +32,8 @@ C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C
 C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO; INTENT
+C
+C       Modified   3/2016:  bug-fix from Edward Anderson, US EPA 
 C.........................................................................
 
 #ifdef IOAPICPL
@@ -55,7 +57,7 @@ C...........   ARGUMENTS and their descriptions:
       INTEGER, INTENT(IN   ) :: VID         !  variable subscript for STATE3 arrays
       INTEGER, INTENT(IN   ) :: JDATE       !  date, formatted YYYYDDD
       INTEGER, INTENT(IN   ) :: JTIME       !  time, formatted HHMMSS
-      REAL   , INTENT(IN   ) :: P, Q        !  fractions used for interpolation.
+      REAL   , INTENT(INOUT) :: P, Q        !  fractions used for interpolation.
 
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:

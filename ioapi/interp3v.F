@@ -4,15 +4,15 @@ C
       LOGICAL FUNCTION INTERP3V( FID, VID, JDATE, JTIME, BUFFER )
 
 C***********************************************************************
-C Version "$Id: interp3v.F 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: interp3v.F 326 2016-03-08 00:12:12Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body          starts at line   81
-C  Worker routine VIR2BUF starts at line  188
+C  function body          starts at line   84
+C  Worker routine VIR3BUF starts at line  191
 C
 C  FUNCTION:
 C       Set up INTERP3 for virtual files
@@ -23,13 +23,14 @@ C
 C  PRECONDITION:
 C       FID is a virtual file containing the requested data
 C
-C  REVISION  HISTORY:  
+C  REVISION  HISTORY:
 C       Prototype  5/1999 by Atanas L Trayanov, MCNC
 C
 C       Modified   9/2004 by Carlie J. Coats, Jr., BAMS, for
 C       I/O API Version 3:  re-structured interface to bufint3.c
 C       routines and data structures; new READ3V interface
 C
+C       Modified   3/2016:  bug-fixes from Edward Anderson, US EPA
 C***********************************************************************
 
       IMPLICIT NONE
@@ -52,10 +53,11 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
+      INTEGER, EXTERNAL :: BUFINT3
       LOGICAL, EXTERNAL :: CURRSTEP    !  finds start of timestep
       INTEGER, EXTERNAL :: SECSDIFF    !  computes date&time differences
       INTEGER, EXTERNAL :: TIME2SEC    !  converts time to seconds
-      LOGICAL, EXTERNAL :: VIR2BUF
+      LOGICAL, EXTERNAL :: VIR3BUF
 
 
 
@@ -81,14 +83,14 @@ C       begin body of INTERP3V
       TSTEP = TSTEP3( FID )
       COUNT = BSIZE3(FID)*NLAYS3(FID)
 
-      IF ( .NOT. CURRSTEP( JDATE, JTIME, 
-     &                     SDATE3( FID ), STIME3( FID ), TSTEP, 
+      IF ( .NOT. CURRSTEP( JDATE, JTIME,
+     &                     SDATE3( FID ), STIME3( FID ), TSTEP,
      &                     PDATE, PTIME ) ) THEN
           CALL M3WARN('INTERP3V', JDATE, JTIME, 'CURRSTEP ERROR')
           INTERP3V = .FALSE.
           RETURN
       END IF
-      
+
       RFLAG = .FALSE.
       IF ( TSTEP .EQ. 0 ) THEN
           P=1.0
@@ -97,7 +99,7 @@ C       begin body of INTERP3V
           IF ( LDATE3(VID,FID) .EQ. IMISS3 .OR.
      $         LTIME3(VID,FID) .EQ. IMISS3 ) THEN
 
-              INTERP3V = VIR2BUF( FID, VID, 0, 0, 0, BUFFER)
+              INTERP3V = VIR3BUF( FID, VID, 0, 0, 0, BUFFER)
 
           END IF
       ELSE
@@ -106,7 +108,7 @@ C       begin body of INTERP3V
          DTJP = SECSDIFF( PDATE, PTIME, JDATE, JTIME )
 
          Q = FLOAT( DTJP ) / FLOAT( DT ) !  INTERPOLATION COEFFICIENTS
-         P = 1.0 - Q            
+         P = 1.0 - Q
 
          FDATE = PDATE
          FTIME = PTIME
@@ -119,12 +121,12 @@ C       begin body of INTERP3V
 
          IF ((PL .AND. PN) .OR. (FL .AND. FN) .OR.
      $       (PL .AND. FL) .OR. (PN .AND. FN)) THEN
- 
+
             CALL M3WARN('INTERP3V', JDATE, JTIME,
      $           'Inconsistent LDATE3/LTIME3 or NDATE3/NTIME3 ERROR')
             INTERP3V = .FALSE.
             RETURN
- 
+
          ENDIF
 
          INTERP3V = .TRUE.
@@ -132,40 +134,40 @@ C       begin body of INTERP3V
             IP=0
             IF (.NOT. FN) THEN
                IF (Q .NE. 0.0) THEN
-                  INTERP3V = VIR2BUF( FID, VID, 1, FDATE, FTIME, BUFFER)
+                  INTERP3V = VIR3BUF( FID, VID, 1, FDATE, FTIME, BUFFER)
                ENDIF
             ENDIF
          ELSE IF(PN) THEN
             IP=1
             IF (.NOT. FL) THEN
                IF (Q .NE. 0.0) THEN
-                  INTERP3V = VIR2BUF( FID, VID, 0, FDATE, FTIME, BUFFER)
+                  INTERP3V = VIR3BUF( FID, VID, 0, FDATE, FTIME, BUFFER)
                ENDIF
             ENDIF
          ELSE IF(FL) THEN
             IP=1
             IF (P .NE. 0.0) THEN
-               INTERP3V = VIR2BUF( FID, VID, 1, PDATE, PTIME, BUFFER)
+               INTERP3V = VIR3BUF( FID, VID, 1, PDATE, PTIME, BUFFER)
             ENDIF
          ELSE IF(FN) THEN
             IP=0
             IF (P .NE. 0.0) THEN
-               INTERP3V = VIR2BUF( FID, VID, 0, PDATE, PTIME, BUFFER)
+               INTERP3V = VIR3BUF( FID, VID, 0, PDATE, PTIME, BUFFER)
             ENDIF
          ELSE
             IP=0
             IF (P .NE. 0.0) THEN
-               INTERP3V = VIR2BUF( FID, VID, 0, PDATE, PTIME, BUFFER)
+               INTERP3V = VIR3BUF( FID, VID, 0, PDATE, PTIME, BUFFER)
             ENDIF
             IF (Q .NE. 0.0) THEN
                INTERP3V = INTERP3V .AND .
-     $              VIR2BUF( FID, VID, 1, FDATE, FTIME, BUFFER)
+     $              VIR3BUF( FID, VID, 1, FDATE, FTIME, BUFFER)
             END IF
          END IF
       END IF
 
       IF (.NOT. INTERP3V) THEN
-         CALL M3WARN('INTERP3V', JDATE, JTIME, 'vir2buf ERROR')
+         CALL M3WARN('INTERP3V', JDATE, JTIME, 'VIR3BUF ERROR')
          RETURN
       ENDIF
 
@@ -185,7 +187,7 @@ C       begin body of INTERP3V
 
 C*********************************************************************
 
-      LOGICAL FUNCTION VIR2BUF( FID, VID, IP, KDATE, KTIME, BUFFER )
+      LOGICAL FUNCTION VIR3BUF( FID, VID, IP, KDATE, KTIME, BUFFER )
 
       IMPLICIT NONE
 
@@ -212,15 +214,15 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
       INTEGER           RET
 
 C....................................................................
-C       begin body of VIR2BUF
+C       begin body of VIR3BUF
 
       COUNT = BSIZE3(FID)*NLAYS3(FID)
       SKIP = 0
 
-      VIR2BUF = READ3V( FID, VID, SKIP, COUNT,
+      VIR3BUF = READ3V( FID, VID, SKIP, COUNT,
      &                  KDATE, KTIME, BUFFER )
       RET = BUFPUT3( FID, VID, COUNT, IP, BUFFER)
-      IF (VIR2BUF .AND. RET .NE. 0) THEN
+      IF (VIR3BUF .AND. RET .NE. 0) THEN
          IF (IP .EQ. 0) THEN
             LDATE3(VID,FID) = KDATE
             LTIME3(VID,FID) = KTIME
@@ -228,7 +230,7 @@ C       begin body of VIR2BUF
             NDATE3(VID,FID) = KDATE
             NTIME3(VID,FID) = KTIME
          ENDIF
-         VIR2BUF = .TRUE.
+         VIR3BUF = .TRUE.
       ELSE
          IF (IP .EQ. 0) THEN
             LDATE3(VID,FID) = IMISS3
@@ -237,9 +239,9 @@ C       begin body of VIR2BUF
             NDATE3(VID,FID) = IMISS3
             NTIME3(VID,FID) = IMISS3
          ENDIF
-         VIR2BUF = .FALSE.
+         VIR3BUF = .FALSE.
       ENDIF
       RETURN
-      END FUNCTION VIR2BUF
+      END FUNCTION VIR3BUF
 
 #endif
