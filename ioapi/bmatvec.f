@@ -2,7 +2,7 @@
       SUBROUTINE  BMATVEC11( M, N, P, IX, AX, V, Y )
 
       !!***********************************************************************
-      !! Version "$Id: bmatvec.f 219 2015-08-17 18:05:54Z coats $"
+      !! Version "$Id: bmatvec.f 328 2016-03-08 16:24:31Z coats $"
       !! EDSS/Models-3 I/O API.
       !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
       !! (C) 2003-2010 Baron Advanced Meteorological Systems, and
@@ -10,9 +10,11 @@
       !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
       !! See file "LGPL.txt" for conditions of use.
       !!.........................................................................
-      !!  subroutine BMATVEC11 body starts at line  76:  single-indexed inputs and outputs
-      !!  subroutine BMATVEC12 body starts at line  76:  single-indexed inputs, double-indexed outputs
-      !!  subroutine BMATVEC22 body starts at line  76:  double-indexed inputs and output
+      !!  subroutine BMATVEC11 body starts at line  90:  single-indexed inputs and outputs
+      !!  subroutine BMATVEC12 body starts at line 114:  single-indexed inputs, double-indexed outputs
+      !!  subroutine BMATVEC21 body starts at line 169:  double-indexed inputs, single-indexed output
+      !!  subroutine BMATVEC22 body starts at line 221:  double-indexed inputs and output
+      !!  subroutine BMATVEC   body starts at line 276:  fall-back for non-"USE M3UTILIO"
       !!
       !!  FUNCTION:  apply a 4-band sparse matrix to an array ("layered vector")
       !!             as used for bilinear interpolation of meteorology in LAYPOINT
@@ -42,9 +44,10 @@
       !!                 preserving the subscript-order.
       !!
       !!  PRECONDITIONS REQUIRED:
-      !!       Number of layers same for input and output.
-      !!       Index and coefficients set up so that the equation for
-      !!       the multiplication (at each row R and layer L) is
+      !!        USE M3UTILIO for generic INTERFACE
+      !!        Number of layers same for input and output.
+      !!        Index and coefficients set up so that the equation for
+      !!        the multiplication (at each row R and layer L) is
       !!
       !!       Y(L,R) = SUM_{ J=1...4 }  A( J,R ) * V( I( J,R ),L )
       !!
@@ -55,6 +58,7 @@
       !!       Version    9/2014 by CJC:  modifications for OpenMP parallel
       !!        Version  12/2014 by CJC for I/O API v3.2:  multiple versions
       !!        with  M3UTILIO generic interface BMATVEC()
+      !!    Version  03/2016 by CJC:  Add BMATVEC() for backwards compatibility
       !!***********************************************************************
 
         IMPLICIT NONE
@@ -211,7 +215,6 @@
 
 
 
-
 !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
@@ -265,4 +268,29 @@
 
       END SUBROUTINE BMATVEC22
 
+
+
+!!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+      SUBROUTINE  BMATVEC( M, N, P, IX, AX, V, Y )
+
+      IMPLICIT NONE
+
+C...........   ARGUMENTS and their descriptions:
+
+        INTEGER, INTENT(IN   ) :: M               ! length of input  vector
+        INTEGER, INTENT(IN   ) :: N               ! length of output vector
+        INTEGER, INTENT(IN   ) :: P               ! number of layers
+        INTEGER, INTENT(IN   ) :: IX( 4,N )       ! index array
+        REAL   , INTENT(IN   ) :: AX( 4,N )       ! 4-band coeff matrix
+        REAL   , INTENT(IN   ) :: V( M,P )        ! P-layered input  vector
+        REAL   , INTENT(  OUT) :: Y( P,N )        ! P-layered output vector
+
+        !!................................................................
+
+        CALL BMATVEC11( M, N, P, IX, AX, V, Y )
+
+        RETURN
+      END SUBROUTINE  BMATVEC
 

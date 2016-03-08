@@ -3,11 +3,11 @@
      &                       NPTS, XLOC, YLOC, NX )
 
         !!***********************************************************************
-        !! Version "$Id: ungridi.f 219 2015-08-17 18:05:54Z coats $"
+        !! Version "$Id: ungridi.f 328 2016-03-08 16:24:31Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
         !! (C) 2003-2010 Baron Advanced Meteorological Systems, and
-        !! (C) 2014 UNC Institute for the Environment.
+        !! (C) 2014-2016 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
         !! See file "LGPL.txt" for conditions of use.
         !!.........................................................................
@@ -15,6 +15,7 @@
         !!  subroutine body  UNGRIDIS2  starts at line  63
         !!  subroutine body  UNGRIDID1  starts at line  63
         !!  subroutine body  UNGRIDID2  starts at line  63
+        !!  subroutine body  UNGRIDI    starts at line  63
         !!
         !!  FUNCTION:
         !! 	computes "ungridding" incidence matrices to be used for program
@@ -29,8 +30,11 @@
         !!                 e.g., for SMOKE program LAYPOINT, changing LAYER
         !!                 from an outermost subscript to an innermost
         !!
+        !!    MODULE M3UTILIO contains a generic UNGRIDI interface that selects
+        !!    among UNGRIDIS1, UNGRIDIS2,  UNGRIDID1, UNGRIDID2.
+        !!
         !!  PRECONDITIONS REQUIRED:
-        !!       none
+        !!       USE M3UTILIO
         !!
         !!  SUBROUTINES AND FUNCTIONS CALLED:
         !!       none
@@ -40,6 +44,7 @@
         !!      Modified  03/2010 by CJC: F9x changes for I/O API v3.1
         !!      Version  12/2014 by CJC for I/O API v3.2:  OpenMP parallel;
         !!      multiple versions with  M3UTILIO generic interface UNGRIDI()
+        !!      Version  03/2016 by CJC:  Add UNGRIDI() for backwards compatibility
         !!***********************************************************************
 
         IMPLICIT NONE
@@ -344,4 +349,28 @@
       END SUBROUTINE  UNGRIDID2
 
 
+!!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+      SUBROUTINE  UNGRIDI( NCOLS, NROWS, XORIG, YORIG, XCELL, YCELL,
+     &                       NPTS, XLOC, YLOC, NX )
+
+        IMPLICIT NONE
+
+C...........   ARGUMENTS and their descriptions:
+
+        INTEGER, INTENT(IN   ) :: NCOLS, NROWS	!  number of grid columns, rows
+        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	!  X,Y coords of LL grid corner
+        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	!  X,Y direction cell size
+        INTEGER, INTENT(IN   ) :: NPTS	        !  number of (point-source) locations
+        REAL   , INTENT(IN   ) :: XLOC( NPTS ) 	!  X point coordinates
+        REAL   , INTENT(IN   ) :: YLOC( NPTS ) 	!  Y point coordinates
+        INTEGER, INTENT(  OUT) :: NX( NPTS )    !  single-indexed subscripts into grid
+C***********************************************************************
+
+        CALL UNGRIDIS1( NCOLS, NROWS, XORIG, YORIG, XCELL, YCELL,
+     &                  NPTS, XLOC, YLOC, NX )
+
+        RETURN
+      END SUBROUTINE  UNGRIDI
 

@@ -2,9 +2,9 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: UPCASE.html 130 2015-01-26 14:01:23Z coats $" -->
+<!-- "$Id: UPCASE.html 329 2016-03-08 16:25:25Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
-<TITLE> UPCASE() </TITLE>
+<TITLE> UPCASE() and DOWNCASE()</TITLE>
 </HEAD>
 
 <BODY BGCOLOR="#FFFFFF" 
@@ -18,6 +18,7 @@
 <H2> Fortran version: </H2>
 <PRE>
     SUBROUTINE UPCASE( ASTRING )
+    SUBROUTINE DOWNCASE( ASTRING )
         CHARACTER*(*), INTENT(INOUT) :: ASTRING    ! string to make into all caps
 </PRE><P>    
 
@@ -26,8 +27,8 @@
 
 <H2> Summary: </H2>
 
-    Upcases (turns into ALL CAPS) the contents of the Fortran
-    character string ASTRING.
+    Upcases (turns into ALL CAPS) or downcases (turns into lower-case)
+    the contents of the Fortran character string <CODE>ASTRING</CODE>.
     <P> 
 
     <STRONG>See also</STRONG> <A HREF = "LUSTR.html">LUSTR()</A>

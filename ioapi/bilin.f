@@ -2,7 +2,7 @@
       SUBROUTINE BILIN11L( M, N, P, IX, AX, V, Y )
 
         !!***********************************************************************
-        !! Version "$Id: bilin.f 219 2015-08-17 18:05:54Z coats $"
+        !! Version "$Id: bilin.f 328 2016-03-08 16:24:31Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
         !! (C) 2003-2010 Baron Advanced Meteorological Systems, and
@@ -10,18 +10,21 @@
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
         !! See file "LGPL.txt" for conditions of use.
         !!.........................................................................
-        !!  subroutine body BILIN1  starts at line  82:  layered-vector inputs and outputs
-        !!  subroutine body BILIN2  starts at line 136:  layered-vector input, 3-D grid output
-        !!  subroutine body BILIN3  starts at line 219:  3-D grid inputs and output
-        !!  subroutine body BILIN11 starts at line 299:  non-layered vector inputs and outputs
-        !!  subroutine body BILIN12 starts at line 350:  non-layered vector input, 2D grid output
-        !!  subroutine body BILIN22 starts at line 404:  2-D grid inputs and output
+        !!  subroutine body BILIN11L starts at line  88:  layered-vector inputs and outputs
+        !!  subroutine body BILIN12L starts at line 142:  layered-vector input, 3-D grid output
+        !!  subroutine body BILIN21L starts at line 225:  layered-vector input, 3-D grid output
+        !!  subroutine body BILIN22L starts at line 300:  layered-vector input, 3-D grid output
+        !!  subroutine body BILIN11  starts at line 380:  non-layered vector inputs and outputs
+        !!  subroutine body BILIN12  starts at line 430:  non-layered vector input, 2D grid output
+        !!  subroutine body BILIN21  starts at line 483:  2-D grid inputs and output
+        !!  subroutine body BILIN22  starts at line 531:  2-D grid inputs and output
+        !!  subroutine body BILIN    starts at line 582:  fall-back for non-"USE M3UTILIO"
         !!
         !!  FUNCTION:  apply a 4-band sparse matrix to an array ("layered vector")
         !!
         !!  NOTE:  Maintains I/O subscript order V( M,P )
         !!
-        !!       For BILIN1ear interpolation of gridded data having dimension NC,NR
+        !!       For Bilinear interpolation of gridded data having dimension NC,NR
         !!       to a list of locations having grid-normal coordinates <X(S),Y(S)>:
         !!       let Y(S) and R(S) be INT( X(S) ) and INT( Y(S) ), P(S) and Q(S)
         !!       be AMOD( X(S), 1.0 ) and AMOD( Y(S), 1.0 ).  Then IX has the
@@ -36,6 +39,9 @@
         !!           AX(2,S) =         P( S )  *( 1.0 - Q( S ) )
         !!           AX(3,S) = ( 1.0 - P( S ) )*        Q( S )
         !!           AX(4,S) =         P( S )  *        Q( S )
+        !!
+        !!    MODULE M3UTILIO contains a generic BILIN interface that selects
+        !!    among the BILIN*
         !!
         !!  SEE ALSO:
         !!       UNGRIDB() which produces such matrices
@@ -568,5 +574,29 @@
         RETURN
 
       END SUBROUTINE BILIN22
+
+
+!!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+      SUBROUTINE BILIN( M, N, P, IX, AX, V, Y )
+
+        IMPLICIT NONE
+
+C...........   ARGUMENTS and their descriptions:
+
+        INTEGER, INTENT(IN   ) :: M               ! length of input  vector
+        INTEGER, INTENT(IN   ) :: N               ! length of output vector
+        INTEGER, INTENT(IN   ) :: P               ! number of layers
+        INTEGER, INTENT(IN   ) :: IX( 4,N )       ! index array
+        REAL   , INTENT(IN   ) :: AX( 4,N )       ! 4-band coeff matrix
+        REAL   , INTENT(IN   ) :: V( M,P )        ! P-layered input  vector
+        REAL   , INTENT(  OUT) :: Y( N,P )        ! P-layered output vector
+
+        CALL BILIN11L( M, N, P, IX, AX, V, Y )
+
+        RETURN
+
+      END SUBROUTINE BILIN
 
 

@@ -3,24 +3,28 @@
      &                       NPTS, XLOC, YLOC, NU, CU )
 
       !!***********************************************************************
-      !! Version "$Id: ungridb.f 219 2015-08-17 18:05:54Z coats $"
+      !! Version "$Id: ungridb.f 328 2016-03-08 16:24:31Z coats $"
       !! EDSS/Models-3 I/O API.
       !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
       !! (C) 2003-2010 by Baron Advanced Meteorological Systems, and
-      !! (C) 2014 UNC Institute for the Environment.
+      !! (C) 2014-2016 UNC Institute for the Environment.
       !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
       !! See file "LGPL.txt" for conditions of use.
       !!.........................................................................
-      !!  subroutine UNGRIDBS1 body starts at line   72:  single-precision 1D inputs
-      !!  subroutine UNGRIDBS2 body starts at line  141:  single-precision 2D inputs
-      !!  subroutine UNGRIDBD1 body starts at line  245:  double-precision 1D inputs
-      !!  subroutine UNGRIDBD2 body starts at line  345:  double-precision 2D inputs
+      !!  subroutine UNGRIDBS1 body starts at line   77:  single-precision 1D inputs
+      !!  subroutine UNGRIDBS2 body starts at line  146:  single-precision 2D inputs
+      !!  subroutine UNGRIDBD1 body starts at line  250:  double-precision 1D inputs
+      !!  subroutine UNGRIDBD2 body starts at line  350:  double-precision 2D inputs
+      !!  subroutine UNGRIDB   body starts at line  456:  fall-back for non-"USE M3UTILIO"
       !!
       !!  FUNCTION:
-      !! 	computes "ungridding" matrices to be used by BMATVEC() and BILIN(),
-      !!	for program LAYPOINT, etc., to perform bilinear interpolation
-      !!	from a grid to a set of locations { <XLOC(S),YLOC(S)>, S=1:NPTS }
+      !!    computes "ungridding" matrices to be used by BMATVEC() and BILIN(),
+      !!    for program LAYPOINT, etc., to perform bilinear interpolation
+      !!    from a grid to a set of locations { <XLOC(S),YLOC(S)>, S=1:NPTS }
       !!    Uses "closest boundary-value" beyond the input-grid boundary
+      !!
+      !!    MODULE M3UTILIO contains a generic UNGRIDB interface that selects
+      !!    among UNGRIDBS1, UNGRIDBS2,  UNGRIDBD1, UNGRIDBD2.
       !!
       !!  SEE ALSO:
       !!       BILIN()   which performs combined interpolate-only,
@@ -29,7 +33,8 @@
       !!                 e.g., for SMOKE program LAYPOINT, changing LAYER
       !!                 from an outermost subscript to an innermost
       !!
-      !!  PRECONDITIONS REQUIRED:  none
+      !!  PRECONDITIONS REQUIRED:
+      !!        USE M3UTILIO for generic INTERFACE
       !!
       !!  SUBROUTINES AND FUNCTIONS CALLED:  none
       !!
@@ -39,6 +44,7 @@
       !!    Version   9/2014 by CJC:  modifications for OpenMP parallel
       !!    Version  12/2014 by CJC for I/O API v3.2:  multiple versions
       !!        with M3UTILIO generic interface UNGRIDB()
+      !!    Version  03/2016 by CJC:  Add UNGRIDB() for backwards compatibility
       !!***********************************************************************
 
       IMPLICIT NONE
@@ -132,7 +138,7 @@
         END DO          !  end matrix computation loop on point sources
 
         RETURN
-        END  SUBROUTINE  UNGRIDBS1
+      END  SUBROUTINE  UNGRIDBS1
 
 
 !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -236,7 +242,7 @@
         END DO          !  end matrix computation loop on point sources
 
         RETURN
-        END  SUBROUTINE  UNGRIDBS2
+      END  SUBROUTINE  UNGRIDBS2
 
 
 !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -336,7 +342,7 @@
         END DO          !  end matrix computation loop on point sources
 
         RETURN
-        END  SUBROUTINE  UNGRIDBD1
+      END  SUBROUTINE  UNGRIDBD1
 
 
 !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -440,7 +446,36 @@
         END DO          !  end matrix computation loop on point sources
 
         RETURN
-        END  SUBROUTINE  UNGRIDBD2
+      END  SUBROUTINE  UNGRIDBD2
 
 
+!!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+
+      SUBROUTINE  UNGRIDB( NCOLS1, NROWS1, XORIG, YORIG, XCELL, YCELL,
+     &                     NPTS, XLOC, YLOC, NU, CU )
+
+        IMPLICIT NONE
+
+        !!...........   ARGUMENTS and their descriptions:
+
+        INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1    !  number of grid columns, rows
+        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	    !  X,Y coords of LL grid corner
+        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	    !  X,Y direction cell size
+        INTEGER, INTENT(IN   ) :: NPTS	            !  number of (point-source) locations
+        REAL   , INTENT(IN   ) :: XLOC( NPTS ) 	    !  X point coordinates
+        REAL   , INTENT(IN   ) :: YLOC( NPTS ) 	    !  Y point coordinates
+        INTEGER, INTENT(  OUT) :: NU( 4,NPTS )      !  single-indexed subscripts into grid
+        REAL   , INTENT(  OUT) :: CU( 4,NPTS )      !  coefficients
+
+
+        !!***********************************************************************
+        !!   begin body of subroutine  UNGRIDB
+
+        CALL UNGRIDBS1( NCOLS1, NROWS1, XORIG, YORIG, XCELL, YCELL,
+     &                  NPTS, XLOC, YLOC, NU, CU )
+        
+        RETURN
+      END  SUBROUTINE  UNGRIDB
 
