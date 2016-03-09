@@ -2,14 +2,15 @@
       SUBROUTINE UTM2LL( X, Y, Z, LON, LAT )
 
 C***********************************************************************
-C Version "$Id: utm2ll.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: utm2ll.f 330 2016-03-09 17:04:07Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
-C (C) 2003-2010 Baron Advanced Meteorological Systems
+C (C) 2003-2010 Baron Advanced Meteorological Systems, and
+C (C) 2013-2016 UNC Institute for the Environment
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine body starts at line  95
+C  subroutine body starts at line  99
 C
 C  FUNCTION:
 C     Convert UTM zone-Z coordinates X-Y to LAT-LON coords
@@ -28,9 +29,9 @@ C       Version 4/2003 by Carlie J. Coats, Jr., BAMS:  support for
 C       additional (non-GRS80) spheres, via INITSPHERES/SPHEREDAT
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
 C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO
+C       Modified 03/2016 by CJC:  rm M3UTILIO:  "gfortran" claims
+C       circular dependency ;-(
 C***********************************************************************
-
-        USE M3UTILIO
 
         IMPLICIT NONE
 
@@ -42,6 +43,10 @@ C...........   ARGUMENTS:
       INTEGER, INTENT(IN   ) :: Z       !  UTM zone
       REAL   , INTENT(  OUT) :: LON     !  East longitude in decimal degrees
       REAL   , INTENT(  OUT) :: LAT     !  North latitude in decimal degrees
+        
+C...........   External Functions
+
+        LOGICAL, EXTERNAL :: INITSPHERES, SPHEREDAT
 
 
 C.......   LOCAL VARIABLES:

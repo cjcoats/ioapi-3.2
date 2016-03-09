@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.cpl 326 2016-03-08 00:12:12Z coats $"
+# VERSION "$Id: Makefile.cpl 330 2016-03-09 17:04:07Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 # COPYRIGHT
@@ -141,8 +141,8 @@ rdbuf3.f      rdcustom.f    rdgrdded.f    readsmet.f    realist.f     \
 scanint.f     setsphere.f   sec2time.f    str2dble.f    skipl.f       \
 smatvec.f     splitline.f   str2int.f     str2real.f    strlist.f     \
 synchtao.f    time2sec.f    trimlen.f     ungridb.f     ungridi.f     \
-upcase.f      wrbndary.f    wrbuf3.f      wrcustom.f    wrgrdded.f    \
-xtbuf3.f      year4.f
+upcase.f      utm2ll.f      wrbndary.f    wrbuf3.f      wrcustom.f    \
+wrgrdded.f    xtbuf3.f      year4.f
 
 FSRC = \
 cbarnes1.F    cbarnesN.F    check3.F      crlf.F        currec.F      \
@@ -364,7 +364,6 @@ shut3.o       :  modncfio.mod modpdata.mod
 syncfid.o     :  modncfio.mod modpdata.mod
 synchtao.o    :  m3utilio.mod
 updtvir3.o    :  m3utilio.mod
-utm2ll.o      :  m3utilio.mod
 wratt3.o      :  modncfio.mod modpdata.mod
 wrbndary.o    :  modncfio.mod
 wrcustom.o    :  modncfio.mod

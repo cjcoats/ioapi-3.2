@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 329 2016-03-08 16:25:25Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 331 2016-03-09 17:13:34Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 329 2016-03-08 16:25:25Z coats $
+    $Id: NEWSTUFF.html 331 2016-03-09 17:13:34Z coats $
     </EM>
     <HR>
 
@@ -34,9 +34,9 @@
                <P>
 
          <LI>  <A HREF = "#mar082016">
-               Compatibility fixes for I/O&nbsp;API 3.2
+               Compatibility fixes for I/O&nbsp;API 3.2</A>
          <LI>  <A HREF = "#mar042016">
-               Bug fixes for I/O&nbsp;API 3.2 from Edward Anderson,
+               Bug fixes for I/O&nbsp;API 3.2</A> from Edward Anderson,
                Lockheed Martin (supporting EPA).
          <LI>  <A HREF = "#feb102016">
                CMAQ metadata routines now implemented in
@@ -555,6 +555,7 @@
         0000000000001440 T ncclos_
     </VAR></BLOCKQUOTE>
     <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -565,8 +566,9 @@
 
 <H2> <A NAME = "mar082016">
     Compatibility fixes for I/O&nbsp;API 3.2; <CODE>DOWNCASE()</CODE>
-
+</A></H2>
     
+    <BLOCKQUOTE>
     B. H. Baek (UNC IE) discovered bacvkwards-compatibility problems
     in <CODE>BILIN(), BMATVEC(),  UNGRIDB(), and UNGRIDI() </CODE>. for 
     codes that do not <CODE>USE&nbsp;M3UTILIO</CODE>.  Now fixed.
@@ -574,6 +576,7 @@
     Added routine <CODE>DOWNCASE( ASTRING )</CODE> to convert argument
     <CODE>ASTRING</CODE> to lower-case
     <P>.
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -583,11 +586,13 @@
 
 <H2> <A NAME = "mar042016">
     Bug fixes for I/O&nbsp;API 3.2 from Edward Anderson,
-    Lockheed Martin. </A></H2>
+    Lockheed Martin. 
+</A></H2>
 
+    <BLOCKQUOTE>
     <DL>
         <DT> Top-level <VAR>Makefile.template</VAR>
-        <DD> Fixes to treatment of "VAR>make</VAR>-variable
+        <DD> Fixes to treatment of <VAR>make</VAR>-variable
         <CODE>BIN</CODE>
         <P>
         <DT> <VAR>ioapi/Makefile.*</VAR>
@@ -604,6 +609,13 @@
         <P>
     </DL>
     <P>
+    <EM>Added March&nbsp;9, 2016:</EM><BR>
+    Need to add <VAR>utm2ll.f</VAR> to the <CODE>fSRC</CODE> list
+    in the <VAR>Makefile</VAR>s; need to remove  <CODE>USE M3UTILIO</CODE>
+    from it to keep <VAR>gfortran</VAR> from claiming (falsely) a
+    circular dependency.
+    <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -614,6 +626,7 @@
 <H2> <A NAME = "feb102016">
     CMAQ metadata routines now implemented in <CODE>MODULE&nbsp;MODATTS3</CODE> </A></H2>
 
+    <BLOCKQUOTE>
     The following routines are now implemented and &quot;active&quot;
     in <A HREF = "MODATTS3.html"><CODE>MODATTS3&nbsp;MODATTS3</CODE></A>:
     <DL>
@@ -648,6 +661,7 @@
         <P>
     </DL>
     <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -659,6 +673,7 @@
     New  &quot;raw netCDF&quot; routines in <CODE>MODULE&nbsp;MODNCFIO</CODE>
 </A></H2>
 
+    <BLOCKQUOTE>
     Add new routines <CODE>DESCNCVAR()</CODE> and <CODE>READNCVAR()</CODE>
     to <A HREF = "MODNCFIO.html"><CODE>MODULE MODNCFIO</CODE></A>:
     <DL>
@@ -677,6 +692,7 @@
         <P>
     </DL>
     <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -690,6 +706,7 @@
     in <A HREF="LISTS.html"><CODE>*LIST()</CODE></A> routines
 </H2>
 
+    <BLOCKQUOTE>
     Add new routine <CODE>DBLLIST()</CODE> for <CODE>REAL*8</CODE>
     valued lists, with support as part of the <CODE>ENVLIST()</CODE> 
     generic.
@@ -706,6 +723,7 @@
     set of Lat-Lon points from a GRIDDED input file, and write the
     resulting time series as columns to a human-readable ASCII REPORT-file.
     <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -718,6 +736,7 @@
     <VAR>wrfgriddesc</VAR> and <VAR>wrftom3</VAR>
 </A></H2>
 
+    <BLOCKQUOTE>
     <VAR>m3tools</VAR> program
     <A HREF = "WRFGRIDDESC.html"><VAR>wrfgriddesc</VAR></A> creates a
     <VAR>GRIDDESC</VAR> file from the header-data in a WRF-format netCDF
@@ -729,6 +748,7 @@
     converts/extracts/windows variables from WRF-format netCDF files to
     GRIDDED I/O&nbsp;API files.
     <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -741,6 +761,7 @@
                climate modeling years
 </A></H2>
 
+    <BLOCKQUOTE>
     I/O&nbsp;API 3.2 has optional support for climate modeling with a
     365-day/no-leap-year calendar with &quot;normal&quot; months, and
     weeks aligned so that Jan.&nbsp;1, 1900 is a Monday.  To build this
@@ -756,6 +777,7 @@
     <VAR>ioapi/Makefile</VAR> by adding <CODE>-DIO_360=1</CODE> to its
     <CODE>DEFINEFLAGS</CODE>.
     <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -767,35 +789,17 @@
     I/O&nbsp;API v3.2 <CODE>Makefile</CODE>s
 </A></H2>
 
-    Note that  <CODE>Makefile</CODE>s always need to be customized
+    <BLOCKQUOTE>
+    Note that  <VAR>Makefile</VAR>s always need to be customized
     for your system (installation-directory <CODE>BASEDIR</CODE>,
     etc.).<P>
-    Starting with this release, these <CODE>Makefile</CODE>s 
+    Starting with this release, these <VAR>>Makefile</VAR>>s 
     will not be included in the release <VAR>ioapi-3.2.tar.gz</VAR>;
     for both of the directories <VAR>ioapi</VAR> and <VAR>m3tools</VAR>
-    you will need to copy one of the <CODE>Makefile.* </CODE> templates
-    to  <CODE>Makefile</CODE> and customize it.
+    you will need to copy one of the <VAR>>Makefile.* </VAR>> templates
+    to  <VAR>>Makefile</VAR>> and customize it.
     <P>
-
-    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
-    <P>
-
-
-<HR> <!----------------------------------------------------------------->
-
-<H2> <A NAME = "nov062015">
-    I/O&nbsp;API v3.2 <CODE>Makefile</CODE>s
-</A></H2>
-
-    Note that  <CODE>Makefile</CODE>s always need to be customized
-    for your system (installation-directory <CODE>BASEDIR</CODE>,
-    etc.).<P>
-    Starting with this release, these <CODE>Makefile</CODE>s 
-    will not be included in the release <VAR>ioapi-3.2.tar.gz</VAR>;
-    for both of the directories <VAR>ioapi</VAR> and <VAR>m3tools</VAR>
-    you will need to copy one of the <CODE>Makefile.* </CODE> templates
-    to  <CODE>Makefile</CODE> and customize it.
-    <P>
+    </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -5822,7 +5826,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 329 2016-03-08 16:25:25Z coats $
+    $Id: NEWSTUFF.html 331 2016-03-09 17:13:34Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
