@@ -46,6 +46,7 @@ C...........   ARGUMENTS:
         
 C...........   External Functions
 
+        INTEGER, EXTERNAL :: INIT3
         LOGICAL, EXTERNAL :: INITSPHERES, SPHEREDAT
 
 
