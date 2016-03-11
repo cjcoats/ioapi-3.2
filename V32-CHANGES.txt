@@ -328,18 +328,18 @@ See
             > puts today's Gregorian date into shell-variable "gdate"
 
             set kdate = `greg2jul 20150103`
-            > converts Jan. 3, 2015 to YYYYDDD format and puts it
-            > into shell-variable "kdate"
+            > converts Jan. 3, 2015 to Julian date YYYYDDD format and
+            > puts it into shell-variable "kdate"
 
             set idate = `julshift today 7`
             > puts Julian date for this day next week into
             > shell-variable "idate"
 
             set days  = `juldiff tomorrow yesterday`; echo $days
-            > echoes -2
+            > echoes  -2
 
             timeshift 2014029.120000 183000
-            > echoes 2014030.063000
+            > echoes  2014030.063000
 
             set foo = `timeshift 2014029.120000 183000`
             > puts 2014030.063000 into shell-variable "foo"
@@ -348,14 +348,15 @@ See
 
     OTHER NEW "m3tools" PROGRAMS.  
     
-        bcwndw, camxtom3, dayagg, gridprobe, insertgrid, m3probe,
-        m3totxt, vertimeproc, vertintegral, wrfgriddesc, wrftom3
+        bcwndw, camxtom3, dayagg, findwndw, gridprobe, insertgrid,
+        m3probe, m3totxt, vertimeproc, vertintegral, wrfgriddesc,
+        wrftom3
 
     OpenMP PARALLEL "m3tools" programs:
 
-        bcwndw, dayagg, m3agmask, m3agmax, m3combo, m3cple, m3interp,
-        m3tproc, mtxcalc mtxcple, presz, vertimeproc, vertintegral,
-        vertot
+        bcwndw, dayagg, findwndw, m3agmask, m3agmax, m3combo, m3cple,
+        m3interp, m3tproc, mtxcalc mtxcple, presz, vertimeproc,
+        vertintegral, vertot
     
     These programs now  USE MODATTS3  for matrix-file attributes:
     
@@ -364,7 +365,7 @@ See
     These programs now  USE MODGCTP for geospatial transforms and
     interpolation:
     
-        gridprobe, insertgrid, latlon, m3cple, m3interp,
+        findwndw, gridprobe, insertgrid, latlon, m3cple, m3interp,
         mtxcalc, projtool
 
 ----------------------------------------------------------------------
@@ -485,9 +486,17 @@ Other Issues
 
 ACKNOWLEDGEMENT
 
-    Many thanks to George Delic, Ph.D., HiPERiSM Consulting LLC
-    <http://www.hiperism.com/> for help getting a cleanly-working
-    release out.
+    Many thanks to the following for help getting a cleanly-working
+    release out:
+
+        George Delic, Ph.D., HiPERiSM Consulting LLC
+        <http://www.hiperism.com/>
+
+        Edward Anderson, Lockheed Martin for US EPA.
+
+        B.H.Baek, UNC Institute for the Environment
+
+   
     
     
 

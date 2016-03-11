@@ -49,31 +49,33 @@ I/O API INSTALLATION
 
     Build instructions for I/O API 3.1 match those for I/O API 3.2
     except that they use ioapi-3.1.tar.gz, which is available only
-    from the CMAS web-site (but not from GitHub).
+    from the CMAS web-site but not presently from GitHub.
 
        1. Download the gzipped tar-file ioapi-3.2.tar.gz from the
           CMAS web-site. It contains directories "ioapi" for the I/O API
           library source code, and "m3tools" for the related tool
           programs.
 
-       2. cd to the directory under which you wish to build the
-          I/O API. gunzip and untar the "ioapi-3.1.tar.gz" (with
-          Gnu tar,
+       2. Choose the directory under which you wish to build the
+          I/O API. Let's call it $BASEDIR for the following.
+          cd to BASEDIR gunzip and untar the "ioapi-3.1.tar.gz"
+          (with Gnu tar,
 
               tar xvfz ioapi-3.2.tar.gz
 
           does unzip-untar all in one step).
 
        Alternative 1. & 2.:
-          cd to the directory under which you wish to build the
-          I/O API.  Issue the command
+
+          cd $BASEDIR.  Issue the command
         
             git clone https://github.com/cjcoats/ioapi-3.2
 
        3. setenv BIN <machinetype> where <machinetype> matches the
-          extension on one of the "Makeinclude.*" (writing your own
-          Makeinclude if yours is not one of the supported systems).
-          The usual pattern for generating BIN is
+          extension on one of the "make"-configuration files
+          "ioapi/Makeinclude.*" (writing your own Makeinclude if yours
+          is not one of the supported systems). The usual pattern for
+          generating BIN is
 
               setenv BIN `uname -s``uname -r | cut -d. -f1` 
 
@@ -84,20 +86,25 @@ I/O API INSTALLATION
           "ifort" and "icc" compilers).  For 32-bit Linux, BIN will be
           of the form "Linux2_x86*" (e.g., "Linux2_x86ifort"...).
 
-       4. There are a number of "Makefile"s:  "Makefile.cpl" for
+       4. mkdir $BASEDIR/$BIN.  This will be the build-and-install
+          directory that will hold object-files, libraries, and
+          "m3tools" executable programs.
+
+       5. There are a number of "Makefile"s:  "Makefile.cpl" for
           PVM Coupling Mode, "Makefile.nocpl" for no-PVM,
           "Makefile.pncf" for PnetCDF/MPI distributed I/O Mode, etc. 
-          Copy the appropriate one of "Makefile.*" to "Makefile". Note
-          that PnetCDF/MPI distributed I/O Mode requires BIN matching
-          one of the "mpi" Makeinclude-files.
+          Copy the appropriate one of the "Makefile.*" to "Makefile".
+          Note that PnetCDF/MPI distributed I/O Mode requires BIN
+          matching one of the "mpi" Makeinclude-files.
 
-       5. Customize "Makefile" for your system:
+       6. Customize "Makefile" for your system:
           The default directory for both executables and object
           libraries is in directory "../$BIN" relative to the source
           code directories for the I/O API and tools. Edit the
-          "Makefile" to put "SRCDIR" "OBJDIR" wherever you want it (if
-          you want somewhere other than the default "./$BIN" location). 
-          Look at the "Makefile" header-comment for further customization options.
+          "Makefile" to put "BASEDIR", "SRCDIR", and "OBJDIR" wherever
+          you want it (if you want somewhere other than the default
+          "./$BIN" location).  Look at the "Makefile" header-comment
+          for further customization options.
 
           NOTE 1:  Different compilers generate linker-visible object
           names in different ways (some with multiple options...).
@@ -108,30 +115,33 @@ I/O API INSTALLATION
           "Makeinclude.$BIN" files.
 
           NOTE 2:  By default on most systems, OpenMP parallelism is
-          enabled; see the OMPFLAGS variable in "Makeinclude.$BIN". The
-          I/O API does not have parallel sections of its own; however,
-          enabling OpenMP does allow the activation of critical sections
+          enabled; see the OMPFLAGS variable in "Makeinclude.$BIN". 
+          Enabling OpenMP does allow the activation of critical sections
           making the I/O&nbsp;API  thread-safe for OpenMP-parallel
           programs (like the MAQSIP-RT air quality model, the WRF or
           MCPL-enabled MM5 meteorology models, research versions of
-          SMOKE, and others.
+          SMOKE, and others.  It also enables OpenMP parallelism in
+          a few (mostly coordinate-transform or interpolation related)
+          I/O API routines.
 
-       6. In the I/O API library source directory "ioapi", type "make"
+       7. In the I/O API library source directory "ioapi", type "make"
           to build the object library. The current build process will
           generate "$OBJDIR/libioapi.a".  For the non-Standard-compliant
           "fixed-132" INCLUDE-files required by CMAQ and some versions
           of SMOKE, type "make fixed_src"
 
-       7. If necessary, get netCDF (for netCDF-4, get both
+       8. If necessary, get netCDF (for netCDF-4, get both
           netCDF-Fortran and netCDF-C) and build "libnetcdf.a" (and
-         "libnetcdff.a" for netCDF-4); if you're building with Coupling
-         Mode active, do the same for PVM.
-       
-       8. Copy or link ("ln -s ...")  the "libnetcdf.a" (and  "libnetcdf.a"
-          and "libpvm3.a" if you built them) to your OBJDIR.
+          "libnetcdff.a" for netCDF-4); if you're building with Coupling
+          Mode active, do the same for PVM, or if you're building with
+          Distributed I/O active, do the same for PnetCDF.  Use the same
+          compiler-set you used for the I/O API (and for your models). 
+          Copy or link ("ln -s ...")  the "libnetcdf.a" (and 
+          "libnetcdff.a", libpnetcdf.a, and "libpvm3.a" if you built
+          them) to your $BASEDIR/$BIN.
 
-       9. In the I/O API tool source directory m3tools, create a
-          customized "Makefile" as in (5) above, and type "make".
+       9. In the I/O API tool source directory "m3tools", create a
+          customized "Makefile" as in (6) above, and type "make".
 
     
 

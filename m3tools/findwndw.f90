@@ -2,7 +2,7 @@
 PROGRAM FINDWNDW
 
     !!***************************************************************
-    !!  Version "$Id: findwndw.f90 336 2016-03-11 20:14:47Z coats $"
+    !!  Version "$Id: findwndw.f90 337 2016-03-11 20:49:17Z coats $"
     !!  Copyright (c) 2016 UNC Institute for the Environment
     !!  All rights reserved.
     !!..............................................................
@@ -93,7 +93,7 @@ PROGRAM FINDWNDW
 'Program FINDWNDW to read headers from two files FILE1 and FILE2, and',         &
 'compute the smallest window into FILE2 that covers FILE1, if any.'             &
 'Program reports failure if FILE2-grid does not completely cover',              &
-'teh FILE1-grid.',                                                              &
+'the FILE1-grid.',                                                              &
 '',                                                                             &
 'Log-output includes column and row ranges for the FILE2-window,',              &
 'XORIG and YORIG for the FILE2-window, and a GRIDDESC-line for it.',            &
@@ -118,7 +118,7 @@ PROGRAM FINDWNDW
 '    Albers Conic Equal Area',                                                  &
 '',                                                                             &
 'Program version:',                                                             &
-'$Id: findwndw.f90 336 2016-03-11 20:14:47Z coats $',&
+'$Id: findwndw.f90 337 2016-03-11 20:49:17Z coats $',&
 '',                                                                             &
 'Copyright (C) 2015 UNC Institute for the Environment',                         &
 'All rights reserved.',                                                         &
