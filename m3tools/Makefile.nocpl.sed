@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl.sed 270 2015-11-28 16:53:06Z coats $"
+# Version "$Id: Makefile.nocpl.sed 333 2016-03-11 19:00:45Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -82,7 +82,7 @@ jul2greg.f90    juldate.f90     juldiff.f90     julshift.f90    latlon.f90      
 m3fake.f90      m3pair.f90      m3probe.f90     m3totxt.f90     m3tproc.f900    \
 m3tshift.f90    m3wndw.f90      mtxcalc.f90     pairstep.f90    presz.f90       \
 timeshift.f90   vertot.f90      vertimeproc.f90 vertintegral.f90                \
-wrfgriddesc.f90 wrftom3.f90
+wrfgriddesc.f90 wrftom3.f90     findwndw.f90
 
 OBJ = $(fSRC:.f=.o) $(FSRC:.F=.o) $(f90SRC:.f=.o)
 
@@ -210,6 +210,9 @@ dayagg: dayagg.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 factor:  factor.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+findwndw:  findwndw.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 greg2jul: greg2jul.o
