@@ -2,7 +2,7 @@
 PROGRAM FINDWNDW
 
     !!***************************************************************
-    !!  Version "$Id: findwndw.f90 335 2016-03-11 19:03:20Z coats $"
+    !!  Version "$Id: findwndw.f90 336 2016-03-11 20:14:47Z coats $"
     !!  Copyright (c) 2016 UNC Institute for the Environment
     !!  All rights reserved.
     !!..............................................................
@@ -118,7 +118,7 @@ PROGRAM FINDWNDW
 '    Albers Conic Equal Area',                                                  &
 '',                                                                             &
 'Program version:',                                                             &
-'$Id: findwndw.f90 335 2016-03-11 19:03:20Z coats $',&
+'$Id: findwndw.f90 336 2016-03-11 20:14:47Z coats $',&
 '',                                                                             &
 'Copyright (C) 2015 UNC Institute for the Environment',                         &
 'All rights reserved.',                                                         &
@@ -153,8 +153,8 @@ PROGRAM FINDWNDW
         P_GAM1 = P_GAM3D
         XCENT1 = XCENT3D
         YCENT1 = YCENT3D
-        XORIG1 = XORIG3D
-        YORIG1 = YORIG3D
+        XORIG1 = XORIG3D - 0.5D0 * XCELL3D
+        YORIG1 = YORIG3D - 0.5D0 * YCELL3D
         XCELL1 = XCELL3D
         YCELL1 = YCELL3D
     END IF                          !  if  open3( FILE1 )
