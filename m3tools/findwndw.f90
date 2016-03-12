@@ -2,7 +2,7 @@
 PROGRAM FINDWNDW
 
     !!***************************************************************
-    !!  Version "$Id: findwndw.f90 337 2016-03-11 20:49:17Z coats $"
+    !!  Version "$Id: findwndw.f90 339 2016-03-12 19:12:49Z coats $"
     !!  Copyright (c) 2016 UNC Institute for the Environment
     !!  All rights reserved.
     !!..............................................................
@@ -35,7 +35,8 @@ PROGRAM FINDWNDW
 
     !!......  LOCAL VARIABLES and their descriptions:
 
-    LOGICAL         EFLAG
+    LOGICAL :: EFLAG   = .FALSE.
+    LOGICAL :: WMOFLAG = .FALSE.
 
     INTEGER         LDEV, ISTAT
     INTEGER         C, R
@@ -91,7 +92,7 @@ PROGRAM FINDWNDW
 
     WRITE( LDEV, '( 5X, A )' )  BLANK, BAR,                                     &
 'Program FINDWNDW to read headers from two files FILE1 and FILE2, and',         &
-'compute the smallest window into FILE2 that covers FILE1, if any.'             &
+'compute the smallest window into FILE2 that covers FILE1, if any.',            &
 'Program reports failure if FILE2-grid does not completely cover',              &
 'the FILE1-grid.',                                                              &
 '',                                                                             &
@@ -118,9 +119,9 @@ PROGRAM FINDWNDW
 '    Albers Conic Equal Area',                                                  &
 '',                                                                             &
 'Program version:',                                                             &
-'$Id: findwndw.f90 337 2016-03-11 20:49:17Z coats $',&
+'$Id: findwndw.f90 339 2016-03-12 19:12:49Z coats $',&
 '',                                                                             &
-'Copyright (C) 2015 UNC Institute for the Environment',                         &
+'Copyright (C) 2016 UNC Institute for the Environment',                         &
 'All rights reserved.',                                                         &
 ''
 
@@ -186,6 +187,8 @@ PROGRAM FINDWNDW
         YCELL2 = YCELL3D
         XFINL2 = XORIG3D + DBLE( NCOLS2 )*XCELL2
         YFINL2 = YORIG3D + DBLE( NROWS2 )*YCELL2
+        
+        WMOFLAG = ( ( GDTYP2 .EQ. LATGRD3 ) .AND. ( XFINL2 .GT. 180.0D0 ) )
 
         !!........  Force positive grid orientation
 
@@ -233,8 +236,12 @@ PROGRAM FINDWNDW
     XMIN1 = XLOC1(1,1)
     YMAX1 = YLOC1(1,1)
     YMIN1 = YLOC1(1,1)
+    
+    IF ( WMOFLAG ) THEN
+    
+        CALL M3MESG( 'FILE2 seems to violate ISO Standard 6709 for "Lat-Lon"' )
 
-!$OMP       PARALLEL DO                                         &
+!$OMP   PARALLEL DO                                             &
 !$OMP&          DEFAULT( NONE ),                                &
 !$OMP&           SHARED( NCOLS1, NROWS1, NCOLS2, NROWS2,        &
 !$OMP&                   XORIG2, YORIG2, XFINL2, YFINL2 ),      &
@@ -243,35 +250,78 @@ PROGRAM FINDWNDW
 !$OMP&        REDUCTION( MIN:   XMIN1, YMIN1 ),                 &
 !$OMP&        REDUCTION( .OR.:  EFLAG )
 
-    DO R = 1, NROWS1
-    DO C = 1, NCOLS1
+        DO R = 1, NROWS1
+        DO C = 1, NCOLS1
 
-        Z = XLOC1( C,R )
+            Z = MOD( XLOC1( C,R ) + 360.0D0 , 360.0D0 )
 
-        IF ( Z .LT. XORIG2 ) THEN
-            EFLAG = .TRUE.
-        ELSE IF ( Z .GT. XFINL2 ) THEN
-            EFLAG = .TRUE.
-        ELSE IF ( Z .GT. XMAX1 ) THEN
-            XMAX1 = Z
-        ELSE IF ( Z .LT. XMIN1 ) THEN
-            XMIN1 = Z
-        END IF
+            IF ( Z .LT. XORIG2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. XFINL2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. XMAX1 ) THEN
+                XMAX1 = Z
+            ELSE IF ( Z .LT. XMIN1 ) THEN
+                XMIN1 = Z
+            END IF
 
-        Z = YLOC1( C,R )
+            Z = YLOC1( C,R )
 
-        IF ( Z .LT. YORIG2 ) THEN
-            EFLAG = .TRUE.
-        ELSE IF ( Z .GT. YFINL2 ) THEN
-            EFLAG = .TRUE.
-        ELSE IF ( Z .GT. YMAX1 ) THEN
-            YMAX1 = Z
-        ELSE IF ( Z .LT. YMIN1 ) THEN
-            YMIN1 = Z
-        END IF
+            IF ( Z .LT. YORIG2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. YFINL2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. YMAX1 ) THEN
+                YMAX1 = Z
+            ELSE IF ( Z .LT. YMIN1 ) THEN
+                YMIN1 = Z
+            END IF
 
-    END DO
-    END DO
+        END DO
+        END DO
+
+    ELSE
+
+!$OMP   PARALLEL DO                                             &
+!$OMP&          DEFAULT( NONE ),                                &
+!$OMP&           SHARED( NCOLS1, NROWS1, NCOLS2, NROWS2,        &
+!$OMP&                   XORIG2, YORIG2, XFINL2, YFINL2 ),      &
+!$OMP&          PRIVATE( C, R, Z )                              &
+!$OMP&        REDUCTION( MAX:   XMAX1, YMAX1 ),                 &
+!$OMP&        REDUCTION( MIN:   XMIN1, YMIN1 ),                 &
+!$OMP&        REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NROWS1
+        DO C = 1, NCOLS1
+
+            Z = XLOC1( C,R )
+
+            IF ( Z .LT. XORIG2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. XFINL2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. XMAX1 ) THEN
+                XMAX1 = Z
+            ELSE IF ( Z .LT. XMIN1 ) THEN
+                XMIN1 = Z
+            END IF
+
+            Z = YLOC1( C,R )
+
+            IF ( Z .LT. YORIG2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. YFINL2 ) THEN
+                EFLAG = .TRUE.
+            ELSE IF ( Z .GT. YMAX1 ) THEN
+                YMAX1 = Z
+            ELSE IF ( Z .LT. YMIN1 ) THEN
+                YMIN1 = Z
+            END IF
+
+        END DO
+        END DO
+
+    END IF      !!  if wmoflag, or not
 
     IF ( EFLAG ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Grid-coverage error(s)', 2 )
