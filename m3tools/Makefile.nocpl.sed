@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl.sed 333 2016-03-11 19:00:45Z coats $"
+# Version "$Id: Makefile.nocpl.sed 340 2016-03-13 16:12:45Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -96,7 +96,7 @@ m3merge         m3pair          m3probe         m3stat          m3totxt         
 m3tproc         m3tshift        m3wndw          m3xtract        mtxblend        \
 mtxbuild        mtxcalc         mtxcple         presterp        presz           \
 projtool        selmrg2d        timeshift       vertot          vertimeproc     \
-vertintegral    wrfgriddesc     wrftom3
+vertintegral    wrfgriddesc     wrftom3         findwndw
 
 
 #      ----------------------   TOP-LEVEL TARGETS:   ------------------

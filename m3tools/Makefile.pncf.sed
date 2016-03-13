@@ -101,7 +101,7 @@ m3merge         m3pair          m3probe         m3stat          m3totxt         
 m3tproc         m3tshift        m3wndw          m3xtract        mtxblend        \
 mtxbuild        mtxcalc         mtxcple         presterp        presz           \
 projtool        selmrg2d        timeshift       vertot          vertimeproc     \
-vertintegral    wrfgriddesc     wrftom3
+vertintegral    wrfgriddesc     wrftom3         findwndw
 
 
 

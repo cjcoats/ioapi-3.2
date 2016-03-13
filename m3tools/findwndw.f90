@@ -2,7 +2,7 @@
 PROGRAM FINDWNDW
 
     !!***************************************************************
-    !!  Version "$Id: findwndw.f90 339 2016-03-12 19:12:49Z coats $"
+    !!  Version "$Id: findwndw.f90 340 2016-03-13 16:12:45Z coats $"
     !!  Copyright (c) 2016 UNC Institute for the Environment
     !!  All rights reserved.
     !!..............................................................
@@ -119,7 +119,7 @@ PROGRAM FINDWNDW
 '    Albers Conic Equal Area',                                                  &
 '',                                                                             &
 'Program version:',                                                             &
-'$Id: findwndw.f90 339 2016-03-12 19:12:49Z coats $',&
+'$Id: findwndw.f90 340 2016-03-13 16:12:45Z coats $',&
 '',                                                                             &
 'Copyright (C) 2016 UNC Institute for the Environment',                         &
 'All rights reserved.',                                                         &
@@ -322,6 +322,12 @@ PROGRAM FINDWNDW
         END DO
 
     END IF      !!  if wmoflag, or not
+
+    CALL M3MESG( BAR )
+    WRITE( MESG, '( 2( A, 1PD24.16 ) )' ) 'Window XMIN:XMAX:', XMIN1, ':', XMAX1
+    CALL M3MESG( MESG )
+    WRITE( MESG, '( 2( A, 1PD24.16 ) )' ) 'Window YMIN:YMAX:', YMIN1, ':', YMAX1
+    CALL M3MESG( MESG )
 
     IF ( EFLAG ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Grid-coverage error(s)', 2 )
