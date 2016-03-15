@@ -44,6 +44,7 @@ BASEDIR = ${HOME}/ioapi-3.2
 SRCDIR  = ${BASEDIR}/m3tools
 IODIR   = ${BASEDIR}/ioapi
 OBJDIR  = ${BASEDIR}/${BIN}
+INSTDIR = ${INSTALL}/${BIN}
 
 # Architecture dependent stuff
 # Assumes FC is an f90

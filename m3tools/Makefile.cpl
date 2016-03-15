@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.cpl 340 2016-03-13 16:12:45Z coats $"
+# Version "$Id: Makefile.cpl 341 2016-03-15 19:04:25Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -39,6 +39,7 @@ BASEDIR = ${HOME}/web31
 SRCDIR  = ${BASEDIR}/m3tools
 IODIR   = ${BASEDIR}/ioapi
 OBJDIR  = ${BASEDIR}/${BIN}
+INSTDIR = ${INSTALL}/${BIN}
 
 # Architecture dependent stuff
 # Assumes FC is an f90

@@ -1131,7 +1131,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
 
         IERR = NF_PUT_ATT_TEXT( FNUM, VINDX3( VAR,FID ), 'var_desc', MXDLEN3, VDESC3D( VAR ) )
         IF ( IERR .NE. 0 ) THEN
-            DSCBUF = 'Error creating  attribute UNITS for variable ' // VNAME3D( VAR )
+            DSCBUF = 'Error creating  attribute VAR_DESC for variable ' // VNAME3D( VAR )
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, DSCBUF )
             EFLAG = .TRUE.
             GO TO 999
@@ -1219,10 +1219,9 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
 
     IF ( CMAQMETA ) THEN
         IF ( .NOT.SETCMAQ( FID ) ) THEN
-!!                CALL M3ABORT( FLIST3( FID ), FNUM, IERR,          !!  cmaqmeta not yet implemented
-!!     &          'Error with CF metadata' )
-!!                EFLAG = .TRUE.
-!!                GO TO 999
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error with CF metadata' )
+            EFLAG = .TRUE.
+            GO TO 999
         END IF
     END IF
 
