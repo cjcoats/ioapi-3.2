@@ -20,7 +20,7 @@ FC   = gfortran
 M4   = m4
 LINK = $(CC)
 
-MODI = -J       ## Module-include-directory command
+MODI = -I       ## Module-include-directory command
 
 MFLAGS    = -ffast-math -funroll-loops # -m64 -Wall -Wsurprising -march=native -mtune=native
 

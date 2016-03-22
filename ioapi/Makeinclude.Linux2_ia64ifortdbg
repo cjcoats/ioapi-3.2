@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_ia64ifortdbg 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_ia64ifortdbg 342 2016-03-22 18:42:22Z coats $"
 
 AR   = ar
 CC   = icc
@@ -7,7 +7,7 @@ M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = -J       ## Module-include-directory command
+MODI = -I       ## Module-include-directory command
 
 MFLAGS    = -tpp2 -traceback
 

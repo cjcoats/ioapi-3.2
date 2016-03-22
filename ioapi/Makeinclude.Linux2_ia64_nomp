@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_ia64_nomp 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_ia64_nomp 342 2016-03-22 18:42:22Z coats $"
 #
 #
 #       Linux for IA64 using the Intel compiler suite, OpenMP disabled
@@ -10,7 +10,7 @@ M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = -J       ## Module-include-directory command
+MODI = -I       ## Module-include-directory command
 
 MFLAGS    = -tpp2 -traceback
 

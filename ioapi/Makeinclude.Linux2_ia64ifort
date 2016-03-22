@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_ia64ifort 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_ia64ifort 342 2016-03-22 18:42:22Z coats $"
 #
 #  Michael Bane (UManchester UK) reports that for ifort version 9,
 #  -stack_temps -safe_cray_ptr are not supported and that there are
@@ -11,7 +11,7 @@ FC   = ifort -auto -cm -w90 -w95 -warn notruncated_source
 M4   = m4
 LINK = $(CC)
 
-MODI = -J       ## Module-include-directory command
+MODI = -I       ## Module-include-directory command
 
 MFLAGS    = -mtune=core2 -traceback
 

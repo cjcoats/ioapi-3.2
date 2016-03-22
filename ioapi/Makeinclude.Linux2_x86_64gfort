@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfort 100 2015-01-16 16:52:16Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfort 342 2016-03-22 18:42:22Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -17,7 +17,7 @@ FC   = gfortran
 M4   = m4
 LINK = $(CC)
 
-MODI = -J       ## Module-include-directory command
+MODI = -I       ## Module-include-directory command
 
 MFLAGS    = -ffast-math -funroll-loops -m64  #  -Wall -Wsurprising -march=native -mtune=native
 
