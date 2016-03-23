@@ -38,13 +38,13 @@ Announcing RELEASE CANDIDATE 1 for I/O API VERSION 3.2
     source level.  New versions typically are driven by a combination
     of needed new modeling capabilities and by changes in external
     software such as netCDF:
-    
+
         2.2 -> 3.0:  netCDF v2:v3 changes; support for "free" F-90
         source format; introduction of F-90 INTERFACEs.
-        
+
         3.0 -> 3.1:  change MXVARS3 from 120 to 2048; more F-90
         INTERFACEs and "generic" routines.
-        
+
         3.1 -> 3.2:  netCDF v3:v4 changes; more F-90 changes;
         "raw netCDF" routines for SMOKE-4; "standard" CMAQ metadata;
         PnetCDF distributed I/O; new MODULEs and their associated
@@ -61,14 +61,14 @@ AVAILABILITY:  now on Github
     Release Candidate 1 of I/O API Version 3.2 is now available
     both as a gzipped "tar-ball" from the CMAS web-site, and also
     via "git" from GitHub.
-    
-    From the CMAS web-site, you can download the tar-ball from 
-    
+
+    From the CMAS web-site, you can download the tar-ball from
+
         <https://www.cmascenter.org/ioapi/download/ioapi-3.2.tar.gz>
-    
-    On GitHub, the web-site is <https://github.com/cjcoats/ioapi-3.2> 
+
+    On GitHub, the web-site is <https://github.com/cjcoats/ioapi-3.2>
     and you can install the source code using the command
-    
+
         git clone https://github.com/cjcoats/ioapi-3.2
 
     See
@@ -85,25 +85,25 @@ NetCDF-4 Issues
 
     Fortran interfaces in terms of which the I/O&nbsp;API was originally
     implemented, in favor of the
-    
+
         IERR = NF_*()
-    
+
     forms introduced with netCDF-3.  [If you can find any
     documentation  on the web indicating that they were making
-    this change I would enjoy seeing it; I can't find any.]  
+    this change I would enjoy seeing it; I can't find any.]
 
     I/O API Version 3.2 was tediously re-coded to replace all 943
     of these calls by the newer  IERR=NF_*()  Fortran calls that
     are still supported.  Prior editions of the I/O API will have
     link errors with netCDF-Fortran 4.4.2 or later, because routines
     such as  NCCLOS()  are no longer in that library.
-    
-    Note that netCDF-4 now requires separate netCDF-C (which is 
+
+    Note that netCDF-4 now requires separate netCDF-C (which is
     now just called "netCDF"), which has library "libnetcdf.a"
     and also netCDF-Fortran, which  has library "libnetcdff.a".
     With netCDF-4 , your "link" command will need the following
     flags to find both of these libraries:
-    
+
         -lnetcdff -lnetcdf
 
     Note also that netCDF Versions 4.x have lots of additional build
@@ -123,7 +123,7 @@ See
 <https://www.cmascenter.org/ioapi/documentation/3.1/html/M3UTILIO.html>
 
     New Routines and INTERFACEs
-    
+
         DBLLIST()
         GETNUM1(), GETREAL1() GETDBLE1():  variants on GETNUM() etc.
             with no range-checking
@@ -131,7 +131,7 @@ See
             routine
 
     F90 Generic Routines and INTERFACEs
-    
+
         ENVLIST:  generic "get a comma-list from environment" routine
         ENVGET:   generic "get a value from environment" routine
         FINDKEY:  generic "find key-tuple in sorted index"
@@ -145,7 +145,7 @@ See
 
 PNCF/MPI Distributed I/O option
 
-See   
+See
 <https://www.cmascenter.org/ioapi/documentation/3.1/html/BUFFERED.html#pncf>
 
     The I/O API can now be configured to use PnetCDF (from Argonne
@@ -153,9 +153,9 @@ See
     basis.  Distributed I/O is only supported for gridded files on the
     cross-point grid; to turn it on, prefix the path-name by a "MPI:"
     prefix, as in the example below:
-    
+
         setenv  CHEMCONC3D  MPI:/mydir/cmaq.conc.US15_CRO.2015233.ncf
-    
+
     Enabling this option is a build-time option, turned on by using
     "ioapi/Makefile.pncf" in conjunction with an "mpif90" enabled
     binary type ${BIN}; due to vagaries in the installation of various
@@ -168,14 +168,14 @@ See
         ioapi/Makeinclude.Linux2_x86_64sunmpi
 
     or by adding  -DIOAPI_PNCF=1  to the  DEFINEFLAGS  "make"-variable
-    of your "ioapi/Makefile". 
+    of your "ioapi/Makefile".
 
     Related data- and processor-distribution state and
     routines are found in new  MODULE MODPDATA.
     See
     <https://www.cmascenter.org/ioapi/documentation/3.1/html/BUFFERED.html#pncf>
-    for environment variables needed for using distributed-parallel I/O   
-   
+    for environment variables needed for using distributed-parallel I/O
+
     The original concept and the prototype code are due to Dr. David
     Wong, US EPA.  The data structures and algorithms in new MODULE
     MODPDATA are his; the rest of the code has been extensively extended
@@ -197,19 +197,25 @@ See
 
         Matrix-attribute routines add extra file attributes
         to describe input and output grids for matrix-files
-        
+
         CF-convention geospatial-metadata routines optionally make
         newly-created files CF compliant. This is turned on by
         "setenv IOAPI_CFMETA YES".  (CF metadata is used by the global
         climate community as well as by a number of third-party
         applications; see
-        
+
             <http://cfconventions.org/>
 
         CMAQ-metadata routines add the current version of "Standard
         CMAQ metadata" to the headers of newly created files.  This
-        is turned on by "setenv IOAPI_CMAQMETA YES"
-        
+        is turned on by "setenv IOAPI_CMAQMETA [ENV | <path>]"
+        or by calling INITCMAQ()
+
+        Unstructured-text metadata routines add multiple lines of
+        80-column text  from either INITMDATA()-arguments or from a text
+        file to the headers of newly created files.  This is turned on
+        by "setenv IOAPI_TEXTMETA  <path>" or by calling INITMTEXT()
+
         SMOKE-metadata routines are not currently implemented
         (pending a definition of "Standard SMOKE Metadata");
         eventually, they should function similarly.
@@ -220,7 +226,7 @@ NEW Module MODGCTP
 
 See
 <https://www.cmascenter.org/ioapi/documentation/3.1/html/MODGCTP.html>
-    
+
     This module contains:
 
       * PARAMETERs for GCTP spheroid names and indices
@@ -257,13 +263,13 @@ See
     distributed-I/O draft code. The new module puts all the definitions
     in a consistent form in one place (with conditional compilation, to
     determine whether or not PnetCDF is active).
-    
+
     This module also supplies new routines for use with a specified
     (non-timestepped) "raw netCDF" file.
-    
+
       * DESCNCVAR() returns the list of variables and their types
-        and dimensions for a specified file, and 
-    
+        and dimensions for a specified file, and
+
       * READNCVAR() reads a specified 1-D, 2-D, or 3-D variable
         from a specified file.
 
@@ -279,21 +285,21 @@ See
 <https://www.cmascenter.org/ioapi/documentation/3.1/html/MODWRFIO.html>
 
     This module supplies new routines for reading "WRF netCDF" files
-    (writing is yet to be implemented). 
+    (writing is yet to be implemented).
     Presently, only single-file operation is supported:  for multiple
     files, you must CLOSEWRF() any currently-open WRF file before
     opening and reading or writing another:
-    
+
       * OPENWRF() opens the WRF-netCDF format file with specified
         logical name for read or read/write.
-    
+
       * CRTWRF() not yet implemented (stub only)
-    
+
       * READWRF() reads the specified timestep of the specified
-        1-D, 2-D, or 3-D variable from the current WRF-netCDF file. 
-    
+        1-D, 2-D, or 3-D variable from the current WRF-netCDF file.
+
       * WRITEWRF() not yet implemented (stub only)
-    
+
       * CLOSEWRF() closes the current WRF-netCDF file.
 
 ----------------------------------------------------------------------
@@ -308,20 +314,20 @@ See
     well in shell-scripts.  They are carefully coded to be safe from
     integer-overflow, and support "yesterday", "today", and "tomorrow"
     as command-line arguments:
-    
+
         > datshift YYYYMMDD NDAYS  -- update Greg-date YYYYMMDD by NDAYS
         > greg2jul YYYYMMDD        -- writes Julian date YYYYDDD
         > jul2greg YYYYDDD         -- writes Greg-date YYYYMMDD
         > juldiff  YYYYDDD ZZZZEEE -- number of days from Julian date
                                       YYYYDDD to Julian date ZZZZEEE
         > julshift  YYYYDDD NDAYS  -- update Julian date YYYYDDD by NDAYS
-        > timeshift YYYYDDD.HHMMSS IIMMSS -- update date&time 
+        > timeshift YYYYDDD.HHMMSS IIMMSS -- update date&time
                                       YYYYDDD:HHMMSS by time step
                                       IIMMSS
         For example, look at the following, where note the back-quotes
         (the "evaluate this" operator) in "set"-statements, and note
         the ":e" and ":r" filename-extension and filename-root operators
-        (these split off the "after the last period" and "before the 
+        (these split off the "after the last period" and "before the
         last period" parts of names):
 
             set gdate = `greg2jul today`
@@ -346,8 +352,8 @@ See
             echo $foo:r         # echoes 2014030
             echo $foo:e         # echoes 063000
 
-    OTHER NEW "m3tools" PROGRAMS.  
-    
+    OTHER NEW "m3tools" PROGRAMS.
+
         bcwndw, camxtom3, dayagg, findwndw, gridprobe, insertgrid,
         m3probe, m3totxt, vertimeproc, vertintegral, wrfgriddesc,
         wrftom3
@@ -357,14 +363,14 @@ See
         bcwndw, dayagg, findwndw, m3agmask, m3agmax, m3combo, m3cple,
         m3interp, m3tproc, mtxcalc mtxcple, presz, vertimeproc,
         vertintegral, vertot
-    
+
     These programs now  USE MODATTS3  for matrix-file attributes:
-    
+
         mtxbuild, mtxcalc, mtxcple
-    
+
     These programs now  USE MODGCTP for geospatial transforms and
     interpolation:
-    
+
         findwndw, gridprobe, insertgrid, latlon, m3cple, m3interp,
         mtxcalc, projtool
 
@@ -374,14 +380,14 @@ Hacks for "gfortran"
 
     Recent versions of "gfortran" insist on breaking compatibility with
     all other compilers we use (and with earlier versions of
-    "gfortran"), not accepting command-line-argument routines  IARGC() 
+    "gfortran"), not accepting command-line-argument routines  IARGC()
     and GETARG()  (which are an industry standard Fortran extension),
-    and accepting only Fortran-2003 routines GET_COMMAND_ARGUMENT()  
+    and accepting only Fortran-2003 routines GET_COMMAND_ARGUMENT()
     and  COMMAND_ARGUMENT_COUNT() . IARGC()  and  GETARG()  are now
     conditionally implemented internally in  "init3.F", depending upon
     preprocessor-definition  -DNEED_ARGS=1  which is now set in
     Makeinclude.Linux2_x86, Makeinclude.Linux2_x86gfort,
-    Makeinclude.Linux2_x86_64, and Makeinclude.Linux2_x86_64gfort. 
+    Makeinclude.Linux2_x86_64, and Makeinclude.Linux2_x86_64gfort.
 
     Depending upon "gfortran" version (which will be dependent upon your
     Linux distribution and its version), you either need to have it, or
@@ -396,10 +402,10 @@ CygWn support under MS-Windows
     The following "Makeinclude" files are now available,
     to build the I/O API using "gcc" and "gfortran" under
     CygWin (see <https://cygwin.com/index.html>):
-    
+
         Makeinclude.WIN_x86gfort:  32-bit library/executables using
         Cygwin "gcc" and "gfortran"
-        
+
         Makeinclude.WIN_x86_64mingw64:  4-bit library/executables using
         MingW-64  "gcc" and "gfortran"
 
@@ -414,7 +420,7 @@ Other Issues
     internally.  Note that your operating system may well barf over
     this kind of thing--the POSIX standard only mandates up to 512
     bytes ;-(
-    
+
     Many source files have been converted to Fortran-90 "free"
     source format.
 
@@ -422,7 +428,7 @@ Other Issues
     they must be customized anyway (you need to copy the appropriate
     "Makefile.*" to "Makefile" and then customize it for your
     installation-directory, etc.). Now, an I/O API update won't wipe
-    out the customization-work you have done. 
+    out the customization-work you have done.
 
     INTEGER Overflow Issues:
 
@@ -432,7 +438,7 @@ Other Issues
         carefully coded so as to avoid such overflow, and can be used
         for time periods as long as several thousand years.
 
-        Programs that use starting date and time and run-duration 
+        Programs that use starting date and time and run-duration
         (formatted YYYDDD, HHMMSS, and HMMSS) as run-control parameters
         will necessarily have the matching overflow problems; it is
         recommended that starting and ending dates and times be used
@@ -440,12 +446,12 @@ Other Issues
         is aided/supported by SUBROUTINE LASTTIME().
 
     CLIMATOLOGY-Year Support:
-    
+
         Support for 365-day  (no leap-year) climate modeling years
         is now available, in addition to the 360-day climatology year
         version available since May 2002.  Note that these are
         SPECIALIZED BUILDS and do not mix with "vanilla" I/O API builds.
-        
+
         To build these versions of the library, customize your
         "ioapi/Makefile" by adding  -DIO_365=1  or  -DIO_360=1
         to its DEFINEFLAGS "make"-variable.
@@ -453,18 +459,18 @@ Other Issues
     Fixup in GCTP package:  introduced scratch variables into
     "ioapi/gctp.f" so that a correct INTERFACE block can be placed
     into MODULE M3UTILIO.
-    
+
     Standards-violations fixes for getyn(), getstr(), getreal(),
     getnum(), getmenu(), getdble(), promptmfile(), promptffile(),
     year4(), skipl(), where the author who modified these routines
     to avoid prompting the user had violated coding standards.
     The relevant Models-3 coding standards state:
-    
+
         YOU WILL CHECK STATUS of systems-calls and other calls that
         may fail (e.g., ALLOCATE, get-environment, netCDF and MPI
         calls) and handle the error appropriately (whether quit or
         return success/failure status); and
-        
+
         YOU WILL WRITE MEANINGFUL LOG MESSAGES adequate to locate and
         diagnose the error for the above, in cases of failures.
 
@@ -473,7 +479,7 @@ Other Issues
 
     64-bit INTEGER(8)-key search and sort routines.  New SORTINC()
     routines look only at the first  M  characters of the sort-key.
-    
+
     Subroutine LASTTIME() returns the ending date&time for
     time step sequence  SDATE:STIME:TSTEP:NSTEPS  and is safe for
     very long time step sequences (even multi-century!).
@@ -496,7 +502,7 @@ ACKNOWLEDGEMENT
 
         B.H.Baek, UNC Institute for the Environment
 
-   
-    
-    
+
+
+
 

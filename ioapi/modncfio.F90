@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 310 2016-02-10 19:20:15Z coats $"
+    !!  Version "$Id: modncfio.F90 344 2016-03-23 22:34:18Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -399,13 +399,13 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_inq_dim
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     dimid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_dimname
-    !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     dimid,
-    !!........                          character(*)        name)
+    !!........                         (INTEGER ::      ncid,
+    !!........                         (INTEGER ::      dimid,
+    !!........                          character(*) :: name)
 
     INTEGER, EXTERNAL :: nf_inq_dimlen
     !!........                         (INTEGER ::     ncid,
@@ -415,7 +415,7 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_rename_dim
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     dimid,
-    !!........                          character(*)        name)
+    !!........                          character(*):: name)
 
 
     !!........ general attribute routines:
@@ -424,51 +424,51 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_inq_att
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     xtype,
     !!........                         (INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_attid
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     attnum)
 
     INTEGER, EXTERNAL :: nf_inq_atttype
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     xtype)
 
     INTEGER, EXTERNAL :: nf_inq_attlen
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_attname
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     attnum,
-    !!........                          character(*)        name)
+    !!........                          character(*):: name)
 
     INTEGER, EXTERNAL :: nf_copy_att
     !!........                         (INTEGER ::     ncid_in,
     !!........                         (INTEGER ::     varid_in,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     ncid_out,
     !!........                         (INTEGER ::     varid_out)
 
     INTEGER, EXTERNAL :: nf_rename_att
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        curname,
-    !!........                          character(*)        newname)
+    !!........                          character(*):: curname,
+    !!........                          character(*):: newname)
 
     INTEGER, EXTERNAL :: nf_del_att
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name)
+    !!........                          character(*):: name)
 
 
     !!........ attribute put/get routines:
@@ -477,48 +477,48 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_put_att_text
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)             name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     len,
-    !!........                          character(*)             text)
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_get_att_text
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)             name,
-    !!........                          character(*)             text)
+    !!........                          character(*):: name,
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_put_att_int1
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)             name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     xtype,
     !!........                         (INTEGER ::     len,
-    !!........                          nf_int1_t                i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_int1
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          character(*):: name,
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_int2
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     xtype,
     !!........                         (INTEGER ::     len,
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_int2
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          character(*):: name,
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_int
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     xtype,
     !!........                         (INTEGER ::     len,
     !!........                         (INTEGER ::     ivals(*))
@@ -526,13 +526,13 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_get_att_int
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     ivals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_real
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     xtype,
     !!........                         (INTEGER ::     len,
     !!........                          real                rvals(*))
@@ -540,12 +540,12 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_get_att_real
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
 
     INTEGER, EXTERNAL :: nf_put_att_double
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     xtype,
     !!........                         (INTEGER ::     len,
     !!........                          double              dvals(*))
@@ -553,7 +553,7 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_get_att_double
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                          double              dvals(*))
 
 
@@ -562,7 +562,7 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_def_var
     !!........                         (INTEGER ::     ncid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     datatype,
     !!........                         (INTEGER ::     ndims,
     !!........                         (INTEGER ::     dimids(*),
@@ -571,7 +571,7 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_inq_var
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     datatype,
     !!........                         (INTEGER ::     ndims,
     !!........                         (INTEGER ::     dimids(*),
@@ -579,13 +579,13 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_inq_varid
     !!........                         (INTEGER ::     ncid,
-    !!........                          character(*)        name,
+    !!........                          character(*):: name,
     !!........                         (INTEGER ::     varid)
 
     INTEGER, EXTERNAL :: nf_inq_varname
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name)
+    !!........                          character(*):: name)
 
     INTEGER, EXTERNAL :: nf_inq_vartype
     !!........                         (INTEGER ::     ncid,
@@ -610,7 +610,7 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_rename_var
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        name)
+    !!........                          character(*):: name)
 
     INTEGER, EXTERNAL :: nf_copy_var
     !!........                         (INTEGER ::     ncid_in,
@@ -624,32 +624,32 @@ MODULE MODNCFIO
     INTEGER, EXTERNAL :: nf_put_var_text
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        text)
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_get_var_text
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          character(*)        text)
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_put_var_int1
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_get_var_int1
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_put_var_int2
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_get_var_int2
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_put_var_int
     !!........                         (INTEGER ::     ncid,
@@ -711,7 +711,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     index(*),
-    !!........                          nf_int1_t           i1val)
+    !!........                          nf_int1_t ::   i1val)
 
     INTEGER, EXTERNAL :: nf_get_var1_int1
     !!........                         (INTEGER ::     ncid,
@@ -723,13 +723,13 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     index(*),
-    !!........                          nf_int2_t           i2val)
+    !!........                          nf_int2_t ::   i2val)
 
     INTEGER, EXTERNAL :: nf_get_var1_int2
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     index(*),
-    !!........                          nf_int2_t           i2val)
+    !!........                          nf_int2_t ::   i2val)
 
     INTEGER, EXTERNAL :: nf_put_var1_int
     !!........                         (INTEGER ::     ncid,
@@ -787,42 +787,42 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
-    !!........                          character(*)        text)
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_get_vara_text
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
-    !!........                          character(*)        text)
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_put_vara_int1
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_get_vara_int1
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_put_vara_int2
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_get_vara_int2
     !!........                         (INTEGER ::     ncid,
     !!........                         (INTEGER ::     varid,
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_put_vara_int
     !!........                         (INTEGER ::     ncid,
@@ -906,7 +906,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_get_vars_int1
     !!........                         (INTEGER ::     ncid,
@@ -914,7 +914,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_put_vars_int2
     !!........                         (INTEGER ::     ncid,
@@ -922,7 +922,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_get_vars_int2
     !!........                         (INTEGER ::     ncid,
@@ -930,7 +930,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     start(*),
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_put_vars_int
     !!........                         (INTEGER ::     ncid,
@@ -1007,7 +1007,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
     !!........                         (INTEGER ::     imap(*),
-    !!........                          character(*)        text)
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_get_varm_text
     !!........                         (INTEGER ::     ncid,
@@ -1016,7 +1016,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
     !!........                         (INTEGER ::     imap(*),
-    !!........                          character(*)        text)
+    !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_put_varm_int1
     !!........                         (INTEGER ::     ncid,
@@ -1025,7 +1025,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
     !!........                         (INTEGER ::     imap(*),
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_get_varm_int1
     !!........                         (INTEGER ::     ncid,
@@ -1034,7 +1034,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
     !!........                         (INTEGER ::     imap(*),
-    !!........                          nf_int1_t           i1vals(*))
+    !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_put_varm_int2
     !!........                         (INTEGER ::     ncid,
@@ -1043,7 +1043,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
     !!........                         (INTEGER ::     imap(*),
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_get_varm_int2
     !!........                         (INTEGER ::     ncid,
@@ -1052,7 +1052,7 @@ MODULE MODNCFIO
     !!........                         (INTEGER ::     count(*),
     !!........                         (INTEGER ::     stride(*),
     !!........                         (INTEGER ::     imap(*),
-    !!........                          nf_int2_t           i2vals(*))
+    !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_put_varm_int
     !!........                         (INTEGER ::     ncid,

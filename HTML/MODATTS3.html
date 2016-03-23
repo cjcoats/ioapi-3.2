@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODATTS3.html 314 2016-02-11 16:50:46Z coats $" -->
+<!-- "$Id: MODATTS3.html 345 2016-03-23 22:34:58Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODATTS3</TITLE>
 </HEAD>
@@ -106,7 +106,7 @@ USAGE of <CODE>MODULE MODATTS3</CODE>
         <P>
 
         <DT> <STRONG>&quot;Standard&quot; CMAQ Metadata</STRONG>
-        <DD> Turned on/off by <STRONG><VAR>setenv&nbsp;IOAPI_CFMETA...</VAR></STRONG>
+        <DD> Turned on/off by <STRONG><VAR>setenv&nbsp;IOAPI_CMAQMETA...</VAR></STRONG>
              with the following values:             
              <BLOCKQUOTE><DL "compact">
                     <DT> <STRONG><CODE>NONE</CODE></STRONG>:  turned off [default]
@@ -168,6 +168,56 @@ USAGE of <CODE>MODULE MODATTS3</CODE>
               </DL></BLOCKQUOTE>
         <P>
 
+        <DT> <STRONG>&quot;Unstructured text-file&quot; Metadata</STRONG>
+        <DD> Turned on/off by <STRONG><VAR>setenv&nbsp;IOAPI_TEXTMETA...</VAR></STRONG>
+             with the following values:             
+             <BLOCKQUOTE><DL "compact">
+                    <DT> <STRONG><CODE>NONE</CODE></STRONG>:  turned off [default]
+                    <P>
+                    <DT> <STRONG><VAR>path-name</VAR></STRONG>:  get metadata from
+                    the indicated structured ASCII file.  This file should consist
+                    of lines of length at most <CODE>MXDLEN3=80</CODE>
+                    characters.
+                    <P>
+              </DL></BLOCKQUOTE>
+              If active, the resulting text metadata can be found in the
+              following <CODE>MODULE</CODE>-variables in 
+              <CODE>MODULE&nbsp;MODATTS3</CODE>:
+              <PRE>
+              LOGICAL,                   PUBLIC, PROTECTED, SAVE :: TEXTMETA          !!  text-file metadata active?
+              INTEGER,                   PUBLIC, PROTECTED, SAVE :: TEXT_MLINES       !!  number of lines in TEXT_MDATA( :,: )
+              CHARACTER*80, ALLOCATABLE, PUBLIC, PROTECTED, SAVE :: TEXT_MDATA( : )   !!  (TEXT_MLINES)
+              </PRE>
+              For newly created files, the data will be stored in
+              global attribute <CODE>TEXT_MDATA</CODE>; if you wish 
+              to look at this metadata for an &quot;old&quot; file
+              from within a program, use routine
+              <A HREF="INQATT3.html">INQATT3()</A> to find the size of
+              the metadata, <CODE>ALLOCATE</CODE> a buffer for it, and
+              then read it with <A HREF="RDATT3.html">RDATTC()</A>
+              and process it as desired. (You could use
+              <A HREF="WRATT3.html">WRATTC()</A> to fake the
+              operation of all this, if you wish :-) )<BR>
+              <EM>NOTE that the netCDF get-text-attribute routines
+              do <STRONG>not check string-sizes nor pad with
+              blanks</STRONG> the way the Fortran standard suggests
+              they should.</EM>
+             This module contains definitions for routines for
+             initializing and setting such metadata:
+             <BLOCKQUOTE> <DL "compact">
+                    <DT> <CODE>INITMTEXT()</CODE>
+                    <DD>  reads metadata from the file into internal
+                          state variable <CODE>TEXT_MDATA</CODE>
+                          Can be called automatically
+                          (as above) or manually.
+                    <DT> <CODE>SETMTEXT()</CODE>
+                    <DD> Stores text metadata  from state variable <CODE>TEXT_MDATA</CODE> 
+                         to an M3IO file-header.
+                    <DT> <CODE>ENDMTEXT()</CODE>
+                    <DD> Turns text metadata off and deallocates <CODE>TEXT_MDATA</CODE>
+              </DL></BLOCKQUOTE>
+        <P>
+
         <DT> <STRONG>&quot;Standard&quot; SMOKE Metadata</STRONG>
         <DD> Not yet implemented.
         <P>
@@ -194,6 +244,10 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
         <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: CMAQMETA</CODE>
         <DD> <CODE>TRUE</CODE> if and only if CMAQ-metadata is
              turned on, and available in the module
+             <P>
+        <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: TEXTMETA</CODE>
+        <DD> <CODE>TRUE</CODE> if and only if ASCII text-file metadata 
+             is turned on, and available in the module.
              <P>
         <DT> <CODE>LOGICAL, PUBLIC, PROTECTED :: SMOKEMETA</CODE>
         <DD> <CODE>TRUE</CODE> if and only if SMOKE-metadata is
@@ -378,6 +432,15 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
              holds standard CMAQ metadata.
              <P>
 
+        <DT> <CODE>INTEGER, PUBLIC, PROTECTED :: TEXT_MLINES</CODE>
+        <DD> Number of lines of ASCII text metadata.
+             Negative if ASCII text-file metadata not active
+             <P>
+        <DT> <CODE>CHARACTER*80, PUBLIC, PROTECTED :: TEXT_MDATA( TEXT_MLINES )</CODE>
+        <DD> Structured-ASCII file metadata.
+             <P>
+        <DT> &nbsp;
+
         <DT> <CODE>TYPE( SMETA_T ), PUBLIC, PROTECTED :: SMOKE_MDATA</CODE>
         <DD> Module state-object for SMOKE metadata.  If <CODE>SMOKEMETA</CODE>,
              holds standard SMOKE metadata.
@@ -437,6 +500,7 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
         <DD> turns off writing CF metadata for new files created
              subsequently.
              <P>
+
         <DT> &nbsp;
         <DT> <CODE><A HREF="#initcmaq">INITCMAQ()</A></CODE>
         <DD> turns on CMAQ-metadata for all new files created
@@ -454,8 +518,20 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
         <DD> turns off writing CMAQ metadata for new files created
              subsequently.
              <P>
-        <DT> &nbsp;
 
+        <DT> &nbsp;
+        <DT> <CODE><A HREF="#initmtext">INITMTEXT()</A></CODE>
+        <DD> turns on text-file metadata for all new files created
+             <P>
+        <DT> <CODE><A HREF="#setmtext">SETMTEXT()</A></CODE>
+        <DD> writes text-file metadatametadata for a specific file.
+             <P>
+        <DT> <CODE><A HREF="#endmtext">ENDMTEXT()</A></CODE>
+        <DD> turns off writing text-file metadatametadata for new files created
+             subsequently.
+             <P>
+
+        <DT> &nbsp;
         <DT> <CODE><A HREF="#initsmoke">INITSMOKE()</A></CODE>
         <DD> turns on SMOKE-metadata for all new files created
              <P>
@@ -763,6 +839,7 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
     <P>
 
 
+
 <HR> <!- ------------------------------------------------------------- ->
 
 
@@ -893,7 +970,38 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
     </PRE>
 
     Turns off CMAQ-standard metadata:
-    sets <CODE>CMAQMETA&nbsp;=&nbsp;.FALSE.</CODE>.
+    sets <CODE>MODULE</CODE>-variable <CODE>CMAQMETA&nbsp;=&nbsp;.FALSE.</CODE>.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H3> <A NAME="initmtext">INITMTEXT</A></H3>
+
+    <PRE>
+    GENERIC INTERFACE:
+    LOGICAL FUNCTION  INITMTEXT()
+    LOGICAL FUNCTION  INITMTEXT( NLINES, LINES )
+
+        INTEGER           , INTENT( IN ) :: NLINES
+        CHARACTER( LEN=* ), INTENT( IN ) :: LINES( NLINES )
+    </PRE>
+
+    Initializes internal state variables holding structured-text
+    metadata from the 80-col-format text file with logical name
+    <CODE>IOAPI_TEXTMETA</CODE> or from the arguments. The first
+    (no-arguments) form is automatically called before opening any
+    newly-created files.  The second (explicit arguments) form 
+    must be called before opening any new files.
+    <P>
+    Environment variable <CODE>IOAPI_TEXTMETA</CODE> should be either
+    <CODE>NONE</CODE> to turn off text metadata (the default), or the
+    path for the ASCII file.
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -901,6 +1009,44 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
 
 
 <HR> <!- ------------------------------------------------------------- ->
+
+
+<H3> <A NAME="setmtext">SETMTEXT</A></H3>
+
+    <PRE>
+    LOGICAL FUNCTION  SETMTEXT( FID )
+        INTEGER           , INTENT( IN ) :: FID
+    </PRE>
+
+    Writes text-file metadata to attribute <CODE>TEXT_MDATA</CODE> in
+    the header of [P]netCDF I/O&nbsp;API files open for writing.
+    If text-file metadata is active, this is automatically called for
+    newly-created files.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H3> <A NAME="endmtext">ENDMTEXT</A></H3>
+
+    <PRE>
+    SUBROUTINE  ENDMTEXT()
+    </PRE>
+
+    Turns off text-file metadata: sets <CODE>MODULE</CODE>-variable
+    <CODE>TEXTMETA&nbsp;=&nbsp;.FALSE.</CODE> and deallocates
+    <CODE>TEXT_MDATA</CODE>.
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
 
 
 <H3> <A NAME="initsmoke">INITSMOKE</A></H3>
@@ -972,7 +1118,7 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
     modeler-use; the first should be considered as internal
     to the I/O API, and is the one called automatically.</EM>
     <P>
-    If <CODE>SMOKEMETA</CODE>> is <CODE>TRUE</CODE>, the first form is
+    If <CODE>SMOKEMETA</CODE> is <CODE>TRUE</CODE>, the first form is
     called automatically as part of the file-creation process.
     <P>
     PRECONDITION:   <CODE>FNAME</CODE> must be the logical name of an

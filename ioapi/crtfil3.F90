@@ -173,6 +173,16 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
             EFLAG = INITSMOKE()
         END IF
 
+        CALL ENVSTR( 'IOAPI_TEXTMETA', 'File for unstructured-te4xt metadata or "NONE"?', 'NONE', NAMBUF, IERR )
+        CALL UPCASE( NAMBUF )
+        IF ( IERR .GT. 0 ) THEN
+            CALL M3MSG2( 'Bad environment vble "IOAPI_TEXTMETA"' )
+        ELSE IF ( NAMBUF .EQ. 'NONE' ) THEN
+            CONTINUE
+        ELSE
+            EFLAG = INITMTEXT()
+        END IF
+
         FIRSTIME = .FALSE.
 
     END IF          !  firstime
@@ -1219,7 +1229,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
 
     IF ( CMAQMETA ) THEN
         IF ( .NOT.SETCMAQ( FID ) ) THEN
-            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error with CF metadata' )
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error with CMAQ metadata' )
             EFLAG = .TRUE.
             GO TO 999
         END IF
@@ -1228,9 +1238,17 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
     IF ( SMOKEMETA ) THEN
         IF ( .NOT.SETSMOKE( FID ) ) THEN
 !!                CALL M3ABORT( FLIST3( FID ), FNUM, IERR,          !!  SMOKEmeta not yet implemented
-!!     &          'Error with CF metadata' )
+!!     &          'Error with SMOKE metadata' )
 !!                EFLAG = .TRUE.
 !!                GO TO 999
+        END IF
+    END IF
+
+    IF ( TEXTMETA ) THEN
+        IF ( .NOT.SETMTEXT( FID ) ) THEN
+            CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'Error with TEXT metadata' )
+            EFLAG = .TRUE.
+            GO TO 999
         END IF
     END IF
 

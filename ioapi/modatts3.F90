@@ -2,7 +2,7 @@
 MODULE MODATTS3
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !! Version "$Id: modatts3.F90 310 2016-02-10 19:20:15Z coats $"
+    !! Version "$Id: modatts3.F90 344 2016-03-23 22:34:18Z coats $"
     !! Copyright (c) 2014-2015 UNC Institute for the Environment
     !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
     !! See file "LGPL.txt" for conditions of use.
@@ -51,7 +51,8 @@ MODULE MODATTS3
     PUBLIC  CMETA_T, SMETA_T,  INITCF, SETCF, ENDCF,                    &
             INITMTXATT, GETMTXATT, SETMTXATT, CHKMTXATT, ENDMTXATT,     &
             INITCMAQ,    GETCMAQ,   LOGCMAQ,  SETCMAQ,   ENDCMAQ,       &
-            INITSMOKE,   GETSMOKE,  SETSMOKE,  ENDSMOKE
+            INITSMOKE,   GETSMOKE,            SETSMOKE,  ENDSMOKE,      &
+            INITMTEXT,                        SETMTEXT,  ENDMTEXT
 
 
     !!........  Flags for "this type of metadata is active"
@@ -60,6 +61,7 @@ MODULE MODATTS3
     LOGICAL, PUBLIC, PROTECTED, SAVE :: CMAQMETA  = .FALSE.
     LOGICAL, PUBLIC, PROTECTED, SAVE :: SMOKEMETA = .FALSE.
     LOGICAL, PUBLIC, PROTECTED, SAVE :: CFMETA    = .FALSE.
+    LOGICAL, PUBLIC, PROTECTED, SAVE :: TEXTMETA  = .FALSE.
 
 
     !!........  Derived types for standard CMAQ, SMOKE metadata
@@ -110,7 +112,7 @@ MODULE MODATTS3
     END TYPE SMETA_T
 
 
-    !!........  Contents of current  standard CMAQ, SMOKE metadata
+    !!........  Contents of current  standard CMAQ, SMOKE, TEXT metadata
 
     TYPE( CMETA_T ), PUBLIC, PROTECTED, SAVE ::  CMAQ_MDATA
     TYPE( SMETA_T ), PUBLIC, PROTECTED, SAVE :: SMOKE_MDATA
@@ -118,6 +120,8 @@ MODULE MODATTS3
     INTEGER, PUBLIC, PARAMETER ::  INGRD3  = 1  !! this is an  input grid-spec for mtx metadata
     INTEGER, PUBLIC, PARAMETER ::  OUTGRD3 = 2  !! this is an output-grid...
 
+    INTEGER,                             PUBLIC, PROTECTED, SAVE :: TEXT_MLINES = 0                            !!  number of lines in TEXT_MDATA( :,: )
+    CHARACTER(LEN=MXDLEN3), ALLOCATABLE, PUBLIC, PROTECTED, SAVE :: TEXT_MDATA( : )     !!  (TEXT_MLINES)
 
     !!........  INTERFACE blocks for generic routines:
 
@@ -135,6 +139,10 @@ MODULE MODATTS3
 
     INTERFACE INITCMAQ
         MODULE PROCEDURE  INITCMAQA, INITCMAQT
+    END INTERFACE
+
+    INTERFACE INITMTEXT
+        MODULE PROCEDURE  INITMTEXTA, INITMTEXTT
     END INTERFACE
 
     INTERFACE INITSMOKE
@@ -227,7 +235,7 @@ MODULE MODATTS3
     INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
 
     CHARACTER*80, SAVE :: SVN_ID =  &
-'$Id:: modatts3.F90 310 2016-02-10 19:20:15Z coats                              $'
+'$Id:: modatts3.F90 344 2016-03-23 22:34:18Z coats                              $'
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1866,7 +1874,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_GETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 310 2016-02-10 19:20:15Z coats $"
+        !! Version "$Id: modatts3.F90 344 2016-03-23 22:34:18Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -2825,7 +2833,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_SETCMAQ( FID, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 310 2016-02-10 19:20:15Z coats $"
+        !! Version "$Id: modatts3.F90 344 2016-03-23 22:34:18Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -3407,6 +3415,223 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         RETURN
 
     END SUBROUTINE  ENDSMOKE
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!      TEXT META Attributes
+    !!          INITMTEXT():  initialize TEXT_MDATA from an external file
+    !!           SETMTEXT():  Copy TEXT_MDATA to file-header
+    !!           ENDMTEXT():  turn off TEXT_META
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  INITMTEXTA( )
+
+        !!........  Local variables:
+
+        INTEGER         MDEV, L, N, ISTAT
+        CHARACTER*80    LINE
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+        
+        IF ( TEXTMETA ) THEN
+            INITMTEXTA = .TRUE.
+            RETURN
+        END IF
+        
+        MDEV = GETEFILE( 'IOAPI_TEXTMETA', .TRUE., .TRUE., 'MODATTS3/INITMTEXT' )
+        IF ( MDEV .LT. 0 ) THEN
+            CALL M3MESG( 'MODATTS3/INITMTEXT:  could not open "TEXT_MDATA"' )
+            INITMTEXTA = .FALSE.
+            RETURN
+        END IF
+
+        DO N = 1, 999999999
+            READ( MDEV, '(A)', IOSTAT=ISTAT, END=99 ) LINE
+            IF ( ISTAT .NE. 0 ) THEN
+                WRITE( MESG, '( 2( A, I9, 2X ) )' )     &
+                    'MODATTS3/INITMTEXT: STAT=', ISTAT, 'counting "TEXT_MDATA" at line', N
+                CALL M3MESG( MESG )
+                INITMTEXTA = .FALSE.
+                RETURN
+            END IF
+        END DO
+99      CONTINUE
+
+        ALLOCATE( TEXT_MDATA( N ), STAT = ISTAT )
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' )                 &
+                'MODATTS3/INITMTEXT: Allocation failure.  STAT==', ISTAT
+            CALL M3MESG( MESG )
+            INITMTEXTA = .FALSE.
+            RETURN
+        END IF
+        
+        REWIND( MDEV )
+        DO L = 1, N
+            READ( MDEV, '(A)', IOSTAT=ISTAT ) TEXT_MDATA(L)
+            IF ( ISTAT .NE. 0 ) THEN
+                WRITE( MESG, '( 2( A, I9, 2X ) )' )     &
+                    'MODATTS3/INITMTEXT: STAT=', ISTAT, 'reading "TEXT_MDATA" at line', L
+                CALL M3MESG( MESG )
+                DEALLOCATE( TEXT_MDATA )
+                INITMTEXTA = .FALSE.
+                RETURN
+            END IF
+        END DO
+        
+        TEXT_MLINES = N
+        TEXTMETA    = .TRUE.
+        INITMTEXTA  = .TRUE.
+        CLOSE( MDEV )
+        
+        RETURN
+
+    END FUNCTION  INITMTEXTA
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  INITMTEXTT( NLINES, LINES )
+
+        !!........  Arguments:
+
+        INTEGER, INTENT(IN   )          :: NLINES
+        CHARACTER(LEN=*), INTENT(IN   ) :: LINES(*)
+
+        !!........  Local variables:
+
+        INTEGER         L, ISTAT
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        
+        IF ( TEXTMETA ) THEN
+
+            CALL M3MESG( 'MODATTS3/INITMTEXT: text metadata already active' )
+            INITMTEXTT = .FALSE.
+            RETURN
+
+        END IF
+
+        ALLOCATE( TEXT_MDATA( NLINES ), STAT = ISTAT )
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' )                 &
+                'MODATTS3/INITMTEXT: Allocation failure.  STAT==', ISTAT
+            CALL M3MESG( MESG )
+            INITMTEXTT = .FALSE.
+            RETURN
+        END IF
+
+        DO L = 1, NLINES
+            TEXT_MDATA( L ) = LINES( L )
+        END DO
+        
+        TEXT_MLINES = NLINES
+        TEXTMETA    = .TRUE.
+        INITMTEXTT  = .TRUE.
+
+        RETURN
+
+    END FUNCTION  INITMTEXTT
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    LOGICAL FUNCTION  SETMTEXT( FNUM )
+
+        !!........  Argument:
+
+        INTEGER, INTENT(IN   ) :: FNUM      !!  subscript in STATE3 arrays
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'      !! I/O API internal state
+
+        !!........  Local variables:
+
+        INTEGER         FID, IERR
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FID = CDFID3( FNUM )
+        IF ( .NOT.TEXTMETA ) THEN
+
+            CALL M3MESG( 'MODATTS3/SETMTEXT: text metadata not active' )
+            IERR = IMISS3
+
+        ELSE IF ( FID .LT. 0 ) THEN
+
+            CALL M3MESG( 'MODATTS3/SETMTEXT: Operation not supported:  file  "' // TRIM(FLIST3(FNUM)) // '" not [P]netCDF' )
+            IERR = IMISS3
+
+        ELSE IF ( FTYPE3( FNUM ) .NE. MPIGRD3 ) THEN
+
+            IERR = NF_REDEF( FID )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting file "' // TRIM(FLIST3(FNUM)) // '" into define mode.' )
+                SETMTEXT = .FALSE.
+                RETURN
+            END IF          !  ierr nonzero:  operation failed
+
+            IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' TEXT_MDATA', TEXT_MLINES*MXDLEN3, TEXT_MDATA )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting attribute "TEXT_MDATA" to "' // TRIM(FLIST3(FNUM)) // '"' )
+                MESG =  NF_STRERROR()
+                CALL M3MESG( MESG )
+            END IF          !  ierr nonzero:  operation failed
+        
+        ELSE
+
+#ifdef  IOAPI_PNCF
+
+            IERR = NFMPI_REDEF( FID )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting file "' // TRIM(FLIST3(FNUM)) // '" into define mode.' )
+                SETMTEXT = .FALSE.
+                RETURN
+            END IF          !  ierr nonzero:  operation failed
+
+            IERR = NFMPI_PUT_ATT_TEXT( FID, NF_GLOBAL, ' TEXT_MDATA', TEXT_MLINES*MXDLEN3, TEXT_MDATA )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting attribute "TEXT_MDATA" to "' // TRIM(FLIST3(FNUM)) // '"' )
+                MESG =  NFMPI_STRERROR()
+                CALL M3MESG( MESG )
+            END IF          !  ierr nonzero:  operation failed
+
+#endif
+#ifndef IOAPI_PNCF
+
+            CALL M3WMESG( 'MODATTS3/SETMTEXT Error:  PnetCDF Mode not active.' )
+            IERR = IMISS3
+
+#endif
+
+        END IF      !!  if fid < 0; else if mpigrd3; else...
+ 
+        SETMTEXT = ( IERR .EQ. 0 )
+
+        RETURN
+
+    END FUNCTION  SETMTEXT
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE  ENDMTEXT()
+
+        IF ( ALLOCATED( TEXT_MDATA ) ) DEALLOCATE( TEXT_MDATA )
+        TEXT_MLINES = 0
+        TEXTMETA    = .FALSE.
+        RETURN
+
+    END SUBROUTINE  ENDMTEXT
 
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
