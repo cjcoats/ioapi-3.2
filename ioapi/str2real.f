@@ -5,7 +5,8 @@ C***********************************************************************
 C Version "$Id: str2real.f 219 2015-08-17 18:05:54Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
-C (C) 2003-2010 by Baron Advanced Meteorological Systems.
+C (C) 2003-2010 by Baron Advanced Meteorological Systems, and
+C (C) 2016 UNC Institute for the Environment
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
@@ -25,6 +26,8 @@ C  REVISION  HISTORY:
 C       Prototype 6/95 by CJC for point source prototype
 C
 C       Modified 03/20010 by CJC: F90 changes for I/O API v3.1
+C
+C       Modified 03/20016 by CJC: F90 change:  READ( STRING, *,...)
 C***********************************************************************
 
       IMPLICIT NONE
@@ -45,7 +48,7 @@ C...........   PARAMETERS
         
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
-        REAL		VAL
+        REAL		    VAL
         INTEGER         I, L, N, P, IOS
         CHARACTER*8     FMT
         CHARACTER*80    MSG
@@ -54,31 +57,16 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 C***********************************************************************
 C   begin body of function  STR2REAL
 
-        L = LEN_TRIM( STRING )
-            
-        DO  11  I = 1, L        !  skip leading whitespace
-            IF ( STRING( I:I ) .GT. BLANK ) GO TO 12
-11      CONTINUE
+        IF ( STRING .EQ. BLANK ) THEN
+            STR2REAL = BADVAL3
+            RETURN
+        END IF                
 
-C.......   If you get to here:  no number there
-
-        STR2REAL = BADVAL3
-        RETURN
-
-12      CONTINUE                 
-        N = L - I + 1
-        P = INDEX( STRING( I:L ), '.' )
-        IF ( P .GT. 0 ) THEN
-            WRITE( FMT, 94010 ) N, N - P
-        ELSE
-            WRITE( FMT, 94010 ) N, 0
-        END IF
-
-        READ( STRING( I:L ), FMT, IOSTAT = IOS ) VAL
+        READ( STRING, *, IOSTAT = IOS ) VAL
 
         IF( IOS .NE. 0 ) THEN
-            WRITE( MSG,94020 ) 
-     &          'Error reading REAL from "', STRING( I:L ), 
+            WRITE( MSG, '( 3A, I10 )' ) 
+     &          'Error reading REAL from "', TRIM( STRING ), 
      &          '"; IOSTAT=', IOS
             CALL M3WARN( 'STR2REAL', 0, 0, MSG )
             STR2REAL = BADVAL3
@@ -87,10 +75,6 @@ C.......   If you get to here:  no number there
         END IF
         
         RETURN
-
-94010   FORMAT( '(G', I2.2, '.', I2.2, ')' )
-
-94020   FORMAT( 3A, I7 )
 
         END FUNCTION STR2REAL
 

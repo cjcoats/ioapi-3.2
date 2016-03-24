@@ -1747,6 +1747,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
+        IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' ICBCCFG', MDATA%ICBCCFG )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( 'Error getting attribute "ICBCCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
+            EFLAG = .TRUE.
+        END IF          !  ierr nonzero:  operation failed
+
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' METCFG', MDATA%METCFG )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'Error getting attribute "METCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
@@ -2041,6 +2047,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' EMISCFG', MDATA%EMISCFG )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'Error getting attribute "EMISCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
+            EFLAG = .TRUE.
+        END IF          !  ierr nonzero:  operation failed
+
+        IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' ICBCCFG', MDATA%ICBCCFG )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( 'Error getting attribute "ICBCCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
@@ -2711,6 +2723,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CALL M3MESG( MESG )
         END IF          !  ierr nonzero:  operation failed
 
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'ICBCCFG', LEN_TRIM( CMAQ_MDATA%ICBCCFG ), CMAQ_MDATA%ICBCCFG )
+        IF ( IERR .NE. 0 ) THEN
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ICBCCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
+        END IF          !  ierr nonzero:  operation failed
+
         IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'METCFG', LEN_TRIM( CMAQ_MDATA%METCFG ), CMAQ_MDATA%METCFG )
         IF ( IERR .NE. 0 ) THEN
             WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "METCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
@@ -2718,7 +2736,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL, 'SYNC_TOP', NF_FLOAT, 1, CMAQ_MDATA%VERSION3 )
+        IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL, 'SYNC_TOP', NF_FLOAT, 1, CMAQ_MDATA%SYNC_TOP )
         IF ( IERR .NE. 0 ) THEN
             WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SYNC_TOP" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
             CALL M3MESG( MESG )
@@ -3060,6 +3078,13 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'EMISCFG', LEN( CMAQ_MDATA%EMISCFG ), CMAQ_MDATA%EMISCFG )
         IF ( IERR .NE. 0 ) THEN
             WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "EMISCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+        END IF          !  ierr nonzero:  operation failed
+
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'ICBCCFG', LEN( CMAQ_MDATA%ICBCCFG ), CMAQ_MDATA%ICBCCFG )
+        IF ( IERR .NE. 0 ) THEN
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ICBCCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
@@ -5549,16 +5574,13 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         CHARACTER(LEN=*), INTENT( IN ) :: CBUF
 
-        CHARACTER*1     CH
-        INTEGER         K
-
         CHARACTER*1,  PARAMETER :: PERIOD = '.'
 
         CHARACTER*1     C1
         CHARACTER*2     C2
 
         C2 =  ADJUSTL( CBUF )
-        IF ( C2 .EQ. PERIOD ) THEN      !!  handle ".TRUE.",  etc.
+        IF ( C2( 1:1 ) .EQ. PERIOD ) THEN      !!  handle ".TRUE.",  etc.
             C1 = C2( 2:2 )
         ELSE
             C1 = C2( 1:1 )
