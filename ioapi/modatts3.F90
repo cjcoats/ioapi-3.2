@@ -2,7 +2,7 @@
 MODULE MODATTS3
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !! Version "$Id: modatts3.F90 344 2016-03-23 22:34:18Z coats $"
+    !! Version "$Id: modatts3.F90 346 2016-03-24 14:49:19Z coats $"
     !! Copyright (c) 2014-2015 UNC Institute for the Environment
     !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
     !! See file "LGPL.txt" for conditions of use.
@@ -235,7 +235,7 @@ MODULE MODATTS3
     INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
 
     CHARACTER*80, SAVE :: SVN_ID =  &
-'$Id:: modatts3.F90 344 2016-03-23 22:34:18Z coats                              $'
+'$Id:: modatts3.F90 346 2016-03-24 14:49:19Z coats                              $'
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1874,7 +1874,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_GETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 344 2016-03-23 22:34:18Z coats $"
+        !! Version "$Id: modatts3.F90 346 2016-03-24 14:49:19Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -2833,7 +2833,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_SETCMAQ( FID, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 344 2016-03-23 22:34:18Z coats $"
+        !! Version "$Id: modatts3.F90 346 2016-03-24 14:49:19Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -3429,7 +3429,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  Local variables:
 
-        INTEGER         MDEV, L, N, ISTAT
+        INTEGER         MDEV, K, L, N, ISTAT
         CHARACTER*80    LINE
         CHARACTER*256   MESG
 
@@ -3447,17 +3447,24 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        DO N = 1, 999999999
-            READ( MDEV, '(A)', IOSTAT=ISTAT, END=99 ) LINE
+        N = 0
+        DO L = 1, 999999999
+            READ( MDEV, '(A)', IOSTAT=ISTAT, END=188 ) LINE
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( 2( A, I9, 2X ) )' )     &
                     'MODATTS3/INITMTEXT: STAT=', ISTAT, 'counting "TEXT_MDATA" at line', N
                 CALL M3MESG( MESG )
                 INITMTEXTA = .FALSE.
                 RETURN
+            ELSE IF ( LINE .EQ. BLANK ) THEN
+                CYCLE
+            ELSE IF ( ISCOMMENT( LINE ) ) THEN
+                CYCLE
+            ELSE
+                N = N + 1
             END IF
         END DO
-99      CONTINUE
+188     CONTINUE
 
         ALLOCATE( TEXT_MDATA( N ), STAT = ISTAT )
         IF ( ISTAT .NE. 0 ) THEN
@@ -3469,8 +3476,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
         
         REWIND( MDEV )
-        DO L = 1, N
-            READ( MDEV, '(A)', IOSTAT=ISTAT ) TEXT_MDATA(L)
+        K = 0
+        DO L = 1, 999999999
+            READ( MDEV, '(A)', IOSTAT=ISTAT, END=199 ) LINE
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( 2( A, I9, 2X ) )' )     &
                     'MODATTS3/INITMTEXT: STAT=', ISTAT, 'reading "TEXT_MDATA" at line', L
@@ -3478,8 +3486,16 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 DEALLOCATE( TEXT_MDATA )
                 INITMTEXTA = .FALSE.
                 RETURN
+            ELSE IF ( LINE .EQ. BLANK ) THEN
+                CYCLE
+            ELSE IF ( ISCOMMENT( LINE ) ) THEN
+                CYCLE
+            ELSE
+                K = K + 1
+                TEXT_MDATA(K) = ADJUSTL( LINE )
             END IF
         END DO
+199     CONTINUE
         
         TEXT_MLINES = N
         TEXTMETA    = .TRUE.
@@ -3527,7 +3543,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DO L = 1, NLINES
-            TEXT_MDATA( L ) = LINES( L )
+            TEXT_MDATA( L ) = ADJUSTL( LINES( L ) )
         END DO
         
         TEXT_MLINES = NLINES
@@ -3563,27 +3579,45 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IF ( .NOT.TEXTMETA ) THEN
 
             CALL M3MESG( 'MODATTS3/SETMTEXT: text metadata not active' )
-            IERR = IMISS3
+            SETMTEXT = .FALSE.
+            RETURN
 
         ELSE IF ( FID .LT. 0 ) THEN
 
             CALL M3MESG( 'MODATTS3/SETMTEXT: Operation not supported:  file  "' // TRIM(FLIST3(FNUM)) // '" not [P]netCDF' )
-            IERR = IMISS3
+            SETMTEXT = .FALSE.
+            RETURN
 
         ELSE IF ( FTYPE3( FNUM ) .NE. MPIGRD3 ) THEN
 
             IERR = NF_REDEF( FID )
-            IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting file "' // TRIM(FLIST3(FNUM)) // '" into define mode.' )
+            IF ( IERR .NE. NF_NOERR ) THEN
+                WRITE( MESG, '(3A,I10)' )       &
+                     'MODATTS3/SETMTEXT: Error putting file "', TRIM( FLIST3(FNUM) ),  &
+                     '" into define mode. STATUS=', IERR
+                CALL M3MESG( MESG )
                 SETMTEXT = .FALSE.
                 RETURN
             END IF          !  ierr nonzero:  operation failed
 
-            IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' TEXT_MDATA', TEXT_MLINES*MXDLEN3, TEXT_MDATA )
-            IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting attribute "TEXT_MDATA" to "' // TRIM(FLIST3(FNUM)) // '"' )
-                MESG =  NF_STRERROR()
+            IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'TEXT_MDATA', TEXT_MLINES*MXDLEN3, TEXT_MDATA )
+            IF ( IERR .NE. NF_NOERR ) THEN
+                WRITE( MESG, '(3A,I10)' )       &
+                     'MODATTS3/SETMTEXT: Error putting attribute "TEXT_MDATA" to "', TRIM( FLIST3(FNUM) ),  &
+                     '" STATUS=', IERR
                 CALL M3MESG( MESG )
+                SETMTEXT = .FALSE.
+                RETURN
+            END IF          !  ierr nonzero:  operation failed
+
+            IERR = NF_ENDDEF( FID )
+            IF ( IERR .NE. 0 ) THEN
+                WRITE( MESG, '(3A,I10)' )       &
+                     'MODATTS3/SETMTEXT: Error putting file "', TRIM( FLIST3(FNUM) ),  &
+                     '" into data mode. STATUS=', IERR
+                CALL M3MESG( MESG )
+                SETMTEXT = .FALSE.
+                RETURN
             END IF          !  ierr nonzero:  operation failed
         
         ELSE
@@ -3591,30 +3625,47 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 #ifdef  IOAPI_PNCF
 
             IERR = NFMPI_REDEF( FID )
-            IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting file "' // TRIM(FLIST3(FNUM)) // '" into define mode.' )
+            IF ( IERR .NE. NF_NOERR ) THEN
+                WRITE( MESG, '(3A,I10)' )       &
+                     'MODATTS3/SETMTEXT: Error putting file "', TRIM( FLIST3(FNUM) ),  &
+                     '" into define mode. STATUS=', IERR
+                CALL M3MESG( MESG )
                 SETMTEXT = .FALSE.
                 RETURN
             END IF          !  ierr nonzero:  operation failed
 
-            IERR = NFMPI_PUT_ATT_TEXT( FID, NF_GLOBAL, ' TEXT_MDATA', TEXT_MLINES*MXDLEN3, TEXT_MDATA )
-            IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( 'MODATTS3/SETMTEXT: Error putting attribute "TEXT_MDATA" to "' // TRIM(FLIST3(FNUM)) // '"' )
-                MESG =  NFMPI_STRERROR()
+            IERR = NFMPI_PUT_ATT_TEXT( FID, NF_GLOBAL, 'TEXT_MDATA', TEXT_MLINES*MXDLEN3, TEXT_MDATA )
+            IF ( IERR .NE. NF_NOERR ) THEN
+                WRITE( MESG, '(3A,I10)' )       &
+                     'MODATTS3/SETMTEXT: Error putting attribute "TEXT_MDATA" to "', TRIM( FLIST3(FNUM) ),  &
+                     '" STATUS=', IERR
                 CALL M3MESG( MESG )
+                SETMTEXT = .FALSE.
+                RETURN
+            END IF          !  ierr nonzero:  operation failed
+
+            IERR = NFMPI_ENDDEF( FID )
+            IF ( IERR .NE. 0 ) THEN
+                WRITE( MESG, '(3A,I10)' )       &
+                     'MODATTS3/SETMTEXT: Error putting file "', TRIM( FLIST3(FNUM) ),  &
+                     '" into data mode. STATUS=', IERR
+                CALL M3MESG( MESG )
+                SETMTEXT = .FALSE.
+                RETURN
             END IF          !  ierr nonzero:  operation failed
 
 #endif
 #ifndef IOAPI_PNCF
 
-            CALL M3WMESG( 'MODATTS3/SETMTEXT Error:  PnetCDF Mode not active.' )
-            IERR = IMISS3
+            CALL M3MESG( 'MODATTS3/SETMTEXT Error:  PnetCDF Mode not active.' )
+            SETMTEXT = .FALSE.
+            RETURN
 
 #endif
 
         END IF      !!  if fid < 0; else if mpigrd3; else...
  
-        SETMTEXT = ( IERR .EQ. 0 )
+        SETMTEXT = .TRUE.
 
         RETURN
 
@@ -5361,14 +5412,15 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*1,  PARAMETER :: BANG   = '!'
         CHARACTER*1,  PARAMETER :: POUND  = '#'
         CHARACTER*1,  PARAMETER :: DOLLAR = '$'
+        CHARACTER*2,  PARAMETER :: SLASH2 = '//'
 
-        CHARACTER*1     CH
-        INTEGER         K
+        CHARACTER*1     C1
+        CHARACTER*2     C2
 
-        K  = 1 + LBLANK( CBUF )
-        CH =  CBUF(K:K)
+        C2 = ADJUSTL( CBUF )
+        C1 = C2(1:1)
 
-        ISCOMMENT = ( ( CH .EQ. BANG  ) .OR. ( CH .EQ. POUND ) .OR. ( CH .EQ. DOLLAR ) )
+        ISCOMMENT = ( ( C2 .EQ. SLASH2  ) .OR. ( C1 .EQ. BANG  ) .OR. ( C1 .EQ. POUND ) .OR. ( C1 .EQ. DOLLAR ) )
 
         RETURN
 
