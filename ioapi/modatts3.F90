@@ -1173,7 +1173,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  Arguments:
 
-       TYPE(CMETA_T) , INTENT( OUT ) :: MDATA
+        TYPE(CMETA_T) , INTENT( OUT ) :: MDATA
 
         CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/INITCMAQ'
 
@@ -1258,7 +1258,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 CYCLE
             END IF
 
-            K = INDEX( '=', LINE )
+            K = INDEX( LINE, '=' )
             IF ( K .EQ. 0 ) THEN
                 EFLAG = .TRUE.
                 WRITE( MESG, '( A, I10, 2X, A, I4 )' ) 'No "=" in "IOAPI_CMAQMETA" at line', L
@@ -1356,7 +1356,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         CLOSE( MDEV )
 
-        INITCMAQT = ( .NOT. EFLAG )
+        CMAQMETA   = ( .NOT. EFLAG )
+        INITCMAQT  = ( .NOT. EFLAG )
 
         RETURN
 
@@ -1378,6 +1379,45 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*256   MESG
 
         !!........  body  .........................................
+
+        MDATA%VERSION3     = 1
+        MDATA%PROJECT      = BLANK
+        MDATA%CASE         = BLANK
+        MDATA%EPISODE      = BLANK
+        MDATA%SPONSOR      = BLANK
+        MDATA%CMAQVERS     = BLANK
+        MDATA%MCIPVERS     = BLANK
+        MDATA%EMISVERS     = BLANK
+        MDATA%METVERS      = BLANK
+        MDATA%CMAQCFG      = BLANK
+        MDATA%MCIPCFG      = BLANK
+        MDATA%EMISCFG      = BLANK
+        MDATA%ICBCCFG      = BLANK
+        MDATA%METCFG       = BLANK
+        MDATA%SYNC_TOP     = BADVAL3
+        MDATA%MAXSYNC      = IMISS3
+        MDATA%MINSYNC      = IMISS3
+        MDATA%WB_DUST      = IMISS3
+        MDATA%ERODE_AGLAND = IMISS3
+        MDATA%WBDUST_BELD  = BLANK
+        MDATA%LTNG_NO      = IMISS3
+        MDATA%KZMIN        = IMISS3
+        MDATA%ILDEPV       = IMISS3
+        MDATA%MOSAIC       = IMISS3
+        MDATA%ABFLUX       = IMISS3
+        MDATA%HGBIDI       = IMISS3
+        MDATA%SFC_HONO     = IMISS3
+        MDATA%BIOGEMIS     = IMISS3
+        MDATA%PT3DEMIS     = IMISS3
+        MDATA%CLD_DIAG     = IMISS3
+        MDATA%AERDIAG      = IMISS3
+        MDATA%PHOTDIAG     = IMISS3
+        MDATA%SSEMDIAG     = IMISS3
+        MDATA%DUSTEM_DIAG  = IMISS3
+        MDATA%LTNGDIAG     = IMISS3
+        MDATA%B3GTS_DIAG   = IMISS3
+        MDATA%PT3DDIAG     = IMISS3
+        MDATA%PT3DFRAC     = IMISS3
 
         EFLAG = .FALSE.
 
@@ -1637,223 +1677,223 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'VERSION3', MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "VERSION3" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "VERSION3" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' PROJECT', MDATA%PROJECT )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PROJECT" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PROJECT" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' CASE', MDATA%CASE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CASE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CASE" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' EPISODE', MDATA%EPISODE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EPISODE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "EPISODE" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' SPONSOR', MDATA%SPONSOR )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SPONSOR" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SPONSOR" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' CMAQVERS', MDATA%CMAQVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CMAQVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' MCIPVERS', MDATA%MCIPVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MCIPVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' EMISVERS', MDATA%EMISVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "EMISVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' METVERS', MDATA%METVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "METVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' CMAQCFG', MDATA%CMAQCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CMAQCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' MCIPCFG', MDATA%MCIPCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MCIPCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' EMISCFG', MDATA%EMISCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "EMISCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, ' METCFG', MDATA%METCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "METCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_REAL( FID, NF_GLOBAL, 'SYNC_TOP', MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SYNC_TOP" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SYNC_TOP" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'MAXSYNC', MDATA%MAXSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MAXSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MAXSYNC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'MINSYNC', MDATA%MINSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MINSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MINSYNC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'WB_DUST', MDATA%WB_DUST )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WB_DUST" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "WB_DUST" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'ERODE_AGLAND', MDATA%ERODE_AGLAND )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ERODE_AGLAND" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "ERODE_AGLAND" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_TEXT( FID, NF_GLOBAL, 'WBDUST_BELD', MDATA%WBDUST_BELD )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WBDUST_BELD" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "WBDUST_BELD" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'LTNG_NO', MDATA%LTNG_NO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNG_NO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "LTNG_NO" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'KZMIN', MDATA%KZMIN )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "KZMIN" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "KZMIN" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'ILDEPV', MDATA%ILDEPV )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ILDEPV" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "ILDEPV" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'MOSAIC', MDATA%MOSAIC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MOSAIC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MOSAIC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'ABFLUX', MDATA%ABFLUX )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ABFLUX" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "ABFLUX" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'HGBIDI', MDATA%HGBIDI )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "HGBIDI" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "HGBIDI" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'SFC_HONO', MDATA%SFC_HONO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SFC_HONO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SFC_HONO" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'BIOGEMIS', MDATA%BIOGEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "BIOGEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "BIOGEMIS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'PT3DEMIS', MDATA%PT3DEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PT3DEMIS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'CLD_DIAG', MDATA%CLD_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CLD_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CLD_DIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'AERDIAG', MDATA%AERDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "AERDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "AERDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'PHOTDIAG', MDATA%PHOTDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PHOTDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PHOTDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'SSEMDIAG', MDATA%SSEMDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SSEMDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SSEMDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'DUSTEM_DIAG', MDATA%DUSTEM_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "DUSTEM_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "DUSTEM_DIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'LTNGDIAG', MDATA%LTNGDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNGDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "LTNGDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'B3GTS_DIAG', MDATA%B3GTS_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "B3GTS_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "B3GTS_DIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'PT3DDIAG', MDATA%PT3DDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PT3DDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_GET_ATT_INT( FID, NF_GLOBAL, 'PT3DFRAC', MDATA%PT3DFRAC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DFRAC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PT3DFRAC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
@@ -1861,7 +1901,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CALL M3MESG( 'Errors putting CMAQ metadata to file "' // TRIM(FLIST3(FNUM)) // '"' )
         END IF          !  ierr nonzero:  operation failed
 
-        GETCMAQ1 = ( .NOT.EFLAG )
+        GETCMAQ1 = ( .NOT. EFLAG )
+        CMAQMETA = ( .NOT. EFLAG )
         RETURN
 
     END FUNCTION  GETCMAQ1
@@ -1933,231 +1974,232 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'VERSION3', MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "VERSION3" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "VERSION3" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' PROJECT', MDATA%PROJECT )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PROJECT" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PROJECT" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' CASE', MDATA%CASE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CASE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CASE" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' EPISODE', MDATA%EPISODE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EPISODE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "EPISODE" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' SPONSOR', MDATA%SPONSOR )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SPONSOR" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SPONSOR" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' CMAQVERS', MDATA%CMAQVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CMAQVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' MCIPVERS', MDATA%MCIPVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MCIPVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' EMISVERS', MDATA%EMISVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "EMISVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' METVERS', MDATA%METVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "METVERS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' CMAQCFG', MDATA%CMAQCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CMAQCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' MCIPCFG', MDATA%MCIPCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MCIPCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' EMISCFG', MDATA%EMISCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "EMISCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, ' METCFG', MDATA%METCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "METCFG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_REAL( FID, NFMPI_GLOBAL, 'SYNC_TOP', MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SYNC_TOP" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SYNC_TOP" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'MAXSYNC', MDATA%MAXSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MAXSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MAXSYNC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'MINSYNC', MDATA%MINSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MINSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MINSYNC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'WB_DUST', MDATA%WB_DUST )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WB_DUST" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "WB_DUST" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'ERODE_AGLAND', MDATA%ERODE_AGLAND )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ERODE_AGLAND" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "ERODE_AGLAND" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_TEXT( FID, NFMPI_GLOBAL, 'WBDUST_BELD', MDATA%WBDUST_BELD )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WBDUST_BELD" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "WBDUST_BELD" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'LTNG_NO', MDATA%LTNG_NO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNG_NO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "LTNG_NO" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'KZMIN', MDATA%KZMIN )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "KZMIN" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "KZMIN" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'ILDEPV', MDATA%ILDEPV )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ILDEPV" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "ILDEPV" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'MOSAIC', MDATA%MOSAIC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MOSAIC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "MOSAIC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'ABFLUX', MDATA%ABFLUX )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ABFLUX" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "ABFLUX" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'HGBIDI', MDATA%HGBIDI )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "HGBIDI" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "HGBIDI" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'SFC_HONO', MDATA%SFC_HONO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SFC_HONO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SFC_HONO" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'BIOGEMIS', MDATA%BIOGEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "BIOGEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "BIOGEMIS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'PT3DEMIS', MDATA%PT3DEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PT3DEMIS" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'CLD_DIAG', MDATA%CLD_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CLD_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "CLD_DIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'AERDIAG', MDATA%AERDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "AERDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "AERDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'PHOTDIAG', MDATA%PHOTDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PHOTDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PHOTDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'SSEMDIAG', MDATA%SSEMDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SSEMDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "SSEMDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'DUSTEM_DIAG', MDATA%DUSTEM_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "DUSTEM_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "DUSTEM_DIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'LTNGDIAG', MDATA%LTNGDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNGDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "LTNGDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'B3GTS_DIAG', MDATA%B3GTS_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "B3GTS_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "B3GTS_DIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'PT3DDIAG', MDATA%PT3DDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PT3DDIAG" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_GET_ATT_INT( FID, NFMPI_GLOBAL, 'PT3DFRAC', MDATA%PT3DFRAC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DFRAC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Error getting attribute "PT3DFRAC" from "' // TRIM(FLIST3(FNUM)) // '"' )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IF ( EFLAG ) THEN
-            CALL M3MESG( 'Errors putting CMAQ metadata to file "' // TRIM(FLIST3(FNUM)) // '"' )
+            CALL M3MESG( 'Errors getting CMAQ metadata to file "' // TRIM(FLIST3(FNUM)) // '"' )
         END IF          !  ierr nonzero:  operation failed
 
         PN_GETCMAQ = ( .NOT.EFLAG )
+        CMAQMETA   = ( .NOT. EFLAG )
 
 #endif
 #ifndef IOAPI_PNCF
@@ -2588,223 +2630,259 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'VERSION3', NF_INT, 1, CMAQ_MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "VERSION3" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "VERSION3" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' PROJECT', LEN( CMAQ_MDATA%PROJECT ), CMAQ_MDATA%PROJECT )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'PROJECT', LEN_TRIM( CMAQ_MDATA%PROJECT ), CMAQ_MDATA%PROJECT )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PROJECT" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PROJECT" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' CASE', LEN( CMAQ_MDATA%CASE ), CMAQ_MDATA%CASE )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'CASE', LEN_TRIM( CMAQ_MDATA%CASE ), CMAQ_MDATA%CASE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CASE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CASE" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' EPISODE', LEN( CMAQ_MDATA%EPISODE ), CMAQ_MDATA%EPISODE )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'EPISODE', LEN_TRIM( CMAQ_MDATA%EPISODE ), CMAQ_MDATA%EPISODE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EPISODE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "EPISODE" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' SPONSOR', LEN( CMAQ_MDATA%SPONSOR ), CMAQ_MDATA%SPONSOR )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'SPONSOR', LEN_TRIM( CMAQ_MDATA%SPONSOR ), CMAQ_MDATA%SPONSOR )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SPONSOR" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SPONSOR" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' CMAQVERS', LEN( CMAQ_MDATA%CMAQVERS ), CMAQ_MDATA%CMAQVERS )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'CMAQVERS', LEN_TRIM( CMAQ_MDATA%CMAQVERS ), CMAQ_MDATA%CMAQVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CMAQVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' MCIPVERS', LEN( CMAQ_MDATA%MCIPVERS ), CMAQ_MDATA%MCIPVERS )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'MCIPVERS', LEN_TRIM( CMAQ_MDATA%MCIPVERS ), CMAQ_MDATA%MCIPVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MCIPVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' EMISVERS', LEN( CMAQ_MDATA%EMISVERS ), CMAQ_MDATA%EMISVERS )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'EMISVERS', LEN_TRIM( CMAQ_MDATA%EMISVERS ), CMAQ_MDATA%EMISVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "EMISVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' METVERS', LEN( CMAQ_MDATA%METVERS ), CMAQ_MDATA%METVERS )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'METVERS', LEN_TRIM( CMAQ_MDATA%METVERS ), CMAQ_MDATA%METVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "METVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' CMAQCFG', LEN( CMAQ_MDATA%CMAQCFG ), CMAQ_MDATA%CMAQCFG )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'CMAQCFG', LEN_TRIM( CMAQ_MDATA%CMAQCFG ), CMAQ_MDATA%CMAQCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CMAQCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' MCIPCFG', LEN( CMAQ_MDATA%MCIPCFG ), CMAQ_MDATA%MCIPCFG )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'MCIPCFG', LEN_TRIM( CMAQ_MDATA%MCIPCFG ), CMAQ_MDATA%MCIPCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MCIPCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' EMISCFG', LEN( CMAQ_MDATA%EMISCFG ), CMAQ_MDATA%EMISCFG )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'EMISCFG', LEN_TRIM( CMAQ_MDATA%EMISCFG ), CMAQ_MDATA%EMISCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
-            EFLAG = .TRUE.
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "EMISCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, ' METCFG', LEN( CMAQ_MDATA%METCFG ), CMAQ_MDATA%METCFG )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'METCFG', LEN_TRIM( CMAQ_MDATA%METCFG ), CMAQ_MDATA%METCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "METCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL, 'SYNC_TOP', NF_FLOAT, 1, CMAQ_MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SYNC_TOP" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SYNC_TOP" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'MAXSYNC', NF_INT, 1, CMAQ_MDATA%MAXSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MAXSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CASE" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'MINSYNC', NF_INT, 1, CMAQ_MDATA%MINSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MINSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MINSYNC" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'WB_DUST', NF_INT, 1, CMAQ_MDATA%WB_DUST )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WB_DUST" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "WB_DUST" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'ERODE_AGLAND', NF_INT, 1, CMAQ_MDATA%ERODE_AGLAND )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ERODE_AGLAND" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ERODE_AGLAND" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'WBDUST_BELD', LEN( CMAQ_MDATA%WBDUST_BELD ), CMAQ_MDATA%WBDUST_BELD )
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'WBDUST_BELD', LEN_TRIM( CMAQ_MDATA%WBDUST_BELD ), CMAQ_MDATA%WBDUST_BELD )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WBDUST_BELD" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "WBDUST_BELD" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'LTNG_NO', NF_INT, 1, CMAQ_MDATA%LTNG_NO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNG_NO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "LTNG_NO" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'KZMIN', NF_INT, 1, CMAQ_MDATA%KZMIN )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "KZMIN" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "KZMIN" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'ILDEPV', NF_INT, 1, CMAQ_MDATA%ILDEPV )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ILDEPV" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ILDEPV" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'MOSAIC', NF_INT, 1, CMAQ_MDATA%MOSAIC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MOSAIC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MOSAIC" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'ABFLUX', NF_INT, 1, CMAQ_MDATA%ABFLUX )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ABFLUX" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ABFLUX" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'HGBIDI', NF_INT, 1, CMAQ_MDATA%HGBIDI )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "HGBIDI" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "HGBIDI" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'SFC_HONO', NF_INT, 1, CMAQ_MDATA%SFC_HONO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SFC_HONO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SFC_HONO" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'BIOGEMIS', NF_INT, 1, CMAQ_MDATA%BIOGEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "BIOGEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "BIOGEMIS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'PT3DEMIS', NF_INT, 1, CMAQ_MDATA%PT3DEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PT3DEMIS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'CLD_DIAG', NF_INT, 1, CMAQ_MDATA%CLD_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CLD_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CLD_DIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'AERDIAG', NF_INT, 1, CMAQ_MDATA%AERDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "AERDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "AERDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'PHOTDIAG', NF_INT, 1, CMAQ_MDATA%PHOTDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PHOTDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PHOTDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'SSEMDIAG', NF_INT, 1, CMAQ_MDATA%SSEMDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SSEMDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SSEMDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'DUSTEM_DIAG', NF_INT, 1, CMAQ_MDATA%DUSTEM_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "DUSTEM_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "DUSTEM_DIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'LTNGDIAG', NF_INT, 1, CMAQ_MDATA%LTNGDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNGDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "LTNGDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'B3GTS_DIAG', NF_INT, 1, CMAQ_MDATA%B3GTS_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "B3GTS_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "B3GTS_DIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'PT3DDIAG', NF_INT, 1, CMAQ_MDATA%PT3DDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PT3DDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'PT3DFRAC', NF_INT, 1, CMAQ_MDATA%PT3DFRAC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DFRAC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PT3DFRAC" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
@@ -2904,223 +2982,260 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'VERSION3', NFMPI_INT, 1, CMAQ_MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "VERSION3" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "VERSION3" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' PROJECT', LEN( CMAQ_MDATA%PROJECT ), CMAQ_MDATA%PROJECT )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'PROJECT', LEN( CMAQ_MDATA%PROJECT ), CMAQ_MDATA%PROJECT )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PROJECT" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PROJECT" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' CASE', LEN( CMAQ_MDATA%CASE ), CMAQ_MDATA%CASE )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'CASE', LEN( CMAQ_MDATA%CASE ), CMAQ_MDATA%CASE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CASE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CASE" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' EPISODE', LEN( CMAQ_MDATA%EPISODE ), CMAQ_MDATA%EPISODE )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'EPISODE', LEN( CMAQ_MDATA%EPISODE ), CMAQ_MDATA%EPISODE )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EPISODE" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "EPISODE" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' SPONSOR', LEN( CMAQ_MDATA%SPONSOR ), CMAQ_MDATA%SPONSOR )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'SPONSOR', LEN( CMAQ_MDATA%SPONSOR ), CMAQ_MDATA%SPONSOR )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SPONSOR" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SPONSOR" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' CMAQVERS', LEN( CMAQ_MDATA%CMAQVERS ), CMAQ_MDATA%CMAQVERS )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'CMAQVERS', LEN( CMAQ_MDATA%CMAQVERS ), CMAQ_MDATA%CMAQVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CMAQVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' MCIPVERS', LEN( CMAQ_MDATA%MCIPVERS ), CMAQ_MDATA%MCIPVERS )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'MCIPVERS', LEN( CMAQ_MDATA%MCIPVERS ), CMAQ_MDATA%MCIPVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MCIPVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' EMISVERS', LEN( CMAQ_MDATA%EMISVERS ), CMAQ_MDATA%EMISVERS )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'EMISVERS', LEN( CMAQ_MDATA%EMISVERS ), CMAQ_MDATA%EMISVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "EMISVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' METVERS', LEN( CMAQ_MDATA%METVERS ), CMAQ_MDATA%METVERS )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'METVERS', LEN( CMAQ_MDATA%METVERS ), CMAQ_MDATA%METVERS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METVERS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "METVERS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' CMAQCFG', LEN( CMAQ_MDATA%CMAQCFG ), CMAQ_MDATA%CMAQCFG )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'CMAQCFG', LEN( CMAQ_MDATA%CMAQCFG ), CMAQ_MDATA%CMAQCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CMAQCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CMAQCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' MCIPCFG', LEN( CMAQ_MDATA%MCIPCFG ), CMAQ_MDATA%MCIPCFG )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'MCIPCFG', LEN( CMAQ_MDATA%MCIPCFG ), CMAQ_MDATA%MCIPCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MCIPCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MCIPCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' EMISCFG', LEN( CMAQ_MDATA%EMISCFG ), CMAQ_MDATA%EMISCFG )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'EMISCFG', LEN( CMAQ_MDATA%EMISCFG ), CMAQ_MDATA%EMISCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "EMISCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "EMISCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, ' METCFG', LEN( CMAQ_MDATA%METCFG ), CMAQ_MDATA%METCFG )
+        IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'METCFG', LEN( CMAQ_MDATA%METCFG ), CMAQ_MDATA%METCFG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "METCFG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "METCFG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_REAL( FID, NFMPI_GLOBAL, 'SYNC_TOP', NFMPI_FLOAT, 1, CMAQ_MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SYNC_TOP" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SYNC_TOP" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'MAXSYNC', NFMPI_INT, 1, CMAQ_MDATA%MAXSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MAXSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CASE" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'MINSYNC', NFMPI_INT, 1, CMAQ_MDATA%MINSYNC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MINSYNC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MINSYNC" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'WB_DUST', NFMPI_INT, 1, CMAQ_MDATA%WB_DUST )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WB_DUST" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "WB_DUST" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'ERODE_AGLAND', NFMPI_INT, 1, CMAQ_MDATA%ERODE_AGLAND )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ERODE_AGLAND" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ERODE_AGLAND" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_TEXT( FID, NFMPI_GLOBAL, 'WBDUST_BELD', LEN( CMAQ_MDATA%WBDUST_BELD ), CMAQ_MDATA%WBDUST_BELD )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "WBDUST_BELD" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "WBDUST_BELD" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'LTNG_NO', NFMPI_INT, 1, CMAQ_MDATA%LTNG_NO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNG_NO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "LTNG_NO" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'KZMIN', NFMPI_INT, 1, CMAQ_MDATA%KZMIN )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "KZMIN" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "KZMIN" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'ILDEPV', NFMPI_INT, 1, CMAQ_MDATA%ILDEPV )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ILDEPV" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ILDEPV" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'MOSAIC', NFMPI_INT, 1, CMAQ_MDATA%MOSAIC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "MOSAIC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "MOSAIC" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'ABFLUX', NFMPI_INT, 1, CMAQ_MDATA%ABFLUX )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "ABFLUX" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "ABFLUX" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'HGBIDI', NFMPI_INT, 1, CMAQ_MDATA%HGBIDI )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "HGBIDI" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "HGBIDI" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'SFC_HONO', NFMPI_INT, 1, CMAQ_MDATA%SFC_HONO )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SFC_HONO" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SFC_HONO" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'BIOGEMIS', NFMPI_INT, 1, CMAQ_MDATA%BIOGEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "BIOGEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "BIOGEMIS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'PT3DEMIS', NFMPI_INT, 1, CMAQ_MDATA%PT3DEMIS )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DEMIS" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PT3DEMIS" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'CLD_DIAG', NFMPI_INT, 1, CMAQ_MDATA%CLD_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "CLD_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "CLD_DIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'AERDIAG', NFMPI_INT, 1, CMAQ_MDATA%AERDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "AERDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "AERDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'PHOTDIAG', NFMPI_INT, 1, CMAQ_MDATA%PHOTDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PHOTDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PHOTDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'SSEMDIAG', NFMPI_INT, 1, CMAQ_MDATA%SSEMDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "SSEMDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SSEMDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'DUSTEM_DIAG', NFMPI_INT, 1, CMAQ_MDATA%DUSTEM_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "DUSTEM_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "DUSTEM_DIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'LTNGDIAG', NFMPI_INT, 1, CMAQ_MDATA%LTNGDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "LTNGDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "LTNGDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'B3GTS_DIAG', NFMPI_INT, 1, CMAQ_MDATA%B3GTS_DIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "B3GTS_DIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "B3GTS_DIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'PT3DDIAG', NFMPI_INT, 1, CMAQ_MDATA%PT3DDIAG )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DDIAG" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PT3DDIAG" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NFMPI_PUT_ATT_INT( FID, NFMPI_GLOBAL, 'PT3DFRAC', NFMPI_INT, 1, CMAQ_MDATA%PT3DFRAC )
         IF ( IERR .NE. 0 ) THEN
-            CALL M3MESG( 'Error putting attribute "PT3DFRAC" to "' // TRIM(FLIST3(FNUM)) // '"' )
+            WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "PT3DFRAC" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
+            CALL M3MESG( MESG )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
@@ -5437,14 +5552,23 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*1     CH
         INTEGER         K
 
-        K  = 1 + LBLANK( CBUF )
-        CH =  CBUF(K:K)
+        CHARACTER*1,  PARAMETER :: PERIOD = '.'
 
-        IF (      ( CH .EQ. 'Y'  ) .OR. ( CH .EQ. 'y' ) .OR.        &
-                  ( CH .EQ. 'T'  ) .OR. ( CH .EQ. 't' ) ) THEN
+        CHARACTER*1     C1
+        CHARACTER*2     C2
+
+        C2 =  ADJUSTL( CBUF )
+        IF ( C2 .EQ. PERIOD ) THEN      !!  handle ".TRUE.",  etc.
+            C1 = C2( 2:2 )
+        ELSE
+            C1 = C2( 1:1 )
+        END IF
+
+        IF (      ( C1 .EQ. 'Y'  ) .OR. ( C1 .EQ. 'y' ) .OR.        &
+                  ( C1 .EQ. 'T'  ) .OR. ( C1 .EQ. 't' ) ) THEN
             STR2LOG = 1
-        ELSE IF ( ( CH .EQ. 'N'  ) .OR. ( CH .EQ. 'n' ) .OR.        &
-                  ( CH .EQ. 'F'  ) .OR. ( CH .EQ. 'f' ) ) THEN
+        ELSE IF ( ( C1 .EQ. 'N'  ) .OR. ( C1 .EQ. 'n' ) .OR.        &
+                  ( C1 .EQ. 'F'  ) .OR. ( C1 .EQ. 'f' ) ) THEN
             STR2LOG = 0
         ELSE
             STR2LOG = IMISS3

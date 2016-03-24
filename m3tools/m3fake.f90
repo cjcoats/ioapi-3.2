@@ -7,11 +7,11 @@ PROGRAM M3FAKE
     !! Copyright (C) 1992-2002 MCNC, 
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and 
-    !! (C) 2015 UNC Institute for the Environment.
+    !! (C) 2015-2016 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  subroutine body starts at line  133
+    !!  subroutine body starts at line  134
     !!
     !!  FUNCTION:
     !!       Generate new EDSS/Models-3 I/O API file with the user-sepcified
@@ -35,6 +35,7 @@ PROGRAM M3FAKE
     !!          USE M3UTILIO, and related changes.
     !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source
     !!      Support for M3INT8 variables.
+    !!      Version  03/2016 by CJC:  improved GRID NAME prompt
     !!***********************************************************************
 
     USE M3UTILIO
@@ -198,7 +199,7 @@ PROGRAM M3FAKE
 
     !!...............   Get file, grid description:
 
-    CALL GETSTR( 'Enter the grid name >>', BLANK,  GDNAM3D )
+    CALL GETSTR( 'Enter the grid name (or RET to enter grid parms) >>', BLANK,  GDNAM3D )
 
     IF ( DSCGRID( GDNAM3D, CNAME, GDTYP3D,              &      !  "standard" grid name
                   P_ALP3D, P_BET3D, P_GAM3D,            &
