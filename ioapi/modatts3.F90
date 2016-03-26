@@ -1,8 +1,9 @@
+xd
 
 MODULE MODATTS3
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !! Version "$Id: modatts3.F90 346 2016-03-24 14:49:19Z coats $"
+    !! Version "$Id: modatts3.F90 349 2016-03-26 14:28:44Z coats $"
     !! Copyright (c) 2014-2015 UNC Institute for the Environment
     !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
     !! See file "LGPL.txt" for conditions of use.
@@ -235,7 +236,7 @@ MODULE MODATTS3
     INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
 
     CHARACTER*80, SAVE :: SVN_ID =  &
-'$Id:: modatts3.F90 346 2016-03-24 14:49:19Z coats                              $'
+'$Id:: modatts3.F90 349 2016-03-26 14:28:44Z coats                              $'
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1921,7 +1922,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_GETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 346 2016-03-24 14:49:19Z coats $"
+        !! Version "$Id: modatts3.F90 349 2016-03-26 14:28:44Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -2736,7 +2737,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL, 'SYNC_TOP', NF_FLOAT, 1, CMAQ_MDATA%SYNC_TOP )
+        IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL, 'SYNC_TOP', NF_FLOAT, 1, CMAQ_MDATA%VERSION3 )
         IF ( IERR .NE. 0 ) THEN
             WRITE( MESG, '( 3A, I10 )' ) 'Error putting attribute "SYNC_TOP" to "', TRIM(FLIST3(FNUM)), '" STATUS=', IERR
             CALL M3MESG( MESG )
@@ -2929,7 +2930,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_SETCMAQ( FID, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 346 2016-03-24 14:49:19Z coats $"
+        !! Version "$Id: modatts3.F90 349 2016-03-26 14:28:44Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -5574,13 +5575,16 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         CHARACTER(LEN=*), INTENT( IN ) :: CBUF
 
+        CHARACTER*1     CH
+        INTEGER         K
+
         CHARACTER*1,  PARAMETER :: PERIOD = '.'
 
         CHARACTER*1     C1
         CHARACTER*2     C2
 
         C2 =  ADJUSTL( CBUF )
-        IF ( C2( 1:1 ) .EQ. PERIOD ) THEN      !!  handle ".TRUE.",  etc.
+        IF ( C2 .EQ. PERIOD ) THEN      !!  handle ".TRUE.",  etc.
             C1 = C2( 2:2 )
         ELSE
             C1 = C2( 1:1 )

@@ -63,7 +63,7 @@ LDFLAGS = -I$(IODIR) -DIOAPICPL $(DEFINEFLAGS) $(ARCHFLAGS)
 #
 # PnetCDF builds also require  -lpnetcdf
 
-LIBS = -L${OBJDIR} -lioapi $(NCFLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
+LIBS = -L${OBJDIR} -lioapi NCFLIBS $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 
 VPATH = ${OBJDIR}
 

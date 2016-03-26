@@ -2,7 +2,7 @@
       INTEGER FUNCTION WKDAY( JDATE )
 
 C***********************************************************************
-C Version "$Id: wrbuf3.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: wkday.F 348 2016-03-26 14:21:09Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -67,7 +67,7 @@ C   begin body of function  WKDAY
       JDAY  = MOD( JDATE, 1000 )
 
 #ifdef CLIMODAYS
-        K     = 360 * ( YEAR - 3 ) + ( MOD( JDAY + CLIMODAYS - 1, 7 )
+        K     = 360 * ( YEAR - 3 ) + MOD( JDAY + CLIMODAYS - 1, 7 )
         WKDAY = 1 + MOD (K, 7)
         RETURN
 #endif

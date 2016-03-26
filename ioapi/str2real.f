@@ -2,7 +2,7 @@
         REAL FUNCTION STR2REAL( STRING )
 
 C***********************************************************************
-C Version "$Id: str2real.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: str2real.f 349 2016-03-26 14:28:44Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems, and

@@ -18,6 +18,7 @@ Announcing RELEASE CANDIDATE 1 for I/O API VERSION 3.2
             > CF-compliant geospatial metadata option
             > Geospatial-Transform metadata option
             > "Standard" CMAQ and SMOKE metadata options.
+            > "Unstructured Text" metadata option
         *) New Module MODGCTP
         *) New Module MODNCFIO
             > Resolve netCDF-vs-PnetCDF issues
@@ -192,7 +193,7 @@ See
 
     New module MODATTS3 replaces I/O API-3.1 module MATXATTS (one
     source incompatibility between these two I/O API versions, but
-    hopefully not a major one).  It provides routines and module-
+    hopefully not a major one).  It provides routines and MODULE
     variables for the following sorts of metadata:
 
         Matrix-attribute routines add extra file attributes
@@ -206,15 +207,20 @@ See
 
             <http://cfconventions.org/>
 
-        CMAQ-metadata routines add the current version of "Standard
-        CMAQ metadata" to the headers of newly created files.  This
-        is turned on by "setenv IOAPI_CMAQMETA [ENV | <path>]"
-        or by calling INITCMAQ()
+        CMAQ-metadata routines add the current version of "Standard CMAQ
+        metadata" to the headers of newly created files.  This is turned
+        on by "setenv IOAPI_CMAQMETA [ENV | <path>]" or by calling
+        INITCMAQ().  The current version of "Standard CMAQ metadata" is
+        defined primarily in terms of the environment variables used to
+        control a CMAQ run.
 
         Unstructured-text metadata routines add multiple lines of
         80-column text  from either INITMDATA()-arguments or from a text
         file to the headers of newly created files.  This is turned on
-        by "setenv IOAPI_TEXTMETA  <path>" or by calling INITMTEXT()
+        by "setenv IOAPI_TEXTMETA  <path>" or by calling INITMTEXT(),
+        and uses only the non-comment, non-blank lines for this purpose.
+        Note that UNIX/Linux filter-utility "fold" can be used to create
+        80-column input.
 
         SMOKE-metadata routines are not currently implemented
         (pending a definition of "Standard SMOKE Metadata");
@@ -484,7 +490,7 @@ Other Issues
     time step sequence  SDATE:STIME:TSTEP:NSTEPS  and is safe for
     very long time step sequences (even multi-century!).
 
-    Add PARAMETER SINUGRD3=11 for the Sinusoidal Equal Area map
+    Added PARAMETER SINUGRD3=11 for the Sinusoidal Equal Area map
     projection to INCLUDE-file PARMS3.EXT (and therefore to
     MODULE M3UTILIO).
 
@@ -501,6 +507,8 @@ ACKNOWLEDGEMENT
         Edward Anderson, Lockheed Martin for US EPA.
 
         B.H.Baek, UNC Institute for the Environment
+
+        Chris Nolte, US EPA
 
 
 

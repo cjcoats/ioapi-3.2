@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl.sed 340 2016-03-13 16:12:45Z coats $"
+# Version "$Id: Makefile.nocpl.sed 348 2016-03-26 14:21:09Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -48,7 +48,7 @@ MAKEINCLUDE
 
 FFLAGS = -I$(IODIR) IOAPI_DEFS $(ARCHFLAGS) $(PARFLAGS) $(FOPTFLAGS) $(ARCHFLAGS)
 
-LDFLAGS = -I$(IODIR) -DIOAPICPL $(DEFINEFLAGS) $(ARCHFLAGS)
+LDFLAGS = -I$(IODIR) $(DEFINEFLAGS) $(ARCHFLAGS)
 
 #  Incompatibility between netCDF versions before / after v4.1.1:
 #  For netCDF v4 and later, you may also need the extra libraries
@@ -57,7 +57,7 @@ LDFLAGS = -I$(IODIR) -DIOAPICPL $(DEFINEFLAGS) $(ARCHFLAGS)
 #          nc-config --libs
 #          nf-config --libs
 #
- LIBS = -L${OBJDIR} -lioapi $(NCFLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
+ LIBS = -L${OBJDIR} -lioapi NCFLIBS $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 #LIBS = -L${OBJDIR} -lioapi -lnetcdf  $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 #LIBS = -L${OBJDIR} -lioapi `nf-config --libs` `nc-config --libs` $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 

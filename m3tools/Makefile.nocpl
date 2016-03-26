@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl 340 2016-03-13 16:12:45Z coats $"
+# Version "$Id: Makefile.nocpl 348 2016-03-26 14:21:09Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -35,7 +35,7 @@
 
 .SUFFIXES: .m4 .c .F .f .f90 .F90
 
-BASEDIR = ${HOME}/web31
+BASEDIR = ${HOME}/ioapi-3.2
 SRCDIR  = ${BASEDIR}/m3tools
 IODIR   = ${BASEDIR}/ioapi
 OBJDIR  = ${BASEDIR}/${BIN}
@@ -46,9 +46,9 @@ INSTDIR = ${INSTALL}/${BIN}
 
 include $(IODIR)/Makeinclude.${BIN}
 
-FFLAGS = -I$(IODIR) -DIOAPICPL $(ARCHFLAGS) $(PARFLAGS) $(FOPTFLAGS) $(ARCHFLAGS)
+FFLAGS = -I$(IODIR) $(ARCHFLAGS) $(PARFLAGS) $(FOPTFLAGS) $(ARCHFLAGS)
 
-LDFLAGS = -I$(IODIR) -DIOAPICPL $(DEFINEFLAGS) $(ARCHFLAGS)
+LDFLAGS = -I$(IODIR) $(DEFINEFLAGS) $(ARCHFLAGS)
 
 #  Incompatibility between netCDF versions before / after v4.1.1:
 #  For netCDF v4 and later, you may also need the extra libraries
