@@ -218,28 +218,25 @@ gtar:
 
 bins:
 	make BIN=Linux2_x86_64
-	make BIN=Linux2_x86_64g95
 	make BIN=Linux2_x86_64sun
 	make BIN=Linux2_x86_64ifort
-	make BIN=Linux2_x86_64g95dbg
+	make BIN=Linux2_x86_64dbg
 	make BIN=Linux2_x86_64sundbg
 	make BIN=Linux2_x86_64ifortdbg
 
 binclean:
 	make BIN=Linux2_x86_64          clean
-	make BIN=Linux2_x86_64g95       clean
 	make BIN=Linux2_x86_64sun       clean
 	make BIN=Linux2_x86_64ifort     clean
-	make BIN=Linux2_x86_64g95dbg    clean
+	make BIN=Linux2_x86_64dbg       clean
 	make BIN=Linux2_x86_64sundbg    clean
 	make BIN=Linux2_x86_64ifortdbg  clean
 
 bindirs:
 	make BIN=Linux2_x86_64          dir
-	make BIN=Linux2_x86_64g95       dir
 	make BIN=Linux2_x86_64sun       dir
 	make BIN=Linux2_x86_64ifort     dir
-	make BIN=Linux2_x86_64g95dbg    dir
+	make BIN=Linux2_x86_64dbg       dir
 	make BIN=Linux2_x86_64sundbg    dir
 	make BIN=Linux2_x86_64ifortdbg  dir
 

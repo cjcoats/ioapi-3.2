@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 329 2016-03-08 16:25:25Z coats $" -->
+<!-- "$Id: AVAIL.html 350 2016-03-29 14:32:58Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -207,7 +207,26 @@ m3stat:
                        I/O&nbsp;API configurations (below), for which
                        the names (etc.) of the MPI based compilers are
                        highly dependent upon the details of individual
-                       installations.
+                       installations.  Note that there are already a
+                       number of specialized
+                       <CODE>Makeinclude.${BIN}</CODE>s 
+                       for various purposes; they should serve as
+                       templates if you need these capabilities for
+                       different compilers:
+                       <DL "COMPACT">
+                           <DT><CODE>Makeinclude.*dbg</CODE>
+                           <DD>Debug version of library
+                           <DT><CODE>Makeinclude.*360</CODE>
+                           <DD>360-day (no leap-year) climatology-year version of library
+                           <DT><CODE>Makeinclude.*365</CODE>
+                           <DD>365-day (no leap-year) climatology-year version of library
+                           <DT><CODE>Makeinclude.*MPI</CODE>
+                           <DD>PnetCDF/MPI enabled distributed-I/O version
+                           of library
+                           <DT><CODE>Makeinclude.Linux2_x86_64ifort_medium*</CODE>
+                           <DD>medium-memory-model (large stack/large-array)
+                               version of library
+                       </DL>
                   <P>
                   <LI> <EM>I/O&nbsp;API 3.2 only</EM> If you want to enable the
                         <A HREF="BUFFERED.html#pncf">PnetCDF
@@ -1467,7 +1486,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 329 2016-03-08 16:25:25Z coats $
+    $Id: AVAIL.html 350 2016-03-29 14:32:58Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

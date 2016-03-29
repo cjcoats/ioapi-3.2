@@ -193,7 +193,7 @@ OBJDIR     = $(BASEDIR)/$(BIN)
 
 
 #      ----------------------   TOP-LEVEL TARGETS:   ------------------
-#
+
 all:  dirs fix configure
 	(cd $(IODIR)   ; make BIN=${BIN} all)
 	(cd $(TOOLDIR) ; make BIN=${BIN} all)

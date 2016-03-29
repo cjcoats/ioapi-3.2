@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.cpl 348 2016-03-26 14:21:09Z coats $"
+# Version "$Id: Makefile.cpl 350 2016-03-29 14:32:58Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -121,28 +121,27 @@ relink:
 	make BIN=${BIN} -i rmexe ; make BIN=${BIN} all
 
 bins:
-	make BIN=Linux2_x86_64g95
+	make BIN=Linux2_x86_64
 	make BIN=Linux2_x86_64sun
 	make BIN=Linux2_x86_64ifort
-	make BIN=Linux2_x86_64g95dbg
+	make BIN=Linux2_x86_64dbg
 	make BIN=Linux2_x86_64sundbg
 	make BIN=Linux2_x86_64ifortdbg
 
 binclean:
 	make -i BIN=Linux2_x86_64          clean
-	make -i BIN=Linux2_x86_64g95       clean
 	make -i BIN=Linux2_x86_64sun       clean
 	make -i BIN=Linux2_x86_64ifort     clean
-	make -i BIN=Linux2_x86_64g95dbg    clean
+	make -i BIN=Linux2_x86_64dbg       clean
 	make -i BIN=Linux2_x86_64sundbg    clean
 	make -i BIN=Linux2_x86_64ifortdbg  clean
 
+
 binrelink:
 	make BIN=Linux2_x86_64         relink
-	make BIN=Linux2_x86_64g95      relink
 	make BIN=Linux2_x86_64sun      relink
 	make BIN=Linux2_x86_64ifort    relink
-	make BIN=Linux2_x86_64g95dbg   relink
+	make BIN=Linux2_x86_64dbg      relink
 	make BIN=Linux2_x86_64sundbg   relink
 	make BIN=Linux2_x86_64ifortdbg relink
 

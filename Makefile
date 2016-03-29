@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.template 256 2015-11-06 16:34:18Z coats $"
+# VERSION "$Id: Makefile.template 348 2016-03-26 14:21:09Z coats $"
 #      EDSS/Models-3 I/O API Version 3.2.
 #.........................................................................
 # COPYRIGHT
@@ -114,16 +114,31 @@
 #
 #       Defining BIN3_DEBUG turns on trace-messages for native-binary
 #       mode routines.
+######################################################################
+#      ----------   Default/fall-back Definitions --------------------
+#      Environment variables override these; 
+#      variable setting on the command line ("make VAR=VALUE ...")
+#      overrides that.
+#  BIN        : Use 64-bit gcc/gfortran
+#  BASEDIR    : source under this current directory
+#  INSTALL    : installation directly under ${HOME}
+#  LIBINST    :  for installation of library
+#  BININST    : for installation of m3tools executables
+#  CPLMODE    : nocpl
+#  IOAPIDEFS  : none (can override for climo-year, etc.
+#  PVMINCL    : none
+#  NCFLIBS    : assumes netCDF-4-style separate libs
 
-BIN        = Linux2_x86_64          # fall-back to gcc/gfortran
-BASEDIR    = `pwd`                  # fall-back to source under this current directory
-INSTALL    = ${HOME}                # fallback to installation directly under ${HOME}
-LIBINST    = $(INSTALL)/$(BIN)      # fall-back for installation of library
-BININST    = $(INSTALL)/$(BIN)      # fall-back for installation of m3tools executables
+
+BIN        = Linux2_x86_64
+BASEDIR    = ${PWD}
+INSTALL    = ${HOME}
+LIBINST    = $(INSTALL)/$(BIN)
+BININST    = $(INSTALL)/$(BIN)
 CPLMODE    = nocpl
 IOAPIDEFS  = 
-PVMINCL    =                        #  or for "cpl": $(PVM_ROOT)/conf/$(PVM_ARCH).def
-NCFLIBS    = -lnetcdf -lnetcdff     #  assumes netCDF-4-style separate libs
+PVMINCL    =
+NCFLIBS    = -lnetcdf -lnetcdff
 
 #               ****   Variants   ****
 #
@@ -168,7 +183,7 @@ SEDCMD = \
 
 #      ----------   I/O API Build System directory definitions  --------
 
-VERSION = 3.2
+VERSION = 3.2-${CPLMODE}
 
 IODIR      = $(BASEDIR)/ioapi
 FIXDIR     = $(IODIR)/fixed_src
@@ -178,33 +193,33 @@ OBJDIR     = $(BASEDIR)/$(BIN)
 
 
 #      ----------------------   TOP-LEVEL TARGETS:   ------------------
-#
+
 all:  dirs fix configure
-	(cd $(IODIR)   ; make all)
-	(cd $(TOOLDIR) ; make all)
-	(cd $(RTTDIR)  ; make all)
+	(cd $(IODIR)   ; make BIN=${BIN} all)
+	(cd $(TOOLDIR) ; make BIN=${BIN} all)
 
 configure:
 	(cd $(IODIR)   ;  sed $(SEDCMD) < Makefile.$(CPLMODE).sed > Makefile )
 	(cd $(TOOLDIR) ;  sed $(SEDCMD) < Makefile.$(CPLMODE).sed > Makefile )
-	(cd $(TESTDIR) ;  sed $(SEDCMD) < Makefile.$(CPLMODE).sed > Makefile )
 
 bins:  dirs
 	(cd $(IODIR)   ; make bins)
 	(cd $(TOOLDIR) ; make bins)
-	(cd $(RTTDIR)  ; make bins)
 
 clean:
-	(cd $(IODIR)   ; make -i clean)
-	(cd $(TOOLDIR) ; make -i clean)
+	(cd $(IODIR)   ; make BIN=${BIN} -i clean)
+	(cd $(TOOLDIR) ; make BIN=${BIN} -i clean)
 
 relink:
-	(cd $(TOOLDIR) ; make -i rmexe; make)
+	(cd $(TOOLDIR) ; make BIN=${BIN} relink)
+
+binrelink:
+	(cd $(TOOLDIR) ; make binrelink)
 
 install: $(LIBINST) $(BININST)
 	echo "Installing I/O API and M3TOOLS in $(LIBINST) and $(BININST)"
-	(cd $(IODIR)   ; make INSTDIR=${LIBINST} install)
-	(cd $(TOOLDIR) ; make INSTDIR=${BININST} install)
+	(cd $(IODIR)   ; make BIN=${BIN} INSTDIR=${LIBINST} install)
+	(cd $(TOOLDIR) ; make BIN=${BIN} INSTDIR=${BININST} install)
 
 dirs: $(OBJDIR) $(FIXDIR)
 

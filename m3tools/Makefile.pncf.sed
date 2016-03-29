@@ -123,27 +123,27 @@ relink:
 	make BIN=${BIN} -i rmexe ; make all
 
 bins:
+	make BIN=Linux2_x86_64
 	make BIN=Linux2_x86_64sun
-	make BIN=Linux2_x86_64g95
-	make BIN=Linux2_x86_64gfort
 	make BIN=Linux2_x86_64ifort
+	make BIN=Linux2_x86_64dbg
 	make BIN=Linux2_x86_64sundbg
 	make BIN=Linux2_x86_64ifortdbg
 
 binclean:
-	make -i BIN=Linux2_x86_64sun     clean
-	make -i BIN=Linux2_x86_64g95     clean
-	make -i BIN=Linux2_x86_64gfort   clean
-	make -i BIN=Linux2_x86_64ifort   clean
-	make -i BIN=Linux2_x86_64sundbg  clean
+	make -i BIN=Linux2_x86_64          clean
+	make -i BIN=Linux2_x86_64sun       clean
+	make -i BIN=Linux2_x86_64ifort     clean
+	make -i BIN=Linux2_x86_64dbg       clean
+	make -i BIN=Linux2_x86_64sundbg    clean
 	make -i BIN=Linux2_x86_64ifortdbg  clean
 
 
 binrelink:
+	make BIN=Linux2_x86_64         relink
 	make BIN=Linux2_x86_64sun      relink
-	make BIN=Linux2_x86_64g95      relink
-	make BIN=Linux2_x86_64gfort    relink
 	make BIN=Linux2_x86_64ifort    relink
+	make BIN=Linux2_x86_64dbg      relink
 	make BIN=Linux2_x86_64sundbg   relink
 	make BIN=Linux2_x86_64ifortdbg relink
 

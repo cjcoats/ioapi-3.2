@@ -1,4 +1,3 @@
-xd
 
 MODULE MODATTS3
 
