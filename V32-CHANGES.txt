@@ -26,7 +26,7 @@ Announcing RELEASE CANDIDATE 1 for I/O API VERSION 3.2
         *) New Module MODWRFIO
         *) New and/or OpenMP Parallel "m3tools" programs
         *) Hacks for "gfortran"
-        *) CygWn support under MS-Windows
+        *) CygWin/MS-Windows, gcc/gfortran/Mac OSX support
         *) Other Issues
 
     See the I/O API ChangeLog or the I/O API Version 3.x Summary for links
@@ -216,11 +216,11 @@ See
 
         Unstructured-text metadata routines add multiple lines of
         80-column text  from either INITMDATA()-arguments or from a text
-        file to the headers of newly created files.  This is turned on
+        file, to the headers of newly created files.  This is turned on
         by "setenv IOAPI_TEXTMETA  <path>" or by calling INITMTEXT(),
         and uses only the non-comment, non-blank lines for this purpose.
         Note that UNIX/Linux filter-utility "fold" can be used to create
-        80-column input.
+        80-column input...
 
         SMOKE-metadata routines are not currently implemented
         (pending a definition of "Standard SMOKE Metadata");
@@ -506,9 +506,9 @@ ACKNOWLEDGEMENT
 
         Edward Anderson, Lockheed Martin for US EPA.
 
-        B.H.Baek, UNC Institute for the Environment
+        B.H.Baek and Francis S. Binkowski, UNC Institute for the Environment
 
-        Chris Nolte, US EPA
+        Chris Nolte and Tanya Spero, US EPA
 
 
 
