@@ -1,7 +1,7 @@
 /**************************************************************************
 VERSION:
     EDSS/Models-3 I/O API -- Version 3
-    "julianc.c" version "$Id: julianc.c 100 2015-01-16 16:52:16Z coats $"
+    "julianc.c" version "$Id: julianc.c 353 2016-04-19 17:14:33Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
@@ -28,6 +28,8 @@ REVISION HISTORY
 
     Unification 2/2002 with Global Climate Model IO_360 version,
     that uses a 360-day GC-year.
+
+    Version 4/2016 by CJC:  add Global Climate Model IO_365 version
                     
 **************************************************************************/
 
@@ -40,14 +42,20 @@ int julianc ( int year, int month, int mday )
     
 #ifdef IO_360
     return  mday + 30 * ( month - 1 ) ;
-#else
+#endif
+
+#ifdef IO_365
+    m = ( month + 9 ) % 12 ;
+    n = (m * 153 + 2) / 5 + mday + 58 ;
+    return  1  +  n % 365 ;
+#endif
+
     m = ( month + 9 ) % 12 ;
     n = (m * 153 + 2) / 5 + mday + 58 ;
     k = ( ( year %   4 ) ? 365 :
         ( ( year % 100 ) ? n++, 366 :
         ( ( year % 400 ) ? 365 : n++, 366 ) ) ) ;
     return  1  +  n % k ;
-#endif
 
     }       /*  end body of julianc()  */
 

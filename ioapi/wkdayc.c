@@ -1,6 +1,6 @@
 
 /**************************************************************************
-ERSION "$Id: wkdayc.c 100 2015-01-16 16:52:16Z coats $"
+ERSION "$Id: wkdayc.c 353 2016-04-19 17:14:33Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -22,8 +22,10 @@ REVISION HISTORY
 	prototype  3/1995 by Carlie J. Coats, Jr.,
         MCNC Environmental Modeling Center
 
-        Unification 2/2002 with Global Climate Model IO_360 version,
-        that uses a 360-day year
+    Unification 2/2002 with Global Climate Model IO_360 version,
+    that uses a 360-day year
+
+    Version 4/2016 by CJC:  add Global Climate Model IO_365 version
                     
 **************************************************************************/
 
@@ -31,7 +33,8 @@ REVISION HISTORY
 
 #ifdef  IO_360
 #define YEARDAYS 360
-#else
+#endif
+#ifdef  IO_365
 #define YEARDAYS 365
 #endif
 
@@ -41,6 +44,14 @@ int wkdayc ( int jdate )
     int  year, jday, k ;
     year  = jdate ;
     jday  = jdate % 1000 ;
+
+#ifdef YEARDAYS
+
+    k = YEARDAYS * ( year - 3 ) + ( jday + YEARDAYS - 1 ) % 7 ;
+    return  1  +  k % 7 ;
+    
+#endif
+
     k     = year - 1 ;
     k     = k * YEARDAYS  +  k / 4  -  k / 100  +  k / 400  +  jday  -  1 ;
     return  1  +  k % 7 ;

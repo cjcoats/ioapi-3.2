@@ -2,7 +2,7 @@
         INTEGER  FUNCTION SECSDIFF ( ADATE, ATIME, ZDATE, ZTIME )
 
 C***********************************************************************
-C Version "$Id: secsdiff.F 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: secsdiff.F 352 2016-04-19 16:39:52Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems
@@ -30,6 +30,8 @@ C       Version 1/2007 by CJC:  simplification; handle negative
 C       *DATE arguments correctly
 C
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
+C
+C       Modified 4/2016 by CJC: IO_365 changes, from Chris Nolte, US EPA
 C***********************************************************************
 
       IMPLICIT NONE
@@ -45,12 +47,16 @@ C...........   PARAMETERS and their descriptions:
         !  "normal"-year, leap-year # of days
 
 #ifdef IO_360
-        INTEGER, PARAMETER :: YDAYS = 360
-        INTEGER, PARAMETER :: LDAYS = 360
+#define     YDAYS   (360)
+#define     LDAYS   (360)
 #endif
-#ifndef IO_360
-        INTEGER, PARAMETER :: YDAYS = 365
-        INTEGER, PARAMETER :: LDAYS = 366
+#ifdef IO_365
+#define     YDAYS   (365)
+#define     LDAYS   (365)
+#endif
+#ifndef YDAYS
+#define     YDAYS   (365)
+#define     LDAYS   (366)
 #endif
 
 

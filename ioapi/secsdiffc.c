@@ -1,6 +1,6 @@
 
 /**************************************************************************
-VERSION "$Id: secsdiffc.c 100 2015-01-16 16:52:16Z coats $"
+VERSION "$Id: secsdiffc.c 354 2016-04-19 19:09:06Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -29,6 +29,8 @@ REVISION HISTORY
 
     Modified 10/2003 by CJC for I/O APIv3:  cross-language FINT/FSTR_L
     type resolution modifications
+
+    Version 4/2016 by CJC:  add Global Climate Model IO_365 version
 **************************************************************************/
 
 #include  "iodecl3.h"
@@ -49,9 +51,7 @@ int secsdiffc( int  adate ,
     secs  =   ztime % 100          -    atime % 100 ;
     total = 60 * ( 60 * ( 24 * days + hours ) + mins ) + secs ;
     
-/** Now add corrections for differences in years **/
-    
-#ifdef IO_360
+/** Now add corrections for differences in years **/5
 
     for ( adate/=1000 ,  zdate/=1000 ; adate < zdate ; adate++ )
         {
@@ -62,8 +62,27 @@ int secsdiffc( int  adate ,
         {
         total -= 360 * 86400 ;
         }
+
+    return  total ;
     
-#else
+#endif
+    
+#ifdef IO_365
+    
+    for ( adate/=1000 ,  zdate/=1000 ; adate < zdate ; adate++ )
+        {
+        total += 365 * 86400 ;
+        }
+
+    for ( ; zdate < adate ; zdate++ )
+        {
+        total -= 365 * 86400 ;
+        }
+
+    return  total ;
+
+#endif
+    
 
     for ( adate/=1000 ,  zdate/=1000 ; adate < zdate ; adate++ )
         {
@@ -80,8 +99,6 @@ int secsdiffc( int  adate ,
         else if ( zdate % 400 ) total -= 365 * 86400 ;
         else                    total -= 366 * 86400 ;
         }
-    
-#endif
 
     return  total ;
 

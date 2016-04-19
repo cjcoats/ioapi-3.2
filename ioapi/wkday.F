@@ -2,7 +2,7 @@
       INTEGER FUNCTION WKDAY( JDATE )
 
 C***********************************************************************
-C Version "$Id: wkday.F 348 2016-03-26 14:21:09Z coats $"
+C Version "$Id: wkday.F 353 2016-04-19 17:14:33Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -31,6 +31,8 @@ C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
 C
 C       Modified 11/2015 by CJC: IO_365 changes.  For IO_360 an IO_365,
 C       assume Year 1900 Day 1 is a Monday.  Equivalently, Year 3 Day 1
+C
+C       Bug-fix 4/2016 by CJC for IO_365
 C***********************************************************************
 
       IMPLICIT NONE
@@ -67,7 +69,7 @@ C   begin body of function  WKDAY
       JDAY  = MOD( JDATE, 1000 )
 
 #ifdef CLIMODAYS
-        K     = 360 * ( YEAR - 3 ) + MOD( JDAY + CLIMODAYS - 1, 7 )
+        K     = CLIMODAYS * ( YEAR - 3 ) + MOD( JDAY + CLIMODAYS - 1, 7 )
         WKDAY = 1 + MOD (K, 7)
         RETURN
 #endif

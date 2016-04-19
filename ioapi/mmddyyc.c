@@ -2,7 +2,7 @@
 /**************************************************************************
 VERSION:
     EDSS/Models-3 I/O API.
-    "locatsc.c" version "$Id: mmddyyc.c 100 2015-01-16 16:52:16Z coats $"
+    "locatsc.c" version "$Id: mmddyyc.c 353 2016-04-19 17:14:33Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
@@ -26,6 +26,8 @@ REVISION HISTORY:
 
     Unification 2/2002 by CJC with Global Climate Model IO_360 version
     that uses a 360-day year; use m3mesgc() for error messages
+
+    Version 4/2016 by CJC:  add Global Climate Model IO_365 version
                     
 **************************************************************************/
 
@@ -93,7 +95,11 @@ iday = jdate % 1000 ;
 
 #else
 
+#ifdef IO_365
     leap = ( year % 4 == 0 ) && ( year % 100 ? 1 : ( year % 400 == 0 ) ) ;
+#else
+    leap = 0 ;
+#endif
 
     if ( leap )
         {

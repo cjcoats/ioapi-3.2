@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 351 2016-04-06 14:23:21Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 355 2016-04-19 19:10:22Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 351 2016-04-06 14:23:21Z coats $
+    $Id: NEWSTUFF.html 355 2016-04-19 19:10:22Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,8 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#apr192016">
+               Fixes for <CODE>IO_365</CODE> Climatology-Year Version.
          <LI>  <A HREF = "#mar232016">
                &quot;unstructured text-file&quot; metadata in
                <CODE>MODULE MODATTS3</CODE></A>
@@ -569,6 +571,49 @@
 
 
 <HR> <!----------------------------------------------------------------->
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "apr192016">
+    Fixes for Climatology-Year
+    <CODE>IO_365</CODE> Version
+</A></H2>
+
+    <BLOCKQUOTE>
+    Bug-fix from Chris Nolte, US EPA, in <A
+    HREF="SECSDIFF.html"><CODE>SECSDIFF()</CODE></A> for the
+    Climatology-Year <CODE>IO_365</CODE> Version.  He also noted that
+    the following C routines needed
+    <CODE>IO_365</CODE> support:
+    <BLOCKQUOTE>
+        <CODE>daymonc()</CODE><BR>
+        <CODE>julianc()</CODE><BR>
+        <CODE>mmddyyc()</CODE><BR>
+        <CODE>secsdiffc</CODE><BR>
+        <CODE>wkdayc()</CODE><BR>
+    </BLOCKQUOTE>
+    Now complete.
+    <P>
+    
+    The following <VAR>Makeinclude</VAR>-files were added, for building
+    360-day and 365-day Climatology Year versions of the I/O&nbsp;API,
+    so that it will be easier to keep the Climatology-Year builds
+    distinct from the (not-compatible) &quot;normal&quot; builds:
+    <BLOCKQUOTE>
+        <VAR>Makeinclude.Linux2_x86_64_360</VAR><BR>
+        <VAR>Makeinclude.Linux2_x86_64_365</VAR><BR>
+        <VAR>Makeinclude.Linux2_x86_64gfort_360</VAR><BR>
+        <VAR>Makeinclude.Linux2_x86_64gfort_365</VAR><BR>
+        <VAR>Makeinclude.Linux2_x86_64ifort_360</VAR><BR>
+        <VAR>Makeinclude.Linux2_x86_64ifort_365</VAR><BR>
+        <VAR>Makeinclude.Linux2_x86_64pg_360</VAR><BR>
+        <VAR>Makeinclude.Linux2_x86_64pg_365</VAR><BR>
+    </BLOCKQUOTE>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "mar232016">
@@ -5924,7 +5969,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 351 2016-04-06 14:23:21Z coats $
+    $Id: NEWSTUFF.html 355 2016-04-19 19:10:22Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODATTS3.html 345 2016-03-23 22:34:58Z coats $" -->
+<!-- "$Id: MODATTS3.html 355 2016-04-19 19:10:22Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODATTS3</TITLE>
 </HEAD>
@@ -169,7 +169,9 @@ USAGE of <CODE>MODULE MODATTS3</CODE>
         <P>
 
         <DT> <STRONG>&quot;Unstructured text-file&quot; Metadata</STRONG>
-        <DD> Turned on/off by <STRONG><VAR>setenv&nbsp;IOAPI_TEXTMETA...</VAR></STRONG>
+        <DD> Turned on/off by either a call to <VAR>INITMTEXT()</VAR>
+        with the relevant text-data content, or by
+        <STRONG><VAR>setenv&nbsp;IOAPI_TEXTMETA...</VAR></STRONG>
              with the following values:             
              <BLOCKQUOTE><DL "compact">
                     <DT> <STRONG><CODE>NONE</CODE></STRONG>:  turned off [default]
@@ -197,11 +199,8 @@ USAGE of <CODE>MODULE MODATTS3</CODE>
               then read it with <A HREF="RDATT3.html">RDATTC()</A>
               and process it as desired. (You could use
               <A HREF="WRATT3.html">WRATTC()</A> to fake the
-              operation of all this, if you wish :-) )<BR>
-              <EM>NOTE that the netCDF get-text-attribute routines
-              do <STRONG>not check string-sizes nor pad with
-              blanks</STRONG> the way the Fortran standard suggests
-              they should.</EM>
+              operation of all this, if you wish :-) )
+              <P>
              This module contains definitions for routines for
              initializing and setting such metadata:
              <BLOCKQUOTE> <DL "compact">
@@ -216,6 +215,15 @@ USAGE of <CODE>MODULE MODATTS3</CODE>
                     <DT> <CODE>ENDMTEXT()</CODE>
                     <DD> Turns text metadata off and deallocates <CODE>TEXT_MDATA</CODE>
               </DL></BLOCKQUOTE>
+              <STRONG><EM>NOTE</EM></STRONG> that the netCDF get-text-attribute routines
+              <STRONG>do not check string-sizes nor pad with
+              blanks</STRONG> the way the Fortran standard suggests
+              they should.
+              <P>
+              <STRONG><EM>NOTE ALSO</EM></STRONG> that the standard UNIX/Linux utility
+              <STRONG><VAR>fold</VAR></STRONG> can be used to create 80-column text files
+              from text-files with longer line-lengths.
+              <P>
         <P>
 
         <DT> <STRONG>&quot;Standard&quot; SMOKE Metadata</STRONG>

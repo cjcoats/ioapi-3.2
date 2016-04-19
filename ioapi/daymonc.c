@@ -1,5 +1,5 @@
 /**************************************************************************
-VERSION "$Id: daymonc.c 100 2015-01-16 16:52:16Z coats $"
+VERSION "$Id: daymonc.c 353 2016-04-19 17:14:33Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -24,6 +24,8 @@ REVISION HISTORY
     Unification 2/2002 with Global Climate Model IO_360 version,
     that uses a 360-day year
 
+    Version 4/2016 by CJC:  add Global Climate Model IO_365 version
+
 **************************************************************************/
 
 #include  "iodecl3.h"
@@ -33,12 +35,24 @@ void daymonc ( int jdate, int  *month, int  *mday )
     {
     int  year, day, j, k ;
      
-#ifdef IO_360
+#if  defined( IO_360 )
+
     day  = jdate % 1000 - 1 ;
     
     *month = day / 30  +  1 ;
     *mday  = day % 30  +  1 ;
+
+#elif  defined( IO_365 )
+
+    year = jdate / 1000 ;
+    day  = jdate % 1000 ;
+    j    = ( day + 305 ) % 365 ;
+    j    = ( j % 153 ) / 61  +  2 * ( j / 153 )  +  j ;
+    *month = ( j / 31 + 2 ) % 12  +  1 ;
+    *mday  =   j % 31             +  1 ;
+
 #else
+
     year = jdate / 1000 ;
     day  = jdate % 1000 ;
     k = ( year %   4 ) ? 365 :
@@ -49,6 +63,7 @@ void daymonc ( int jdate, int  *month, int  *mday )
     
     *month = ( j / 31 + 2 ) % 12  +  1 ;
     *mday  =   j % 31             +  1 ;
+
 #endif
 
     }       /*  end body of daymonc()  */
