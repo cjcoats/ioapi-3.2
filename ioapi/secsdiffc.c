@@ -1,6 +1,6 @@
 
 /**************************************************************************
-VERSION "$Id: secsdiffc.c 354 2016-04-19 19:09:06Z coats $"
+VERSION "$Id: secsdiffc.c 356 2016-04-20 14:04:17Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -51,7 +51,9 @@ int secsdiffc( int  adate ,
     secs  =   ztime % 100          -    atime % 100 ;
     total = 60 * ( 60 * ( 24 * days + hours ) + mins ) + secs ;
     
-/** Now add corrections for differences in years **/5
+/** Now add corrections for differences in years **/
+    
+#ifdef IO_360
 
     for ( adate/=1000 ,  zdate/=1000 ; adate < zdate ; adate++ )
         {

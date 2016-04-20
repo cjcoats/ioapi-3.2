@@ -1,6 +1,6 @@
 
 /**************************************************************************
-ERSION "$Id: wkdayc.c 353 2016-04-19 17:14:33Z coats $"
+ERSION "$Id: wkdayc.c 356 2016-04-20 14:04:17Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -53,7 +53,7 @@ int wkdayc ( int jdate )
 #endif
 
     k     = year - 1 ;
-    k     = k * YEARDAYS  +  k / 4  -  k / 100  +  k / 400  +  jday  -  1 ;
+    k     = k * 365  +  k / 4  -  k / 100  +  k / 400  +  jday  -  1 ;
     return  1  +  k % 7 ;
 
     }       /*  end body of wkdayc()  */
