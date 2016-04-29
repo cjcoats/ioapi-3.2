@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODATTS3.html 355 2016-04-19 19:10:22Z coats $" -->
+<!-- "$Id: MODATTS3.html 362 2016-04-29 15:26:36Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODATTS3</TITLE>
 </HEAD>
@@ -266,7 +266,10 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
         <DT> &nbsp;
 
         <DT> <CODE>TYPE CMETA_T</CODE>
-        <DD> Derived data type for standard CMAQ metadata objects.<BR>
+        <DD> Derived data type for standard CMAQ metadata objects.
+             See <A HREF="http://www.airqualitymodeling.org/cmaqwiki/index.php?title=CMAQ_version_5.0_%28February_2010_release%29_OGD#Files.2C_configuration.2C_and_environment_variables_3">this section of the CMAQ Wiki</A>
+             for more information
+             <BR>
              The fields are the following:
              <DL>
                 <DT><CODE>INTEGER :: VERSION3</CODE>
@@ -311,6 +314,84 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
                 <DT><CODE>CHARACTER*256 :: METCFG</CODE>
                 <DD>Meteorology-model configuration (as text)
 
+                <DT><CODE>CHARACTER*512 :: LTNGNO</CODE>
+                <DD>&quot;inline&quot; or path for lightning file <CODE>LTNG_NO</CODE>, or ...
+
+                <DT><CODE>CHARACTER*512 :: OCEAN</CODE>
+                <DD>Path for file <CODE>OCEAN_1</CODE>
+
+                <DT><CODE>CHARACTER*512 :: EMIS</CODE>
+                <DD>Path for file <CODE>EMIS_1</CODE>
+
+                <DT><CODE>CHARACTER*512 :: GCBDY</CODE>
+                <DD>Path for file <CODE>BNDY_GASC_1</CODE>
+
+                <DT><CODE>CHARACTER*512 :: AEBDY</CODE>
+                <DD>Path for file <CODE>BNDY_AERO_1</CODE>
+
+                <DT><CODE>CHARACTER*512 :: NRBDY</CODE>
+                <DD>Path for file <CODE>BNDY_NONR_1</CODE>
+
+                <DT><CODE>CHARACTER*512 ::TRBDY </CODE>
+                <DD>Path for file <CODE>BNDY_TRAC_1</CODE>
+
+                <DT><CODE>CHARACTER*512 ::GCINIT </CODE>
+                <DD>Path for file <CODE>INIT_GASC_1</CODE>
+
+                <DT><CODE>CHARACTER*512 :: AEINIT</CODE>
+                <DD>Path for file <CODE>INIT_AERO_1</CODE>
+
+                <DT><CODE>CHARACTER*512 ::NRINIT </CODE>
+                <DD>Path for file <CODE>INIT_NONR_1</CODE>
+
+                <DT><CODE>CHARACTER*512 :: TRINIT</CODE>
+                <DD>Path for file <CODE>INIT_TRAC_1</CODE>
+
+                <DT><CODE>CHARACTER*512 ::GCNML </CODE>
+                <DD>Path for file <CODE>gc_matrix_nml</CODE>
+
+                <DT><CODE>CHARACTER*512 :: AENML</CODE>
+                <DD>Path for file <CODE>ae_matrix_nml</CODE>
+
+                <DT><CODE>CHARACTER*512 :: NRNML</CODE>
+                <DD>Path for file <CODE>nr_matrix_nml</CODE>
+
+                <DT><CODE>CHARACTER*512 :: TRNML</CODE>
+                <DD>Path for file <CODE>tr_matrix_nml</CODE>
+
+                <DT><CODE>CHARACTER*512 :: GRDCRO2</CODE>
+                <DD>Path for file <CODE>GRID_CRO_2D</CODE>
+
+                <DT><CODE>CHARACTER*512 :: GRDDOT2</CODE>
+                <DD>Path for file <CODE>GRID_DOT_2D</CODE>
+
+                <DT><CODE>CHARACTER*512 :: METCRO2</CODE>
+                <DD>Path for file <CODE>MET_CRO_2D</CODE>
+
+                <DT><CODE>CHARACTER*512 :: METCRO3</CODE>
+                <DD>Path for file <CODE>MET_CRO_3D</CODE>
+
+                <DT><CODE>CHARACTER*512 :: METDOT3</CODE>
+                <DD>Path for file <CODE>MET_DOT_3D</CODE>
+
+                <DT><CODE>CHARACTER*512 :: METBDY3</CODE>
+                <DD>Path for file <CODE>MET_BDY_3D</CODE>
+
+                <DT><CODE>CHARACTER*512 :: XJDATA</CODE>
+                <DD>Path for file <CODE>XJ_DATA</CODE>
+
+                <DT><CODE>CHARACTER*512 :: GSPRO</CODE>
+                <DD>Path for file <CODE>GSPRO</CODE>
+
+                <DT><CODE>CHARACTER*512 :: B3GRD</CODE>
+                <DD>Path for file <CODE>B3GRD</CODE>
+
+                <DT><CODE>CHARACTER*512 :: SOILINP</CODE>
+                <DD>Path for file <CODE>SOILINP</CODE>
+
+                <DT><CODE>CHARACTER*512 :: CSQYDATA</CODE>
+                <DD>Path for file <CODE>CSQY_DATA</CODE>
+
                 <DT><CODE>REAL :: SYNC_TOP</CODE>
                 <DD>Value of CMAQ environment variable <CODE>SIGMA_SYNC_TOP</CODE>:<BR>
                 top sigma level thru which sync step determined
@@ -322,6 +403,14 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
                 <DT><CODE>INTEGER :: MINSYNC</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_MINSYNC</CODE>:<BR>
                 min sync time step (sec)
+
+                <DT><CODE>INTEGER :: EMISDATE</CODE>
+                <DD>Value of CMAQ environment variable <CODE>EMISDATE</CODE>:<BR>
+                (non-standard-format) Gregorian date for emissions inputs (YYYYMMDD)
+
+                <DT><CODE>INTEGER :: EMISDATE</CODE>
+                <DD>Value of CMAQ environment variable <CODE>EMISDATE</CODE>:<BR>
+                Date for layer-fraction inputs (YYYYDDD)
 
                 <DT><CODE>CHARACTER*8 :: WBDUST_BELD</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_WBDUST_BELD</CODE>:<BR>
@@ -342,6 +431,10 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
 
              <DL>
 
+                <DT><CODE>INTEGER :: CTM_CKSUM</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_CKSUM</CODE>:<BR>
+                Flag &quot;  Do CKSUM() every time step?&quot;
+
                 <DT><CODE>INTEGER :: WB_DUST</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_WB_DUST</CODE>:<BR>
                 Flag &quot;  use in-line wind-borne dust computation?&quot;
@@ -350,9 +443,13 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
                 <DD>Value of CMAQ environment variable <CODE>CTM_ERODE_AGLAND</CODE>:<BR>
                 Flag &quot; use in-line wind-borne dust computation?&quot;
 
-                <DT><CODE>INTEGER :: LTNG_NO</CODE>
-                <DD>Value of CMAQ environment variable <CODE>CTM_LTNG_NO</CODE>:<BR>
-                Flag &quot; Is lighning NOx active?&quot;
+                <DT><CODE>INTEGER :: LTNGPARAM</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_LTNGPARAM</CODE>:<BR>
+                Flag &quot; in-line lightning NOx computation?&quot;
+
+                <DT><CODE>INTEGER :: CTM_WVEL</CODE>
+                <DD>Value of CMAQ environment variable <CODE>CTM_WVEL</CODE>:<BR>
+                Flag &quot; output the CCTM-calculated vertical velocities?&quot;
 
                 <DT><CODE>INTEGER :: KZMIN</CODE>
                 <DD>Value of CMAQ environment variable <CODE>KZMIN</CODE>:<BR>

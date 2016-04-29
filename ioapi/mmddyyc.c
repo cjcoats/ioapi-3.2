@@ -2,7 +2,7 @@
 /**************************************************************************
 VERSION:
     EDSS/Models-3 I/O API.
-    "locatsc.c" version "$Id: mmddyyc.c 353 2016-04-19 17:14:33Z coats $"
+    "locatsc.c" version "$Id: mmddyyc.c 361 2016-04-29 15:23:02Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
@@ -47,7 +47,6 @@ static const int    cumday[ 13 ] =
     {
 #ifdef IO_360
     0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360
-    };
 #else
     0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
 #endif
@@ -90,15 +89,15 @@ iday = jdate % 1000 ;
                      iday - cumday[ mnth],
                      year ) ;
             return ;
-            } ;
+            }
         }
 
 #else
 
 #ifdef IO_365
-    leap = ( year % 4 == 0 ) && ( year % 100 ? 1 : ( year % 400 == 0 ) ) ;
-#else
     leap = 0 ;
+#else
+    leap = ( year % 4 == 0 ) && ( year % 100 ? 1 : ( year % 400 == 0 ) ) ;
 #endif
 
     if ( leap )
