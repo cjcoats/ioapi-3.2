@@ -1,16 +1,24 @@
 #!/bin/csh
 #!/usr/local/bin/tcsh
 #.........................................................................
-# Version "$Id: nm_test.csh 100 2015-01-16 16:52:16Z coats $"
+# Version "$Id: nm_test.csh 363 2016-05-06 12:36:37Z coats $"
 # EDSS/Models-3 I/O API.
 # Copyright (C) 2003 Baron Advanced Meteorological Systems
 # Distributed under the GNU Lesser PUBLIC LICENSE version 2.1
 # See file "LGPL.txt" for conditions of use.
 #.........................................................................
-#  Script to test link-compatibility of "libioapi.a" and "libnetcdf.a"
+#   Script to test link-compatibility of "libioapi.a" and "libnetcdf.a"
+#
+#   Version 5/6/2016 by Carlie J. Coats, Jr.:  hack for to support
+#   GNU version of "nm"
 #.........................................................................
 #  USAGE
-#       lib_test.csh
+#       nm_test.csh  <client-library> <source-library <name>
+#   where the client-libraryu uses a routine from source-library with the
+#   specified name.  For example:
+#       nm_test libioapi.a libnetcdff.a nf_open
+#   finds the linker-name for routine "nf_open", which is used by libioapi.a
+#   and which is defined in libnetcdff.a
 #.........................................................................
 #  IBM NOTE
 #       IBM's "csh" misbehaves, so you may need to substitute "tcsh"
@@ -31,7 +39,7 @@ set foo = \
 `nm ${a1} | grep -i ${a3} | sort -u | sed -e 's/ *U *//'`
 
 set bar = \
-`nm ${a2} | grep -i ${a3} | grep T | sort -u | sed -e 's/[0-9]* *T *//'`
+`nm ${a2} | grep -i ${a3} | grep T | sort -u | sed -e 's/[0-9a-fA-F]* *T *//'`
 
 if ( ${foo} == '' ) then
    echo "Symbol ${a3} not found in ${a1}"
