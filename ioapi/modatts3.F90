@@ -2,7 +2,7 @@
 MODULE MODATTS3
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !! Version "$Id: modatts3.F90 361 2016-04-29 15:23:02Z coats $"
+    !! Version "$Id: modatts3.F90 365 2016-05-12 15:49:49Z coats $"
     !! Copyright (c) 2014-2015 UNC Institute for the Environment
     !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
     !! See file "LGPL.txt" for conditions of use.
@@ -271,7 +271,7 @@ MODULE MODATTS3
     INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
 
     CHARACTER*80, SAVE :: SVN_ID =  &
-'$Id:: modatts3.F90 361 2016-04-29 15:23:02Z coats                              $'
+'$Id:: modatts3.F90 365 2016-05-12 15:49:49Z coats                              $'
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1228,6 +1228,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL UPCASE( ANAME )
         IF ( ANAME .EQ. 'ENV' ) THEN
             INITCMAQT = INITCMAQE( MDATA )
+            RETURN
+        ELSE IF ( ANAME .EQ. 'N' .OR. ANAME .EQ. 'F' .OR. ANAME .EQ. 'IOAPI_CMAQMETA' ) THEN
+            INITCMAQT = .FALSE.
             RETURN
         END IF
 
@@ -2572,7 +2575,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_GETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 361 2016-04-29 15:23:02Z coats $"
+        !! Version "$Id: modatts3.F90 365 2016-05-12 15:49:49Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -4161,7 +4164,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_SETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 361 2016-04-29 15:23:02Z coats $"
+        !! Version "$Id: modatts3.F90 365 2016-05-12 15:49:49Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
