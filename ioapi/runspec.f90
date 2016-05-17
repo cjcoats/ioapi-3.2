@@ -2,13 +2,13 @@
 SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
 
     !!***********************************************************************
-    !! Version "$Id: runspec.f90 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: runspec.f90 367 2016-05-17 18:25:47Z coats $"
     !! EDSS/Models-3 I/O API.
-    !! (C) 2015 UNC Institute for the Environment.
+    !! (C) 2015-2016 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  subroutine body starts at line  71
+    !!  subroutine body starts at line  82
     !!
     !!  FUNCTION:
     !!      Return time step sequence SDATE:STIME:TSTEP:NRECS
@@ -32,6 +32,7 @@ SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
     !!  REVISION  HISTORY:
     !!      Adapted 03/2015 by Carlie J. Coats, Jr., UNC IE, from algorithm
     !!      used in various "m3tools" programs
+    !!      Bug-fix 05/2016 by CJC
     !!***********************************************************************
 
     IMPLICIT NONE
@@ -92,7 +93,7 @@ SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
         MESG = 'Could not get description for "'//TRIM( FNAME )//'"'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
 
-    ELSE IF ( TSTEP1 .EQ. 0 ) THEN   !!  time independent case
+    ELSE IF ( TSTEP3D .EQ. 0 ) THEN   !!  time independent case
 
         SDATE = SDATE3D
         STIME = STIME3D
