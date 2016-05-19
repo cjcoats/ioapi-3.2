@@ -18,18 +18,25 @@ I/O API DOCUMENTS:
 
 CURRENT VERSION AVAILABILITY
 
-    The current version of the I/O API is Version 3.2.  It is available
-    in source code form (together with the documentation) from URL
+    The current development version of the I/O API is Version 3.2; the
+    "old" production version (in maintenance-only mode) is 3.1; versions
+    3.0 and earlier are obsolete.  These are available in source code
+    form (together with the documentation) from URL
 
         https://www.cmascenter.org/ioapi/documentation/3.1/html/AVAIL.html
-        https://github.com/cjcoats/ioapi-3.2 via
 
-            git clone https://github.com/cjcoats/ioapi-3.2
+    Source code and documentation for Version 3.2 is also available via
+    "git", from
 
-    New features of this release are documented at URL
+        https://github.com/cjcoats/ioapi-3.2
+
+    using the command
+
+        git clone https://github.com/cjcoats/ioapi-3.2
+
+    Change-Log and new features are documented at URL
 
         https://www.cmascenter.org/ioapi/documentation/3.1/html/NEWSTUFF.html
-
 
 I/O API INSTALLATION
 
@@ -149,7 +156,7 @@ I/O API INSTALLATION
           customized "Makefile" as in (6) above, and type "make".
 
 
-README.txt version "$Id: README.txt 369 2016-05-19 12:28:56Z coats $
+README.txt version "$Id: README.txt 371 2016-05-19 12:46:41Z coats $
 
 
 
