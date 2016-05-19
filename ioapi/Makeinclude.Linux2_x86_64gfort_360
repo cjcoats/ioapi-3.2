@@ -1,5 +1,8 @@
 # Version "$Id: Makeinclude.Linux2_x86_64gfort 342 2016-03-22 18:42:22Z coats $"
 #
+#   -- Flags for building 360-day climatological (no-leap-year) 
+#     version of the  I/O API (etc.)
+#
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
 #  ("gfortran" version 4.8 or later to be exact) that insist on

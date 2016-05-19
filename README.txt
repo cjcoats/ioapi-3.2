@@ -4,26 +4,26 @@
 
 
 I/O API DOCUMENTS:
- 
+
     The EDSS Documentation for the EDSS/Models-3 I/O API is available
     only as HTML -- it was designed from the start as a heavily
-    cross-linked hyperdocument, and is not available in linear
-    dead-tree document-forms such as PDF. The EDSS Documentation for
-    the EDSS/Models-3 I/O API is copyright (C) 1992-2002 MCNC,
-    (C) 1992-2002 and 2005-2013 Carlie J. Coats Jr, and 
-    (C) 2003-2011 Baron Advanced Meteorological Systems.
+    cross-linked hyperdocument, and is not available in linear dead-tree
+    document-forms such as PDF. Documentation for the EDSS/Models-3/BAMS
+    I/O API is copyright (C) 1992-2002 MCNC, (C) 1992-2002 and 2005-2013
+    Carlie J. Coats Jr, (C) 2003-2011 Baron Advanced Meteorological
+    Systems, LLC., and (C) 2013-2016 UNC Institute for the Environment.
     Documentation may be found at URL
-    
+
         https://www.cmascenter.org/ioapi/documentation/3.1/html/index.html
 
 CURRENT VERSION AVAILABILITY
 
     The current version of the I/O API is Version 3.2.  It is available
-    in source code form from URL
+    in source code form (together with the documentation) from URL
 
         https://www.cmascenter.org/ioapi/documentation/3.1/html/AVAIL.html
         https://github.com/cjcoats/ioapi-3.2 via
-        
+
             git clone https://github.com/cjcoats/ioapi-3.2
 
     New features of this release are documented at URL
@@ -68,7 +68,7 @@ I/O API INSTALLATION
        Alternative 1. & 2.:
 
           cd $BASEDIR.  Issue the command
-        
+
             git clone https://github.com/cjcoats/ioapi-3.2
 
        3. setenv BIN <machinetype> where <machinetype> matches the
@@ -77,22 +77,26 @@ I/O API INSTALLATION
           is not one of the supported systems). The usual pattern for
           generating BIN is
 
-              setenv BIN `uname -s``uname -r | cut -d. -f1` 
+              setenv BIN `uname -s``uname -r | cut -d. -f1`
 
-          although there are exceptions where more work is needed for
-          Cray, SGI and Linux systems, and F90, profiling, or DEBUG compiles.
-          For 64-bit Linux, BIN will be of the form "Linux2_x86_64*"
-          (e.g., "Linux2_x86_64ifort" for 64-bit builds using Intel
-          "ifort" and "icc" compilers).  For 32-bit Linux, BIN will be
-          of the form "Linux2_x86*" (e.g., "Linux2_x86ifort"...).
+          with a possible compiler-specific extension, although there
+          are exceptions where more work is needed for Cray, SGI and
+          Linux systems, and F90, profiling, or DEBUG compiles. For
+          64-bit Linux, BIN will be of the form "Linux2_x86_64*" (e.g.,
+          "Linux2_x86_64ifort" for 64-bit builds using Intel "ifort" and
+          "icc" compilers, Linux2_x86_64*dbg for debug-builds,
+          Linux2_x86_64*mpi for Pnetcdf/MPI distributed I/O, or
+          Linux2_x86_64*36[0,5] for climatological (no-leap-year)
+          builds).  For 32-bit Linux, BIN will be of the form
+          "Linux2_x86*" (e.g., "Linux2_x86ifort"...).
 
        4. mkdir $BASEDIR/$BIN.  This will be the build-and-install
           directory that will hold object-files, libraries, and
           "m3tools" executable programs.
 
        5. There are a number of "Makefile"s:  "Makefile.cpl" for
-          PVM Coupling Mode, "Makefile.nocpl" for no-PVM,
-          "Makefile.pncf" for PnetCDF/MPI distributed I/O Mode, etc. 
+          PVM Coupling Mode, "Makefile.nocpl" for no-PVM
+          "Makefile.pncf" for PnetCDF/MPI distributed I/O Mode, etc.
           Copy the appropriate one of the "Makefile.*" to "Makefile".
           Note that PnetCDF/MPI distributed I/O Mode requires BIN
           matching one of the "mpi" Makeinclude-files.
@@ -115,18 +119,19 @@ I/O API INSTALLATION
           "Makeinclude.$BIN" files.
 
           NOTE 2:  By default on most systems, OpenMP parallelism is
-          enabled; see the OMPFLAGS variable in "Makeinclude.$BIN". 
+          enabled; see the OMPFLAGS variable in "Makeinclude.$BIN".
           Enabling OpenMP does allow the activation of critical sections
           making the I/O&nbsp;API  thread-safe for OpenMP-parallel
           programs (like the MAQSIP-RT air quality model, the WRF or
           MCPL-enabled MM5 meteorology models, research versions of
-          SMOKE, and others.  It also enables OpenMP parallelism in
-          a few (mostly coordinate-transform or interpolation related)
-          I/O API routines.
+          SMOKE, and others.  It also enables OpenMP parallelism in a
+          number of "m3tools" programs and a few (mostly
+          coordinate-transform or interpolation related) I/O API
+          routines.
 
        7. In the I/O API library source directory "ioapi", type "make"
           to build the object library. The current build process will
-          generate "$OBJDIR/libioapi.a".  For the non-Standard-compliant
+          generate "${OBJDIR}/libioapi.a".  For the non-Standard-compliant
           "fixed-132" INCLUDE-files required by CMAQ and some versions
           of SMOKE, type "make fixed_src"
 
@@ -135,14 +140,16 @@ I/O API INSTALLATION
           "libnetcdff.a" for netCDF-4); if you're building with Coupling
           Mode active, do the same for PVM, or if you're building with
           Distributed I/O active, do the same for PnetCDF.  Use the same
-          compiler-set you used for the I/O API (and for your models). 
-          Copy or link ("ln -s ...")  the "libnetcdf.a" (and 
+          compiler-set you used for the I/O API (and for your models).
+          Copy or link ("ln -s ...")  the "libnetcdf.a" (and
           "libnetcdff.a", libpnetcdf.a, and "libpvm3.a" if you built
           them) to your $BASEDIR/$BIN.
 
        9. In the I/O API tool source directory "m3tools", create a
           customized "Makefile" as in (6) above, and type "make".
 
-    
+
+README.txt version "$Id: README.txt 369 2016-05-19 12:28:56Z coats $
+
 
 

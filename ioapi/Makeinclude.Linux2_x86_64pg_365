@@ -1,5 +1,8 @@
 # VERSION "$Id: Makeinclude.Linux2_x86_64pg 100 2015-01-16 16:52:16Z coats $"
 #
+#   -- Flags for building 365-day climatological (no-leap-year) 
+#     version of the  I/O API (etc.)
+#
 #  In some ways, this is the most problematical install, because of 
 #  the way  various compilers create linker-visible object names for
 #  the code they compile.  The default flags assume that you are using

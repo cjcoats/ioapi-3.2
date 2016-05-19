@@ -1,6 +1,6 @@
 # Version "$Id: Makeinclude.Linux2_x86_64ifort 100 2015-01-16 16:52:16Z coats $"
 #
-#  Version to define 365-day/no-leap-year climatology version of I/O API
+#  Version to define 360-day/no-leap-year climatology version of I/O API
 
 AR   = ar
 CC   = icc
