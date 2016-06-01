@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: M3TPROC.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: M3TPROC.html 372 2016-06-01 15:49:14Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program M3TPROC </TITLE>
 </HEAD>
@@ -113,11 +113,6 @@
     setenv FOO  /tmp/hourfile.A         !  input file
     setenv BAR  /tmp/maxfile.A          !  output file
     setenv M3TPROC_ALLV F               !  all variables:  false
-    setenv M3TPROC_PLEN    240000       !  output time step 24:00:00
-    setenv M3TPROC_BDATE 19930701       !  starting date  July 1, 1993
-    setenv M3TPROC_BTIME    40000       !  agg window starts at 04:00:00
-    setenv M3TPROC_WLEN    160000       !  agg indow duration   16:00:00
-    setenv M3TPROC_NPER        31       !  output all 31 days of July
     setenv M3TPROC_TYPE         2       !  agg type:  AVERAGE
     m3tproc  FOO BAR &lt;&lt;  !DONE
     OZONE                               !  variable to be aggregated

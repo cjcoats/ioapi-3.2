@@ -274,7 +274,7 @@ PROGRAM  M3TPROC
 
     IF( NPFLAG ) THEN
 
-        N = NVARS3D
+        NVARS   = NVARS3D
         DO  V = 1, NVARS3D
            INAME( V )  = VNAME3D( V )
            ONAME( V )  = VNAME3D( V )
@@ -343,7 +343,7 @@ PROGRAM  M3TPROC
 
     END IF  ! If prompting or not
 
-    IF ( N .EQ. 0 ) THEN
+    IF ( NVARS .EQ. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'No variables selected', 2 )
     ELSE
         NVARS3D = NVARS
