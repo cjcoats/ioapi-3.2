@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.nocpl 330 2016-03-09 17:04:07Z coats $"
+# VERSION "$Id: Makefile.nocpl 376 2016-06-03 20:45:50Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 # COPYRIGHT
@@ -151,7 +151,7 @@ getefile.F    getffile.F    initlog3.F    interp3.F     isdstime.F    \
 jstep3.F      julian.F      junit.F       m3err.F       m3exit.F      \
 m3msg2.F      mmddyy.F      nextime.F     read3.F       read4d.F      \
 secsdiff.F    wkday.F       write3.F      write4d.F     yr2day.F      \
-interp3v.F    intpqv.F      updtvir3.F    single_thread.F
+# interp3v.F    intpqv.F      updtvir3.F    single_thread.F
 
 f90SRC = \
 chkfil3.f90     cktflag3.f90    crdict3.f90     crtkf.f90       \
