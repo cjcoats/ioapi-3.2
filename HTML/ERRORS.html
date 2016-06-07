@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ERRORS.html 281 2015-12-10 20:24:32Z coats $" -->
+<!-- "$Id: ERRORS.html 377 2016-06-07 19:37:04Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     I/O API Troubleshooting
@@ -34,6 +34,8 @@
                 <VAR>ifort</VAR> on <VAR>Linux</VAR></A>
          <LI>  <A HREF="#reloc"><VAR>relocation error</VAR> link issues
                 for <VAR>x86_64</VAR></A>
+         <LI>  <A HREF="#instr">Error:  <CODE>Program Exception -
+               illegal instruction</CODE></A>
          <LI>  <A HREF="#gcc"><VAR>gcc/g77</VAR> on <VAR>x86_64</VAR>
                 Problems</A>
          <LI>  <A HREF="#irix"  >IRIX 7.4 Problems</A>
@@ -63,7 +65,7 @@
     Each I/O&nbsp;API source file will have its version embedded in the file's
     header-comment, e.g.
     <PRE>
-    !! Version "$Id: ERRORS.html 281 2015-12-10 20:24:32Z coats $"
+    !! Version "$Id: ERRORS.html 377 2016-06-07 19:37:04Z coats $"
     </PRE>
 <P>
 
@@ -345,6 +347,91 @@ class `AREG'
     have similar problems, but the solutions are compiler specific.
     <P>
 
+
+    <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
+    <P>
+
+
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2><A NAME="instr">
+
+    Error:  <CODE>Program Exception - illegal instruction</CODE> on
+    Linux
+
+</A></H2>
+
+    <EM>Thanks to Christopher G. Nolte, Ph.D., US EPA Office of Research
+    and Development for his <EM>M3USER</EM> mailing-list comments this one.</EM>
+    <P>
+    
+    This is probably the result of compiling either the library or
+    the model (or both) for a different processor-model than you are
+    running it on.
+    <P>
+
+    <EM><U>Background:</U></EM>:  As it creates new processor
+    generations, Intel adds new and more powerful arithmetic
+    instructions with each generation.  Code that uses these new
+    instructions will give the above-shown error message when you
+    attempt to run it on an old processor.  There were four major
+    iterations of the <CODE>SSE</CODE> family of instructions (starting
+    with the <EM>Pentium&nbsp;II</EM> generation of processors and
+    continuing through the <EM>Westmere</EM>; each was mildly faster
+    than its predecessor.  <EM>SandyBridge</EM> introduced the much more
+    powerful <CODE>AVX</CODE> family of instructions and
+    <EM>Haswell</EM> the <CODE>AVX2</CODE>.  Note that each processor
+    generation does support all the previous generations of instructions
+    (but not, of course, vice versa).    
+    <P>
+    
+    Various compilers give access to these instructions, using compiler
+    directives specific to that compiler.  Some examples are:
+    <DL>
+        <DT> Intel <VAR>ifort/icc</VAR>:
+        <DD> <CODE>-x...</CODE> directives:<BR>
+             <CODE>-xHost</CODE>: Use all the instructions for this machine<BR>
+             <CODE>-xSSE4.2</CODE>: <EM>Nehalem</EM> or later<BR>
+             <CODE>-xAVX</CODE>: <EM>SandyBridge or later</EM><BR>
+             <CODE>-xAVX2</CODE>: <EM>Haswell</EM> or later<P>
+        <DT> GNU  <VAR>gfortran/gcc</VAR>
+        <DD> <CODE>-march=... -mtune=...</CODE> directives: the first of
+             these governs instruction set use; the second controls how
+             the optimizer uses it<BR>
+             <CODE>-march=native -mtune=native</CODE>: this machine's architecture<BR>
+             <CODE>-march=corei7 -mtune=corei7</CODE>: <EM>Nehalem</EM>
+             or later (SSE4.2)<BR>
+             <CODE>-march=corei7-avx -mtune=corei7-avx</CODE>:
+             <EM>SanyBridge</EM> or later (AVX)<BR>
+             <CODE>-march=corei7-avx2 -mtune=corei7-avx2</CODE>:
+             <EM>Haswell</EM> or later (AVX2)<P>
+        <DT> Portland Group <VAR>ifort/icc</VAR>
+        <DD> Default is this machine's architecture (dangerous if you 
+             have multiple different-generation machines!)<BR>
+             <CODE>-tp=nehalem</CODE>: <EM>Nehalem</EM> or later
+             (SSE4.2)<BR>
+             <CODE>-tp=sandybridge</CODE>: <EM>SanyBridge</EM> or later
+             (AVX)<BR>
+             <CODE>-tp=haswell</CODE>: <EM>Haswell</EM> or later (AVX2)<BR>
+    </DL>
+    Well designed modeling codes will get approximately a 20-25%
+    performance boost for using SSE4.2 instructions, a further 70-80%
+    boost for AVX, and a further 325-30% for AVX2.  Because of its
+    sloppy coding, WRF will get less than half that much speedup, and
+    CMAQ even less than that. Note that Intel and AMD have also improved
+    the memory systems of the various processor generations, giving a
+    further 5-10% performance boost per processor generation for that
+    reason (independent of which instruction set you're using).
+    <P>
+
+    See <A HREF="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">
+    https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions</A>
+    and <A HREF="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">
+    https://en.wikipedia.org/wiki/Advanced_Vector_Extensions</A> for
+    more information about the SSE and AVX families of new instructions.
+    <P>
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
