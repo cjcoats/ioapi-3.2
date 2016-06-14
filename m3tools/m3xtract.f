@@ -2,16 +2,16 @@
         PROGRAM  M3XTRACT
 
 C***********************************************************************
-C Version "$Id: m3xtract.f 163 2015-02-24 06:48:57Z coats $"
+C Version "$Id: m3xtract.f 379 2016-06-14 15:53:21Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2013 Baron Advanced Meteorological Systems,
 C (C) 2007-2013 Carlie J. Coats, Jr., and
-C (C) 2014 UNC Institute for the Environment.
+C (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  126
+C  program body starts at line  130
 C
 C  FUNCTION:
 C       extracts a subset of variables from the input file for a
@@ -54,9 +54,12 @@ C       Version 11/2013 by CJC:  support for M3INT, M3DBLE variables.
 C
 C       Version  02/2015 by CJC: Support for M3INT8 variables;
 C       bug-fix for multi-layer case
+C
+C       Version  06/2016 by CJC:  copy CMAQ metadata, if present
 C***********************************************************************
 
       USE M3UTILIO
+      USE MODATTS3
 
       IMPLICIT NONE
 
@@ -112,6 +115,7 @@ C...........   LOCAL VARIABLES and their descriptions:
         INTEGER         DMAX    !  string length for descriptions
         INTEGER         IOS     !  I/O status
         INTEGER         ISTAT
+        LOGICAL         CFLAG
 
         LOGICAL :: EFLAG = .FALSE.
 
@@ -144,12 +148,15 @@ C   begin body of program  M3XTRACT
      &' ',
      &'See URL',
      &'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',
-     &  ' ',
+     &' ',
      &'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013',
-     &'Carlie J. Coats, Jr., and (C) 2002-2010 Baron Advanced',
-     &'Meteorological Systems, LLC.  Released under Version 2',
-     &'of the GNU General Public License. See enclosed GPL.txt, or',
-     &'URL http://www.gnu.org/copyleft/gpl.html',
+     &'Carlie J. Coats, Jr., (C) 2003-2010 Baron Advanced',
+     &'Meteorological Systems, LLC., and (C) 2014-2016 UNC Institute',
+     &'for the the Environment.',
+     &'Released under Version 2 of the GNU General Public License,',
+     &'Version 2. See enclosed GPL.txt, or URL',
+     &' ',
+     &'    http://www.gnu.org/copyleft/gpl.html',
      &' ',
      &'Comments and questions are welcome and can be sent to',
      &' ',
@@ -160,7 +167,7 @@ C   begin body of program  M3XTRACT
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3xtract.f 163 2015-02-24 06:48:57Z coats               $',
+     &'$Id:: m3xtract.f 379 2016-06-14 15:53:21Z coats               $',
      &' '
 
         ARGCNT = IARGC()
@@ -193,6 +200,21 @@ C   begin body of program  M3XTRACT
         IF ( .NOT. DESC3( INAME ) ) THEN
             MESG = 'Could not get description of input file ' // INAME
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+        END IF
+
+        IF ( ISCMAQ( INAME ) ) THEN
+            CFLAG = ENVYN( 'COPY_META',
+     &                     'Copy CMAQ metadata to output file?', 
+     &                     .TRUE., ISTAT )
+            IF ( ISTAT .GT. 0 ) THEN
+                MESG = 'Bad environment variable "COPY_META"'
+                CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+            ELSE IF ( .NOT.CFLAG ) THEN
+                CONTINUE
+            ELSE IF ( .NOT.GETCMAQ( INAME ) ) THEN
+                MESG = 'Could not get CMAQ metadata for ' // INAME
+                CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+            END IF
         END IF
 
         NVSAV  = NVARS3D

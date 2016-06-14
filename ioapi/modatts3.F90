@@ -2,8 +2,8 @@
 MODULE MODATTS3
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !! Version "$Id: modatts3.F90 365 2016-05-12 15:49:49Z coats $"
-    !! Copyright (c) 2014-2015 UNC Institute for the Environment
+    !! Version "$Id: modatts3.F90 378 2016-06-14 15:52:48Z coats $"
+    !! Copyright (c) 2014-2016 UNC Institute for the Environment
     !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
     !! See file "LGPL.txt" for conditions of use.
     !!...................................................................
@@ -39,6 +39,8 @@ MODULE MODATTS3
     !!
     !!      Modified 10/2015 by CJC for I/O API 3.2: use NF_*()
     !!      instead of NC*(), for netCDF-Fortran 4.x compatibility;
+    !!
+    !!      Modified 06/2016 by CJC:  ISCMAQ() and ISSMOKE()
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     USE M3UTILIO
@@ -48,11 +50,11 @@ MODULE MODATTS3
 
     !!........  PUBLIC Routines:
 
-    PUBLIC  CMETA_T, SMETA_T,  INITCF, SETCF, ENDCF,                    &
-            INITMTXATT, GETMTXATT, SETMTXATT, CHKMTXATT, ENDMTXATT,     &
-            INITCMAQ,    GETCMAQ,   LOGCMAQ,  SETCMAQ,   ENDCMAQ,       &
-            INITSMOKE,   GETSMOKE,            SETSMOKE,  ENDSMOKE,      &
-            INITMTEXT,                        SETMTEXT,  ENDMTEXT
+    PUBLIC  CMETA_T, SMETA_T,  INITCF, SETCF, ENDCF,                            &
+            INITMTXATT,         GETMTXATT, SETMTXATT, CHKMTXATT, ENDMTXATT,     &
+            INITCMAQ,  ISCMAQ,  GETCMAQ,   LOGCMAQ,   SETCMAQ,   ENDCMAQ,       &
+            INITSMOKE, ISSMOKE, GETSMOKE,  LOGSMOKE,  SETSMOKE,  ENDSMOKE,      &
+            INITMTEXT,                                SETMTEXT,  ENDMTEXT
 
 
     !!........  Flags for "this type of metadata is active"
@@ -271,7 +273,7 @@ MODULE MODATTS3
     INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
 
     CHARACTER*80, SAVE :: SVN_ID =  &
-'$Id:: modatts3.F90 365 2016-05-12 15:49:49Z coats                              $'
+'$Id:: modatts3.F90 378 2016-06-14 15:52:48Z coats                              $'
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2005,6 +2007,56 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!  Does FNAME file-header have CMAQ metadata?
+
+
+    LOGICAL FUNCTION ISCMAQ( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/ISCMAQ'
+
+        !!........  Local Variables:
+
+        INTEGER         FNUM, ATTNUM, IERR
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FNUM = NAME2FID( FNAME )
+
+        IF ( FNUM .LE. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            ISCMAQ = .FALSE.
+        ELSE IF ( CDFID3( FNUM ) .LT. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            ISCMAQ = .FALSE.
+#ifdef  IOAPI_PNCF
+        ELSE IF ( FTYPE3( FNUM ) .EQ. MPIGRD3 ) THEN
+            IERR = NFMPI_INQ_ATTID( CDFID3( FNUM ), NF_GLOBAL, 'CMAQVERS', ATTNUM )
+            ISCMAQ = ( IERR .EQ. NF_NOERR )
+#endif
+        ELSE
+            IERR = NF_INQ_ATTID( CDFID3( FNUM ), NF_GLOBAL, 'CMAQVERS', ATTNUM )
+            ISCMAQ = ( IERR .EQ. NF_NOERR )
+        END IF
+
+        RETURN
+
+    END FUNCTION  ISCMAQ
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!  Initialize CMAQ_MDATA from FNAME file-header
 
 
@@ -2575,7 +2627,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_GETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 365 2016-05-12 15:49:49Z coats $"
+        !! Version "$Id: modatts3.F90 378 2016-06-14 15:52:48Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -4164,7 +4216,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_SETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 365 2016-05-12 15:49:49Z coats $"
+        !! Version "$Id: modatts3.F90 378 2016-06-14 15:52:48Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -4821,6 +4873,51 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!  Does FNAME file-header have CMAQ metadata?
+
+
+    LOGICAL FUNCTION ISSMOKE( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT(IN   ) :: FNAME
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  Parameter:
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODATTS3/ISSMOKE'
+
+        !!........  Local Variables:
+
+        INTEGER         FNUM, ATTNUM, IERR
+        CHARACTER*256   MESG
+
+        !!........  body  .........................................
+
+        FNUM = NAME2FID( FNAME )
+
+        IF ( FNUM .LE. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not yet open'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            ISSMOKE = .FALSE.
+        ELSE IF ( CDFID3( FNUM ) .LT. 0 ) THEN
+            MESG = 'File "' // TRIM( FNAME ) //'" not netCDF'
+            CALL M3WARN( PNAME, 0, 0, MESG )
+            ISSMOKE = .FALSE.
+        ELSE
+            CALL M3MESG( 'SMOKE metadata not yet implemented' )
+            ISSMOKE  = .FALSE.
+        END IF
+
+        RETURN
+
+    END FUNCTION  ISSMOKE
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     LOGICAL FUNCTION GETSMOKEF( FNAME )
@@ -4920,6 +5017,26 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         RETURN
 
     END FUNCTION  GETSMOKE1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!  Write formatted CMAQ_MDATA metadata to program log
+
+
+    LOGICAL FUNCTION LOGSMOKE( )
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  body  .........................................
+
+        CALL M3MESG( 'SMOKE metadata not yet implemented' )
+        LOGSMOKE = .FALSE.
+
+        RETURN
+
+    END FUNCTION  LOGSMOKE
 
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

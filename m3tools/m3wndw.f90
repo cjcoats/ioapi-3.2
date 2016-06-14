@@ -2,16 +2,16 @@
 PROGRAM  M3WNDW
 
     !!***********************************************************************
-    !! Version "$Id: m3wndw.f90 163 2015-02-24 06:48:57Z coats $"
+    !! Version "$Id: m3wndw.f90 379 2016-06-14 15:53:21Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.,
-    !! and (C) 2015 UNC Institute for the Environment
+    !! and (C) 2015-2016 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  103
+    !!  program body starts at line  107
     !!
     !!  FUNCTION:
     !!       Window a subrectangle of the grid from gridded input file
@@ -37,9 +37,13 @@ PROGRAM  M3WNDW
     !!
     !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
     !!      expand WNDW for M3DBLE and M3INT8 variables.
+    !!
+    !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
     !!***********************************************************************
 
     USE M3UTILIO
+    USE MODATTS3
+
     IMPLICIT NONE
 
     !!...........   EXTERNAL FUNCTIONS and their descriptions:
@@ -93,7 +97,7 @@ PROGRAM  M3WNDW
     REAL*8          XCELL1      ! X-coordinate cell dimension
     REAL*8          YCELL1      ! Y-coordinate cell dimension
 
-    LOGICAL         EFLAG
+    LOGICAL         EFLAG, CFLAG
 
     REAL, ALLOCATABLE :: WNDW( : )
 
@@ -136,7 +140,7 @@ PROGRAM  M3WNDW
 '    Chapel Hill, NC 27599-1105',                                       &
 ' ',                                                                    &
 'Program version: ',                                                    &
-'$Id: m3wndw.f90 163 2015-02-24 06:48:57Z coats $',&
+'$Id: m3wndw.f90 379 2016-06-14 15:53:21Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -166,6 +170,17 @@ PROGRAM  M3WNDW
     IF ( .NOT. DESC3( INAME ) ) THEN
         MESG = 'Could not get description of input file ' // INAME
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+    END IF
+
+    IF ( ISCMAQ( INAME ) ) THEN
+        CFLAG = ENVYN( 'COPY_META', 'Copy CMAQ metadata to output file?', .TRUE., ISTAT )
+        IF ( ISTAT .GT. 0 ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Bad environment variable "COPY_META"', 2 )
+        ELSE IF ( .NOT.CFLAG ) THEN
+            CONTINUE
+        ELSE IF ( .NOT.GETCMAQ( INAME ) ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Could not get CMAQ metadata for ' // INAME, 2 )
+        END IF
     END IF
 
     IF ( FTYPE3D .NE. GRDDED3 ) THEN

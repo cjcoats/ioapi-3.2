@@ -2,16 +2,16 @@
 PROGRAM M3CPLE
 
     !!***********************************************************************
-    !! Version "$Id: m3cple.f90 174 2015-02-26 21:23:12Z coats $"
+    !! Version "$Id: m3cple.f90 379 2016-06-14 15:53:21Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
     !!   (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-    !!   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
-    !!   (C) 2015 UNC Institute for the Environment.
+    !!   (C) 2003-2010 Baron Advanced Meteorological Systems. LLC., and
+    !!   (C) 2014-2016 UNC Institute for the Environment.
     !!   Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!   See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  137
+    !!  program body starts at line  140
     !!
     !!  DESCRIPTION:
     !!       For each time step in the specified time step sequence,
@@ -50,10 +50,12 @@ PROGRAM M3CPLE
     !!       Version  01/2013 by CJC:  use new LASTTIME() to find EDATE:ETIME
     !!       Version  12/2014 by CJC for I/O API v3.2:  USE MODGCTP: GRID2INDX(),
     !!       INDXMULT();  F90 free-format source; use generics for "GET*()"
+    !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
     !!***********************************************************************
 
     USE M3UTILIO
     USE MODGCTP
+    USE MODATTS3
 
     IMPLICIT NONE
 
@@ -196,8 +198,8 @@ PROGRAM M3CPLE
 '   https://www.cmascenter.org/ioapi/documentation/3.1/html/AA.html#tools', &
 '',                                                                         &
 'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013 Carlie J. Coats, Jr.', &
-'(C) 2002-2010 Baron Advanced Meteorological Systems, LLC., and',           &
-'(C) 2015 UNC Institute for the Environment.',                              &
+'(C) 2003-2010 Baron Advanced Meteorological Systems, LLC., and',           &
+'(C) 2014-2016 UNC Institute for the Environment.',                         &
 'Released under Version 2 of the GNU General Public License. See',          &
 'enclosed GPL.txt, or URL',                                                 &
 ''  ,                                                                       &
@@ -212,7 +214,7 @@ PROGRAM M3CPLE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3cple.f90 174 2015-02-26 21:23:12Z coats $',&
+'$Id: m3cple.f90 379 2016-06-14 15:53:21Z coats $',&
 ' '
 
         IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -257,10 +259,28 @@ PROGRAM M3CPLE
             YORIG1 = YORIG3D
             XCELL1 = XCELL3D
             YCELL1 = YCELL3D
+
+            IF ( ISCMAQ( FNAME ) ) THEN
+                CFLAG = ENVYN( 'COPY_META', 'Copy CMAQ metadata to output file?', .TRUE., ISTAT )
+                IF ( ISTAT .GT. 0 ) THEN
+                    EFLAG = .TRUE.
+                    CALL M3MESG( 'Bad environment variable "COPY_META"' )
+                ELSE IF ( .NOT.CFLAG ) THEN
+                    CONTINUE
+                ELSE IF ( .NOT.GETCMAQ( FNAME ) ) THEN
+                    EFLAG = .TRUE.
+                    CALL M3MESG( 'Could not get CMAQ metadata for ' // FNAME )
+                END IF
+            END IF
+
         ELSE
             MESG = 'Could not get file description for ' // FNAME
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         END IF
+
+
+        !!...............  Get CMAQ metadata
+       
 
 
         !!...............  Get output grid description, time step sequence

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODATTS3.html 362 2016-04-29 15:26:36Z coats $" -->
+<!-- "$Id: MODATTS3.html 380 2016-06-14 16:01:54Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODATTS3</TITLE>
 </HEAD>
@@ -37,6 +37,23 @@
     disk-space):  the &quot;system&quot; will have to make a new copy of
     the file with both the new metadata and the existing data, and then
     rename it behind the scenes.
+    <P>
+    The following <VAR>m3tools</VAR> programs examine their input files
+    to see whether CMAQ metadata is present; if so they examine
+    environment variable <CODE>COPY_META</CODE> (default
+    <CODE>TRUE</CODE>) to determine whether or not to copy that metadata
+    to their output file(s):
+    <BLOCKQUOTE>
+    <DL>
+        <DT><VAR>m3combo</VAR>
+        <DT><VAR>m3cple</VAR>
+        <DT><VAR>m3interp</VAR>
+        <DT><VAR>m3tproc</VAR>
+        <DT><VAR>m3tshift</VAR>
+        <DT><VAR>m3wndw</VAR>
+        <DT><VAR>m3xtract</VAR>
+    </DL>
+    </BLOCKQUOTE>
     <P>
     </BLOCKQUOTE>
 
@@ -153,6 +170,9 @@ USAGE of <CODE>MODULE MODATTS3</CODE>
                           created files.  Can be called automatically
                           (as above) or manually, optionally with 
                           user specified metadata-object.
+                    <DT> <CODE>ISCMAQ()</CODE>
+                    <DD>  Checks whether an M3IO file header contains
+                          CMAQ metadata.
                     <DT> <CODE>GETCMAQ()</CODE>
                     <DD>  Retrieves CMAQ metadata from an M3IO
                           file-header, and optionally places it
@@ -610,6 +630,9 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
         <DT> <CODE><A HREF="#initcmaq">INITCMAQ()</A></CODE>
         <DD> turns on CMAQ-metadata for all new files created
              <P>
+        <DT> <CODE><A HREF="#iscmaq">ISCMAQ()</A></CODE>
+        <DD> Checks whether CMAQ-metadata exists in a specified file
+             <P>
         <DT> <CODE><A HREF="#getcmaq">GETCMAQ()</A></CODE>
         <DD> reads CMAQ-metadata from a specific file.
              <P>
@@ -966,6 +989,25 @@ Definitions and Declarations in <CODE>MODULE MODATTS3</CODE>
     <CODE>IOAPI_CMAQMETA</CODE> should be either <CODE>NONE</CODE> to
     turn off CMAQ metadata (the default), or the path for a
     structured-ASCII file with format [TBD].
+    <P>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H3> <A NAME="iscmaq">ISCMAQ</A></H3>
+
+    <PRE>
+    LOGICAL FUNCTION  ISCMAQ( FNAME )
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+    </PRE>
+
+    Returns <CODE>TRUE</CODE> if the specified file's header contains
+    CMAQ metadata.
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>

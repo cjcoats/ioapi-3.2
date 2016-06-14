@@ -2,16 +2,16 @@
 PROGRAM  M3TSHIFT
 
     !!***********************************************************************
-    !! Version "$Id: m3tshift.f90 163 2015-02-24 06:48:57Z coats $"
+    !! Version "$Id: m3tshift.f90 379 2016-06-14 15:53:21Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.,
-    !! and (C) 2015 UNC Institute for the Environment
+    !! and (C) 2014-2016 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  86
+    !!  program body starts at line  89
     !!
     !!  FUNCTION:
     !!       extracts a subset of variables from the input file for a
@@ -34,9 +34,12 @@ PROGRAM  M3TSHIFT
     !!
     !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
     !!      inlined SUBROUTINE TSHIFT, explicit ALLOCATE. Support for M3INT8 variables.
+    !!
+    !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
     !!***********************************************************************
 
     USE M3UTILIO
+    USE MODATTS3
 
     IMPLICIT NONE
 
@@ -76,7 +79,7 @@ PROGRAM  M3TSHIFT
     INTEGER         I       !  loop counter (time step #)
     INTEGER         ISTAT
 
-    LOGICAL         EFLAG
+    LOGICAL         EFLAG, CFLAG
     
     REAL*8, ALLOCATABLE :: RBUF ( : )   !!  over-size except for M3DBLE, M3INT8...
 
@@ -100,7 +103,7 @@ PROGRAM  M3TSHIFT
 '',                                                                         &
 'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013 Carlie J. Coats, Jr.', &
 '(C) 2002-2010 Baron Advanced Meteorological Systems, LLC., and',           &
-'(C) 2015 UNC Institute for the Environment.',                              &
+'(C) 2014-2016 UNC Institute for the Environment.',                         &
 'Released under Version 2 of the GNU General Public License. See',          &
 'enclosed GPL.txt, or URL',                                                 &
 ''  ,                                                                       &
@@ -115,7 +118,7 @@ PROGRAM  M3TSHIFT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tshift.f90 163 2015-02-24 06:48:57Z coats $',&
+'$Id: m3tshift.f90 379 2016-06-14 15:53:21Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -146,6 +149,17 @@ PROGRAM  M3TSHIFT
     IF ( .NOT. DESC3( INAME ) ) THEN
         MESG = 'Could not get description of input file "' // TRIM( INAME ) // '"'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+    END IF
+
+    IF ( ISCMAQ( INAME ) ) THEN
+        CFLAG = ENVYN( 'COPY_META', 'Copy CMAQ metadata to output file?', .TRUE., ISTAT )
+        IF ( ISTAT .GT. 0 ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Bad environment variable "COPY_META"', 2 )
+        ELSE IF ( .NOT.CFLAG ) THEN
+            CONTINUE
+        ELSE IF ( .NOT.GETCMAQ( INAME ) ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Could not get CMAQ metadata for ' // INAME, 2 )
+        END IF
     END IF
 
     IF ( FTYPE3D .EQ. CUSTOM3 ) THEN

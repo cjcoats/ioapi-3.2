@@ -2,15 +2,15 @@
         PROGRAM M3INTERP
 
 C***********************************************************************
-C Version "$Id: m3interp.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: m3interp.f 379 2016-06-14 15:53:21Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
-C   (C) 2014 UNC Institute for the Environment.
+C   (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  134
+C  program body starts at line  137
 C
 C  DESCRIPTION:
 C       For each time step in the specified time step sequence,
@@ -42,10 +42,12 @@ C       USE M3UTILIO, and related changes.
 C       Version  01/2013 by CJC:  use new LASTTIME() to find EDATE:ETIME
 C       Version  12/2014 by CJC for I/O API v3.2:  USE MODGCTP: GRID2INDX(),
 C       INDXMULT(), and related changes.
+C       Version  06/2016 by CJC:  copy CMAQ metadata, if present
 C***********************************************************************
 
       USE M3UTILIO
       USE MODGCTP
+      USE MODATTS3
 
       IMPLICIT NONE
 
@@ -72,7 +74,7 @@ C...........   LOCAL VARIABLES and their descriptions:
         CHARACTER*256   MESG
 
         INTEGER         LDEV        !  log-device
-        INTEGER         STATUS      !  allocation-status
+        INTEGER         ISTAT       !  allocation-status
 
         LOGICAL         AFLAG, BFLAG, CFLAG, XFLAG, YFLAG
 
@@ -188,10 +190,12 @@ C   begin body of program M3INTERP
      &'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',
      &' ',
      &'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013',
-     &'Carlie J. Coats, Jr., (C) 2002-2010 Baron Advanced',
-     &'Meteorological Systems, LLC., and (C) 2014 UNC Institute for the',
-     &'the Environment.  Released under Version 2 of the GNU General',
-     &'Public License, Version 2. See enclosed GPL.txt, or URL',
+     &'Carlie J. Coats, Jr., (C) 2003-2010 Baron Advanced',
+     &'Meteorological Systems, LLC., and (C) 2014-2016 UNC Institute',
+     &'for the the Environment.',
+     &'Released under Version 2 of the GNU General Public License,',
+     &'Version 2. See enclosed GPL.txt, or URL',
+     &' ',
      &'    http://www.gnu.org/copyleft/gpl.html',
      &' ',
      &'Comments and questions are welcome and can be sent to',
@@ -203,7 +207,7 @@ C   begin body of program M3INTERP
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3interp.f 101 2015-01-16 16:52:50Z coats               $',
+     &'$Id:: m3interp.f 379 2016-06-14 15:53:21Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -250,6 +254,23 @@ C...............  Open and get description for input data file
             XCELL1 = XCELL3D
             YCELL1 = YCELL3D
             NSIZE1 = NCOLS1*NROWS1*NLAYS1
+
+            IF ( ISCMAQ( FNAME ) ) THEN
+                CFLAG = ENVYN( 'COPY_META', 
+     &                         'Copy CMAQ metadata to output file?', 
+     &                         .TRUE., ISTAT )
+                IF ( ISTAT .GT. 0 ) THEN
+                    EFLAG = .TRUE.
+                    CALL M3MESG( 'Bad environment vble "COPY_META"' )
+                ELSE IF ( .NOT.CFLAG ) THEN
+                    CONTINUE
+                ELSE IF ( .NOT.GETCMAQ( FNAME ) ) THEN
+                    EFLAG = .TRUE.
+                    MESG  = 'Could not get CMAQ metadata for ' // FNAME
+                    CALL M3MESG( MESG )
+                END IF
+            END IF
+
         ELSE
             MESG = 'Could not get file description for ' // FNAME
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
@@ -308,10 +329,10 @@ C...............  Setup for mode of operation:  copy or interpolate:
                 EFLAG = .TRUE.
             END IF
 
-            ALLOCATE( BUF1( NCOLS3D*NROWS3D, NLAYS3D ), STAT = STATUS )
-            IF ( STATUS .NE. 0 ) THEN
+            ALLOCATE( BUF1( NCOLS3D*NROWS3D, NLAYS3D ), STAT = ISTAT )
+            IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10 )' )
-     &               'Buffer allocation failed:  STAT=', STATUS
+     &               'Buffer allocation failed:  STAT=', ISTAT
                 CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
             END IF
 
@@ -412,11 +433,11 @@ C...............  Allocate buffers; compute re-gridding matrix
      &                BUF2( NCOLS2*NROWS2, NLAYS1 ),
      &                IX2   ( NCOLS2*NROWS2 ),
      &                PX2   ( NCOLS2*NROWS2 ),
-     &                PY2   ( NCOLS2*NROWS2 ),  STAT = STATUS )
+     &                PY2   ( NCOLS2*NROWS2 ),  STAT = ISTAT )
 
-            IF ( STATUS .NE. 0 ) THEN
+            IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10)' )
-     &               'Buffer allocation failed:  STAT=', STATUS
+     &               'Buffer allocation failed:  STAT=', ISTAT
                 CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
             END IF
 

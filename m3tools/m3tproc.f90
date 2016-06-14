@@ -2,16 +2,16 @@
 PROGRAM  M3TPROC
 
     !!***********************************************************************
-    !! Version "$Id: m3tproc.f90 231 2015-10-08 20:45:24Z coats $"
+    !! Version "$Id: m3tproc.f90 379 2016-06-14 15:53:21Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
-    !! (C) 2015 UNC Institute for the Environment
+    !! (C) 2014-2016 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line 149
+    !!  program body starts at line 151
     !!
     !!  FUNCTION:
     !!      Sums, give max, or gives average over a specified time period
@@ -66,9 +66,12 @@ PROGRAM  M3TPROC
     !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
     !!      AGGVAR ~~> TIMEAGG;  now CONTAINs  SUBROUTINE TIMEAGG.
     !!      Corrected/improved error-status behavior. Support for M3INT8 variables.
+    !!
+    !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
     !!***********************************************************************
 
     USE M3UTILIO
+    USE MODATTS3
 
     IMPLICIT NONE
 
@@ -140,7 +143,7 @@ PROGRAM  M3TPROC
     INTEGER         VMAX    !  string length for names
     INTEGER         ITYPE, ISTAT
 
-    LOGICAL         EFLAG
+    LOGICAL         EFLAG, CFLAG
     LOGICAL         NPFLAG  !  iff no prompting for variables
 
     !!.........................................................................
@@ -167,8 +170,8 @@ PROGRAM  M3TPROC
 '   https://www.cmascenter.org/ioapi/documentation/3.1/html/AA.html#tools', &
 '',                                                                         &
 'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013 Carlie J. Coats, Jr.', &
-'(C) 2002-2010 Baron Advanced Meteorological Systems, LLC., and',           &
-'(C) 2015 UNC Institute for the Environment.',                              &
+'(C) 2003-2010 Baron Advanced Meteorological Systems, LLC., and',           &
+'(C) 2014-2016 UNC Institute for the Environment.',                         &
 'Released under Version 2 of the GNU General Public License. See',          &
 'enclosed GPL.txt, or URL',                                                 &
 ''  ,                                                                       &
@@ -183,7 +186,7 @@ PROGRAM  M3TPROC
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tproc.f90 231 2015-10-08 20:45:24Z coats $',&
+'$Id: m3tproc.f90 379 2016-06-14 15:53:21Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -217,6 +220,17 @@ PROGRAM  M3TPROC
     ELSE IF ( TSTEP3D .EQ. 0 ) THEN
         MESG = 'Input file "' // TRIM( IFILE ) // '" is time-independent: no output written.'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+    END IF
+
+    IF ( ISCMAQ( IFILE ) ) THEN
+        CFLAG = ENVYN( 'COPY_META', 'Copy CMAQ metadata to output file?', .TRUE., ISTAT )
+        IF ( ISTAT .GT. 0 ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Bad environment variable "COPY_META"', 2 )
+        ELSE IF ( .NOT.CFLAG ) THEN
+            CONTINUE
+        ELSE IF ( .NOT.GETCMAQ( IFILE ) ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Could not get CMAQ metadata for ' // IFILE, 2 )
+        END IF
     END IF
 
     IF ( FTYPE3D .EQ. CUSTOM3 ) THEN

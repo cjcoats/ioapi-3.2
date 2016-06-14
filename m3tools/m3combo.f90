@@ -2,15 +2,16 @@
 PROGRAM M3COMBO
 
     !!***********************************************************************
-    !! Version "$Id: m3combo.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: m3combo.f90 379 2016-06-14 15:53:21Z coats $"
     !! EDSS/Models-3 M3TOOLS.
-    !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-    !! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.,
-    !! (C) 2007, 2012 Bonyoung Koo, ENVIRON International Corporation.
-    !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
-    !! See file "GPL.txt" for conditions of use.
+    !!   Copyright (C) 1992-2002 MCNC,
+    !!   (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
+    !!   (C) 2003-2010 Baron Advanced Meteorological Systems. LLC., and
+    !!   (C) 2014-2016 UNC Institute for the Environment.
+    !!   Distributed under the GNU GENERAL PUBLIC LICENSE version 2
+    !!   See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  132
+    !!  program body starts at line  137
     !!
     !!  DESCRIPTION:
     !!       For a given input file, define a new output file with variables
@@ -49,9 +50,11 @@ PROGRAM M3COMBO
     !!       Version 12/2011 by CJC:  bug-fixes for non-GRIDDED files, from
     !!       Bonyoung Koo, Environ
     !!       Version 11/2013 by CJC:  OpenMP parallel
+    !!       Version 06/2016 by CJC:  copy CMAQ metadata, if present
     !!***********************************************************************
 
     USE M3UTILIO
+    USE MODATTS3
 
     IMPLICIT NONE
 
@@ -85,7 +88,7 @@ PROGRAM M3COMBO
     REAL            COEF( MXVARS3, MXVARS3 )
     REAL            OFFS( MXVARS3 )
 
-    LOGICAL         EFLAG
+    LOGICAL         EFLAG, CFLAG
 
     INTEGER         NCOLS1      ! number of grid columns
     INTEGER         NROWS1      ! number of grid rows
@@ -178,8 +181,8 @@ PROGRAM M3COMBO
 '   https://www.cmascenter.org/ioapi/documentation/3.1/html/AA.html#tools', &
 '',                                                                         &
 'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013 Carlie J. Coats, Jr.', &
-'(C) 2002-2010 Baron Advanced Meteorological Systems, LLC., and',           &
-'(C) 2015 UNC Institute for the Environment.',                              &
+'(C) 2003-2010 Baron Advanced Meteorological Systems, LLC., and',           &
+'(C) 2015-2016 UNC Institute for the Environment.',                         &
 'Released under Version 2 of the GNU General Public License. See',          &
 'enclosed GPL.txt, or URL',                                                 &
 ''  ,                                                                       &
@@ -194,7 +197,7 @@ PROGRAM M3COMBO
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3combo.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: m3combo.f90 379 2016-06-14 15:53:21Z coats $',&
 ' '
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -254,6 +257,19 @@ PROGRAM M3COMBO
         VGTOP1 = VGTOP3D
         VGLEV1( : )  = VGLVS3D( : )
         FVARS( 1:NVARS3D,1 ) = VNAME3D( : )
+
+        IF ( ISCMAQ( FNAME(1) ) ) THEN
+            CFLAG = ENVYN( 'COPY_META', 'Copy CMAQ metadata to output file?', .TRUE., ISTAT )
+            IF ( ISTAT .GT. 0 ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Bad environment variable "COPY_META"' )
+            ELSE IF ( .NOT.CFLAG ) THEN
+                CONTINUE
+            ELSE IF ( .NOT.GETCMAQ( FNAME(1) ) ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Could not get CMAQ metadata for ' // FNAME(1) )
+            END IF
+        END IF
 
         IF ( FTYPE3D .EQ. GRDDED3 ) THEN
             SIZE = NCOLS3D * NROWS3D * NLAYS3D

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 375 2016-06-03 20:42:52Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 380 2016-06-14 16:01:54Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 375 2016-06-03 20:42:52Z coats $
+    $Id: NEWSTUFF.html 380 2016-06-14 16:01:54Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,9 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#jun142016">
+               Copy CMAQ metadata from input to output, for
+               relevant <VAR>m3tools</VAR> programs</A>
          <LI>  <A HREF = "#jun032016">
                Don't compile <VAR>single_thread.F</VAR> if coupling mode
                not enabled</A>
@@ -151,7 +154,7 @@
          <LI>  <A HREF = "#may0511">
                Bug-fixes and format improvements in <VAR>m3tools</VAR> program
                <CODE>PROJTOOL</CODE>
-               </A>
+               </A>Makefile.nocpl.sed
          <LI>  <A HREF = "#apr2511">
                Add interface-block for <CODE>CRLF()</CODE> to
                <CODE>MODULE M3UTILIO</CODE>
@@ -293,7 +296,7 @@
          <LI>  <A HREF = "#sep0106">C/Fortran interface utilities;
                <VAR>MMDDYY()</VAR> bug-fix
                </A>
-         <LI>  <A HREF = "#jun1106">Format-fix
+         <LI>  <A HREF = "#jun1106">FoMakefile.nocpl.sedrmat-fix
                in <VAR>CKDESC3()</VAR></A>
          <LI>  <A HREF = "#jun0706">Added WRF vertical coordinate
                support to worker routine <VAR>CKFILE3()</VAR>
@@ -580,6 +583,38 @@
 
 
 <HR> <!----------------------------------------------------------------->
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jun142016">
+     Copy CMAQ metadata from input to output, for relevant <VAR>m3tools</VAR>
+     programs.
+</A></H2>
+
+    <BLOCKQUOTE>
+    Add new routines <CODE>ISCMAQ()</CODE> and  <CODE>ISSMOKE()</CODE>
+    to <A HREF="MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A>.
+    <P>
+    Copy CMAQ metadata from input to output, for <VAR>m3tools</VAR>
+    programs, under control of environment variable <CODE>COPY_META</CODE>
+    (default <CODE>ISCMAQ(&lt;input file&gt;)</CODE>)
+    <BLOCKQUOTE>
+    <DL>
+        <DT><VAR>m3combo</VAR>
+        <DT><VAR>m3cple</VAR>
+        <DT><VAR>m3interp</VAR>
+        <DT><VAR>m3tproc</VAR>
+        <DT><VAR>m3tshift</VAR>
+        <DT><VAR>m3wndw</VAR>
+        <DT><VAR>m3xtract</VAR>
+    </DL>
+    </BLOCKQUOTE>
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "jun032016">
@@ -6048,7 +6083,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 375 2016-06-03 20:42:52Z coats $
+    $Id: NEWSTUFF.html 380 2016-06-14 16:01:54Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

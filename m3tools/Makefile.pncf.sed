@@ -183,8 +183,13 @@ flags:
 gridprobe.o     : modgctp.mod
 insertgrid.o    : modgctp.mod
 latlon.o        : modgctp.mod
-m3cple.o        : modgctp.mod
-m3interp.o      : modgctp.mod
+m3combo.o       : modatts3.mod
+m3cple.o        : modgctp.mod modatts3.mod
+m3interp.o      : modgctp.mod modatts3.mod
+m3tproc.o       : modatts3.mod
+m3tshift.o      : modatts3.mod
+m3xtract.o      : modatts3.mod
+m3wndw.o        : modatts3.mod
 mtxbuild.o      : modatts3.mod
 mtxcalc.o       : modatts3.mod modgctp.mod
 mtxcple.o       : modatts3.mod
