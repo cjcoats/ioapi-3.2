@@ -2,14 +2,15 @@
       PROGRAM M3HDR
 
 C***********************************************************************
-C Version "$Id: m3hdr.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: m3hdr.f 381 2016-06-15 14:38:44Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
+C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
+C   (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  91
+C  program body starts at line  94
 C
 C  DESCRIPTION:
 C       display header information from M3IO files
@@ -23,9 +24,11 @@ C  REVISION  HISTORY:
 C       Adapted 05/2003 by Carlie J. Coats, Jr., BAMS, from M3CPLE
 C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
+C       Version  06/2016 by CJC:  Log CMAQ or SMOKE metadata, if present
 C***********************************************************************
 
       USE M3UTILIO
+      USE MODATTS3
       IMPLICIT NONE
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
@@ -82,13 +85,14 @@ C...........   LOCAL VARIABLES and their descriptions:
       CHARACTER*124 OUTLIN
       INTEGER       I, J, K, NARG, ISTAT, LDEV, LENF, LENR
       INTEGER       NLINE,LLB,NBL,IZONE,MXLLEN
-      LOGICAL           AFLAG
+      LOGICAL       AFLAG, EFLAG
 
 
 C***********************************************************************
 C   begin body of program M4CPLE
 
-        LDEV = INIT3()
+        EFLAG = .FALSE.
+        LDEV  = INIT3()
         WRITE( *, '( 5X, A )' )
      &'Program M3HDR to display the header description of a Models-3',
      &'I/O API file in "human-readable" format.',
@@ -106,10 +110,13 @@ C   begin body of program M4CPLE
      &'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',
      &' ',
      &'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013',
-     &'Carlie J. Coats, Jr., and (C) 2002-2010 Baron Advanced',
-     &'Meteorological Systems, LLC.  Released under Version 2',
-     &'of the GNU General Public License. See enclosed GPL.txt, or',
-     &'URL http://www.gnu.org/copyleft/gpl.html',
+     &'Carlie J. Coats, Jr., (C) 2003-2010 Baron Advanced',
+     &'Meteorological Systems, LLC., and (C) 2014-2016 UNC Institute',
+     &'for the the Environment.',
+     &'Released under Version 2 of the GNU General Public License,',
+     &'Version 2. See enclosed GPL.txt, or URL',
+     &' ',
+     &'    http://www.gnu.org/copyleft/gpl.html',
      &' ',
      &'Comments and questions are welcome and can be sent to',
      &' ',
@@ -120,7 +127,7 @@ C   begin body of program M4CPLE
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3hdr.f 101 2015-01-16 16:52:50Z coats                  $',
+     &'$Id:: m3hdr.f 381 2016-06-15 14:38:44Z coats                  $',
      &' '
 
         NARG  = IARGC()
@@ -338,6 +345,27 @@ C   begin body of program M4CPLE
            END IF
         end do
         CALL PUT( BLANK  )
+
+        IF ( ISCMAQ( FNAME ) ) THEN
+            IF ( .NOT.GETCMAQ( FNAME ) ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Error reading CMAQ metadata' )
+            ELSE IF ( .NOT.LOGCMAQ( LDEV, CMAQ_MDATA ) ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Error writing CMAQ metadata' )
+            END IF
+        END IF
+
+        IF ( ISSMOKE( FNAME ) ) THEN
+            IF ( .NOT.GETSMOKE( FNAME ) ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Error reading SMOKE metadata' )
+            ELSE IF ( .NOT.LOGSMOKE( LDEV, SMOKE_MDATA ) ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Error writing SMOKE metadata' )
+            END IF
+        END IF
+
         CALL PUT( BAR  )
 
 

@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.template 379 2016-06-14 15:53:21Z coats $"
+# Version "$Id: Makefile.template 381 2016-06-15 14:38:44Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -198,6 +198,7 @@ insertgrid.o    : modgctp.mod
 latlon.o        : modgctp.mod
 m3combo.o       : modatts3.mod
 m3cple.o        : modgctp.mod modatts3.mod
+m3hdr.o         : modatts3.mod
 m3interp.o      : modgctp.mod modatts3.mod
 m3tproc.o       : modatts3.mod
 m3tshift.o      : modatts3.mod

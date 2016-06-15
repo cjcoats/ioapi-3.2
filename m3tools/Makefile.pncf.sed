@@ -185,6 +185,7 @@ insertgrid.o    : modgctp.mod
 latlon.o        : modgctp.mod
 m3combo.o       : modatts3.mod
 m3cple.o        : modgctp.mod modatts3.mod
+m3hdr.o         : modatts3.mod
 m3interp.o      : modgctp.mod modatts3.mod
 m3tproc.o       : modatts3.mod
 m3tshift.o      : modatts3.mod

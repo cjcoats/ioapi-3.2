@@ -2,7 +2,7 @@
 MODULE MODATTS3
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !! Version "$Id: modatts3.F90 378 2016-06-14 15:52:48Z coats $"
+    !! Version "$Id: modatts3.F90 381 2016-06-15 14:38:44Z coats $"
     !! Copyright (c) 2014-2016 UNC Institute for the Environment
     !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
     !! See file "LGPL.txt" for conditions of use.
@@ -196,7 +196,11 @@ MODULE MODATTS3
     END INTERFACE
 
     INTERFACE LOGCMAQ
-        MODULE PROCEDURE  LOGCMAQ1, LOGCMAQF, LOGCMAQM, LOGCMAQFM
+        MODULE PROCEDURE  LOGCMAQ1, LOGCMAQF, LOGCMAQM, LOGCMAQFM, LOGCMAQDM
+    END INTERFACE
+
+    INTERFACE LOGSMOKE
+        MODULE PROCEDURE  LOGSMOKE1, LOGSMOKEF, LOGSMOKEM, LOGSMOKEFM, LOGSMOKEDM
     END INTERFACE
 
     INTERFACE SETCF
@@ -273,7 +277,7 @@ MODULE MODATTS3
     INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
 
     CHARACTER*80, SAVE :: SVN_ID =  &
-'$Id:: modatts3.F90 378 2016-06-14 15:52:48Z coats                              $'
+'$Id:: modatts3.F90 381 2016-06-15 14:38:44Z coats                              $'
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2627,7 +2631,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_GETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 378 2016-06-14 15:52:48Z coats $"
+        !! Version "$Id: modatts3.F90 381 2016-06-15 14:38:44Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -4216,7 +4220,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_SETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 378 2016-06-14 15:52:48Z coats $"
+        !! Version "$Id: modatts3.F90 381 2016-06-15 14:38:44Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -5020,10 +5024,80 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !!  Write formatted CMAQ_MDATA metadata to program log
+    !!  Write formatted SMOKE_MDATA metadata to program log
 
 
-    LOGICAL FUNCTION LOGSMOKE( )
+    LOGICAL FUNCTION LOGSMOKE1( )
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  body  .........................................
+
+        LOGSMOKE1 = LOGSMOKEDM( LOGDEV, SMOKE_MDATA )
+
+        RETURN
+
+    END FUNCTION  LOGSMOKE1
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!  Write formatted MDATA metadata to program log
+
+
+    LOGICAL FUNCTION LOGSMOKEM( MDATA )
+
+        !!........  Arguments:
+
+        TYPE( SMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  body  .........................................
+
+        LOGSMOKEM = LOGSMOKEDM( LOGDEV, SMOKE_MDATA )
+
+        RETURN
+
+    END FUNCTION  LOGSMOKEM
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!  Write formatted SMOKE_MDATA metadata to FNAME
+
+
+    LOGICAL FUNCTION LOGSMOKEF( FNAME )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+
+        !!........  Include file:
+
+        INCLUDE 'STATE3.EXT'
+
+        !!........  body  .........................................
+
+        LOGSMOKEF = LOGSMOKEFM( FNAME, SMOKE_MDATA )
+
+        RETURN
+
+    END FUNCTION  LOGSMOKEF
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!  Write formatted SMOKE_MDATA metadata to FNAME
+
+
+    LOGICAL FUNCTION LOGSMOKEFM( FNAME, MDATA )
+
+        !!........  Arguments:
+
+        CHARACTER( LEN=* ), INTENT( IN ) :: FNAME
+        TYPE( SMETA_T ),    INTENT( IN ) :: MDATA
 
         !!........  Include file:
 
@@ -5032,11 +5106,32 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!........  body  .........................................
 
         CALL M3MESG( 'SMOKE metadata not yet implemented' )
-        LOGSMOKE = .FALSE.
+        LOGSMOKEFM = .FALSE.
 
         RETURN
 
-    END FUNCTION  LOGSMOKE
+    END FUNCTION  LOGSMOKEFM
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !!  Write formatted SMOKE_MDATA metadata to FDEV
+
+
+    LOGICAL FUNCTION LOGSMOKEDM( FDEV, MDATA )
+
+        !!........  Arguments:
+
+        INTEGER        , INTENT( IN ) :: FDEV
+        TYPE( SMETA_T ), INTENT( IN ) :: MDATA
+
+        !!........  body  .........................................
+
+        CALL M3MESG( 'SMOKE metadata not yet implemented' )
+        LOGSMOKEDM = .FALSE.
+
+        RETURN
+
+    END FUNCTION  LOGSMOKEDM
 
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
