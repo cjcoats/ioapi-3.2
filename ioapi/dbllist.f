@@ -4,11 +4,11 @@
 C***********************************************************************
 C Version "$Id: DBLLIST.f 273 2015-12-03 18:05:34Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C)  2015 UNC Institute for the Environment.
+C Copyright (C)  2015-2016 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  55
+C  function body starts at line  57
 C
 C  RETURNS:  TRUE for success, FALSE for failure
 C            Success implies NCNT > 0 ("we actually found something")
@@ -23,6 +23,7 @@ C
 C  REVISION  HISTORY:
 C       prototype 12/03/1998 by Carlie J. Coats, Jr., UNC IE:
 C       adapted from "reallist.f"
+C       Modified  06/2016 by CJC: bug-fixes
 C***********************************************************************
 
       IMPLICIT NONE
@@ -38,7 +39,7 @@ C...........   ARGUMENTS and their descriptions:
 C...........   EXTERNAL FUNCTION:
 
         INTEGER, EXTERNAL :: LBLANK
-        REAL,    EXTERNAL :: STR2DBLE
+        REAL*8,  EXTERNAL :: STR2DBLE
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
@@ -48,6 +49,7 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
         INTEGER         ISTAT   !  return status for ENVSTR
         INTEGER         L, M    !  subscript/loop counter
         INTEGER         LO, HI  !  substring bounds
+        INTEGER         J, K
 
 C***********************************************************************
 C   begin body of function  dummy
@@ -73,17 +75,26 @@ C   begin body of function  dummy
         DO  L = 1, NMAX
             LO = LO + LBLANK( BUF( LO: ) )
             IF ( LO .GE. 65535 )  THEN
-                NCNT = L
+                NCNT = L-1
                 GO TO 99                !  list exhausted
             END IF
-            HI = MAX( INDEX( BUF(LO:), ',' ), INDEX( BUF(LO:), ' ' ) )
-            IF ( HI .EQ. 0 ) HI = 65536 - LO                   !  no more commas, blank-separators
-            LIST( L ) = STR2DBLE( BUF( LO : LO + HI - 2 ) )
+            J = INDEX( BUF(LO:), ',' )
+            K = INDEX( BUF(LO:), ' ' )
+            IF ( MAX( J, K ) .EQ. 0 ) THEN
+                HI = 65536 - LO                   !  no more commas, blank-separators
+            ELSE IF ( J .EQ. 0 ) THEN
+                HI = K
+            ELSE IF ( K .EQ. 0 ) THEN
+                HI = J
+            ELSE
+                HI = MIN( J, K )
+            END IF
+            LIST( L ) = STR2DBLE( BUF( LO : ) )
             LO = LO + HI                !  1 col past the comma
         END DO
 
-        IF ( LO+HI+1 .LT. 65535 )  THEN   !  fall-through:  list done?
-           IF ( BUF( LO+HI+1: ) .NE. ' ' )  THEN
+        IF ( LO+1 .LT. 65535 )  THEN   !  fall-through:  list done?
+           IF ( BUF( LO+1: ) .NE. ' ' )  THEN
                DBLLIST = .FALSE.
                RETURN
             END IF

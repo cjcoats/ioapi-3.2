@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 380 2016-06-14 16:01:54Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 383 2016-06-24 19:08:45Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 380 2016-06-14 16:01:54Z coats $
+    $Id: NEWSTUFF.html 383 2016-06-24 19:08:45Z coats $
     </EM>
     <HR>
 
@@ -33,10 +33,12 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
-         <LI>  <A HREF = "#jun142016">
+         <LI>  <A HREF = "#jun242016">
+               Bug-fixes in <CODE>[DBL|INT|REAL|STR]LIST()</CODE> routines
+          <LI>  <A HREF = "#jun142016">
                Copy CMAQ metadata from input to output, for
                relevant <VAR>m3tools</VAR> programs</A>
-         <LI>  <A HREF = "#jun032016">
+        <LI>  <A HREF = "#jun032016">
                Don't compile <VAR>single_thread.F</VAR> if coupling mode
                not enabled</A>
          <LI>  <A HREF = "#jun012016">
@@ -608,6 +610,21 @@
         <DT><VAR>m3xtract</VAR>
     </DL>
     </BLOCKQUOTE>
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jun242016">
+     Bug-fixes in <CODE>DBLLIST(), INTLIST(), REALIST(), STRLIST()</CODE> routines
+</A></H2>
+
+    <BLOCKQUOTE>
+    Corrected mis-handling of delimiters in COMMA-or-BLANK delimited lists.
     <P>
     </BLOCKQUOTE>
 
@@ -6083,7 +6100,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 380 2016-06-14 16:01:54Z coats $
+    $Id: NEWSTUFF.html 383 2016-06-24 19:08:45Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

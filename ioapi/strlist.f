@@ -2,16 +2,16 @@
         LOGICAL FUNCTION STRLIST( ENAME, EDESC, NMAX, NCNT, LIST )
 
 C***********************************************************************
-C Version "$Id: strlist.f 273 2015-12-03 18:05:34Z coats $"
+C Version "$Id: strlist.f 382 2016-06-24 18:55:25Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems,
 C (C) 2007-2013 Carlie J. Coats, Jr., and 
-C (C) 2014-2015 UNC Institute for the Environment.
+C (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  61
+C  function body starts at line  65
 C
 C  RETURNS:  TRUE for success, FALSE for failure
 C            Success implies NCNT > 0 ("we actually found something")
@@ -31,6 +31,7 @@ C       Modified  03/2010 by CJC: F9x changes for I/O API v3.1
 C       Modified  03/2014 by CJC: buffer-size 65535 to match "envgets.c" change
 C       Modified  12/2015 by CJC: blank-delimited lists; termination-condition 
 C       needs "LO+HI+1 .LT. 65535" (etc.) several places.
+C       Modified  06/2016 by CJC: bug-fixes
 C***********************************************************************
 
       IMPLICIT NONE
@@ -53,7 +54,7 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
         CHARACTER*256   MESG      !  buffer for error messages
         CHARACTER*5     PREFIX    !  buffer for checking "LIST:"
         INTEGER         ISTAT     !  return status for ENVSTR
-        INTEGER         K, L, M   !  subscript/loop counters
+        INTEGER         I, J, K, L, M   !  subscript/loop counters
         INTEGER         LO, HI    !  substring bounds
         INTEGER         LMAX      !  max substring length
         LOGICAL         EFLAG
@@ -88,7 +89,17 @@ C   begin body of function  STRLIST
                 NCNT = K - 1
                 GO TO 99                !  list exhausted
             END IF
-            HI = MAX( INDEX( BUF(LO:), ',' ), INDEX( BUF(LO:), ' ' ) )
+            I = INDEX( BUF(LO:), ',' )
+            J = INDEX( BUF(LO:), ' ' )
+            IF ( MAX( J, K ) .EQ. 0 ) THEN
+                HI = 0                   !  no more commas, blank-separators
+            ELSE IF ( I .EQ. 0 ) THEN
+                HI = J
+            ELSE IF ( J .EQ. 0 ) THEN
+                HI = I
+            ELSE
+                HI = MIN( I,J )
+            END IF
             IF ( HI .EQ. 0 ) THEN          !  no more commas
                 L  = LEN_TRIM( BUF( LO: ) )
                 HI = 65536 - LO  
@@ -104,7 +115,7 @@ C   begin body of function  STRLIST
         END DO
 
         IF ( LO+1 .LT. 65535 )  THEN   !  fall-through:  list done?
-            IF ( BUF( HI+1: ) .NE. ' ' )  THEN   !  fall-through:  list done?
+            IF ( BUF( LO+1: ) .NE. ' ' )  THEN   !  fall-through:  list done?
                 STRLIST = .FALSE.
                 RETURN
              END IF

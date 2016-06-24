@@ -2,16 +2,16 @@
         LOGICAL FUNCTION INTLIST( ENAME, EDESC, NMAX, NCNT, LIST )
 
 C***********************************************************************
-C Version "$Id: intlist.f 273 2015-12-03 18:05:34Z coats $"
+C Version "$Id: intlist.f 382 2016-06-24 18:55:25Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems,
 C (C) 2007-2013 Carlie J. Coats, Jr., and 
-C (C) 2014-2015 UNC Institute for the Environment.
+C (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  62
+C  function body starts at line  64
 C
 C  RETURNS:  TRUE for success, FALSE for failure
 C            Success implies NCNT > 0 ("we actually found something")
@@ -31,6 +31,7 @@ C       Modified  03/2010 by CJC: F9x changes for I/O API v3.1
 C       Modified  03/2014 by CJC: buffer-size 65535 to match "envgets.c" change
 C       Modified  12/2015 by CJC: blank-delimited lists; termination-condition 
 C       needs "LO+HI+1 .LT. 65535" (etc.) several places.
+C       Modified  06/2016 by CJC: bug-fixes
 C***********************************************************************
 
       IMPLICIT NONE
@@ -55,6 +56,7 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
         INTEGER         ISTAT   !  return status for ENVSTR
         INTEGER         L, M    !  subscript/loop counter
         INTEGER         LO, HI  !  substring bounds
+        INTEGER         J, K
 
 C***********************************************************************
 C   begin body of function  dummy
@@ -80,17 +82,26 @@ C   begin body of function  dummy
         DO  L = 1, NMAX
             LO = LO + LBLANK( BUF( LO: ) )
             IF ( LO .GE. 65535 )  THEN
-                NCNT = L
+                NCNT = L-1
                 GO TO 99                !  list exhausted
             END IF
-            HI = MAX( INDEX( BUF(LO:), ',' ), INDEX( BUF(LO:), ' ' ) )
-            IF ( HI .EQ. 0 ) HI = 65536 - LO                   !  no more commas, blank-separators
-            LIST( L ) = STR2INT( BUF( LO : LO + HI - 1 ) )
+            J = INDEX( BUF(LO:), ',' )
+            K = INDEX( BUF(LO:), ' ' )
+            IF ( MAX( J, K ) .EQ. 0 ) THEN
+                HI = 65536 - LO                   !  no more commas, blank-separators
+            ELSE IF ( J .EQ. 0 ) THEN
+                HI = K
+            ELSE IF ( K .EQ. 0 ) THEN
+                HI = J
+            ELSE
+                HI = MIN( J, K )
+            END IF
+            LIST( L ) = STR2INT( BUF( LO : ) )
             LO = LO + HI                !  1 col past the comma
         END DO
 
         IF ( LO+1 .LT. 65535 )  THEN   !  fall-through:  list done?
-           IF ( BUF( LO+HI+1: ) .NE. ' ' )  THEN
+           IF ( BUF( LO+1: ) .NE. ' ' )  THEN
                INTLIST = .FALSE.
                RETURN
             END IF
