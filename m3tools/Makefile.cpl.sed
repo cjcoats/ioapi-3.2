@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.cpl.sed 381 2016-06-15 14:38:44Z coats $"
+# Version "$Id: Makefile.cpl.sed 384 2016-06-30 15:43:47Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -87,7 +87,7 @@ m3tshift.f90    m3wndw.f90      mtxcalc.f90     pairstep.f90    presz.f90       
 timeshift.f90   vertot.f90      vertimeproc.f90 vertintegral.f90                \
 wrfgriddesc.f90 wrftom3.f90     findwndw.f90
 
-OBJ = $(fSRC:.f=.o) $(FSRC:.F=.o) $(f90SRC:.f=.o)
+OBJ = $(fSRC:.f=.o) $(f90SRC:.f90=.o)
 
 EXE = \
 airs2m3         bcwndw          camxtom3        datshift        dayagg          \

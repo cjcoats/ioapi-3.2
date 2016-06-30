@@ -88,7 +88,7 @@ m3tshift.f90    m3wndw.f90      mtxcalc.f90     pairstep.f90    presz.f90       
 timeshift.f90   vertot.f90      vertimeproc.f90 vertintegral.f90                \
 wrfgriddesc.f90 wrftom3.f90     findwndw.f90
 
-OBJ = $(fSRC:.f=.o) $(FSRC:.F=.o) $(f90SRC:.f=.o)
+OBJ = $(fSRC:.f=.o) $(f90SRC:.f90=.o)
 
 
 EXE = \
