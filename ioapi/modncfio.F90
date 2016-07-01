@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 344 2016-03-23 22:34:18Z coats $"
+    !!  Version "$Id: modncfio.F90 385 2016-07-01 15:31:15Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -476,28 +476,28 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_put_att_text
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     len,
+    !!........                          INTEGER ::     len,
     !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_get_att_text
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
     !!........                          character(*):: text)
 
     INTEGER, EXTERNAL :: nf_put_att_int1
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     xtype,
-    !!........                         (INTEGER ::     len,
+    !!........                          INTEGER ::     xtype,
+    !!........                          INTEGER ::     len,
     !!........                          nf_int1_t ::   i1vals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_int1
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
     !!........                          nf_int1_t ::   i1vals(*))
 

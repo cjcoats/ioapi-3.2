@@ -2,7 +2,7 @@
 SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
 
     !!***********************************************************************
-    !! Version "$Id: opnlog3.F90 235 2015-10-14 15:44:39Z coats $"
+    !! Version "$Id: opnlog3.F90 385 2016-07-01 15:31:15Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -36,6 +36,10 @@ SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
     !!
     !!      Modified 10/2015 by CJC for I/O API 3.2: use NF_*() instead of NC*()
     !!      for netCDF-Fortran 4.x compatibility
+    !!
+    !!      Modified 7/2016 by CJC:  bug-fix from Edward Anderson
+    !!      (Lockheed Martin, supporting the U.S. EPA:: NF_GET_ATT_TEXT(()
+    !!      argument-list
     !!***********************************************************************
 
     USE M3UTILIO
@@ -120,7 +124,7 @@ SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
 #endif
     ELSE IF ( FNUM .GT. 0 ) THEN
 !$OMP CRITICAL( S_NC )
-        IERR = NF_GET_ATT_TEXT( FNUM, NF_GLOBAL, 'EXEC_ID', EXECID, MXDLEN3 )
+        IERR = NF_GET_ATT_TEXT( FNUM, NF_GLOBAL, 'EXEC_ID', EXECID )
 !$OMP END CRITICAL( S_NC )
     ELSE
         CALL M3MESG( 'OPNLOG3:  unrecognized file' )
