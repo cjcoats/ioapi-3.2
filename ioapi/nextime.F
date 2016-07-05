@@ -2,7 +2,7 @@
       SUBROUTINE NEXTIME  ( JDATE , JTIME, DTIME )
 
 C.....................................................................
-C Version "$Id: wrbuf3.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: nextime.F 386 2016-07-05 20:45:07Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -47,6 +47,8 @@ C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C
 C       Modified 11/2015 by CJC: IO_365 changes
+C
+C       Modified 07/2016 by CJC: Bug-fix in LASTTIME()
 C........................................................................
 
         IMPLICIT  NONE
@@ -240,11 +242,21 @@ C...........   Note that each year must be treated individually
 
         SUBROUTINE LASTTIME( SDATE,STIME,TSTEP,NRECS, EDATE,ETIME )
 
+        IMPLICIT  NONE
+
+C.......   ARGUMENTS:
+
         INTEGER, INTENT(IN   ) :: SDATE, STIME, TSTEP, NRECS
         INTEGER, INTENT(  OUT) :: EDATE, ETIME
 
+C.......   PARAMETERs:
+
         INTEGER, PARAMETER :: S365 = 365 * 24 * 60 * 60     !!  seconds
         INTEGER, PARAMETER :: T365 = 365 * 24 * 10000       !!  time as H*MMSS
+
+        !!.......   EXTERNAL Functions:
+
+        INTEGER, EXTERNAL :: SEC2TIME, TIME2SEC
 
         !!.......   LOCAL VARIABLES:  day and year components of date
 

@@ -2,7 +2,7 @@
 SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
 
     !!***********************************************************************
-    !! Version "$Id: runspec.f90 367 2016-05-17 18:25:47Z coats $"
+    !! Version "$Id: runspec.f90 386 2016-07-05 20:45:07Z coats $"
     !! EDSS/Models-3 I/O API.
     !! (C) 2015-2016 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -58,7 +58,7 @@ SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
     !!...........   EXTERNAL FUNCTIONS and their descriptions:
 
     LOGICAL, EXTERNAL :: ENVYN
-    INTEGER, EXTERNAL :: ENVINT, GETNUM, JSTEP3
+    INTEGER, EXTERNAL :: ENVINT, GETNUM, JSTEP3, CURREC
 
     !!...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
@@ -153,15 +153,15 @@ SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
 
         CALL M3MESG( 'Now enter time step sequence parameters' )
 
-        SDATE = GETNUM( SDATE1, 9999999, JDATE1, 'Enter STARTING DATE (YYYYDDD)' )
+        SDATE = GETNUM( SDATE1, EDATE1, SDATE1, 'Enter STARTING DATE (YYYYDDD)' )
 
-        STIME = GETNUM( 0,   9999999, STIME1, 'Enter STARTING TIME  (H*MMSS)' )
+        STIME = GETNUM( 0, 999999999,   STIME1, 'Enter STARTING TIME  (H*MMSS)' )
 
         TSTEP = GETNUM( TSTEP1, 999999999, TSTEP1, 'Enter     TIME STEP  (H*MMSS)' )
 
-        EDATE = GETNUM( SDATE, 9999999, EDATE1, 'Enter  ENDING DATE (YYYYDDD)' )
+        EDATE = GETNUM( SDATE, EDATE1, EDATE1, 'Enter  ENDING DATE (YYYYDDD)' )
 
-        ETIME = GETNUM( 0, 9999999, ETIME1, 'Enter   ENDING TIME  (H*MMSS)' )
+        ETIME = GETNUM( 0, 999999999,  ETIME1, 'Enter   ENDING TIME  (H*MMSS)' )
 
     END IF      !!  if useenv, or not
 
@@ -182,6 +182,8 @@ SUBROUTINE RUNSPEC( FNAME, USEENV, SDATE, STIME, TSTEP, NRECS )
         WRITE( MESG, '(A, I10.6, 2X, 3 A )' ) 'Time step', TSTEP, 'not compatible with "', TRIM( FNAME ) , '"'
         CALL M3MESG( MESG )
     END IF
+    
+    NRECS = CURREC( EDATE, ETIME, SDATE, STIME, TSTEP, JDATE, JTIME )
 
     IF ( EFLAG ) THEN
         CALL M3EXIT( PNAME,0,0, 'Bad input time step sequence', 2 )
