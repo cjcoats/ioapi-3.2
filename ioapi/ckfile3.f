@@ -2,7 +2,7 @@
         LOGICAL FUNCTION CKFILE3( FID )  RESULT( CKFLAG )
 
 C***********************************************************************
-C Version "$Id: ckfile3.f 388 2016-07-05 21:08:30Z coats $"
+C Version "$Id: ckfile3.f 390 2016-07-05 21:11:01Z coats $"
 C BAMS/MCNC/EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems, and
@@ -937,7 +937,7 @@ C...........   Checks on the vertical coordinate description:
 
                 WRITE( MESG, 94010 )
      &           'Unknown vertical grid/coordinate type:', VGTYP3(FID),
-     &        /   'in file "' // TRIM( FLIST3( FID ) ) // '"'
+     &            'in file "' // TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
                 CKFLAG = .FALSE.
                 RETURN
