@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 387 2016-07-05 20:47:42Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 389 2016-07-05 21:08:53Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 387 2016-07-05 20:47:42Z coats $
+    $Id: NEWSTUFF.html 389 2016-07-05 21:08:53Z coats $
     </EM>
     <HR>
 
@@ -34,7 +34,7 @@
                <P>
 
          <LI>  <A HREF = "#jul052016">
-               Bug-fixes in <CODE>LASTTIME(), RUNSPEC()</CODE> routines
+               Bug-fixes in <CODE>LASTTIME(), RUNSPEC(), CKFIL3()</CODE> routines
          <LI>  <A HREF = "#jun242016">
                Bug-fixes in <CODE>[DBL|INT|REAL|STR]LIST()</CODE> routines
           <LI>  <A HREF = "#jun142016">
@@ -590,11 +590,18 @@
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "jul052016">
-     Bug-fixes in <CODE>LASTTIME(), RUNSPEC()</CODE> routines
+     Bug-fixes in <CODE>LASTTIME(), RUNSPEC(), CKFILE3()</CODE> routines
 </A></H2>
 
     <BLOCKQUOTE>
-    Subject says it.
+    Missing <CODE>IMPLICIT NONE</CODE> and <CODE>EXTERNAL</CODE> declarations
+    in <CODE>LASTTIME()</CODE>.
+    <P>
+    Error in calculation of <CODE>NRECS</CODE> argumnent for
+    <CODE>RUNSPEC()<CODE>
+    <P>
+    Bug-fixes by Edward Anderson, Lockheed Martin, for
+    <CODE>CKFILE3()</CODE>.
     <P>
     </BLOCKQUOTE>
 
@@ -6119,7 +6126,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 387 2016-07-05 20:47:42Z coats $
+    $Id: NEWSTUFF.html 389 2016-07-05 21:08:53Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

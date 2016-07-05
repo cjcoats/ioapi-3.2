@@ -2,7 +2,7 @@
         LOGICAL FUNCTION CKFILE3( FID )  RESULT( CKFLAG )
 
 C***********************************************************************
-C Version "$Id: ckfile3.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: ckfile3.f 388 2016-07-05 21:08:30Z coats $"
 C BAMS/MCNC/EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems, and
@@ -38,6 +38,8 @@ C       Modified 07-08/2015 by CJC:  bug reported by Mogesh Naidoo:
 C       Add support for EQMGRD3, TRMGRD3, ALBGRD3, LEQGRD3, SINIGRD3.
 C       Eliminate unused NETCDF.EXT.  MPIGRD3 type for MPI/PnetCDF
 C       distributed I/O
+C       Modified 07-05/2016 by CJC:  bugs reported by Edward Anderson,
+C       Lockheed Martin,
 C***********************************************************************
 
         USE M3UTILIO
@@ -924,18 +926,18 @@ C...........   Checks on the vertical coordinate description:
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
 
-            ELSE IF ( ( VGTYP .NE. VGSGPN3 ) .AND.
-     &                ( VGTYP .NE. VGSGPH3 ) .AND.
-     &                ( VGTYP .NE. VGSIGZ3 ) .AND.
-     &                ( VGTYP .NE. VGPRES3 ) .AND.
-     &                ( VGTYP .NE. VGZVAL3 ) .AND.
-     &                ( VGTYP .NE. VGHVAL3 ) .AND.
-     &                ( VGTYP .NE. VGWRFEM ) .AND.
-     &                ( VGTYP .NE. VGWRFNM ) ) THEN
+            ELSE IF ( ( VGTYP3(FID) .NE. VGSGPN3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGSGPH3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGSIGZ3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGPRES3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGZVAL3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGHVAL3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGWRFEM ) .AND.
+     &                ( VGTYP3(FID) .NE. VGWRFNM ) ) THEN
 
                 WRITE( MESG, 94010 )
-     &             'Unknown vertical grid/coordinate type:', VGTYP,
-     &             'in file "' // TRIM( FLIST3( FID ) ) // '"'
+     &           'Unknown vertical grid/coordinate type:', VGTYP3(FID),
+     &        /   'in file "' // TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
                 CKFLAG = .FALSE.
                 RETURN
@@ -953,7 +955,7 @@ C******************  FORMAT  STATEMENTS   ******************************
 
 C...........   Internal buffering formats............ 94xxx
 
-94000   FORMAT( A )
+94000   FORMAT( 99( A, : ) )
 
 94010   FORMAT( A, I10, :, 2X, A )
 
