@@ -2,14 +2,14 @@
 PROGRAM JULDATE
 
     !!***********************************************************************
-    !! Version "$Id: juldate.f90 121 2015-01-20 22:24:38Z coats $"
+    !! Version "$Id: juldate.f90 391 2016-07-12 18:55:38Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  80
+    !!  program body starts at line  72
     !!
     !!  DESCRIPTION:
     !!       interactively month, day, year;
@@ -71,14 +71,14 @@ PROGRAM JULDATE
 
     CALL GETDTTIME( JDATE, JTIME )
     ARGCNT = IARGC()
-    IF ( ARGCNT .EQ. 0 ) THEN
-        SCRBUF = '?'
-    ELSE IF ( ARGCNT .EQ. 1 ) THEN
+    IF ( ARGCNT .EQ. 1 ) THEN
         CALL GETARG( ARGCNT, SCRBUF )
         CALL LUSTR( SCRBUF )
     END IF
 
-    IF ( SCRBUF .EQ. '--HELP' .OR. SCRBUF .EQ. '?' ) THEN
+    IF ( SCRBUF .EQ. '--HELP' .OR.  &
+         SCRBUF .EQ. '?'      .OR.  &
+         SCRBUF .EQ. '-?' ) THEN
         WRITE( *,'( 5X, A )' ) ' ', ' ',                              &
  'Program JULDATE takes calendar date (in form Month DD YYYY)',       &
  'and returns the date in Julian-date form "YYYYDDD".',               &
@@ -114,7 +114,7 @@ PROGRAM JULDATE
 'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',      &
 ' ',                                                                  &
 'Program version: ',                                                  &
-'$Id:: juldate.f90 121 2015-01-20 22:24:38Z coats              $',    &
+'$Id:: juldate.f90 391 2016-07-12 18:55:38Z coats              $',    &
 ' '
         CALL EXIT( 0 )
     END IF      !!  if
