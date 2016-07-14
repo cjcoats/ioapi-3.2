@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 393 2016-07-13 21:07:53Z coats $" -->
+<!-- "$Id: MODNCFIO.html 396 2016-07-14 15:31:23Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -129,9 +129,9 @@
     LOGICAL FUNCTION READNCVEC3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, IVEC3 )
     LOGICAL FUNCTION READNCVEC3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, RVEC3 )
     LOGICAL FUNCTION READNCVEC3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, DVEC3 )
-    LOGICAL FUNCTION READNCVEC3DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, IVEC4 )
-    LOGICAL FUNCTION READNCVEC3DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, RVEC4 )
-    LOGICAL FUNCTION READNCVEC3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, DVEC4 )
+    LOGICAL FUNCTION READNCVEC4DI( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, IVEC4 )
+    LOGICAL FUNCTION READNCVEC4DR( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, RVEC4 )
+    LOGICAL FUNCTION READNCVEC4DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, DVEC4 )
         CHARACTER*(*), INTENT(IN   ) :: FNAME                !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME                !!  variable name
         INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS  !!  dimensions
@@ -171,8 +171,9 @@
     <CODE>VNAME</CODE> must exactly match the name of a variable in the file.<BR>
     The dimensions given as arguments must exactly match the dimensions
     for that variable in that file.<BR>
-    Does not support time stepped variables (or variables having
-    netCDF-unlimited as a dimension).<BR>
+    For time stepped variables (or variables having
+    netCDF-unlimited as a dimension), supports only
+    &quot;whole-variable&quot; read operations.<BR>
     Output-array must be dimensioned as shown above.
     <P>
 
