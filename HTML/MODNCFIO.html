@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 396 2016-07-14 15:31:23Z coats $" -->
+<!-- "$Id: MODNCFIO.html 399 2016-07-14 17:14:29Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -104,7 +104,10 @@
 
     <H3><CODE>READNCVAR</CODE></H3>
     <PRE>
-    LOGICAL FUNCTION READNCVAR( FNAME, VNAME, NCOLS, [NROWS, [NLAYS,]] GRID )
+    LOGICAL FUNCTION READNCVAR( FNAME, VNAME, [NCOLS, [NROWS, [NLAYS, [NRECS, ]]]] GRID )
+    LOGICAL FUNCTION READNCVAR0DI( FNAME, VNAME, IGRID0 )
+    LOGICAL FUNCTION READNCVAR0DR( FNAME, VNAME, RGRID0 )
+    LOGICAL FUNCTION READNCVAR0DD( FNAME, VNAME, DGRID0 )
     LOGICAL FUNCTION READNCVAR1DI( FNAME, VNAME, NCOLS, IGRID1 )
     LOGICAL FUNCTION READNCVAR1DR( FNAME, VNAME, NCOLS, RGRID1 )
     LOGICAL FUNCTION READNCVAR1DD( FNAME, VNAME, NCOLS, DGRID1 )
@@ -134,8 +137,11 @@
     LOGICAL FUNCTION READNCVEC4DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, DVEC4 )
         CHARACTER*(*), INTENT(IN   ) :: FNAME                !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME                !!  variable name
-        INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS  !!  dimensions
-        &lt;type&gt;       , INTENT(  OUT) ::  GRID ( NCOLS, [NROWS, [NLAYS,]] )
+        INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS, NRECS  !!  dimensions
+        &lt;type&gt;       , INTENT(  OUT) ::  GRID ( NCOLS, [NROWS, [NLAYS,[NRECS]]] )
+        INTEGER      , INTENT(  OUT) :: IGRID0
+        REAL         , INTENT(  OUT) :: RGRID0
+        REAL*8       , INTENT(  OUT) :: DGRID0
         INTEGER      , INTENT(  OUT) :: IGRID1( NCOLS )
         REAL         , INTENT(  OUT) :: RGRID1( NCOLS )
         REAL*8       , INTENT(  OUT) :: DGRID1( NCOLS )
@@ -162,7 +168,7 @@
         REAL*8       , INTENT(  OUT) ::  DVEC4( NCOLS*NROWS*NLAYS*NRECS )
     </PRE>
     Generic and type/dimension-count specific routines for reading entire
-    1-D, 2-D, 3-D, and 4-D <CODE>M3INT, M3REAL</CODE> and <CODE>M3DBLE</CODE>
+    0-D, 1-D, 2-D, 3-D, and 4-D <CODE>M3INT, M3REAL</CODE> and <CODE>M3DBLE</CODE>
     variables from &quot;raw&quot; netCDF files.
     <P>
 
