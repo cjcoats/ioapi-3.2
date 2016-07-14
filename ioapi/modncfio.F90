@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 392 2016-07-13 21:06:40Z coats $"
+    !!  Version "$Id: modncfio.F90 394 2016-07-13 22:52:51Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -140,7 +140,8 @@ MODULE MODNCFIO
                          READNCVAR3DR, READNCVAR3DI, READNCVAR3DD,   &
                          READNCVAR4DR, READNCVAR4DI, READNCVAR4DD,   &
                          READNCVEC2DR, READNCVEC2DI, READNCVEC2DD,   &
-                         READNCVEC3DR, READNCVEC3DI, READNCVEC3DD
+                         READNCVEC3DR, READNCVEC3DI, READNCVEC3DD,   &
+                         READNCVEC4DR, READNCVEC4DI, READNCVEC4DD
     END INTERFACE READNCVAR
 
 
@@ -2172,7 +2173,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 1 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -2791,7 +2792,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 3 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -2883,12 +2884,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 
 
-    LOGICAL FUNCTION READNCVAR3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, NRECS, GRID )
+    LOGICAL FUNCTION READNCVAR3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, GRID )
         USE M3UTILIO
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS, NRECS    !!  dimensions
+        INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS    !!  dimensions
         REAL*8       , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS )
 
         INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
@@ -2931,7 +2932,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 3 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -2988,26 +2989,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             GO TO 999
         END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
 
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading RECORD dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR()
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NRECS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
         DIMS(:) = 1
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = NRECS
         ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -3045,7 +3030,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
         INTEGER      , INTENT(IN   ) :: NCOLS, NROWS, NLAYS, NRECS    !!  dimensions
-        REAL         , INTENT(  OUT) :: GRID( NCOLS, NROWS, NRECS, NLAYS )
+        REAL         , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS, NRECS )
 
         INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
         INTEGER         FID, VID, XID, YID
@@ -3087,7 +3072,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
+        ELSE IF ( NDIMS .NE. 4 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -3138,6 +3123,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             EFLAG = .TRUE.
             GO TO 999
         ELSE IF ( IDIM .NE. NLAYS ) THEN
+            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
+
+        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            MESG = NF_STRERROR()
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        ELSE IF ( IDIM .NE. NRECS ) THEN
             MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -3230,7 +3230,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 4 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -3281,6 +3281,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             EFLAG = .TRUE.
             GO TO 999
         ELSE IF ( IDIM .NE. NLAYS ) THEN
+            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
+
+        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            MESG = NF_STRERROR()
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        ELSE IF ( IDIM .NE. NRECS ) THEN
             MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -3370,7 +3385,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 4 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -3421,6 +3436,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             EFLAG = .TRUE.
             GO TO 999
         ELSE IF ( IDIM .NE. NLAYS ) THEN
+            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
+
+        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            MESG = NF_STRERROR()
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        ELSE IF ( IDIM .NE. NRECS ) THEN
             MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -4022,7 +4052,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 3 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -4162,7 +4192,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 3 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -4302,7 +4332,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
+        ELSE IF ( NDIMS .NE. 4 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -4358,6 +4388,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             EFLAG = .TRUE.
             GO TO 999
         END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
+
+        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            MESG = NF_STRERROR()
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        ELSE IF ( IDIM .NE. NRECS ) THEN
+            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
 
         DIMS(:) = 1
         DELS(1) = NCOLS
@@ -4443,7 +4488,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 4 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -4494,6 +4539,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             EFLAG = .TRUE.
             GO TO 999
         ELSE IF ( IDIM .NE. NLAYS ) THEN
+            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
+
+        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            MESG = NF_STRERROR()
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        ELSE IF ( IDIM .NE. NRECS ) THEN
             MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -4584,7 +4644,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
             GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
+        ELSE IF ( NDIMS .NE. 4 ) THEN
             MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
@@ -4635,6 +4695,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             EFLAG = .TRUE.
             GO TO 999
         ELSE IF ( IDIM .NE. NLAYS ) THEN
+            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
+
+        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            MESG = NF_STRERROR()
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+            GO TO 999
+        ELSE IF ( IDIM .NE. NRECS ) THEN
             MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
             CALL M3MESG( MESG )
             EFLAG = .TRUE.

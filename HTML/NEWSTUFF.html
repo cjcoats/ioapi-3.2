@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 389 2016-07-05 21:08:53Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 395 2016-07-14 14:24:26Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 389 2016-07-05 21:08:53Z coats $
+    $Id: NEWSTUFF.html 395 2016-07-14 14:24:26Z coats $
     </EM>
     <HR>
 
@@ -33,10 +33,12 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
-         <LI>  <A HREF = "#jul052016">
-               Bug-fixes in <CODE>LASTTIME(), RUNSPEC(), CKFIL3()</CODE> routines
+         <LI>  <A HREF = "#jul142016">
+               4-D <CODE>READNCVAR()</CODE> routines in
+               <CODE>MODULE&nbsp;MODNCFIO</CODE>
+               </A>
          <LI>  <A HREF = "#jun242016">
-               Bug-fixes in <CODE>[DBL|INT|REAL|STR]LIST()</CODE> routines
+               Bug-fixes in <CODE>[DBL|INT|REAL|STR]LIST()</CODE> routines</A>
           <LI>  <A HREF = "#jun142016">
                Copy CMAQ metadata from input to output, for
                relevant <VAR>m3tools</VAR> programs</A>
@@ -125,7 +127,7 @@
                Bonyoung Koo, Environ.</A>
          <LI>  <A HREF = "#nov1512">
                Bug-fix for <CODE>m3tools/m3xtract</CODE> and
-               <CODE>m3tools/vertintegral</CODE>.</ABug-fixes in <CODE>LASTTIME(), RUNSPEC()</CODE> routines>
+               <CODE>m3tools/vertintegral</CODE>.</A>
          <LI>  <A HREF = "#oct3012">
                Bug-fix for <CODE>m3tools/projtool</CODE>.</A>
          <LI>  <A HREF = "#oct0212">
@@ -587,6 +589,27 @@
 
 
 <HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jul142016">
+    4-D <CODE>READNCVAR()</CODE> routines in
+    <CODE>MODULE&nbsp;MODNCFIO</CODE>
+</A></H2>
+
+    <BLOCKQUOTE>
+    New routines <CODE>READNCVAR4DD(), READNCVAR4DI(), READNCVAR4DR(), 
+    READNCVEC4DD(), READNCVEC4DI(), READNCVEC4DR()</CODE>
+    in the generic routine <CODE>READNCVAR()</CODE>
+    <P>
+    Bug-fixes (fixed bad dimension-check) for
+    <CODE>READNCVAR3DD(), READNCVAR3DI(), READNCVAR3DR(), 
+    READNCVEC3DD(), READNCVEC3DI(), READNCVEC3DR()</CODE>
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
 <HR> <!----------------------------------------------------------------->
 
 <H2> <A NAME = "jul052016">
@@ -598,7 +621,7 @@
     in <CODE>LASTTIME()</CODE>.
     <P>
     Error in calculation of <CODE>NRECS</CODE> argumnent for
-    <CODE>RUNSPEC()<CODE>
+    <CODE>RUNSPEC()</CODE>
     <P>
     Bug-fixes by Edward Anderson, Lockheed Martin, for
     <CODE>CKFILE3()</CODE>.
@@ -6126,7 +6149,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 389 2016-07-05 21:08:53Z coats $
+    $Id: NEWSTUFF.html 395 2016-07-14 14:24:26Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
