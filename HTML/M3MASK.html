@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: M3MASK.html 211 2015-07-22 19:46:32Z coats $" -->
+<!-- "$Id: M3MASK.html 405 2016-07-28 15:28:08Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program M3MASK </TITLE>
 </HEAD>
@@ -16,6 +16,7 @@
 
 <H2> Usage </H2>
 <PRE>
+    setenv  COLROW    &lt;COL-ROW input, instead of LAT-LON? (Y/N [Y]&gt;
     setenv  MASKDATA  &lt;path name for input ASCII mask file&gt;
     setenv  LLFILE    &lt;path name for input M3IO gridded file&gt;
     setenv  MASKFILE  &lt;path name for output M3IO mask file&gt;
@@ -27,7 +28,8 @@
 <H2> Summary </H2>
 
     Reads ASCII mask-data, specified by a file <CODE>MASKDATA</CODE>
-    with lines containing the columns and rows, respectively, for the
+    with lines containing either the columns and rows or the latitudes
+    and longitudes, respectively, for the
     mask being specified, with one line per grid cell, and creates a
     GRIDDED output file <CODE>MASKFILE</CODE>, on the grid specified by 
     <CODE>LLFILE</CODE>.  <CODE>MASKFILE</CODE> contains one
@@ -56,7 +58,7 @@
     Requires Fortran-90 for compilation.  Source code for program
     <CODE>m3mask</CODE> is available <A HREF = "gpl.txt">under the
     GNU GPL License, Version 2</A>, and can be downloaded
-    <A HREF = "AVAIL.html">here</A>.
+    <A HREF = "AVAIL.html">here, for I/O&nbsp;API-3.2 or later.</A>.
     <P>
 
 

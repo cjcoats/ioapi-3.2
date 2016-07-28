@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl.sed 401 2016-07-26 21:34:58Z coats $"
+# Version "$Id: Makefile.nocpl.sed 403 2016-07-28 15:14:24Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -177,23 +177,24 @@ flags:
 #  ---------------------------  Dependencies:  --------------------
 
 
-gridprobe.o     : modgctp.mod
-insertgrid.o    : modgctp.mod
-latlon.o        : modgctp.mod
-m3combo.o       : modatts3.mod
-m3cple.o        : modgctp.mod modatts3.mod
-m3hdr.o         : modatts3.mod
-m3interp.o      : modgctp.mod modatts3.mod
-m3tproc.o       : modatts3.mod
-m3tshift.o      : modatts3.mod
-m3xtract.o      : modatts3.mod
-m3wndw.o        : modatts3.mod
-mtxbuild.o      : modatts3.mod
-mtxcalc.o       : modatts3.mod modgctp.mod
-mtxcple.o       : modatts3.mod
-projtool.o      : modgctp.mod
-wrfgriddesc.o   : modwrfio.mod
-wrftom3.o       : modwrfio.mod
+gridprobe.o     : m3utilio.mod  modgctp.mod
+insertgrid.o    : m3utilio.mod  modgctp.mod
+latlon.o        : m3utilio.mod  modgctp.mod
+m3combo.o       : m3utilio.mod  modatts3.mod
+m3cple.o        : m3utilio.mod  modgctp.mod modatts3.mod
+m3hdr.o         : m3utilio.mod  modatts3.mod
+m3interp.o      : m3utilio.mod  modgctp.mod modatts3.mod
+m3mask.o        : m3utilio.mod  modgctp.mod
+m3tproc.o       : m3utilio.mod  modatts3.mod
+m3tshift.o      : m3utilio.mod  modatts3.mod
+m3xtract.o      : m3utilio.mod  modatts3.mod
+m3wndw.o        : m3utilio.mod  modatts3.mod
+mtxbuild.o      : m3utilio.mod  modatts3.mod
+mtxcalc.o       : m3utilio.mod  modatts3.mod modgctp.mod
+mtxcple.o       : m3utilio.mod  modatts3.mod
+projtool.o      : m3utilio.mod  modgctp.mod
+wrfgriddesc.o   : m3utilio.mod  modwrfio.mod
+wrftom3.o       : m3utilio.mod  modwrfio.mod
 
 
 #  ---------------------------  $(EXE) Program builds:  -----------------
