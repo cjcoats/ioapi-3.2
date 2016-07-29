@@ -2,7 +2,7 @@
 PROGRAM M3MASK
 
     !!***********************************************************************
-    !!  Program body starts at line   104
+    !!  Program body starts at line   62
     !!
     !!  DESCRIPTION:
     !!      Read and grid ASCII "mask" file, that contains <col,row>
@@ -100,7 +100,7 @@ PROGRAM M3MASK
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: m3mask.f90 406 2016-07-28 18:59:59Z coats $',&
+'$Id: m3mask.f90 407 2016-07-29 20:06:16Z coats $',&
 BAR, ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -224,13 +224,16 @@ BAR, ''
 
             CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &
                         LATGRD3, 0.0D0,  0.0D0,  0.0D0,  0.0D0,  0.0D0,     &
-                        XX, YY, XLON, YLAT )
-            COL = 1 + INT( DDX1 * ( XX - XORIG1 ) )
-            ROW = 1 + INT( DDY1 * ( YY - YORIG1 ) )
+                        XLON, YLAT, XX, YY )
+            XX  = DDX1 * ( XX - XORIG1 ) 
+            YY  = DDY1 * ( YY - YORIG1 )
+            COL = 1 + INT( XX )
+            ROW = 1 + INT( YY )
 
-            IF ( XX .LT. 0.0D0 .OR. COL .GT. NCOLS3D .OR.     &
-                 YY .LT. 0.0D0 .OR. ROW .GT. NROWS3D  ) THEN
-                WRITE( MESG, '( A, F12.6, 2X, A, F12.6 )' ) 'WARNING:  <LAT=', YLAT, 'LON=', XLON, '> out of grid bounds'
+            IF ( COL .LT. 1 .OR. COL .GT. NCOLS3D .OR.     &
+                 ROW .LT. 1 .OR. ROW .GT. NROWS3D  ) THEN
+                WRITE( MESG, '( A, F11.6, 2X, A, F11.6, A )' )  &
+                    'WARNING:  <LAT=', YLAT, 'LON=', XLON, '> out of grid bounds'
                 CALL M3MESG( MESG )
             ELSE
                 MASK( COL,ROW ) = 1
