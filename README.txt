@@ -45,13 +45,14 @@ I/O API INSTALLATION
     considerations implemented in terms of "Makeinclude" files and an
     environment variable "BIN" that characterizes this compatibility
     type.  "Makeinclude.$BIN" files are available for many platforms
-    (including some debug-, profiling, distributed-I/O and other
-    variants, denoted by dbg, pg, mpi, i8, and r8 suffixes)
+    (including some debug, profiling, distributed-I/O and other
+    variants, denoted by "dbg", "pg", "mpi", "_360", "_365", "i8",
+    and "r8" suffixes)
 
     From these examples and from a knowledge of the compiler user
-    manual, it should be relatively easy to build Makeinclude files for
-    most UNIX or UNIX-like platforms and compilers.  Instructions for
-    building the I/O API library libioapi.a  and the I/O API tool
+    manual, it should be relatively easy to build Makeinclude files
+    for most UNIX or UNIX-like platforms and compilers.  Instructions
+    for building the I/O API library libioapi.a  and the I/O API tool
     executable programs are as follows:
 
     Build instructions for I/O API 3.1 match those for I/O API 3.2
@@ -72,7 +73,7 @@ I/O API INSTALLATION
 
           does unzip-untar all in one step).
 
-       Alternative 1. & 2.:
+       ALTERNATIVE 1. & 2.:
 
           cd $BASEDIR.  Issue the command
 
@@ -105,15 +106,15 @@ I/O API INSTALLATION
           PVM Coupling Mode, "Makefile.nocpl" for no-PVM
           "Makefile.pncf" for PnetCDF/MPI distributed I/O Mode, etc.
           Copy the appropriate one of the "Makefile.*" to "Makefile".
-          Note that PnetCDF/MPI distributed I/O Mode requires BIN
-          matching one of the "mpi" Makeinclude-files.
+          Note that PnetCDF/MPI distributed I/O Mode builds require
+          BIN matching one of the "mpi" Makeinclude-files.
 
        6. Customize "Makefile" for your system:
           The default directory for both executables and object
           libraries is in directory "../$BIN" relative to the source
           code directories for the I/O API and tools. Edit the
           "Makefile" to put "BASEDIR", "SRCDIR", and "OBJDIR" wherever
-          you want it (if you want somewhere other than the default
+          you want them (if you want somewhere other than the default
           "./$BIN" location).  Look at the "Makefile" header-comment
           for further customization options.
 
@@ -121,8 +122,8 @@ I/O API INSTALLATION
           names in different ways (some with multiple options...).
           It is important that all of the compiles (including those
           for netCDF, PVM, and other libraries) for an entire
-          executable program use the same scheme; this is controlled by
-          various parts of the ARCHFLAGS variable in the
+          executable program use the same scheme; this is controlled
+          by various parts of the ARCHFLAGS variable in the
           "Makeinclude.$BIN" files.
 
           NOTE 2:  By default on most systems, OpenMP parallelism is
@@ -132,7 +133,7 @@ I/O API INSTALLATION
           programs (like the MAQSIP-RT air quality model, the WRF or
           MCPL-enabled MM5 meteorology models, research versions of
           SMOKE, and others.  It also enables OpenMP parallelism in a
-          number of "m3tools" programs and a few (mostly
+          number of "m3tools" programs and a few additional (mostly
           coordinate-transform or interpolation related) I/O API
           routines.
 

@@ -2,9 +2,9 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: M3CPLE.html 211 2015-07-22 19:46:32Z coats $" -->
+<!-- "$Id: M3CPLE.html 410 2016-08-03 15:39:39Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
-<TITLE> Program M3CPLE </TITLE>
+<TITLE> Programs <VAR>M3CPLE</VAR> and <VAR>M3INTERP</VAR></TITLE>
 </HEAD>
 
 <BODY BGCOLOR="#FFFFFF" 
@@ -12,7 +12,8 @@
       MARGINHEIGHT="15" 
       LEFTMARGIN="15" 
       MARGINWIDTH="15">
-<H1>    Program M3CPLE </H1>
+
+<H1> <VAR>m3tools</VAR> Programs <VAR>M3CPLE</VAR> and <VAR>M3INTERP</VAR> </H1>
 
 <H2> Usage </H2>
 <PRE>
@@ -21,37 +22,44 @@
     setenv  &lt;outfile&gt;    &lt;path name&gt;
     setenv  GRIDDESC     &lt;path name&gt;
     
-    m3cple <EM>&lt;and respond to the prompts&gt;</EM>
+    [m3cple | m3interp] <EM>&lt;and respond to the prompts&gt;</EM>
 </PRE>
 where <VAR>infile</VAR>, <VAR>outfile</VAR>, and the optional 
 <VAR>synchfile</VAR> are the <A HREF = "LOGICALS.html">logical 
 names </A> of the input and output files.  <VAR>GRIDDESC</VAR>
-is needed only if <CODE>M3CPLE</CODE> is doing a grid-to-grid
+is needed only if <VAR>M3CPLE</VAR> is doing a grid-to-grid
 interpolation rather than a copy operation.
 <P> 
 
 <H2> Summary </H2>
 
 
-The <CODE>M3CPLE</CODE> program extracts all 
+The <VAR>M3CPLE</VAR> program extracts all 
 <A HREF = "VBLE.html">variables</A> for a specified time step sequence 
 from one I/O&nbsp;API file, <VAR>infile</VAR>, optionally interpolates them 
 to a new grid, and writes them to a different I/O&nbsp;API file, 
 <VAR>outfile</VAR>, under the optional control of a <VAR>synchfile</VAR>. 
 Any combination of <A HREF="BUFFERED.html">physical or virtual files</A>
-is supported.
+is supported.  The output time step sequence must be a subsequence
+of the input file's time step sequence
 <P>
  
-The normal use of <CODE>M3CPLE</CODE> with a <VAR>synchfile</VAR> is 
+Program <VAR>M3INTERP</VAR> acts like <VAR>M3CPLE</VAR> 
+except that it uses <A HREF="INTERP3.html"><CODE>INTERP3()</CODE></A>
+to extract a possibly-nonaligned time step sequence from the file,
+rather than only a subsequence of time steps found in the file.
+<P>
+ 
+The normal use of <VAR>M3CPLE</VAR> with a <VAR>synchfile</VAR> is 
 to fit into a system of coupled models exchanging data via the <A
 HREF="BUFFERED.html#pvm">I/O&nbsp;API coupling mode</A>, and
 extract/interpolate data either from a virtual file to a  physical
 file, or vice versa.  Grid-to-grid interpolation is only available for
 files of type <A HREF="DATATYPES.html#grdded"> GRDDED3</A>; the copy
-operation is available for files of type <A
-HREF="DATATYPES.html#grdded">GRDDED3</A>,  <A
-HREF="DATATYPES.html#custom">CUSTOM3</A>,  <A
-HREF="DATATYPES.html#bndary">BNDARY3</A>; in any case, all the
+operation is available for files of type
+<A HREF="DATATYPES.html#grdded">GRDDED3</A>,
+<A HREF="DATATYPES.html#custom">CUSTOM3</A>,
+<A HREF="DATATYPES.html#bndary">BNDARY3</A>; in any case, all the
 variables must be of <A NAME = "DATATYPES.html#basic">basic data type
 M3REAL</A>.   For interpolation to be meaningful, <STRONG>the output
 resolution should be finer than the input resolution</STRONG>, else you
