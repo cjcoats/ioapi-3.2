@@ -1,0 +1,814 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+
+<HTML> 
+<HEAD>
+<!-- $HeadURL: svn+ssh://svn_bams@beech.baronams.com/bams_only/trunk/config_man/standards_bams.html $ -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> 
+    M3IO Software Development Standards
+</TITLE>
+  <STYLE type="text/css">
+  span.green {font-weight: bold; color:green;}
+  span.red   {font-weight: bold; color:red;}
+  span.blue  {font-weight: bold; color:blue;}
+  body {
+  background-color: #FFFFFF;
+  margin-top:    15px;
+  margin-bottom: 15px;
+  margin-left:   15px;
+  margin-right:  15px;
+  }
+  </STYLE>
+</HEAD>
+   
+<!-- 
+<BODY BGCOLOR     ="#FFFFFF" 
+      TOPMARGIN   ="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN  ="15" 
+      MARGINWIDTH ="15">
+-->
+
+<BODY>
+
+<!--#include virtual="/INCLUDES/header.html" -->
+
+<H1>
+    M3IO Software Development Standards
+</H1>
+
+    <!-- There are no tyops in this web page. -->
+
+<H2>
+<A NAME = "contents">
+    Contents
+</A>
+</H2>
+
+   <BLOCKQUOTE>
+
+   <DL>
+       <DT>  <A HREF="#review">REVIEW</A> </DT>
+       <DT>  <A HREF="#coding">CODING</A> </DT>
+       <DD>
+        <DL>
+             <DT>  <A HREF="#general">General</A>
+             <DT>  <A HREF="#fortran">Fortran</A>
+             <DT>  <A HREF="#c">C/C++</A> 
+             <DT>  <A HREF="#scripts">Scripts</A> 
+             <DT>  <A HREF="#html">HTML</A> 
+         </DL>
+   </DL>
+
+   </BLOCKQUOTE>
+
+<HR> <!-- =========================================================== -->
+
+<H2><A NAME = "review">
+    REVIEW
+</A></H2>
+
+   <BLOCKQUOTE>
+
+    Review processes are envisioned as a mechanism providing control and
+    feedback into the analysis, design, implementation, testing, and use
+    of software and data.  It is expected that the scope and extent of
+    the review processes will be highly dependent upon the size and
+    complexity of the software being reviewed.
+    <P>
+
+    The resources required are mostly the time of the personnel
+    involved, and should usually amount to about  10 - 20 % of the
+    man-hours required for the initial software development.
+    <P>
+
+    It should be recognized that the review processes should not only
+    result in higher quality in the software developed, but also in the
+    increased communication and software development expertise of the
+    personnel involved.
+    <P>
+
+    At the present time, review shall require design and/or code walk
+    through that involves the Chief Architect and the Chief Operations
+    Officer or his designate.
+    <P>
+
+   Design review objectives include the following:
+   <UL>
+       <LI>  faithful representation -- i. e., that design accurately
+            addresses the requirements
+
+       <LI>  good representation:
+             <UL>   
+                <LI>  feasible
+                <LI>  modular and flexible
+                <LI>  technically sound
+                <LI>  structurally sound (good, robust design choices)
+             </UL>   
+
+       <LI>  design standards are met
+       <LI>  adequate test design specified.
+   </UL>
+   <P>
+
+   Code review objectives include the following</P>
+   <UL>
+       <LI> code accurately follows the design
+       <LI> structurally sound (well-thought-out) implementation
+       <LI> coding standards met (implies readability)
+       <LI> testing performed adequately
+   </UL>
+   <P>
+
+   An especially important aspect of design and code is that of
+   <STRONG>interfaces</STRONG>.<BR>
+   Interfaces include:
+   <P>
+   <UL>
+
+       <LI> <EM>Shared state</EM>, e.g., a situation where an operation
+            is split across several different subroutines (etc.) which
+            must cooperate in order to perform that operation.
+
+       <LI> <EM>Preconditions</EM> (what must be done before invocation) and
+            <EM>postconditions</EM>P (what is guaranteed to be true after
+            invocation)
+
+       <LI> The set of <EM>input and output data structures</EM>, particularly
+            the input and output files,
+
+       <LI> The set of <EM>environment variables</EM> required (including logical
+            file names),
+
+       <LI> The <EM>names</EM> of the variables read from or written to those files
+
+       <LI> The <EM>sequence of prompts</EM> required by the program (and the
+            meaning of the responses to those prompts).
+
+       <LI> return status
+
+       <LI> For <CODE>PROGRAM</CODE>s, interfaces include whatever else
+            is required in order to write a script for the program.
+
+       <LI> For <CODE>MODULE</CODE>s, interfaces include all <CODE>PUBLIC</CODE>
+            entities.
+            <BLOCKQUOTE>
+            Note that it is good practice for <CODE>PUBLIC</CODE>
+            entities only to include <CODE>TYPE</CODE>s,
+            <CODE>PARAMETER</CODE>s, <CODE>SUBROUTINE</CODE>s and
+            <CODE>FUNCTION</CODE>s, and  <CODE>PROTECTED</CODE> variables.  
+            <P>
+            Module variables generally should be <CODE>PRIVATE</CODE>.
+            In a few exceptional cases, variables may be
+            <CODE>PUBLIC,&nbsp;PROTECTED</CODE>, in order to give
+            read-only access to their values to code that <CODE>USE</CODE>s 
+            the module.
+            </BLOCKQUOTE>
+
+       <LI> For <CODE>SUBROUTINE</CODE>s and <CODE>FUNCTION</CODE>s,
+            interfaces include the arguments and their
+            <CODE>INTENT</CODE>s, the preconditions, and the
+            postconditions.
+    </UL>
+    <P>
+
+    Good design, with modularity and flexibility, is largely the art
+    of finding that separation of software into components which
+    yields the best and simplest set of interfaces, where each task
+    is internally cohesive, and produces internally consistent
+    objects that are then inputs to other processes.
+    <P>
+
+    Generally, interfaces should be kept as simple--and as
+    standardized--as possible.  For example:
+    <P>
+    <UL>
+
+        <LI> Minimize shared state.<BR>
+             Separating initialization from computation is a violation of
+             the shared-state/cohesive-components/simple-interfaces principle.
+
+        <LI> Having multiple specialized names for multiple variables
+             with the same functionality, for the purpose of
+             distinguishing what program produced that variable is a
+             violation of interface simplicity and standardization.
+             If variables are functionally interchangeable, they ought
+             to have the same name.
+
+        <LI> Requiring management-oriented metadata as part of an
+             interface is a violation of interface simplicity and
+             component cohesion.
+     </UL>
+
+    <H3>General Requirements</H3>
+    <UL>
+
+       <LI> Where possible, internal names should match external-interface
+            names.  For example, if an input file has a variable named
+            <VAR>FOO</VAR> then the source code should also refer to that
+            variable by the name <VAR>FOO</VAR> unless either multiple input
+            variables named <VAR>FOO</VAR> are present or the name of the
+            corresponding input variable is in fact a program-option.
+            <P>
+
+       <LI> Program code must pass Chief Architect review before being
+            accepted for the production repository.
+            <P>
+
+       <LI> Production executables will be built directly from the
+            production repository.
+            <P>
+
+       <LI> Scripts must pass Chief Operations Officer review before being
+            accepted for  production use.
+            <P>
+ 
+       <LI> For new programs, interfaces shall be documented.
+            <P>
+ 
+       <LI> For new major programs, interfaces and program function shall be
+            specified, and must be accepted by the Chief Architect before
+            initiating work.
+            <P>
+ 
+      <LI>  For modified programs, interfaces and program function shall
+            not be changed without permission of the Chief Architect.
+            <P>
+ 
+      <LI>  The purpose of the main code repository is to maintain the
+            <STRONG>main</STRONG> code path, not, e.g., 8 different versions
+            of the code <CODE>noahr_mod.F90.begin_week_ncar</CODE>, ...
+            <P>
+
+      <LI>  <CODE>Makefile</CODE> structure in the repository
+            is as follows:
+            </P>
+            <UL>
+                <LI> <CODE>Makefile.template</CODE> is the repository
+                     copy.  It is not used directly.
+                <LI> <CODE>Makefile</CODE> is the local (non-Subversion)
+                     customized copy, actually used for building codes.
+                <LI> Updating <CODE>Makefile.template</CODE> is a
+                     required part of a repository commit.
+                <LI> Updating <CODE>Makefile</CODE> is a
+                     required part of a repository checkout or update
+                     that creates/changes <CODE>Makefile.template</CODE>.
+            </UL>
+            <P>
+
+       <LI> <VAR>Makefile.template</VAR> updates must accompany items submitted,
+            where program-changes affect <VAR>Makefile</VAR>s.
+            <P>
+
+    </UL>
+
+   </BLOCKQUOTE>
+
+<P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG></P>
+
+<HR> <!-- =========================================================== -->
+
+<H2><A NAME = "coding">
+    Coding
+</A></H2>
+
+    <BLOCKQUOTE>
+
+    <H3>
+    <A NAME = "general">
+        General
+    </A>
+    </H3>
+
+   <UL>
+
+        <LI>  Programs must build successfully under all three of:  
+              Intel, Sun, and GNU compilers before being accepted. 
+              Generally, any variance from programming language standards
+              must be approved by the Chief Architect before acceptance.
+              <P>
+
+        <LI>  Generally, program-logs should contain enough information
+              both to diagnose any error(s) which may have occured and 
+              to reconstruct a script of the program.  In particular,
+              memory-allocation, file-opening, environment-variable
+              evaluation, and MPI-operation status shall be checked, and
+              failures shall be logged [I/O&nbsp;API routines do this
+              automatically, for the most part.]
+              <P>
+
+        <LI>  Programs shall include a &quot;splash screen&quot; in
+              their output/logs, that documents the following:
+              <UL>
+                  <LI>Program name and function
+                  <LI>preconditions, and requirements (e.g., preconditions,
+                      environment variables, input and output files)
+                  <LI>Copyright notice
+                  <LI>Program version (Subversion <CODE>$</CODE><CODE>Id$</CODE>
+              </UL>
+              <P>
+
+        <LI>  Use mixed-case output to a log:  the human-factors specialists
+              say that WHILE ALL CAPS GETS THE READER'S ATTENTION, IT IS
+              HARDER TO READ TEXT THAT IS GIVEN IN MIXED CASE.
+              <P>
+ 
+        <LI>  Programs, modules, subroutines and functions should have
+              header comments with the following:
+              <UL>
+                  <LI> The purpose of the module, subroutine, or function
+                  <LI> the function and logic of the algorithms,
+                  <LI> Literature references, if appropriate
+                  <LI> the purposes of major variables
+                  <LI> Preconditions, especially required environment
+                       variables,
+                  <LI> Revision history
+              </UL>
+              Header-comment revision history will be kept up-to-date.
+              <P>
+ 
+        <LI>  M3IO programs shall use <CODE>M3EXIT()</CODE> for program
+              termination.
+              <P>
+
+        <LI>  Code shall be written with view to readability and
+              maintainability.  Code is actually more a communications
+              medium than merely a mechanical algorithm-description.
+              <P>
+ 
+        <LI>  Avoid multiple (&gt;&nbsp;2) levels of definitions,
+              recursion, and other nested structures:  the cognitive
+              psychologyists say this greatly decreases understanability
+              of the code.
+              <BR>
+              For this purpose, &quot;perfect&quot; loop-nests may
+              be regarded as a single control structure; indentation
+              shall reflect this:
+              <PRE>
+      DO R = 1, NROWS
+      DO C = 1, NCOLS
+          ...
+      END DO
+      END DO
+              </PRE>
+
+        <LI>  <STRONG>Do not</STRONG> make comments that merely echo the
+              content of program source code.
+              <BR>
+              For example, the following is improper:
+              <PRE>
+    SUBROUTINE INITCHAN( OUTSTEP, SDATE, STIME, OVLSTEP ) !! begin initchan
+        ...
+        RETURN
+    END SUBROUTINE INITCHAN  !! end initchan
+              </PRE>
+
+        <LI>  Code shall be compliant with the <STRONG>relevant language
+              standards</STRONG>, with exceptions that may be allowed by
+              the Chief Architect.
+              <P>
+
+        <LI>  <STRONG>File-names:</STRONG>    
+	          <UL>
+                <LI>  File and directory names of the form
+                      <VAR>core</VAR> or <VAR>core.*</VAR> are strictly forbidden.
+                      <P>
+                <LI>  <VAR>lib</VAR> is only used for directories
+                      containing binary-library <CODE>.a</CODE> and/or
+                      <CODE>.so</CODE> files.
+                      <P>
+                <LI>  File extensions are:
+                      <DL>                
+                           <DT><CODE>.c&nbsp;&nbsp;</CODE> &nbsp; C source                                          
+                           <DT><CODE>.C&nbsp;&nbsp;</CODE> &nbsp; C++ source                                        
+                           <DT><CODE>.csh</CODE>           &nbsp; C-shell/TCSH  source                              
+                           <DT><CODE>.f&nbsp;&nbsp;</CODE> &nbsp; fixed-source-form Fortran                         
+                           <DT><CODE>.f90</CODE>           &nbsp; free-source-form Fortran                          
+                           <DT><CODE>.F&nbsp;&nbsp;</CODE> &nbsp; fixed-source-form Fortran requiring pre-processing
+                           <DT><CODE>.F90</CODE>           &nbsp; free-source-form Fortran requiring pre-processing 
+                           <DT><CODE>.pl&nbsp;</CODE>      &nbsp; PERL source                                       
+                      </DL>
+                      <P>
+                <LI>  For Fortran <VAR>MODULE</VAR>s, the basename of the
+                      source file is the lower-case of the
+                      <CODE>MODULE</CODE>-name (e.g.,
+                      <CODE>MODULE&nbsp;MODFOO</CODE> shall be in source
+                      file <VAR>modfoo.f</VAR> or
+                      <VAR>modfoo.f90</VAR>).
+                      <P>
+	    </UL>
+
+        <LI>  Only code that compiles correctly may go into the repository.
+              <P>
+        <LI>  For each repository directory, the code version contained
+              shall be unique.  For multiple versions of an executable,
+              you should use <VAR>svn</VAR> branches.
+              <P>
+
+        <LI>  For any <VAR>svn add</VAR> or <VAR>svn delete</VAR>, make
+              corresponding changes to the master
+              <CODE>Makefile.template</CODE> before <VAR>svn commit</VAR>.
+              <P>
+
+        <LI>  No one but the Chief Architect may change codes in
+              <VAR>ioapi</VAR> and <VAR>m3tools</VAR>.
+              <P>
+
+        <LI>  Indentation style shall be consistent across entire source
+              files.
+              <P>
+ 
+        <LI>  All I/O and memory-allocation operations (and other
+              operations that may potentially succeed or fail) shall check
+              the success/failure status of the indicated operation, and
+              shall log failures, preferably with the error-status value.
+              (For M3IO <VAR>READ3()</VAR>, etc., the log-operation is
+              done automatically; still, however, success/failure status
+              shall be checked, and the program code shall act
+              accordingly.)
+              <BR>
+              Such log messages shall indicate the situation in adequate
+              detail for post-mortem diagnosis&mdash;including such
+              error-status and record-identifier information as is
+              available.  In principle, the text of the error-message
+              shall be sufficient to determine the exact location and
+              reason for program termination.
+              <P>
+   </UL>
+
+    <P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG></P>
+
+    <HR> <!-- ====================================================== -->
+
+    <H3>
+    <A NAME = "fortran">
+        Fortran
+    </A>
+    </H3>
+
+   <UL>
+
+        <LI>  The <VAR>IMPLICIT NONE</VAR> statement must be present.
+              <P>
+
+        <LI>  Arithmetic <VAR>IF</VAR>, Alternate <VAR>RETURN</VAR>,
+              <VAR>PAUSE</VAR>, and Assigned and
+              computed <VAR>GOTO</VAR> statements are forbidden.
+              <P>
+
+        <LI>  Counters of Fortran <VAR>DO</VAR> loops will be <VAR>INTEGER</VAR>
+              variables.
+              <P>
+
+        <LI>  Loops and block constructions (<VAR>IF-THEN...ELSE IF...ELSE...
+              END IF</VAR>, <VAR>DO</VAR> loops, etc.) with either
+              deep nesting or long blocks of code in them should have
+              documentation (by in-line exclamation point ("!...")
+              comments) for block beginning, alternatives
+              (<VAR>ELSE</VAR> blocks), and ending, so that their
+              beginnings, alternatives, and endings can be matched up
+              easily.
+              <P>
+
+        <LI>  Loop beginning and loop ending for loops constructed with
+              <VAR>IF</VAR>s and <VAR>GO TO</VAR>s must be documented by
+              comments.
+              <P>
+
+        <LI>  Labels shall appear only on <VAR>CONTINUE</VAR> statements
+              (otherwise, the flow-of-control may not be clear).
+              <P>
+
+        <LI>  Do not <VAR>GO TO</VAR> the interior of a <VAR>DO</VAR>-loop
+              or an <VAR>IF-THEN-ELSE</VAR> block from outside the
+              block:  the effects are "unspecified", according to the
+              Fortran standard, and if a compiler-vendor chooses to
+              implement them by &quot;Start WW-III&quot;, they're within
+              their rights and we don't want to be stuck with it.
+              <P>
+
+        <LI>  Avoid use of tabs in Fortran source code:  they mean
+              different things to different systems, and make use of
+              indentation-tools difficult.
+              <P>
+
+        <LI>  Subroutine and function argument <VAR>INTENT</VAR> should
+              be specified.
+              <P>
+
+        <LI>  <VAR>REAL</VAR> or <VAR>COMPLEX</VAR> variables shall not be
+              tested for equality. This is not numerically robust nor
+              reliable.
+              <P>
+
+        <LI>  Free source form is preferred for new projects and codes.<BR>
+              Where possible, program code should fit within columns
+              1-80 (and cols 1-120 in all cases).
+              <P>
+
+        <LI>  Comment text should be in lower case, and program code should be
+              in UPPER CASE.  For new development, &quot;!&quot; comments are
+              preferred.
+              <P>
+ 
+        <LI>  Comments should be separated from program-code sufficiently that
+              neither one interferes with the reading of the other
+              (either by having block comments interspersed with blocks
+              of code and set off by blank lines, or by having comments
+              in the right margin, with program code on the left.
+              <P>
+
+        <LI>  Whitespace and blank lines should be used to set off constructs
+              and to emphasize commonality, to enhance readability.  E.g.,
+              <PRE>
+        X  ( IROW ) = EE  +  SIN ( B * C ) / D
+        YAB( IROW ) = EE  +  B**2  -  C**2
+        </PRE>
+        is preferable to:
+        <PRE>
+        X(IROW)=EE+SIN(B*C)/D
+        YAB(IROW)=EE+C**2-D**2
+              </PRE>
+              <P>
+
+        <LI>  Indentation shall be in multiples of four columns, with
+              initiation and termination at the same level (e.g., a
+              <VAR>DO</VAR> and its terminating <VAR>END DO</VAR> start at
+              the same column) (&quot;Algol/Wirth/Whitesmith&quot; style
+              indentation).
+              <P>
+
+        <LI>  Continuation-line code shall be indented at least 6 spaces
+              beyond the current indentation level.
+              <P>
+
+        <LI>  Parallel directives shall use the same indentation as
+              other source code.
+              <P>
+
+        <LI>  The use of zeros where needed on either side of a decimal point
+               to enhance readability of floating-point constants is
+               preferred, e.g.,  <VAR>1.0</VAR> and <VAR>0.007</VAR>
+               instead of <VAR>1.</VAR> and <VAR>.007</VAR>.
+              <P>
+
+        <LI>  Do not use repeated divisions in Fortran expressions:
+              e.g., use <VAR>FOO/(BAR*QUX)</VAR> instead of
+              <VAR>FOO/BAR/QUX</VAR>: 
+              <BR>
+              (a)&nbsp;Fortran precedence rules are the opposite of normal
+              algebra rules, and this does lead to confusion and to
+              obscure bugs; and 
+              <BR>
+              (b)&nbsp;divisions are typically 30-100x more expensive than
+              multiplications, so is inefficient anyway.
+              <BR>
+              Those meteorology professors who encourage this practice
+              should be <STRONG>shot</STRONG>!  (For the most part,
+              fractions in &quot;first normal form&quot; are most readable
+              and most efficient: numerator, with parenthesis as
+              necessary, and with constants leading more complex
+              sub-expressions, a divide-symbol, then denominator, with
+              parentheses as necessary, and with constants leading more
+              complex sub-expressions.)
+              <P>
+
+        <LI>  Code with numerical round-off properties in mind.  In
+              particular, avoid things like the following stupidity out
+              of MCIP (with a divide by GSFC at the end of
+              <VAR>F3</VAR>, and the a multiply by it in
+              <VAR>RSTOMI(C,R)</VAR>, accomplishing only round-off
+              error):
+              <PRE>
+        F3 = 0.5 * ( GSFC - GA + SQRT( GA * GA
+ &amp;                         + GA * GSFC * (4.0 * Q1C / QSS - 2.0)
+ &amp;                                   + GSFC * GSFC ) ) / GSFC
+        RSTOMI(C,R) = GSFC * F3
+              </PRE>
+              <P>
+
+        <LI>  Where possible, avoid use of explicit <VAR>KIND</VAR>s:
+              I/O&nbsp;API data is &quot;default&quot; <VAR>INTEGER</VAR>,
+              <VAR>REAL</VAR>, <VAR>DOUBLE PRECISION</VAR>, and you may
+              cause obscure, hard-to-diagnose bugs.  Moreover, 
+              <STRONG>explicit  usages such as
+              <VAR>REAL(KIND=4)&nbsp;FOO</VAR> are incorrect and work only
+              by vendor-choice accident:  the standard does NOT equate
+              such a declaration to <CODE>IEEE REAL*4</CODE> or other
+              4-byte real. </STRONG>
+              <P>
+
+        <LI>  New codes should <VAR>USE&nbsp;M3UTILIO</VAR> instead of
+              <VAR>INCLUDE</VAR>ing I/O&nbsp;API <CODE>INCLUDE</CODE>
+              files (<VAR>PARMS3.EXT, FDESC3.EX, IODECL3.EXT,</VAR>
+              etc.).  This not only is a substantial convenience, it also 
+              allows the compiler to check argument-list compatibility for
+              most I/O&nbsp;API calls.
+              <P>
+
+        <LI>  Generally, modeling codes should not use
+              <VAR>CLOSE3()</VAR>: in a modular model such as
+              <VAR>MAQSIP</VAR> or <VAR>CMAQ</VAR>, file-state is a
+              global model property, and changing it in one module can
+              violate the environment of a different module.  The one
+              acceptable use is for intialization/restart situations
+              where one may want be able to do the following kind of
+              sequence:
+              <PRE>
+      IF ( OPEN3( 'INIT_STUFF', FSREAD3, PNAME ) ) THEN
+          ...
+      END IF
+      IF ( .NOT.CLOSE3( 'INIT_STUFF' ) ) THEN
+          ...we have an error to process...
+      ELSE IF ( OPEN3( 'OUTPUT_STUFF', FSUNKN3, PNAME ) ) THEN
+          ...
+      END IF
+              </PRE>
+              where for a &quot;cold-start&quot; initialization, 
+              <CODE>INIT_STUFF</CODE> is the cold-start initialization
+              file and  <CODE>OUTPUT_STUFF</CODE> is the new output file,
+              but for a restart, <CODE>INIT_STUFF</CODE>
+              <CODE>OUTPUT_STUFF</CODE> are the same file, and we are
+              using <CODE>CLOSE3</CODE> to avoid having the same physical
+              file open in different (read-only vs read-write) modes under
+              two different names, which might lead to data corruption. 
+              (You may recall we rather had to jump through hoops --
+              generating obscure warning messages -- to avoid this
+              problems without using <CODE>CLOSE3</CODE> in
+              <VAR>MAQSIP</VAR>.
+              <P>
+
+    </UL>
+
+    <P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG></P>
+
+<HR> <!-- =========================================================== -->
+
+    <H3>
+    <A NAME = "c">
+        C/C++
+    </A>
+    </H3>
+
+   <UL>
+
+        <LI>  Where possible, program code should fit within columns 1-80
+              (and cols 1-120 in all cases).
+              <P>
+
+        <LI>  Avoid use of tabs in C/C++ source code:  they mean
+              different things to different systems, and make use of
+              indentation-tools difficult.
+              <P>
+
+        <LI>  Whitespace should be use to set off constructs and to emphasize
+              commonality, to enhance readability.
+              <P>
+
+        <LI>  Comments should be separated from program-code sufficiently that
+              neither interferes with the reading of the other.
+              <P>
+
+        <LI>  Indentation shall be in multiples of four columns, using
+              &quot;Wirth/Whitesmiths&quot; brace style, e.g.,
+              <PRE>
+     for ( i=0 ; i&lt;N ; i++ )
+         {
+         something() ;
+         }
+              </PRE>
+              <P>
+
+        <LI>  Use fully-braced bodies for <VAR>if</VAR>-block and
+              <VAR>for</VAR>-loop constructs:
+              <BR>
+              (a) this helps to avoid a class of obscure bugs; and
+              <BR>
+              (b) it enhances maintainability, if the body goes from
+              single-statement to multi-statement later.
+              <P>
+
+        <LI>  Note that there are standard tools like <VAR>astyle</VAR>
+              on Linux that can help you with the code-format issues above...
+              <P>
+
+    </UL>
+
+    <P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG></P>
+
+<HR> <!-- ========================================================= -->
+    
+
+    <H3><A name="scripts">Scripts</A></H3>
+
+    <UL>
+
+        <LI>  Scripts that execute M3IO program/model executables (e.g.,
+              Fortran programs) shall not split program log into multiple
+              pieces.  Output from a program will be included within the log
+              for the script that executes that program.
+              <P>
+
+        <LI>  The use of environment variable <CODE>LOGFILE</CODE> to
+              separate program-log from script-log is forbidden.
+              <P>
+
+        <LI>  Scripts that execute programs/models (e.g., Fortran
+              programs) shall log program environment and (if present) 
+              contents of UI-file.
+              <P>
+
+        <LI>  Scripts shall return program exit status.
+              <P>
+
+        <LI>  Indentation shall have initiation and termination at the same
+              level (e.g., an <VAR>if</VAR> and its terminating
+              <VAR>endif</VAR> or <VAR>for</VAR> and its terminating
+              <VAR>end</VAR> shall start at the same column)
+              (&quot;Algol/Wirth/Whitesmith&quot; style indentation).
+              Multiples of four columns is preferred.
+              <P>
+
+        <LI>  To ease analysis:  Whenever a script uses 
+              redirection to create a new log file, the script will display, in the 
+              current log, the fully qualified path to the new log prior to
+              executing the command with the redirection.
+              <P>
+
+        <LI>  To promote portability: Where practical, scripts will  not use
+              hard coded directory names and file names.  Scripts will use
+              environment variables where available and parameters to build
+              file paths.
+              <P>
+
+       <LI>  To promote re-use:  Where appropriate scripts will be designed
+             to perform a set of related generic functions.  Scripts will
+             use an argument list, environment variables, or a configuration
+             file to obtain  parameters required by the functions.
+              <P>
+
+       <LI>  To ease analysis: Where practical, scripts will be designed to
+             reduce the depth of calling sequences by bundling related
+             functions  within a single script.
+             <P>
+
+       <LI>  To ease analysis:  When appropriate, scripts will echo parameter
+             information and configuration information.  Scripts will echo
+             appropriate level of detail to describe operations being
+             performed.
+              <P>
+
+       <LI>  To ease analysis:  Where appropriate a script will identify its
+             file name and the current date/time at the beginning of its
+             execution.  A script will also identify its file name and
+             current date/time at the end of normal execution.
+             <P>
+
+       <LI>  To support monitoring:  When a script detects an error the
+             script will echo its file name and appropriate details.  The
+             script will prepend the keyword <CODE>###&nbsp;</CODE> to each
+             line of the error message.
+             <P>
+
+        <LI>  Each script will include near the top a comment to display the
+              contents of the Subversion keyword <VAR>Id</VAR>.
+              <P>
+
+        <LI>  Each script will include near the top a comment to display a
+              its author, revision history, and copyright statement.
+              <P>
+
+        <LI>  The switches <CODE>-cw</CODE> will be used  in a command
+              <VAr>perl -cw</var> to verify the syntax of a PERL script 
+              before the script is put into production.
+              <P>
+
+        <LI>  In PERL scripts, the switch <CODE>-w</CODE> will be used on the 
+              PERL invocation line (e.g., <CODE>#!/usr/bin/perl -w ...</CODE>)
+              to enable warnings during execution of the script.
+              <P>
+
+        <LI>  In a <VAR>csh</VAR> script not invoked directly from a cron 
+              table, the switch <CODE>-f</CODE> will be used on the
+              <VAR>csh</VAR> invocation line  (i.e., <CODE>#!/bin/csh -f
+              ...</CODE>) to disable re-execution of the login profile.
+              <P>
+
+    </UL>
+
+   </BLOCKQUOTE>
+
+    <P><STRONG><A href="#contents">Back to
+    <EM>Contents</EM></A></STRONG></P>
+<!--#include virtual="/INCLUDES/footer.html" -->
+    <PRE>
+$Id: STANDARDS.html 411 2016-08-16 16:17:21Z coats $
+     </PRE>
+ </BODY>
+</HTML>
+
+
+
+
+
