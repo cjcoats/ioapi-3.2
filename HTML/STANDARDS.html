@@ -189,6 +189,15 @@
              Separating initialization from computation is a violation of
              the shared-state/cohesive-components/simple-interfaces principle.
 
+        <LI> <EM><A HREF="https://en.wikipedia.org/wiki/Subsidiarity">Subsidiarity:</A></EM>
+             Declare variables (etc.) at the most local scope consistent
+             with their use.<BR>
+             For example, declaring a <CODE>MODULE</CODE>-variable that is
+             allocated and deallocated within a particular subroutine, 
+             and is used only in that subroutine and its callees is a
+             violation:  that variable should have been local to that
+             subroutine.
+
         <LI> Having multiple specialized names for multiple variables
              with the same functionality, for the purpose of
              distinguishing what program produced that variable is a
@@ -803,7 +812,7 @@
     <EM>Contents</EM></A></STRONG></P>
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-$Id: STANDARDS.html 411 2016-08-16 16:17:21Z coats $
+$Id: STANDARDS.html 413 2016-08-17 17:21:31Z coats $
      </PRE>
  </BODY>
 </HTML>
