@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl 403 2016-07-28 15:14:24Z coats $"
+# Version "$Id: Makefile.nocpl 414 2016-08-18 13:23:06Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -57,7 +57,7 @@ LDFLAGS = -I$(IODIR) $(DEFINEFLAGS) $(ARCHFLAGS)
 #          nc-config --libs
 #          nf-config --libs
 #
- LIBS = -L${OBJDIR} -lioapi -lnetcdf -lnetcdff $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
+ LIBS = -L${OBJDIR} -lioapi -lnetcdff -lnetcdf $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 #LIBS = -L${OBJDIR} -lioapi -lnetcdf  $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 #LIBS = -L${OBJDIR} -lioapi `nf-config --libs` `nc-config --libs` $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 

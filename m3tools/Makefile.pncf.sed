@@ -58,7 +58,7 @@ LDFLAGS = -I$(IODIR) -DIOAPICPL $(DEFINEFLAGS) $(ARCHFLAGS)
 #          nc-config --libs
 #          nf-config --libs
 #
-#LIBS = -L${OBJDIR} -lioapi -lnetcdf -lnetcdff $(PVMLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
+#LIBS = -L${OBJDIR} -lioapi -lnetcdff -lnetcdf $(PVMLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 #LIBS = -L${OBJDIR} -lioapi `nf-config --libs` `nc-config --libs`  $(PVMLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 #
 # PnetCDF builds also require  -lpnetcdf
