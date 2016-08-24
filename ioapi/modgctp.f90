@@ -538,6 +538,22 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
+        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+
+            DO  R = 1, NROWS2
+            DO  C = 1, NCOLS2
+
+                XLOC2( C,R ) = X0  +  XCELL2 * DBLE( C )
+                YLOC2( C,R ) = Y0  +  YCELL2 * DBLE( R )
+
+            END DO
+            END DO          !  end traversal of input grid
+
+            RETURN
+
+        END IF
+
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
         JPR    = 1              !!  do NOT print projection parameters
@@ -584,54 +600,38 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         X0 = XORIG2 - 0.5 * XCELL2
         Y0 = YORIG2 - 0.5 * YCELL2
 
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+        DO  R = 1, NROWS2
+        DO  C = 1, NCOLS2
 
-            DO  R = 1, NROWS2
-            DO  C = 1, NCOLS2
+            CRDIN( 1 ) = X0  +  XCELL2 * DBLE( C )
+            CRDIN( 2 ) = Y0  +  YCELL2 * DBLE( R )
 
-                XLOC2( C,R ) = X0  +  XCELL2 * DBLE( C )
-                YLOC2( C,R ) = Y0  +  YCELL2 * DBLE( R )
+!$OMP       CRITICAL( S_GTPZ0 )
+            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                        LENGTH, IFLG )
+!$OMP       END CRITICAL( S_GTPZ0 )
 
-            END DO
-            END DO          !  end traversal of input grid
-
-        ELSE
-
-            DO  R = 1, NROWS2
-            DO  C = 1, NCOLS2
-
-                CRDIN( 1 ) = X0  +  XCELL2 * DBLE( C )
-                CRDIN( 2 ) = Y0  +  YCELL2 * DBLE( R )
-
-!$OMP           CRITICAL( S_GTPZ0 )
-                CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                            IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                            TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                            LENGTH, IFLG )
-!$OMP           END CRITICAL( S_GTPZ0 )
-
-                IF ( IFLG .NE. 0 ) THEN
-                    IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                    WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
-                       'Failure:  status ', IFLG,                   &
-                       'in GTPZ0 at (c,r)=(', C, ',', R, ')'
-                    EFLAG = .TRUE.
-                    CALL M3MESG( MESG )
-                    CYCLE
-                END IF
-
-                XLOC2( C,R ) = CRDIO( 1 )
-                YLOC2( C,R ) = CRDIO( 2 )
-
-            END DO
-            END DO          !  end traversal of input grid
-
-            IF ( EFLAG ) THEN
-                CALL M3EXIT( PNAME, 0, 0, 'Grid coord-transform error(s)', 2 )
+            IF ( IFLG .NE. 0 ) THEN
+                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+                WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
+                   'Failure:  status ', IFLG,                   &
+                   'in GTPZ0 at (c,r)=(', C, ',', R, ')'
+                EFLAG = .TRUE.
+                CALL M3MESG( MESG )
+                CYCLE
             END IF
 
-        END IF          !  if sameproj, or not
+            XLOC2( C,R ) = CRDIO( 1 )
+            YLOC2( C,R ) = CRDIO( 2 )
+
+        END DO
+        END DO          !  end traversal of input grid
+
+        IF ( EFLAG ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Grid coord-transform error(s)', 2 )
+        END IF
 
         RETURN
 
@@ -966,6 +966,36 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
+        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+
+!$OMP        PARALLEL DO                                                        &
+!$OMP&           DEFAULT( NONE ),                                               &
+!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1,   &
+!$OMP&                    NCOLS1, NROWS1, XCELL2, YCELL2, IX2, PX2, PY2 ),      &
+!$OMP&           PRIVATE( C, R, XX, YY, J, CC, RR )
+
+            DO  R = 1, NROWS2
+            DO  C = 1, NCOLS2
+
+                XX = DDX1 * ( X0  +  XCELL2 * DBLE( C ) - X1 )
+                YY = DDY1 * ( Y0  +  YCELL2 * DBLE( R ) - Y1 )
+                XX = MIN( MAX( 1.0D0, XX ), X2 )
+                YY = MIN( MAX( 1.0D0, YY ), Y2 )
+                J  = C + NCOLS2 * ( R - 1 )
+                CC = INT( XX )
+                RR = INT( YY )
+                IX2( J ) = CC + NCOLS1 * ( RR - 1 )
+                PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+                PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+
+            END DO
+            END DO          !  end traversal of input grid
+
+            RETURN
+
+        END IF
+
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
         JPR    = 1              !!  do NOT print projection parameters
@@ -1016,80 +1046,61 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         X2 = DBLE( NCOLS1 )
         Y2 = DBLE( NROWS1 )
 
+!$OMP   PARALLEL DO                                                         &
+!$OMP&       DEFAULT( NONE ),                                               &
+!$OMP&        SHARED( NROWS2, NCOLS2, X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1,   &
+!$OMP&                NCOLS1, NROWS1, XCELL2, YCELL2, IX2, PX2, PY2,        &
+!$OMP&                INSYS, INZONE, TPAIN, INUNIT, INSPH, IPR, JPR,        &
+!$OMP&                LPARM, IOSYS, IOZONE,TPOUT, IOUNIT, LN27, LN83,       &
+!$OMP&                FN27, FN83, LENGTH  ),                                &
+!$OMP&       PRIVATE( C, R, XX, YY, J, CC, RR, LEMSG, CRDIN, CRDIO, IFLG,   &
+!$OMP&                MESG ),                                               &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+        DO  R = 1, NROWS2
+        DO  C = 1, NCOLS2
 
-!$OMP        PARALLEL DO                                                        &
-!$OMP&           DEFAULT( NONE ),                                               &
-!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1,   &
-!$OMP&                    NCOLS1, NROWS1, XCELL2, YCELL2, IX2, PX2, PY2 ),      &
-!$OMP&           PRIVATE( C, R, XX, YY, J, CC, RR )
+            CRDIN( 1 ) = X0  +  XCELL2 * DBLE( C )
+            CRDIN( 2 ) = Y0  +  YCELL2 * DBLE( R )
 
-            DO  R = 1, NROWS2
-            DO  C = 1, NCOLS2
+!$OMP       CRITICAL( S_GTPZ0 )
+            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                        LENGTH, IFLG )
+!$OMP       END CRITICAL( S_GTPZ0 )
 
-                XX = DDX1 * ( X0  +  XCELL2 * DBLE( C ) - X1 )
-                YY = DDY1 * ( Y0  +  YCELL2 * DBLE( R ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                J  = C + NCOLS2 * ( R - 1 )
-                CC = INT( XX )
-                RR = INT( YY )
-                IX2( J ) = CC + NCOLS1 * ( RR - 1 )
-                PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-
-            END DO
-            END DO          !  end traversal of input grid
-
-        ELSE
-            DO  R = 1, NROWS2
-            DO  C = 1, NCOLS2
-
-                CRDIN( 1 ) = X0  +  XCELL2 * DBLE( C )
-                CRDIN( 2 ) = Y0  +  YCELL2 * DBLE( R )
-
-!$OMP           CRITICAL( S_GTPZ0 )
-                CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                            IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                            TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                            LENGTH, IFLG )
-!$OMP           END CRITICAL( S_GTPZ0 )
-
-                IF ( IFLG .NE. 0 ) THEN
-                    IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                    WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
-                       'Failure:  status ', IFLG,                   &
-                       'in GTPZ0 at (c,r)=(', C, ',', R, ')'
-                    EFLAG = .TRUE.
-                    CALL M3MESG( MESG )
-                    CYCLE
-                END IF
-
-                XX = DDX1 * ( CRDIO( 1 ) - X1 )
-                YY = DDY1 * ( CRDIO( 2 ) - Y1 )
-                J  = C + NCOLS2 * ( R - 1 )
-
-                IF ( XX .LT. 1.0D0 .OR. XX .GE. DBLE( NCOLS1 ) .OR.    &
-                     YY .LT. 1.0D0 .OR. YY .GE. DBLE( NROWS1 ) ) THEN
-                    IX2( J ) = IMISS3
-                ELSE
-                    CC = INT( XX )
-                    RR = INT( YY )
-                    IX2( J ) = 1 + CC + NCOLS1 * RR
-                    PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                    PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                END IF
-
-            END DO
-            END DO          !  end traversal of input grid
-
-            IF ( EFLAG ) THEN
-                CALL M3EXIT( PNAME, 0, 0, 'Input-grid coord-transform error(s)', 2 )
+            IF ( IFLG .NE. 0 ) THEN
+                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+                WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
+                   'Failure:  status ', IFLG,                   &
+                   'in GTPZ0 at (c,r)=(', C, ',', R, ')'
+                EFLAG = .TRUE.
+                CALL M3MESG( MESG )
+                CYCLE
             END IF
 
-        END IF          !  if latgrd3, or not
+            XX = DDX1 * ( CRDIO( 1 ) - X1 )
+            YY = DDY1 * ( CRDIO( 2 ) - Y1 )
+            J  = C + NCOLS2 * ( R - 1 )
+
+            IF ( XX .LT. 1.0D0 .OR. XX .GE. DBLE( NCOLS1 ) .OR.    &
+                 YY .LT. 1.0D0 .OR. YY .GE. DBLE( NROWS1 ) ) THEN
+                IX2( J ) = IMISS3
+            ELSE
+                CC = INT( XX )
+                RR = INT( YY )
+                IX2( J ) = 1 + CC + NCOLS1 * RR
+                PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+                PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+            END IF
+
+        END DO
+        END DO          !  end traversal of input grid
+
+        IF ( EFLAG ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Input-grid coord-transform error(s)', 2 )
+        END IF
 
         RETURN
 
@@ -1168,6 +1179,36 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
         !!........  Body  ......................................................
+
+        IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
+
+!$OMP        PARALLEL DO                                                        &
+!$OMP&           DEFAULT( NONE ),                                               &
+!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1,   &
+!$OMP&                    NCOLS1, NROWS1, XCELL2, YCELL2, IX2, PX2, PY2 ),      &
+!$OMP&           PRIVATE( C, R, XX, YY, J, CC, RR )
+
+            DO  R = 1, NROWS2
+            DO  C = 1, NCOLS2
+
+                XX = DDX1 * ( X0  +  XCELL2 * DBLE( C ) - X1 )
+                YY = DDY1 * ( Y0  +  YCELL2 * DBLE( R ) - Y1 )
+                XX = MIN( MAX( 1.0D0, XX ), X2 )
+                YY = MIN( MAX( 1.0D0, YY ), Y2 )
+                J  = C + NCOLS2 * ( R - 1 )
+                CC = INT( XX )
+                RR = INT( YY )
+                IX2( J ) = CC + NCOLS1 * ( RR - 1 )
+                PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+                PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+
+            END DO
+            END DO          !  end traversal of input grid
+
+            RETURN
+
+        END IF
 
         EFLAG = .FALSE.
 
@@ -1471,6 +1512,33 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
+        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+
+!$OMP        PARALLEL DO                                                    &
+!$OMP&           DEFAULT( NONE ),                                           &
+!$OMP&            SHARED( NPNTS2, X1, Y1, X2, Y2, DDX1, DDY1,               &
+!$OMP&                    NCOLS1, NROWS1, XPNTS2, YPNTS2, IX2, PX2, PY2 ),  &
+!$OMP&           PRIVATE( K, XX, YY, CC, RR )
+
+            DO  K = 1, NPNTS2
+
+                XX = DDX1 * ( XPNTS2( K ) - X1 )
+                YY = DDY1 * ( YPNTS2( K ) - Y1 )
+                XX = MIN( MAX( 1.0D0, XX ), X2 )
+                YY = MIN( MAX( 1.0D0, YY ), Y2 )
+                CC = INT( XX )
+                RR = INT( YY )
+                IX2( K ) = CC + NCOLS1 * ( RR - 1 )
+                PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+                PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+
+            END DO          !  end traversal of input PNTS
+
+            RETURN
+
+        END IF
+
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
         JPR    = 1              !!  do NOT print projection parameters
@@ -1519,70 +1587,53 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         X2 = DBLE( NCOLS1 )
         Y2 = DBLE( NROWS1 )
 
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+!$OMP   PARALLEL DO                                                     &
+!$OMP&      DEFAULT( NONE ),                                            &
+!$OMP&       SHARED( NPNTS2, X1, Y1, X2, Y2, DDX1, DDY1,                &
+!$OMP&               NCOLS1, NROWS1, XPNTS2, YPNTS2, IX2, PX2, PY2,     &
+!$OMP&               INSYS, INZONE, TPAIN, INUNIT, INSPH, IPR, JPR,     &
+!$OMP&               LEMSG, LPARM, IOSYS, IOZONE,TPOUT, IOUNIT,         &
+!$OMP&               LN27, LN83, FN27, FN83, LENGTH ),                  &
+!$OMP&      PRIVATE( K, XX, YY, CC, RR, CRDIN, CRDIO, IFLG, MESG )      &
+!$OMP&    REDUCTION( .OR.:  EFLAG )
 
-!$OMP        PARALLEL DO                                                    &
-!$OMP&           DEFAULT( NONE ),                                           &
-!$OMP&            SHARED( NPNTS2, X1, Y1, X2, Y2, DDX1, DDY1,               &
-!$OMP&                    NCOLS1, NROWS1, XPNTS2, YPNTS2, IX2, PX2, PY2 ),  &
-!$OMP&           PRIVATE( K, XX, YY, CC, RR )
+        DO  K = 1, NPNTS2
 
-            DO  K = 1, NPNTS2
+            CRDIN( 1 ) = XPNTS2( K )
+            CRDIN( 2 ) = XPNTS2( K )
 
-                XX = DDX1 * ( XPNTS2( K ) - X1 )
-                YY = DDY1 * ( YPNTS2( K ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
-                IX2( K ) = CC + NCOLS1 * ( RR - 1 )
-                PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+!$OMP       CRITICAL( S_GTPZ0 )
+            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                        LENGTH, IFLG )
+!$OMP       END CRITICAL( S_GTPZ0 )
 
-            END DO          !  end traversal of input PNTS
-
-        ELSE
-
-            DO  K = 1, NPNTS2
-
-                CRDIN( 1 ) = XPNTS2( K )
-                CRDIN( 2 ) = XPNTS2( K )
-
-!$OMP           CRITICAL( S_GTPZ0 )
-                CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                            IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                            TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                            LENGTH, IFLG )
-!$OMP           END CRITICAL( S_GTPZ0 )
-
-                IF ( IFLG .NE. 0 ) THEN
-                    IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                    WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
-                       'Failure:  status ', IFLG,                   &
-                       'in GTPZ0 at (c,r)=(', C, ',', R, ')'
-                    EFLAG = .TRUE.
-                    CALL M3MESG( MESG )
-                    CYCLE
-                END IF
-
-                XX = DDX1 * ( CRDIO( 1 ) - X1 )
-                YY = DDY1 * ( CRDIO( 2 ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
-                IX2( K ) = CC + NCOLS1 * ( RR - 1 )
-                PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-
-            END DO          !  end traversal of input PNTS
-
-            IF ( EFLAG ) THEN
-                CALL M3EXIT( PNAME, 0, 0, 'Input-PNTS coord-transform error(s)', 2 )
+            IF ( IFLG .NE. 0 ) THEN
+                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+                WRITE( MESG, '( A, I3, 2X, A, I9, A )' )        &
+                   'Failure:  status ', IFLG,                   &
+                   'in GTPZ0 at k=(', K, ')'
+                EFLAG = .TRUE.
+                CALL M3MESG( MESG )
+                CYCLE
             END IF
 
-        END IF          !  if latgrd3, or not
+            XX = DDX1 * ( CRDIO( 1 ) - X1 )
+            YY = DDY1 * ( CRDIO( 2 ) - Y1 )
+            XX = MIN( MAX( 1.0D0, XX ), X2 )
+            YY = MIN( MAX( 1.0D0, YY ), Y2 )
+            CC = INT( XX )
+            RR = INT( YY )
+            IX2( K ) = CC + NCOLS1 * ( RR - 1 )
+            PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+            PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+
+        END DO          !  end traversal of input PNTS
+
+        IF ( EFLAG ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'Input-PNTS coord-transform error(s)', 2 )
+        END IF
 
         RETURN
 
@@ -1661,6 +1712,33 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
         !!........  Body  ......................................................
+
+        IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
+
+!$OMP        PARALLEL DO                                                    &
+!$OMP&           DEFAULT( NONE ),                                           &
+!$OMP&            SHARED( NPNTS2, X1, Y1, X2, Y2, DDX1, DDY1,               &
+!$OMP&                    NCOLS1, NROWS1, XPNTS2, YPNTS2, IX2, PX2, PY2 ),  &
+!$OMP&           PRIVATE( K, XX, YY, CC, RR )
+
+            DO  K = 1, NPNTS2
+
+                XX = DDX1 * ( XPNTS2( K ) - X1 )
+                YY = DDY1 * ( YPNTS2( K ) - Y1 )
+                XX = MIN( MAX( 1.0D0, XX ), X2 )
+                YY = MIN( MAX( 1.0D0, YY ), Y2 )
+                CC = INT( XX )
+                RR = INT( YY )
+                IX2( K ) = CC + NCOLS1 * ( RR - 1 )
+                PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+                PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
+
+            END DO          !  end traversal of input PNTS
+
+            RETURN
+
+        END IF
 
         EFLAG = .FALSE.
 
@@ -1895,12 +1973,11 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER     I, ILL, ILR, IUL, IUR
         REAL        ALL, ALR, AUL, AUR, PX, PY, QX, QY
 
-!$OMP        PARALLEL DO                                                &
-!$OMP&           DEFAULT( NONE ),                                       &
-!$OMP&            SHARED( NSIZE1, IX1, PX1, PY1, NCOLS2, NROWS2,        &
-!$OMP&                    GR1, GR2 ),                                   &
-!$OMP&           PRIVATE( I, ILL, ILR, IUL, IUR, PX, QX, PY, QY,        &
-!$OMP&                    ALL, ALR, AUL, AUR )
+!$OMP    PARALLEL DO                                                        &
+!$OMP&       DEFAULT( NONE ),                                               &
+!$OMP&        SHARED( NSIZE1, IX1, PX1, PY1, NCOLS2, NROWS2, GR1, GR2 ),    &
+!$OMP&       PRIVATE( I, ILL, ILR, IUL, IUR, PX, QX, PY, QY,                &
+!$OMP&                ALL, ALR, AUL, AUR )
 
         DO I = 1, NSIZE1
             ILL = IX1( I )
@@ -1981,52 +2058,52 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !!  Sadly, this doesn't work:  F90 can't distinguish between
 !!  horizontally-single-indexed ( NCOLS2*NROWS2,NLAYS ) 3D arrays and
 !!  doubly-indexed ( NCOLS2,NROWS2 ) 2D arrays.
-!! 
+!!
 !!     SUBROUTINE INDXMULT3( NCOLS1, NROWS1, NCOLS2, NROWS2,    &
 !!                           IX1, PX1, PY1, GR1, GR2 )
-!! 
+!!
 !!         !!  Use <IX,PX,PY> from GRID2INDX() or PNTS2INDX()  to map GR2 into GR1
-!! 
+!!
 !!         INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1, NCOLS2, NROWS2
 !!         INTEGER, INTENT(IN   ) :: IX1( NCOLS1*NROWS1 )
 !!         REAL   , INTENT(IN   ) :: PX1( NCOLS1*NROWS1 )
 !!         REAL   , INTENT(IN   ) :: PY1( NCOLS1*NROWS1 )
 !!         REAL   , INTENT(  OUT) :: GR1( NCOLS1,NROWS1 )
 !!         REAL   , INTENT(IN   ) :: GR2( NCOLS2,NROWS2 )
-!! 
+!!
 !!         INTEGER     C, R, I, CC, RR
 !!         REAL        ALL, ALR, AUL, AUR, PX, PY, QX, QY
-!! 
+!!
 !! !$OMP        PARALLEL DO                                                &
 !! !$OMP&           DEFAULT( NONE ),                                       &
 !! !$OMP&            SHARED( NLAYS, NCOLS1, NROWS1, NCOLS2, NROWS2,        &
 !! !$OMP&                    IX1, PX1, PY1, GR1, GR2 ),                    &
 !! !$OMP&           PRIVATE( L, R, C, I, RR, CC, PX, QX, PY, QY,           &
 !! !$OMP&                    ALL, ALR, AUL, AUR )
-!! 
+!!
 !!         DO R = 1, NROWS1
 !!         DO C = 1, NCOLS1
 !!             I  = IX1( C + ( R - 1) * NCOLS1 ) - 1
 !!             CC = 1 + MOD( I , NCOLS2 )
 !!             RR = 1 +      I / NCOLS2
-!! 
+!!
 !!             PX = PX1( I )
 !!             QX = 1.0 - PX
 !!             PY = PY1( I )
 !!             QY = 1.0 - PY
-!! 
+!!
 !!             ALL = PX * PY
 !!             ALR = QX * PY
 !!             AUL = PX * QY
 !!             AUR = QX * QY
-!! 
+!!
 !!             GR1( C,R ) = ALL * GR2(CC,RR  ) + ALR * GR2(CC+1,RR  )  +   &
 !!                          AUL * GR2(CC,RR+1) + AUR * GR2(CC+1,RR+1)
 !!         END DO
 !!         END DO
-!! 
+!!
 !!         RETURN
-!! 
+!!
 !!     END SUBROUTINE INDXMULT3
 
 
@@ -2177,6 +2254,15 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  Body  ......................................................
 
+        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+
+            XLOC1 = XLOC2
+            YLOC1 = YLOC2
+            RETURN
+
+        END IF
+
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
 
@@ -2229,38 +2315,29 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Compute transforms:
 
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+        CRDIN( 1 ) = XLOC2
+        CRDIN( 2 ) = YLOC2
 
-            XLOC1 = XLOC2
-            YLOC1 = YLOC2
+        CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                    IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                    TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                    LENGTH, IFLG )
 
-        ELSE
+        IF ( IFLG .NE. 0 ) THEN
+            IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+            WRITE( MESG, '( A, I3, 2X, A )' )   &
+               'Failure:  status ', IFLG, 'in GTPZ0'
+            EFLAG = .TRUE.
+            CALL M3MESG( MESG )
+        END IF
 
-            CRDIN( 1 ) = XLOC2
-            CRDIN( 2 ) = YLOC2
+        XLOC1 = CRDIO( 1 )
+        YLOC1 = CRDIO( 2 )
 
-            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                        LENGTH, IFLG )
+        IF ( EFLAG ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+        END IF
 
-            IF ( IFLG .NE. 0 ) THEN
-                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                WRITE( MESG, '( A, I3, 2X, A )' )   &
-                   'Failure:  status ', IFLG, 'in GTPZ0'
-                EFLAG = .TRUE.
-                CALL M3MESG( MESG )
-            END IF
-
-            XLOC1 = CRDIO( 1 )
-            YLOC1 = CRDIO( 2 )
-
-            IF ( EFLAG ) THEN
-                CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
-            END IF
-
-        END IF          !  if sameproj, or not
 
         RETURN
 
@@ -2334,6 +2411,15 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL M3MESG( BLANK )
         CALL M3MESG( 'Processing coordinate transforms...' )
         CALL M3MESG( BLANK )
+
+        IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,     &
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
+
+            XLOC1 = XLOC2
+            YLOC1 = YLOC2
+            RETURN
+
+        END IF
 
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
@@ -2548,6 +2634,26 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
+        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+
+!$OMP        PARALLEL DO                                            &
+!$OMP&           DEFAULT( NONE ),                                   &
+!$OMP&            SHARED( NPTS, XLOC1, YLOC1, XLOC2, YLOC2 ),       &
+!$OMP&           PRIVATE( K )
+
+            DO  K = 1, NPTS
+
+                XLOC1( K ) = XLOC2( K )
+                YLOC1( K ) = YLOC2( K )
+
+            END DO
+
+            RETURN
+
+        END IF
+
+
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
         JPR    = 1              !!  do NOT print projection parameters
@@ -2592,62 +2698,43 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Compute transforms:
 
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+!$OMP   PARALLEL DO                                                 &
+!$OMP&       DEFAULT( NONE ),                                       &
+!$OMP&        SHARED( NPTS, XLOC1, YLOC1, XLOC2, YLOC2,             &
+!$OMP&                INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&       PRIVATE( K, CRDIN, CRDIO, LENGTH, IFLG, MESG ),        &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-!$OMP        PARALLEL DO                                            &
-!$OMP&           DEFAULT( NONE ),                                   &
-!$OMP&            SHARED( NPTS, XLOC1, YLOC1, XLOC2, YLOC2 ),       &
-!$OMP&           PRIVATE( K )
+        DO K = 1, NPTS
 
-            DO  K = 1, NPTS
+            CRDIN( 1 ) = XLOC2( K )
+            CRDIN( 2 ) = YLOC2( K )
 
-                XLOC1( K ) = XLOC2( K )
-                YLOC1( K ) = YLOC2( K )
+!$OMP       CRITICAL( S_GTPZ0 )
+            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                        LENGTH, IFLG )
+!$OMP       END CRITICAL( S_GTPZ0 )
 
-            END DO
-
-        ELSE
-
-!$OMP        PARALLEL DO                                                &
-!$OMP&           DEFAULT( NONE ),                                       &
-!$OMP&            SHARED( NPTS, XLOC1, YLOC1, XLOC2, YLOC2,             &
-!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
-!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
-!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
-!$OMP&           PRIVATE( K, CRDIN, CRDIO, LENGTH, IFLG, MESG ),        &
-!$OMP&         REDUCTION( .OR.:  EFLAG )
-
-            DO K = 1, NPTS
-
-                CRDIN( 1 ) = XLOC2( K )
-                CRDIN( 2 ) = YLOC2( K )
-
-!$OMP           CRITICAL( S_GTPZ0 )
-                CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                            IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                            TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                            LENGTH, IFLG )
-!$OMP           END CRITICAL( S_GTPZ0 )
-
-                IF ( IFLG .NE. 0 ) THEN
-                    IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                    WRITE( MESG, '( A, I3, 2X, A, I4 )' )   &
-                       'Failure:  status ', IFLG, 'in GTPZ0 at K=', K
-                    EFLAG = .TRUE.
-                    CALL M3MESG( MESG )
-                END IF
-
-                XLOC1( K ) = CRDIO( 1 )
-                YLOC1( K ) = CRDIO( 2 )
-
-            END DO
-
-            IF ( EFLAG ) THEN
-                CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+            IF ( IFLG .NE. 0 ) THEN
+                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+                WRITE( MESG, '( A, I3, 2X, A, I4 )' )   &
+                   'Failure:  status ', IFLG, 'in GTPZ0 at K=', K
+                EFLAG = .TRUE.
+                CALL M3MESG( MESG )
             END IF
 
-        END IF          !  if sameproj, or not
+            XLOC1( K ) = CRDIO( 1 )
+            YLOC1( K ) = CRDIO( 2 )
+
+        END DO
+
+        IF ( EFLAG ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+        END IF
 
         RETURN
 
@@ -2722,6 +2809,25 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL M3MESG( BLANK )
         CALL M3MESG( 'Processing coordinate transforms...' )
         CALL M3MESG( BLANK )
+
+        IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
+
+!$OMP        PARALLEL DO                                            &
+!$OMP&           DEFAULT( NONE ),                                   &
+!$OMP&            SHARED( NPTS, XLOC1, YLOC1, XLOC2, YLOC2 ),       &
+!$OMP&           PRIVATE( K )
+
+            DO  K = 1, NPTS
+
+                XLOC1( K ) = XLOC2( K )
+                YLOC1( K ) = YLOC2( K )
+
+            END DO
+
+            RETURN
+
+        END IF
 
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
@@ -2975,6 +3081,27 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
+        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+
+!$OMP        PARALLEL DO                                                &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NCOLS, NROWS, XLOC1, YLOC1, XLOC2, YLOC2 ),   &
+!$OMP&           PRIVATE( C, R )
+
+            DO  R = 1, NROWS
+            DO  C = 1, NCOLS
+
+                XLOC1( C,R ) = XLOC2( C,R )
+                YLOC1( C,R ) = YLOC2( C,R )
+
+            END DO
+            END DO
+
+            RETURN
+
+        END IF
+
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
         JPR    = 1              !!  do NOT print projection parameters
@@ -3019,66 +3146,45 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Compute transforms:
 
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+!$OMP   PARALLEL DO                                                 &
+!$OMP&       DEFAULT( NONE ),                                       &
+!$OMP&        SHARED( NCOLS, NROWS, XLOC1, YLOC1, XLOC2, YLOC2,     &
+!$OMP&                INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&       PRIVATE( C, R, CRDIN, CRDIO, LENGTH, IFLG, MESG ),     &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-!$OMP        PARALLEL DO                                                &
-!$OMP&           DEFAULT( NONE ),                                       &
-!$OMP&            SHARED( NCOLS, NROWS, XLOC1, YLOC1, XLOC2, YLOC2 ),   &
-!$OMP&           PRIVATE( C, R )
+        DO  R = 1, NROWS
+        DO  C = 1, NCOLS
 
-            DO  R = 1, NROWS
-            DO  C = 1, NCOLS
+            CRDIN( 1 ) = XLOC2( C,R )
+            CRDIN( 2 ) = YLOC2( C,R )
 
-                XLOC1( C,R ) = XLOC2( C,R )
-                YLOC1( C,R ) = YLOC2( C,R )
+!$OMP       CRITICAL( S_GTPZ0 )
+            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                        LENGTH, IFLG )
+!$OMP       END CRITICAL( S_GTPZ0 )
 
-            END DO
-            END DO
-
-        ELSE
-
-!$OMP        PARALLEL DO                                                &
-!$OMP&           DEFAULT( NONE ),                                       &
-!$OMP&            SHARED( NCOLS, NROWS, XLOC1, YLOC1, XLOC2, YLOC2,     &
-!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
-!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
-!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
-!$OMP&           PRIVATE( C, R, CRDIN, CRDIO, LENGTH, IFLG, MESG ),     &
-!$OMP&         REDUCTION( .OR.:  EFLAG )
-
-            DO  R = 1, NROWS
-            DO  C = 1, NCOLS
-
-                CRDIN( 1 ) = XLOC2( C,R )
-                CRDIN( 2 ) = YLOC2( C,R )
-
-!$OMP           CRITICAL( S_GTPZ0 )
-                CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                            IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                            TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                            LENGTH, IFLG )
-!$OMP           END CRITICAL( S_GTPZ0 )
-
-                IF ( IFLG .NE. 0 ) THEN
-                    IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                    WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' )   &
-                       'Failure:  status ', IFLG, 'in GTPZ0 at (C,R)=(', C, ',', R, ')'
-                    EFLAG = .TRUE.
-                    CALL M3MESG( MESG )
-                END IF
-
-                XLOC1( C,R ) = CRDIO( 1 )
-                YLOC1( C,R ) = CRDIO( 2 )
-
-            END DO
-            END DO
-
-            IF ( EFLAG ) THEN
-                CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+            IF ( IFLG .NE. 0 ) THEN
+                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+                WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' )   &
+                   'Failure:  status ', IFLG, 'in GTPZ0 at (C,R)=(', C, ',', R, ')'
+                EFLAG = .TRUE.
+                CALL M3MESG( MESG )
             END IF
 
-        END IF          !  if sameproj, or not
+            XLOC1( C,R ) = CRDIO( 1 )
+            YLOC1( C,R ) = CRDIO( 2 )
+
+        END DO
+        END DO
+
+        IF ( EFLAG ) THEN
+            CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+        END IF
 
         RETURN
 
@@ -3764,8 +3870,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!  Set up a particular named projection or grid  CNAME:
-    !!  INITPROJD() returns  REAL*8 projection parameters 
-    !!  INITPROJS() returns  REAL   projection parameters 
+    !!  INITPROJD() returns  REAL*8 projection parameters
+    !!  INITPROJS() returns  REAL   projection parameters
     !!  INITPROJ1() has no return values
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -4182,7 +4288,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     END FUNCTION SETPROJD
 
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- 
+
     LOGICAL FUNCTION SETPROJS( CTYPE, A, B, C, X, Y )
 
         INTEGER      , INTENT(IN   ) :: CTYPE
@@ -6644,6 +6750,33 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         RETURN
 
     END FUNCTION SAMEPROJ
+
+
+    LOGICAL FUNCTION  SAMEPROJ2( N1, A1, B1, C1, X1, Y1, S1, N2, A2, B2, C2, X2, Y2, S2 )
+        INTEGER, INTENT( IN ) :: N1, N2
+        REAL*8,  INTENT( IN ) :: A1, B1, C1, X1, Y1, S1, A2, B2, C2, X2, Y2, S2
+
+        IF ( N1 .NE. N2 ) THEN
+            SAMEPROJ2 = .FALSE.
+        ELSE IF ( DBLERR( A1, A2 ) ) THEN
+            SAMEPROJ2 = .FALSE.
+        ELSE IF ( DBLERR( B1, B2 ) ) THEN
+            SAMEPROJ2 = .FALSE.
+        ELSE IF ( DBLERR( C1, C2 ) ) THEN
+            SAMEPROJ2 = .FALSE.
+        ELSE IF ( DBLERR( X1, X2 ) ) THEN
+            SAMEPROJ2 = .FALSE.
+        ELSE IF ( DBLERR( Y1, Y2 ) ) THEN
+            SAMEPROJ2 = .FALSE.
+        ELSE IF ( DBLERR( S1, S2 ) ) THEN
+            SAMEPROJ2 = .FALSE.
+        ELSE
+            SAMEPROJ2 = .TRUE.
+        END IF
+
+        RETURN
+
+    END FUNCTION SAMEPROJ2
 
 
 END MODULE MODGCTP

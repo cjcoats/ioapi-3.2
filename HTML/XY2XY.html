@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: XY2XY.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: XY2XY.html 416 2016-08-24 19:15:43Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> XY2XY </TITLE>
 </HEAD>
@@ -17,60 +17,64 @@
 <H2> Fortran version: </H2>
 
 &quot;Generic&quot; Fortran-90 routine to do map-projection transforms
-on arrays of points, with optional <CODE>SPHER1</CODE>,
-<CODE>SPHER2</CODE> spheroid arguments and optional rank for the arrays
+on arrays of points, with optional <CODE>SPHER_O</CODE>,
+<CODE>SPHER_I</CODE> spheroid arguments and optional rank (=0,1,2) for the arrays
 of points being converted.
 <PRE>
-    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,         &amp;
-                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,         &amp;
-                      XLOC2, YLOC2, XLOC1, YLOC1 )
+    SUBROUTINE XY2XY( GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I,          &amp;
+                      GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O,          &amp;
+                      XLOC_O, YLOC_O, XLOC_I, YLOC_I )
 
-    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1, &amp;
-                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2, &amp;
-                      XLOC2, YLOC2, XLOC1, YLOC1 )
+    SUBROUTINE XY2XY( GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I, SPHER_I, &amp;
+                      GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O, SPHER_O, &amp;
+                      XLOC_O, YLOC_O, XLOC_I, YLOC_I )
 
-    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,         &amp;
-                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,         &amp;
-                      NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+    SUBROUTINE XY2XY( GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I,          &amp;
+                      GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O,          &amp;
+                      NPTS, XPTS_O, YPTS_O, XPTS_I, YPTS_I )
 
-    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1, &amp;
-                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2, &amp;
-                      NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+    SUBROUTINE XY2XY( GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I, SPHER_I, &amp;
+                      GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O, SPHER_O, &amp;
+                      NPTS, XPTS_O, YPTS_O, XPTS_I, YPTS_I )
 
-    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,         &amp;
-                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,         &amp;
-                      NCOLS, NROWS, XGRD2, YGRD2, XGRD1, YGRD1 )
+    SUBROUTINE XY2XY( GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I,          &amp;
+                      GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O,          &amp;
+                      NCOLS, NROWS, XGRD_O, YGRD_O, XGRD_I, YGRD_I )
 
-    SUBROUTINE XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1, &amp;
-                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2, &amp;
-                      NCOLS, NROWS, XGRD2, YGRD2, XGRD1, YGRD1 )
+    SUBROUTINE XY2XY( GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I, SPHER_I, &amp;
+                      GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O, SPHER_O, &amp;
+                      NCOLS, NROWS, XGRD_O, YGRD_O, XGRD_I, YGRD_I )
 
-        INTEGER, INTENT(IN   ) :: GDTYP1, GDTYP2
-        REAL*8 , INTENT(IN   ) :: P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1
-        REAL*8 , INTENT(IN   ) :: P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2
-        REAL*8 , INTENT(IN   ) :: SPHER1, SPHER2
-        REAL*8 , INTENT(IN   ) :: XLOC2
-        REAL*8 , INTENT(IN   ) :: YLOC2
-        REAL*8 , INTENT(  OUT) :: XLOC1
-        REAL*8 , INTENT(  OUT) :: YLOC1
-        REAL*8 , INTENT(IN   ) :: XPTS2( NPTS )
-        REAL*8 , INTENT(IN   ) :: YPTS2( NPTS )
-        REAL*8 , INTENT(  OUT) :: XPTS1( NPTS )
-        REAL*8 , INTENT(  OUT) :: YPTS1( NPTS )
-        REAL*8 , INTENT(IN   ) :: XGRD2( NCOLS,NROWS )
-        REAL*8 , INTENT(IN   ) :: YGRD2( NCOLS,NROWS )
-        REAL*8 , INTENT(  OUT) :: XGRD1( NCOLS,NROWS )
-        REAL*8 , INTENT(  OUT) :: YGRD1( NCOLS,NROWS )
+        INTEGER, INTENT(IN   ) :: GDTYP_I, GDTYP_O
+        REAL*8 , INTENT(IN   ) :: P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I
+        REAL*8 , INTENT(IN   ) :: P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O
+        REAL*8 , INTENT(IN   ) :: SPHER_I, SPHER_O
+        REAL*8 , INTENT(IN   ) :: XLOC_O
+        REAL*8 , INTENT(IN   ) :: YLOC_O
+        REAL*8 , INTENT(  OUT) :: XLOC_I
+        REAL*8 , INTENT(  OUT) :: YLOC_I
+        REAL*8 , INTENT(IN   ) :: XPTS_O( NPTS )
+        REAL*8 , INTENT(IN   ) :: YPTS_O( NPTS )
+        REAL*8 , INTENT(  OUT) :: XPTS_I( NPTS )
+        REAL*8 , INTENT(  OUT) :: YPTS_I( NPTS )
+        REAL*8 , INTENT(IN   ) :: XGRD_O( NCOLS,NROWS )
+        REAL*8 , INTENT(IN   ) :: YGRD_O( NCOLS,NROWS )
+        REAL*8 , INTENT(  OUT) :: XGRD_I( NCOLS,NROWS )
+        REAL*8 , INTENT(  OUT) :: YGRD_I( NCOLS,NROWS )
 </PRE><P>    
 
 
 <H2> Summary: </H2>
-    For I/O&nbsp;API Version 3.2 or later, only:  module-routine
-    contained in <CODE>MODULE MODGCTP</CODE>..
+    For I/O&nbsp;API Version 3.2 or later, only: generic module-routine
+    <CODE>CONTAIN</CODE>ed in <CODE>MODULE MODGCTP</CODE>..
     <P>
-    Transform point-locations with GRID2 coordinates into GRID1
-    coordinates, using USGS GCTP-package routine  
-    <A HREF="GCTP.html"><CODE>GTPZ0()</CODE></A>.
+    Transform point-locations with (input) GRID_I coordinates into
+    (output) GRID_O coordinates, using USGS GCTP-package routine  
+    <A HREF="GCTP.html"><CODE>GTPZ0()</CODE></A>.  The usual
+    <A HREF="GRIDS.html#horiz">I/O&nbsp;API coordinate-description
+    conventions</A> are used  for the
+    <CODE>GDTYP,P_ALP,P_BET,P_GAM,XCENT,YCENT</CODE> input and output
+    coordinate description arguments.
     <P>
 
     Versions without the spheroid arguments use routine
@@ -85,6 +89,10 @@ of points being converted.
     spheroid, from Lat-Lon to the output-projection coordinates).
     <P>
 
+    <EM>For I/O&nbsp;API Version 3.2 or later, only:</EM>  generic module-routine
+    <CODE>CONTAIN</CODE>ed in <CODE>MODULE MODGCTP</CODE>.
+    <P>
+
 <H2> Preconditions </H2>
 
     <CODE>USE MODGCTGP</CODE>
@@ -95,55 +103,55 @@ of points being converted.
  
     <PRE>
     ...
-    INTEGER     GDTYP1      !!  parameters for output coordinate system
-    REAL*8      P_ALP1
-    REAL*8      P_BET1
-    REAL*8      P_GAM1
-    REAL*8      XCENT1
-    REAL*8      YCENT1
-    INTEGER     NCOLS1
-    INTEGER     NROWS1
-    INTEGER     GDTYP2      !!  parameters for input grid and coord system
-    INTEGER     NCOLS2
-    INTEGER     NROWS2
-    INTEGER     NTHIK2
-    REAL*8      P_ALP2
-    REAL*8      P_BET2
-    REAL*8      P_GAM2
-    REAL*8      XCENT2
-    REAL*8      YCENT2
+    INTEGER     GDTYP_O      !!  parameters for output coordinate system
+    REAL*8      P_ALP_O
+    REAL*8      P_BET_O
+    REAL*8      P_GAM_O
+    REAL*8      XCENT_O
+    REAL*8      YCENT_O
+    INTEGER     NCOLS_O
+    INTEGER     NROWS_O
+    INTEGER     GDTYP_I      !!  parameters for input grid and coord system
+    INTEGER     NCOLS
+    INTEGER     NROWS
+    INTEGER     NTHIK_I
+    REAL*8      P_ALP_I
+    REAL*8      P_BET_I
+    REAL*8      P_GAM_I
+    REAL*8      XCENT_I
+    REAL*8      YCENT_I
     ...
-    REAL*8  XLOC2           !!  input point
-    REAL*8  YLO2C
-    REAL*8  XLOC1           !!  output point
-    REAL*8  YLOC1
+    REAL*8  XLOC_I           !!  input point
+    REAL*8  YLOC_I
+    REAL*8  XLOC_O           !!  output point
+    REAL*8  YLOC_O
     ...
     INTEGER NPTS
-    REAL*8  XPTS2( NPTS )   !!  input points
-    REAL*8  YPTS2( NPTS )
-    REAL*8  XPTS1( NPTS )   !!  output points
-    REAL*8  YPTS1( NPTS )
+    REAL*8  XPTS_I( NPTS )   !!  input points
+    REAL*8  YPTS_I( NPTS )
+    REAL*8  XPTS_O( NPTS )   !!  output points
+    REAL*8  YPTS_O( NPTS )
     ...
-    REAL*8  XGRD2( NCOLS2,NROWS2 )   !!  input points
-    REAL*8  YGRD2( NCOLS2,NROWS2 )
-    REAL*8  XGRD1( NCOLS1,NROWS1 )   !!  output points
-    REAL*8  YGRD1( NCOLS1,NROWS1 )
+    REAL*8  XGRD_I( NCOLS,NROWS )   !!  input points
+    REAL*8  YGRD_I( NCOLS,NROWS )
+    REAL*8  XGRD_O( NCOLS,NROWS )   !!  output points
+    REAL*8  YGRD_O( NCOLS,NROWS )
     ...
-    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
-                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
-               XLOC2, YLOC2, XLOC1, YLOC1 )
+    CALL XY2XY( GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O,     &amp;
+                GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I,     &amp;
+               XLOC_I, YLOC_I, XLOC_O, YLOC_O )
     ...
-    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
-                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
-                NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+    CALL XY2XY( GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O,     &amp;
+                GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I,     &amp;
+                NPTS, XPTS_I, YPTS_I, XPTS_O, YPTS_O )
     ...
-    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
-                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
-                NPTS, XPTS2, YPTS2, XPTS1, YPTS1 )
+    CALL XY2XY( GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O,     &amp;
+                GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I,     &amp;
+                NPTS, XPTS_I, YPTS_I, XPTS_O, YPTS_O )
     ...
-    CALL XY2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,     &amp;
-                GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,     &amp;
-                NCOLS2, NROWS2, XGRD2, YGRD2, XGRD1, YGRD1 )
+    CALL XY2XY( GDTYP_O, P_ALP_O, P_BET_O, P_GAM_O, XCENT_O, YCENT_O,     &amp;
+                GDTYP_I, P_ALP_I, P_BET_I, P_GAM_I, XCENT_I, YCENT_I,     &amp;
+                NCOLS_I, NROWS_I, XGRD_I, YGRD_I, XGRD_O, YGRD_O )
     ...
 </PRE><P>
 

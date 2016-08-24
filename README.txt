@@ -157,7 +157,7 @@ I/O API INSTALLATION
           customized "Makefile" as in (6) above, and type "make".
 
 
-README.txt version "$Id: README.txt 371 2016-05-19 12:46:41Z coats $
+README.txt version "$Id: README.txt 417 2016-08-24 19:16:52Z coats $
 
 
 
