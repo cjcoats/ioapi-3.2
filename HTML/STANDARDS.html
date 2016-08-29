@@ -1,11 +1,11 @@
 
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 
-<HTML> 
+<HTML>
 <HEAD>
 <!-- $HeadURL: svn+ssh://svn_bams@beech.baronams.com/bams_only/trunk/config_man/standards_bams.html $ -->
-<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
-<TITLE> 
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE>
     M3IO Software Development Standards
 </TITLE>
   <STYLE type="text/css">
@@ -21,12 +21,12 @@
   }
   </STYLE>
 </HEAD>
-   
-<!-- 
-<BODY BGCOLOR     ="#FFFFFF" 
-      TOPMARGIN   ="15" 
-      MARGINHEIGHT="15" 
-      LEFTMARGIN  ="15" 
+
+<!--
+<BODY BGCOLOR     ="#FFFFFF"
+      TOPMARGIN   ="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN  ="15"
       MARGINWIDTH ="15">
 -->
 
@@ -55,13 +55,31 @@
         <DL>
              <DT>  <A HREF="#general">General</A>
              <DT>  <A HREF="#fortran">Fortran</A>
-             <DT>  <A HREF="#c">C/C++</A> 
-             <DT>  <A HREF="#scripts">Scripts</A> 
-             <DT>  <A HREF="#html">HTML</A> 
+             <DT>  <A HREF="#c">C/C++</A>
+             <DT>  <A HREF="#scripts">Scripts</A>
          </DL>
    </DL>
 
    </BLOCKQUOTE>
+
+<H2>Introduction</H2>
+
+    <BLOCKQUOTE>
+    This document started as the set of standards for the EPA Models-3
+    project, and was continued by the author while at the North Carolina
+    Supercomputing Center, then at Baron Advanced Meteorological
+    Systems, LLC. [BAMS], and now at UNC's Institute for the
+    Environment. It is the software development standard under which the
+    Models-3 I/O&nbsp;API, the MAQSIP air quality model, the NCSC/BAMS
+    operational-forecast tools and models, and various other software
+    systems were and are maintained.  It is offered here for use with
+    such other projects as may find it useful.
+    <P>
+    (There are still some &quot;dangling&quot; BAMS references, e.g.,
+    to the Chief Architect, Chief Operations Officer, <EM>test</EM> vs
+    <EM>production</EM> repositories, etc.  These give some level of
+    recognition to the importance of the items that reference them.)
+    </BLOCKQUOTE>
 
 <HR> <!-- =========================================================== -->
 
@@ -100,12 +118,12 @@
             addresses the requirements
 
        <LI>  good representation:
-             <UL>   
+             <UL>
                 <LI>  feasible
                 <LI>  modular and flexible
                 <LI>  technically sound
                 <LI>  structurally sound (good, robust design choices)
-             </UL>   
+             </UL>
 
        <LI>  design standards are met
        <LI>  adequate test design specified.
@@ -157,12 +175,12 @@
             Note that it is good practice for <CODE>PUBLIC</CODE>
             entities only to include <CODE>TYPE</CODE>s,
             <CODE>PARAMETER</CODE>s, <CODE>SUBROUTINE</CODE>s and
-            <CODE>FUNCTION</CODE>s, and  <CODE>PROTECTED</CODE> variables.  
+            <CODE>FUNCTION</CODE>s, and  <CODE>PROTECTED</CODE> variables.
             <P>
             Module variables generally should be <CODE>PRIVATE</CODE>.
             In a few exceptional cases, variables may be
             <CODE>PUBLIC,&nbsp;PROTECTED</CODE>, in order to give
-            read-only access to their values to code that <CODE>USE</CODE>s 
+            read-only access to their values to code that <CODE>USE</CODE>s
             the module.
             </BLOCKQUOTE>
 
@@ -193,7 +211,7 @@
              Declare variables (etc.) at the most local scope consistent
              with their use.<BR>
              For example, declaring a <CODE>MODULE</CODE>-variable that is
-             allocated and deallocated within a particular subroutine, 
+             allocated and deallocated within a particular subroutine,
              and is used only in that subroutine and its callees is a
              violation:  that variable should have been local to that
              subroutine.
@@ -232,19 +250,19 @@
        <LI> Scripts must pass Chief Operations Officer review before being
             accepted for  production use.
             <P>
- 
+
        <LI> For new programs, interfaces shall be documented.
             <P>
- 
+
        <LI> For new major programs, interfaces and program function shall be
             specified, and must be accepted by the Chief Architect before
             initiating work.
             <P>
- 
+
       <LI>  For modified programs, interfaces and program function shall
             not be changed without permission of the Chief Architect.
             <P>
- 
+
       <LI>  The purpose of the main code repository is to maintain the
             <STRONG>main</STRONG> code path, not, e.g., 8 different versions
             of the code <CODE>noahr_mod.F90.begin_week_ncar</CODE>, ...
@@ -292,14 +310,24 @@
 
    <UL>
 
-        <LI>  Programs must build successfully under all three of:  
-              Intel, Sun, and GNU compilers before being accepted. 
+        <LI>  Code shall be written with view to readability and
+              maintainability.  Code is actually more a communications
+              medium than merely a mechanical algorithm-description.
+              <P>
+
+        <LI>  Code shall be <STRONG>compliant with the relevant language
+              standards</STRONG>, with exceptions that may be allowed by
+              the Chief Architect.
+              <P>
+
+        <LI>  Programs must build successfully under all three of:
+              Intel, Sun, and GNU compilers before being accepted.
               Generally, any variance from programming language standards
               must be approved by the Chief Architect before acceptance.
               <P>
 
         <LI>  Generally, program-logs should contain enough information
-              both to diagnose any error(s) which may have occured and 
+              both to diagnose any error(s) which may have occured and
               to reconstruct a script of the program.  In particular,
               memory-allocation, file-opening, environment-variable
               evaluation, and MPI-operation status shall be checked, and
@@ -320,9 +348,9 @@
 
         <LI>  Use mixed-case output to a log:  the human-factors specialists
               say that WHILE ALL CAPS GETS THE READER'S ATTENTION, IT IS
-              HARDER TO READ TEXT THAT IS GIVEN IN MIXED CASE.
+              HARDER TO READ THAN TEXT THAT IS GIVEN IN MIXED CASE.
               <P>
- 
+
         <LI>  Programs, modules, subroutines and functions should have
               header comments with the following:
               <UL>
@@ -336,19 +364,20 @@
               </UL>
               Header-comment revision history will be kept up-to-date.
               <P>
- 
+
         <LI>  M3IO programs shall use <CODE>M3EXIT()</CODE> for program
               termination.
               <P>
 
-        <LI>  Code shall be written with view to readability and
-              maintainability.  Code is actually more a communications
-              medium than merely a mechanical algorithm-description.
-              <P>
- 
+        <LI> Declare variables (etc.) at the most local scope consistent
+             with their use.  Also, &quot;auto&quot; local array
+             variables are preferred over explicitly
+             allocated/deallocated local arrays, whenever possible.
+             <P>
+
         <LI>  Avoid multiple (&gt;&nbsp;2) levels of definitions,
               recursion, and other nested structures:  the cognitive
-              psychologyists say this greatly decreases understanability
+              psychologyists say this greatly decreases understandability
               of the code.
               <BR>
               For this purpose, &quot;perfect&quot; loop-nests may
@@ -373,12 +402,7 @@
     END SUBROUTINE INITCHAN  !! end initchan
               </PRE>
 
-        <LI>  Code shall be compliant with the <STRONG>relevant language
-              standards</STRONG>, with exceptions that may be allowed by
-              the Chief Architect.
-              <P>
-
-        <LI>  <STRONG>File-names:</STRONG>    
+        <LI>  <STRONG>File-names:</STRONG>
 	          <UL>
                 <LI>  File and directory names of the form
                       <VAR>core</VAR> or <VAR>core.*</VAR> are strictly forbidden.
@@ -388,15 +412,17 @@
                       <CODE>.so</CODE> files.
                       <P>
                 <LI>  File extensions are:
-                      <DL>                
-                           <DT><CODE>.c&nbsp;&nbsp;</CODE> &nbsp; C source                                          
-                           <DT><CODE>.C&nbsp;&nbsp;</CODE> &nbsp; C++ source                                        
-                           <DT><CODE>.csh</CODE>           &nbsp; C-shell/TCSH  source                              
-                           <DT><CODE>.f&nbsp;&nbsp;</CODE> &nbsp; fixed-source-form Fortran                         
-                           <DT><CODE>.f90</CODE>           &nbsp; free-source-form Fortran                          
+                      <DL>
+                           <DT><CODE>.c&nbsp;&nbsp;</CODE> &nbsp; C source
+                           <DT><CODE>.C&nbsp;&nbsp;</CODE> &nbsp; C++ source
+                           <DT><CODE>.csh</CODE>           &nbsp; C-shell/TCSH  source
+                           <DT><CODE>.ksh</CODE>           &nbsp; Korn-shell source
+                           <DT><CODE>.sh&nbsp;</CODE>      &nbsp; Bourne-shell/BASH  source
+                           <DT><CODE>.f&nbsp;&nbsp;</CODE> &nbsp; fixed-source-form Fortran
+                           <DT><CODE>.f90</CODE>           &nbsp; free-source-form Fortran
                            <DT><CODE>.F&nbsp;&nbsp;</CODE> &nbsp; fixed-source-form Fortran requiring pre-processing
-                           <DT><CODE>.F90</CODE>           &nbsp; free-source-form Fortran requiring pre-processing 
-                           <DT><CODE>.pl&nbsp;</CODE>      &nbsp; PERL source                                       
+                           <DT><CODE>.F90</CODE>           &nbsp; free-source-form Fortran requiring pre-processing
+                           <DT><CODE>.pl&nbsp;</CODE>      &nbsp; PERL source
                       </DL>
                       <P>
                 <LI>  For Fortran <VAR>MODULE</VAR>s, the basename of the
@@ -410,6 +436,7 @@
 
         <LI>  Only code that compiles correctly may go into the repository.
               <P>
+
         <LI>  For each repository directory, the code version contained
               shall be unique.  For multiple versions of an executable,
               you should use <VAR>svn</VAR> branches.
@@ -420,14 +447,14 @@
               <CODE>Makefile.template</CODE> before <VAR>svn commit</VAR>.
               <P>
 
-        <LI>  No one but the Chief Architect may change codes in
+        <LI>  No one but the Chief Architect may change the source code in
               <VAR>ioapi</VAR> and <VAR>m3tools</VAR>.
               <P>
 
         <LI>  Indentation style shall be consistent across entire source
               files.
               <P>
- 
+
         <LI>  All I/O and memory-allocation operations (and other
               operations that may potentially succeed or fail) shall check
               the success/failure status of the indicated operation, and
@@ -520,7 +547,7 @@
               in UPPER CASE.  For new development, &quot;!&quot; comments are
               preferred.
               <P>
- 
+
         <LI>  Comments should be separated from program-code sufficiently that
               neither one interferes with the reading of the other
               (either by having block comments interspersed with blocks
@@ -537,7 +564,7 @@
         is preferable to:
         <PRE>
         X(IROW)=EE+SIN(B*C)/D
-        YAB(IROW)=EE+C**2-D**2
+        YAB(IROW)=EE+B**2-C**2
               </PRE>
               <P>
 
@@ -564,11 +591,11 @@
 
         <LI>  Do not use repeated divisions in Fortran expressions:
               e.g., use <VAR>FOO/(BAR*QUX)</VAR> instead of
-              <VAR>FOO/BAR/QUX</VAR>: 
+              <VAR>FOO/BAR/QUX</VAR>:
               <BR>
               (a)&nbsp;Fortran precedence rules are the opposite of normal
               algebra rules, and this does lead to confusion and to
-              obscure bugs; and 
+              obscure bugs; and
               <BR>
               (b)&nbsp;divisions are typically 30-100x more expensive than
               multiplications, so is inefficient anyway.
@@ -600,7 +627,7 @@
         <LI>  Where possible, avoid use of explicit <VAR>KIND</VAR>s:
               I/O&nbsp;API data is &quot;default&quot; <VAR>INTEGER</VAR>,
               <VAR>REAL</VAR>, <VAR>DOUBLE PRECISION</VAR>, and you may
-              cause obscure, hard-to-diagnose bugs.  Moreover, 
+              cause obscure, hard-to-diagnose bugs.  Moreover,
               <STRONG>explicit  usages such as
               <VAR>REAL(KIND=4)&nbsp;FOO</VAR> are incorrect and work only
               by vendor-choice accident:  the standard does NOT equate
@@ -611,7 +638,7 @@
         <LI>  New codes should <VAR>USE&nbsp;M3UTILIO</VAR> instead of
               <VAR>INCLUDE</VAR>ing I/O&nbsp;API <CODE>INCLUDE</CODE>
               files (<VAR>PARMS3.EXT, FDESC3.EX, IODECL3.EXT,</VAR>
-              etc.).  This not only is a substantial convenience, it also 
+              etc.).  This not only is a substantial convenience, it also
               allows the compiler to check argument-list compatibility for
               most I/O&nbsp;API calls.
               <P>
@@ -634,14 +661,14 @@
           ...
       END IF
               </PRE>
-              where for a &quot;cold-start&quot; initialization, 
+              where for a &quot;cold-start&quot; initialization,
               <CODE>INIT_STUFF</CODE> is the cold-start initialization
               file and  <CODE>OUTPUT_STUFF</CODE> is the new output file,
               but for a restart, <CODE>INIT_STUFF</CODE>
               <CODE>OUTPUT_STUFF</CODE> are the same file, and we are
               using <CODE>CLOSE3</CODE> to avoid having the same physical
               file open in different (read-only vs read-write) modes under
-              two different names, which might lead to data corruption. 
+              two different names, which might lead to data corruption.
               (You may recall we rather had to jump through hoops --
               generating obscure warning messages -- to avoid this
               problems without using <CODE>CLOSE3</CODE> in
@@ -680,7 +707,7 @@
               <P>
 
         <LI>  Indentation shall be in multiples of four columns, using
-              &quot;Wirth/Whitesmiths&quot; brace style, e.g.,
+              &quot;Algol/Wirth/Whitesmiths&quot; brace style, e.g.,
               <PRE>
      for ( i=0 ; i&lt;N ; i++ )
          {
@@ -707,7 +734,7 @@
     <P><STRONG><A HREF="#contents">Back to <EM>Contents</EM></A></STRONG></P>
 
 <HR> <!-- ========================================================= -->
-    
+
 
     <H3><A name="scripts">Scripts</A></H3>
 
@@ -724,7 +751,7 @@
               <P>
 
         <LI>  Scripts that execute programs/models (e.g., Fortran
-              programs) shall log program environment and (if present) 
+              programs) shall log program environment and (if present)
               contents of UI-file.
               <P>
 
@@ -739,8 +766,8 @@
               Multiples of four columns is preferred.
               <P>
 
-        <LI>  To ease analysis:  Whenever a script uses 
-              redirection to create a new log file, the script will display, in the 
+        <LI>  To ease analysis:  Whenever a script uses
+              redirection to create a new log file, the script will display, in the
               current log, the fully qualified path to the new log prior to
               executing the command with the redirection.
               <P>
@@ -789,16 +816,16 @@
               <P>
 
         <LI>  The switches <CODE>-cw</CODE> will be used  in a command
-              <VAr>perl -cw</var> to verify the syntax of a PERL script 
+              <VAr>perl -cw</var> to verify the syntax of a PERL script
               before the script is put into production.
               <P>
 
-        <LI>  In PERL scripts, the switch <CODE>-w</CODE> will be used on the 
+        <LI>  In PERL scripts, the switch <CODE>-w</CODE> will be used on the
               PERL invocation line (e.g., <CODE>#!/usr/bin/perl -w ...</CODE>)
               to enable warnings during execution of the script.
               <P>
 
-        <LI>  In a <VAR>csh</VAR> script not invoked directly from a cron 
+        <LI>  In a <VAR>csh</VAR> script not invoked directly from a cron
               table, the switch <CODE>-f</CODE> will be used on the
               <VAR>csh</VAR> invocation line  (i.e., <CODE>#!/bin/csh -f
               ...</CODE>) to disable re-execution of the login profile.
@@ -812,7 +839,7 @@
     <EM>Contents</EM></A></STRONG></P>
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-$Id: STANDARDS.html 413 2016-08-17 17:21:31Z coats $
+$Id: STANDARDS.html 418 2016-08-29 14:56:57Z coats $
      </PRE>
  </BODY>
 </HTML>
