@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 411 2016-08-16 16:17:21Z coats $" -->
+<!-- "$Id: AA.html 419 2016-09-06 15:10:10Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -270,7 +270,23 @@ Contents
              <STRONG><VAR>MODULE M3UTILIO</VAR></STRONG></A>:
              parameters, data structures, <VAR>INTERFACE</VAR>
              blocks, and declarations.  Replaces use of the
-             (now-deprecated) INCLUDE-files below.
+             (now-deprecated) <CODE>INCLUDE</CODE>-files below.
+             <BR>
+             <STRONG>Note on Code Conversion:</STRONG> Since
+             <VAR>MODULE&nbsp;M3UTILIO</VAR> <CODE>INCLUDE</CODE>s
+             these files, and since it has <CODE>INTERFACE</CODE>
+             blocks for virtually all the public I/O&nbsp;API
+             subroutines and functions, you need to do the following
+             to retrofit an &quot;old-style&quot; code to one with
+             <CODE>USE&nbsp;M3UTILIO</CODE>:
+             <UL>
+                <LI> Delete the <CODE>INCLUDE</CODE> statements
+                     for <CODE>PARMS.EXT, FDESC3.EXT</CODE>,
+                     and <CODE>IODECL3.EXT</CODE>, 
+                <LI> Deete the declarations and <CODE>EXTERNAL</CODE>
+                     statements for I/O&nbsp;API functions.
+             </UL>
+             <P>
         <DT> <A HREF = "MODATTS3.html">
              <STRONG><VAR>MODULE MODATTS3</VAR></STRONG></A>:
              parameters and routines for map-transform metadata.
@@ -1456,7 +1472,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 411 2016-08-16 16:17:21Z coats $
+    $Id: AA.html 419 2016-09-06 15:10:10Z coats $
     </PRE>
 
 </BODY>

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVGETS.html 183 2015-04-15 19:04:15Z coats $" -->
+<!-- "$Id: ENVGETS.html 419 2016-09-06 15:10:10Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> ENVGET(), [B]ENV*() and env*c() </TITLE>
 </HEAD>
@@ -108,6 +108,8 @@ INTERFACE ENVGET(... )      !! generic:  I/O API v3.2 or later, only
         INTEGER      , INTENT(  OUT) :: STATUS  !  for distinguishing error/default-value cases
     END INTERFACE           !! envget()
 
+    !!...  CHARACTER-string arguments:
+
     INTERFACE
 
         SUBROUTINE ENVSTR( LNAME, DESC, DEFAULT, EQNAME, STAT )
@@ -150,10 +152,18 @@ int envync( const char * lname       ,
             int        * status )
 </PRE>
 
-    <STRONG>NOTE: </STRONG> envstrc() null-terminates the returned 
-    value iff its length is at most <VAR>elen</VAR>.  Otherwise, it
-    padds from the end of the value up to <VAR>elen</VAR> with ASCII
-    NULLs (i.e., its behavior is the same as strncpy() ).
+    <STRONG>NOTE&nbsp;1: </STRONG> <VAR>envstrc()</VAR> null-terminates
+    the returned  value iff its length is at most <VAR>elen</VAR>. 
+    Otherwise, it pads from the end of the value up to <VAR>elen</VAR>
+    with ASCII NULLs (i.e., its behavior is similar to
+    <VAR>strncpy()</VAR> ).
+    <P>
+
+    <STRONG>NOTE&nbsp;2: It is a serious offense against good software
+    engineering principles to use somethng meaningless (like a blank)
+    as the <CODE>description</CODE> argument.</STRONG>  Doing so may
+    justifiably be taken as an attempt to make the code unreadable
+    and unusable by anyone except the original author.
     <P>
 
 

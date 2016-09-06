@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ERRORS.html 377 2016-06-07 19:37:04Z coats $" -->
+<!-- "$Id: ERRORS.html 419 2016-09-06 15:10:10Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     I/O API Troubleshooting
@@ -28,6 +28,8 @@
     <UL>
          <LI>  <A HREF="AVAIL.html#ncf4">netCDF Version&nbsp;4 issues</A>
          <LI>  <A HREF="AVAIL.html#gfort"><VAR>gfortran</VAR> build issues</A>
+         <LI>  <A HREF="#dups">Errors after retrofitting
+              <CODE>MODULE&nbsp;M3UTILIO</CODE></A>
          <LI>  <A HREF="#ccfc">Compiler/system-library compatibility issues</A>
          <LI>  <A HREF="#intern">&quot;Internal compiler error&quot; Problems</A>
          <LI>  <A HREF="#pgi">Link errors with <VAR>pgf90</VAR> and
@@ -65,9 +67,49 @@
     Each I/O&nbsp;API source file will have its version embedded in the file's
     header-comment, e.g.
     <PRE>
-    !! Version "$Id: ERRORS.html 377 2016-06-07 19:37:04Z coats $"
+    !! Version "$Id: ERRORS.html 419 2016-09-06 15:10:10Z coats $"
     </PRE>
 <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2><A NAME="dups">
+
+     Errors after retrofitting <CODE>MODULE&nbsp;M3UTILIO</CODE>
+
+</A></H2>
+
+    Since <CODE>MODULE&nbsp;M3UTILIO</CODE> itself <CODE>INCLUDE</CODE>s
+    the standard I/O&nbsp; include-files and also has <CODE>INTERFACE</CODE>-blocks
+    for (almost all of) the public I/O&nbsp;API functions, when you
+    retrofit <CODE>USE&nbsp;M3UTILIO</CODE> into an old code, you must
+    remove these  <CODE>INCLUDE</CODE>-statements and declarations and
+    <CODE>EXTERNAL</CODE> statements for the public I/O&nbsp;API
+    functions.  If you missed some of these, you may see compile
+    errors like the following
+    <PRE>
+...
+/home/coats/ioapi-3.2/ioapi/PARMS3.EXT(66): error #6401: The attributes of this name conflict with those made accessible by a USE statement.   [NAMLEN3]
+...
+/home/coats/ioapi-3.2/m3tools/m3tproc.f90(102): error #6401: The attributes of this name conflict with those made accessible by a USE statement.   [GETNUM]
+...
+    </PRE>
+    or
+    <PRE>
+...
+Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-associated at (2)
+...
+    </PRE>
+    or...
+    <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
+    <P>
+
+    To fix these errors, remove the corresponding
+    <CODE>INCLUDE</CODE>-statements, function-declarations, and
+    <CODE>EXTERNAL</CODE> statements.
+    <P>
+
 
 
 <HR> <!----------------------------------------------------------------->

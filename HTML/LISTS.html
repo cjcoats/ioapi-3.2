@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: LISTS.html 275 2015-12-03 18:42:26Z coats $" -->
+<!-- "$Id: LISTS.html 419 2016-09-06 15:10:10Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> Environment-LIST() Functions </TITLE>
 </HEAD>
@@ -18,8 +18,9 @@
 
 <H2> Fortran version: </H2>
 Generic form, returns <CODE>INTEGER</CODE>, <CODE>REAL</CODE>, or
-<CODE>CHARACTER*(*)</CODE> arrays.  <EM>I/O&nbsp;API-3.1 or later,
-only</EM>
+<CODE>CHARACTER*(*)</CODE> arrays  (<EM>I/O&nbsp;API-3.1 or later,
+only</EM>), or <CODE>REAL*8</CODE> arrays  (<EM>I/O&nbsp;API-3.2 or
+later, only</EM>)
 <PRE>
     LOGICAL FUNCTION ENVLIST( ENAME, EDESC, NMAX, NCNT, *LIST )
         CHARACTER*(*), INTENT(IN   ) :: ENAME   !  in:  environment variable for the list
@@ -35,7 +36,7 @@ Type-specific forms: (<EM>all I/O&nbsp;API versions</EM>)
 <PRE>
     LOGICAL FUNCTION INTLIST( ENAME, EDESC, NMAX, NCNT, ILIST )
     LOGICAL FUNCTION REALIST( ENAME, EDESC, NMAX, NCNT, RLIST )
-    LOGICAL FUNCTION DBLLIST( ENAME, EDESC, NMAX, NCNT, DLIST )
+    LOGICAL FUNCTION DBLLIST( ENAME, EDESC, NMAX, NCNT, DLIST )   !!  I/O API 3.2 only
     LOGICAL FUNCTION STRLIST( ENAME, EDESC, NMAX, NCNT, SLIST )
         CHARACTER*(*), INTENT(IN   ) :: ENAME   !  in:  environment variable for the list
         CHARACTER*(*), INTENT(IN   ) :: EDESC   !  in:  environment variable description
@@ -84,6 +85,13 @@ Type-specific forms: (<EM>all I/O&nbsp;API versions</EM>)
         <DD> formatting error on some list entry
     </DL>
     </BLOCKQUOTE>
+    <P>
+
+    <STRONG>NOTE: It is a serious offense against good software
+    engineering principles to use somethng meaningless (like a blank) as
+    the <CODE>EDESC</CODE> description-argument.</STRONG>  Doing so may
+    justifiably be taken as an attempt to make the code unreadable and
+    unusable by anyone except the original author.
     <P>
 
     For Fortran-90 declarations and interface checking:

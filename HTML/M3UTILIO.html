@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: M3UTILIO.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: M3UTILIO.html 419 2016-09-06 15:10:10Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE>MODULE M3UTILIO</TITLE>
 </HEAD>
@@ -58,13 +58,17 @@
     for the corresponding C <VAR>#include</VAR> construct).
     <P>
 
-    Note that in retro-fitting <CODE>MODULE&nbsp;M3UTILIO</CODE>
+    Note that to <STRONG>retro-fit</STRONG> <CODE>MODULE&nbsp;M3UTILIO</CODE>
     into existing codes, one must not only remove all of the
     <CODE>INCLUDE</CODE> statements associated with the standard
     I/O&nbsp;API <CODE>PARMS3.EXT</CODE>, <CODE>FDESC3.EXT</CODE>,
     and/or <CODE>IODECL3.EXT</CODE>, one must also remove any (now
-    extra, duplicate) declarations of the functions with explicit
-    <CODE>INTERFACE</CODE>s from the list given above.
+    extra, duplicate) declarations and <CODE>EXTERNAL</CODE>
+    statements for I/O&nbsp;API functions that now have explicit
+    <CODE>INTERFACE</CODE>s in <CODE>MODULE&nbsp;M3UTILIO</CODE>
+    (the list being basically the full set of public I/O&nbsp;API
+    functions).  (If you get a &quot;duplicate definition&quot;
+    compile-error, you probably missed one ;-(&nbsp;)
     <P>
     </BLOCKQUOTE> 
 
