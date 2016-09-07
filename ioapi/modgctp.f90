@@ -2,7 +2,7 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 266 2015-11-20 16:59:47Z coats $"
+    !!  Version "$Id: modgctp.f90 417 2016-08-24 19:16:52Z coats $"
     !!  Copyright (c) 2014-2015 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -225,7 +225,7 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 266 2015-11-20 16:59:47Z coats                     $'
+'$Id:: modgctp.f90 417 2016-08-24 19:16:52Z coats                     $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:

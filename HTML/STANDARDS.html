@@ -312,7 +312,8 @@
 
         <LI>  Code shall be written with view to readability and
               maintainability.  Code is actually more a communications
-              medium than merely a mechanical algorithm-description.
+              medium than merely a mechanical algorithm-description.<BR>
+              In particular, avoid &quot;clutter&quot;.
               <P>
 
         <LI>  Code shall be <STRONG>compliant with the relevant language
@@ -373,6 +374,11 @@
              with their use.  Also, &quot;auto&quot; local array
              variables are preferred over explicitly
              allocated/deallocated local arrays, whenever possible.
+             <P>
+
+        <LI> Specify <CODE>INTENT</CODE> for subroutine and function
+             arguments (either explicitly, for Fortran, or in the
+             descriptive comments for C and other languages).
              <P>
 
         <LI>  Avoid multiple (&gt;&nbsp;2) levels of definitions,
@@ -485,39 +491,59 @@
 
    <UL>
 
-        <LI>  The <VAR>IMPLICIT NONE</VAR> statement must be present.
+        <LI>  Use fully-qualified  <CODE>END</CODE> statements for
+              program units:
+              <BLOCKQUOTE><CODE>
+              END FUNCTION<BR>
+              END SUBROUTINE<BR>
+              END MODULE<BR>
+              END PROGRAM<BR>
+              </CODE></BLOCKQUOTE>
               <P>
 
-        <LI>  Arithmetic <VAR>IF</VAR>, Alternate <VAR>RETURN</VAR>,
-              <VAR>PAUSE</VAR>, and Assigned and
-              computed <VAR>GOTO</VAR> statements are forbidden.
+        <LI>  The <CODE>IMPLICIT NONE</CODE> statement must be present.
               <P>
 
-        <LI>  Counters of Fortran <VAR>DO</VAR> loops will be <VAR>INTEGER</VAR>
+        <LI>  Specify <CODE>INTENT</CODE> for subroutine and function
+              arguments.<BR>
+              It is <STRONG>metadata perjury</STRONG> to specify this 
+              incorrectly, e.g., by the lazy use of <CODE>INTENT(INOUT)</CODE>
+              for everything.<BR>
+              Use of <CODE>INTENT(INOUT)</CODE> is a red flag indicating
+              probable bad modularity, as it tends to indicate splitting
+              a single task across multiple code-units.
+              <P>
+
+        <LI>  Arithmetic <CODE>IF</CODE>, Alternate <CODE>RETURN</CODE>,
+              <CODE>PAUSE</CODE>, and Assigned and
+              computed <CODE>GOTO</CODE> statements are forbidden.
+              <P>
+
+        <LI>  Counters of Fortran <CODE>DO</CODE> loops will be <CODE>INTEGER</CODE>
               variables.
               <P>
 
-        <LI>  Loops and block constructions (<VAR>IF-THEN...ELSE IF...ELSE...
-              END IF</VAR>, <VAR>DO</VAR> loops, etc.) with either
+        <LI>  Loops and block constructions (<CODE>IF-THEN...ELSE IF...ELSE...
+              END IF</CODE>, <CODE>DO</CODE> loops, etc.) with either
               deep nesting or long blocks of code in them should have
               documentation (by in-line exclamation point ("!...")
               comments) for block beginning, alternatives
-              (<VAR>ELSE</VAR> blocks), and ending, so that their
+              (<CODE>ELSE</CODE> blocks), and ending, so that their
               beginnings, alternatives, and endings can be matched up
               easily.
               <P>
 
         <LI>  Loop beginning and loop ending for loops constructed with
-              <VAR>IF</VAR>s and <VAR>GO TO</VAR>s must be documented by
+              <CODE>IF</CODE>s and <CODE>GO TO</CODE>s must be documented by
               comments.
               <P>
 
-        <LI>  Labels shall appear only on <VAR>CONTINUE</VAR> statements
+        <LI>  Labels shall appear only on <CODE>CONTINUE</CODE> statements
               (otherwise, the flow-of-control may not be clear).
               <P>
 
-        <LI>  Do not <VAR>GO TO</VAR> the interior of a <VAR>DO</VAR>-loop
-              or an <VAR>IF-THEN-ELSE</VAR> block from outside the
+        <LI>  Do not <CODE>GO TO</CODE> the interior of a <CODE>DO</CODE>-loop
+              or an <CODE>IF-THEN-ELSE</CODE> block from outside the
               block:  the effects are "unspecified", according to the
               Fortran standard, and if a compiler-vendor chooses to
               implement them by &quot;Start WW-III&quot;, they're within
@@ -529,11 +555,7 @@
               indentation-tools difficult.
               <P>
 
-        <LI>  Subroutine and function argument <VAR>INTENT</VAR> should
-              be specified.
-              <P>
-
-        <LI>  <VAR>REAL</VAR> or <VAR>COMPLEX</VAR> variables shall not be
+        <LI>  <CODE>REAL</CODE> or <CODE>COMPLEX</CODE> variables shall not be
               tested for equality. This is not numerically robust nor
               reliable.
               <P>
@@ -570,7 +592,7 @@
 
         <LI>  Indentation shall be in multiples of four columns, with
               initiation and termination at the same level (e.g., a
-              <VAR>DO</VAR> and its terminating <VAR>END DO</VAR> start at
+              <CODE>DO</CODE> and its terminating <CODE>END DO</CODE> start at
               the same column) (&quot;Algol/Wirth/Whitesmith&quot; style
               indentation).
               <P>
@@ -585,13 +607,13 @@
 
         <LI>  The use of zeros where needed on either side of a decimal point
                to enhance readability of floating-point constants is
-               preferred, e.g.,  <VAR>1.0</VAR> and <VAR>0.007</VAR>
-               instead of <VAR>1.</VAR> and <VAR>.007</VAR>.
+               preferred, e.g.,  <CODE>1.0</CODE> and <CODE>0.007</CODE>
+               instead of <CODE>1.</CODE> and <CODE>.007</CODE>.
               <P>
 
         <LI>  Do not use repeated divisions in Fortran expressions:
-              e.g., use <VAR>FOO/(BAR*QUX)</VAR> instead of
-              <VAR>FOO/BAR/QUX</VAR>:
+              e.g., use <CODE>FOO/(BAR*QUX)</CODE> instead of
+              <CODE>FOO/BAR/QUX</CODE>:
               <BR>
               (a)&nbsp;Fortran precedence rules are the opposite of normal
               algebra rules, and this does lead to confusion and to
@@ -615,7 +637,8 @@
               of MCIP (with a divide by GSFC at the end of
               <VAR>F3</VAR>, and the a multiply by it in
               <VAR>RSTOMI(C,R)</VAR>, accomplishing only round-off
-              error):
+              error and wasting CPU time on an (expensive)
+              divide-operation):
               <PRE>
         F3 = 0.5 * ( GSFC - GA + SQRT( GA * GA
  &amp;                         + GA * GSFC * (4.0 * Q1C / QSS - 2.0)
@@ -624,28 +647,28 @@
               </PRE>
               <P>
 
-        <LI>  Where possible, avoid use of explicit <VAR>KIND</VAR>s:
-              I/O&nbsp;API data is &quot;default&quot; <VAR>INTEGER</VAR>,
-              <VAR>REAL</VAR>, <VAR>DOUBLE PRECISION</VAR>, and you may
+        <LI>  Where possible, avoid use of explicit <CODE>KIND</CODE>s:
+              I/O&nbsp;API data is &quot;default&quot; <CODE>INTEGER</CODE>,
+              <CODE>REAL</CODE>, <CODE>DOUBLE PRECISION</CODE>, and you may
               cause obscure, hard-to-diagnose bugs.  Moreover,
               <STRONG>explicit  usages such as
-              <VAR>REAL(KIND=4)&nbsp;FOO</VAR> are incorrect and work only
+              <CODE>REAL(KIND=4)&nbsp;FOO</CODE> are incorrect and work only
               by vendor-choice accident:  the standard does NOT equate
               such a declaration to <CODE>IEEE REAL*4</CODE> or other
               4-byte real. </STRONG>
               <P>
 
-        <LI>  New codes should <VAR>USE&nbsp;M3UTILIO</VAR> instead of
-              <VAR>INCLUDE</VAR>ing I/O&nbsp;API <CODE>INCLUDE</CODE>
-              files (<VAR>PARMS3.EXT, FDESC3.EX, IODECL3.EXT,</VAR>
+        <LI>  New codes should <CODE>USE&nbsp;M3UTILIO</CODE> instead of
+              <CODE>INCLUDE</CODE>ing I/O&nbsp;API <CODE>INCLUDE</CODE>
+              files (<CODE>PARMS3.EXT, FDESC3.EX, IODECL3.EXT,</CODE>
               etc.).  This not only is a substantial convenience, it also
               allows the compiler to check argument-list compatibility for
               most I/O&nbsp;API calls.
               <P>
 
         <LI>  Generally, modeling codes should not use
-              <VAR>CLOSE3()</VAR>: in a modular model such as
-              <VAR>MAQSIP</VAR> or <VAR>CMAQ</VAR>, file-state is a
+              <CODE>CLOSE3()</CODE>: in a modular model such as
+              <CODE>MAQSIP</CODE> or <CODE>CMAQ</CODE>, file-state is a
               global model property, and changing it in one module can
               violate the environment of a different module.  The one
               acceptable use is for intialization/restart situations
@@ -759,9 +782,9 @@
               <P>
 
         <LI>  Indentation shall have initiation and termination at the same
-              level (e.g., an <VAR>if</VAR> and its terminating
-              <VAR>endif</VAR> or <VAR>for</VAR> and its terminating
-              <VAR>end</VAR> shall start at the same column)
+              level (e.g., an <CODE>if</CODE> and its terminating
+              <CODE>endif</CODE> or <CODE>for</CODE> and its terminating
+              <CODE>end</CODE> shall start at the same column)
               (&quot;Algol/Wirth/Whitesmith&quot; style indentation).
               Multiples of four columns is preferred.
               <P>
@@ -839,7 +862,7 @@
     <EM>Contents</EM></A></STRONG></P>
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-$Id: STANDARDS.html 418 2016-08-29 14:56:57Z coats $
+$Id: STANDARDS.html 420 2016-09-07 14:51:47Z coats $
      </PRE>
  </BODY>
 </HTML>
