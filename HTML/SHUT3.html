@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: SHUT3.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: SHUT3.html 421 2016-09-07 19:47:03Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> SHUT3() and shut3c() </TITLE>
 </HEAD>
@@ -39,15 +39,16 @@
     <P> 
 
 <H2> Summary: </H2>
-    SHUT3() and shut3c() flush to disk and close all Models-3 
+    <CODE>SHUT3()</CODE> and <CODE>shut3c()</CODE> flush to disk and close all Models-3 
     I/O API files currently open.
     Return .TRUE. or 1, respectively, on success, and .FALSE. 
     or 0 on failure.  Failure also generates log-messages
     attempting to describe the error.
 
-    Calling <A HREF = "INIT3.html"> INIT3() </A> after SHUT3() 
-    may cause strange results on some systems.  (Calls of INIT3() 
-    subsequent to SHUT3() will generate a warning message from INIT3() 
+    Calling <A HREF = "INIT3.html"><CODE>INIT3()</CODE></A> after
+    <CODE>SHUT3()</CODE>
+    may cause strange results on some systems.  (Calls of <CODE>INIT3()</CODE> 
+    subsequent to SHUT3() will generate a warning message from <CODE>INIT3()</CODE> 
     to the <A HREF = "ENVIRONMENT.html"> program log </A>).
     <P> 
     
@@ -64,7 +65,7 @@
     <P> 
 
     I/O API must already be initialized by a call to 
-    <A HREF = "INIT3.html"> INIT3() </A>.
+    <A HREF = "INIT3.html"><CODE>INIT3()</CODE></A>.
     <P> 
 
         

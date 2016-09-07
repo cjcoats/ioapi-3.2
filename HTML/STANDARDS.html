@@ -327,6 +327,21 @@
               must be approved by the Chief Architect before acceptance.
               <P>
 
+        <LI>  <STRONG>Models-3 standard:</STRONG>  All modeling and
+              tools programs must use <CODE>M3EXIT()</CODE> for
+              termination, with exit-status following the  normal
+              UNIX conventions: see  <VAR>/usr/include/stdlib.h</VAR>.
+              By this convention,
+              <UL>
+                  <LI>  0  means normal successful completion;
+                  <LI>  1  means I/O related error;
+                  <LI>  2   means general program-related error; and
+                  <LI>  N &gt; 2 allows you to classify errors for your program in
+                        detail.
+              </UL>
+              <STRONG>Fortran <CODE>STOP</CODE> is forbidden.</STRONG>
+              <P>
+
         <LI>  Generally, program-logs should contain enough information
               both to diagnose any error(s) which may have occured and
               to reconstruct a script of the program.  In particular,
@@ -862,7 +877,7 @@
     <EM>Contents</EM></A></STRONG></P>
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-$Id: STANDARDS.html 420 2016-09-07 14:51:47Z coats $
+$Id: STANDARDS.html 421 2016-09-07 19:47:03Z coats $
      </PRE>
  </BODY>
 </HTML>
