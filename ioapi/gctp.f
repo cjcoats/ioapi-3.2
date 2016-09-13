@@ -1,6 +1,6 @@
 
 C.........................................................................
-C Version "$Id: gctp.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: gctp.f 422 2016-09-13 12:47:23Z coats $"
 C Adapted from USGS general cartographic transformation package, version 2.0.2
 C with portability and F90-related enhancements
 C EDSS/Models-3 I/O API.  Modifications copyright (C) 1992-2000 MCNC
@@ -263,8 +263,8 @@ C      OTHERWISE , ERROR CODE FROM PROJECTION COMPUTATIONAL MODULE.
       IMPLICIT REAL*8 (A-H,O-Z)
       SAVE
 
-      CHARACTER*72, SAVE :: SVN_ID =
-     &'$Id:: gctp.f 219 2015-08-17 18:05:54Z coats                   $'
+      CHARACTER*72 :: SVN_ID =
+     &'$Id:: gctp.f 422 2016-09-13 12:47:23Z coats                   $'
 
       INTEGER   NAD27(134), NAD83(134), NADUT(54), SPTYPE(134)
       INTEGER   SYSUNT(24), SWITCH(23), ITER
