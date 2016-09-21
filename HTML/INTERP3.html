@@ -2,21 +2,21 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: INTERP3.html 137 2015-01-27 21:43:37Z coats $" -->
-<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<!-- "$Id: INTERP3.html 425 2016-09-21 18:35:25Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> INTERP3() and interp3c() </TITLE>
 </HEAD>
 
-<BODY BGCOLOR="#FFFFFF" 
-      TOPMARGIN="15" 
-      MARGINHEIGHT="15" 
-      LEFTMARGIN="15" 
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
       MARGINWIDTH="15">
 <H1>    INTERP3() and interp3c() </H1>
 
 <!--
 <H2>NOTE</H2>
-     
+
      The 2002 <CODE>CMAQ</CODE> release contains an unauthorized fork
      of the I/O&nbsp;API, with a new routines <CODE>INTERPX</CODE> and
      <CODE>WRITEX</CODE>.  The former of these two routines (as
@@ -35,9 +35,9 @@
 
 <H2> Fortran version: </H2>
 <PRE>
-    LOGICAL FUNCTION INTERP3( FNAME, VNAME, CALLER, 
+    LOGICAL FUNCTION INTERP3( FNAME, VNAME, CALLER,
  &amp;                            JDATE, JTIME, BSIZE, BUFFER )
-    LOGICAL FUNCTION INTERPX( FNAME, VNAME, CALLER, 
+    LOGICAL FUNCTION INTERPX( FNAME, VNAME, CALLER,
  &amp;                            COL0, COL1, ROW0, ROW1, LAY0, LAY1,
  &amp;                            JDATE, JTIME, BUFFER )
         CHARACTER*(*), INTENT(IN   ) :: FNAME     !  file name for query
@@ -55,12 +55,12 @@
         &lt;type&gt;, INTENT(  OUT) :: BUFFER( BSIZE ) !  array to hold input
 </PRE><P>
 
-<H2> C version: </H2>  
+<H2> C version: </H2>
 <BLOCKQUOTE>
     <CODE>interp3c()</CODE> and <CODE>interpxc()</CODE> are C wrappers
     calling the Fortran <CODE>INTERP3()</CODE> and
     <CODE>INTERPX()</CODE>.
-</BLOCKQUOTE><P> 
+</BLOCKQUOTE><P>
 
 <PRE>
     int interp3c( const char * fname ,
@@ -83,13 +83,13 @@
                   int          jtime ,
                   void       * buffer )
 </PRE>
-<P> 
+<P>
 
 <H2> NOTE on <CODE>INTERPX</CODE>: </H2>
 
     <CODE>INTERPX()</CODE> is new with
     <A HREF="NEWSTUFF.html#ver22">I/O&nbsp;API Version&nbsp;2.2</A>
-    <P> 
+    <P>
 
 <H2> Summary: </H2>
 
@@ -97,7 +97,7 @@
     to those constructing analysis tools) since they encapsulate so
     many &quot;routine&quot; tasks for the model-writing user --
     not strictly required, but <EM>terribly</EM> convenient to have.
-    <P>     
+    <P>
 
     Do linear-time interpolation of <CODE>REAL</CODE> or
     <CODE>DOUBLE&nbsp;PRECISION</CODE> (<CODE>REAL*8</CODE>)
@@ -108,13 +108,13 @@
     time</A> <CODE>JDATE</CODE> (coded <CODE>YYYYDDD</CODE>),
     <CODE>JTIME (HHMMSS)</CODE>, with optimized memory  allocation,
     reading, etc., handled behind the scenes.
-    <P>     
-    
+    <P>
+
     <CODE>INTERP3()</CODE> checks size <CODE>BSIZE</CODE> of the buffer
     to hold the data against the size calculated from values in the
     file header (and insists that they match); returns a full-grid
     result.
-    <P> 
+    <P>
 
     <CODE>INTERPX()</CODE> checks window bounds <CODE>COL0, COL1, ROW0,
     ROW1, LAY0, LAY1</CODE> against the dimension values in the file header
@@ -143,23 +143,31 @@
               &nbsp;&lt;=&nbsp;LAY0&nbsp;&lt;=&nbsp;L&nbsp;&lt;=&nbsp;LAY1&nbsp;&lt;=&nbsp;NLAYS3D<BR>
               </CODE></BLOCKQUOTE>
     </UL>
-    <P> 
+    <P>
 
-    For <A HREF = "DATATYPES.html#timestruct"> time independent </A> 
+    For <A HREF = "DATATYPES.html#timestruct"> time independent </A>
     files, <CODE>JDATE:JTIME</CODE> are ignored.
-    <P> 
+    <P>
 
     Returns <CODE>.TRUE.</CODE> (or 1) if the operation succeeds,
     <CODE>.FALSE.</CODE> (or 0) if it fails.  For failure, writes a log
     message indicating the nature of the failure.
-    <P> 
+    <P>
 
-    Calls <VAR><A HREF = "INIT3.html">INIT3()</A></VAR> and also 
-    <VAR><A HREF = "OPEN3.html">OPEN3()</A></VAR> if necessary (opening 
+    <EM>For I/O&nbsp;API 3.2 or later:</EM>  If
+    <A HREF="BUFFERED.html#snoop"><VAR>snoop mode</VAR></A> is configured
+    in the <VAR>Makefile</VAR> when you build <VAR>libioapi.a</VAR>,
+    then environment variables <CODE>SNOOPTRY3, SNOOPSECS3</CODE> control the
+    number of re-tries and the delay between re-tries (secs) for
+    reading data under end-of-file conditions.
+    <P>
+
+    Calls <VAR><A HREF = "INIT3.html">INIT3()</A></VAR> and also
+    <VAR><A HREF = "OPEN3.html">OPEN3()</A></VAR> if necessary (opening
     the file for read-only if it does so).
     <P>
 
-    For Fortran-90 declarations and interface checking:    
+    For Fortran-90 declarations and interface checking:
     <PRE>
     <A HREF = "M3UTILIO.html">USE M3UTILIO</A>
     </PRE><P>
@@ -171,39 +179,39 @@
     <A HREF = "WRITE3.html">WRITE3</A>,<BR>
     <A HREF = "XTRACT3.html">XTRACT3</A>,<BR>
     </BLOCKQUOTE>
-    <P> 
-    
+    <P>
+
 <H2> Preconditions: </H2>
 
     <CODE><A HREF = "M3UTILIO.html">USE M3UTILIO</A></CODE> or
-    <A HREF = "INCLUDE.html#iodecl"> 
+    <A HREF = "INCLUDE.html#iodecl">
     <CODE>INCLUDE&nbsp;'IODECL3.EXT'</CODE> </A> <BR>
     for Fortran, or <BR>
     <CODE>#include&nbsp;&quot;iodecl3.h&quot;</CODE> for C.
-    <P> 
+    <P>
 
     <CODE>FNAME</CODE> and <CODE>VNAME</CODE> must have length at most
     16, exclusive of trailng blanks.
-    <P> 
+    <P>
 
     Valid <CODE>BSIZE</CODE> for <VAR>INTERP3()</VAR> or <CODE>COL0,
     COL1, ROW0, ROW1, LAY0, LAY1</CODE> for <VAR>INTERPX()</VAR>.
-    <P> 
+    <P>
 
     <VAR>INTERPX()</VAR> not supported yet for virtual files (netCDF
     only).
-    <P> 
+    <P>
 
     <CODE>JDATE</CODE> and <CODE>JTIME</CODE> must be expressed in
     terms of Models-3  date and time conventions.
-    <P> 
+    <P>
 
     <A HREF = "DATATYPES.html#basic"> basic data type
-    <CODE>VTYPE3D</CODE></A> 
+    <CODE>VTYPE3D</CODE></A>
     for the variable must be  <CODE>M3REAL</CODE> for releases prior to
-    the May&nbsp;3, 2002 Version&nbsp;2.2-beta, or <CODE>M3REAL</CODE> 
+    the May&nbsp;3, 2002 Version&nbsp;2.2-beta, or <CODE>M3REAL</CODE>
     or <CODE>M3DBLE</CODE> for subsequent releases.
-    <P> 
+    <P>
 
 <H2> Fortran Usage: </H2>
 
@@ -233,7 +241,7 @@ Sample usage:
         ...
     END IF
     ...
-    IF ( INTERPX( 'MYFILE', 'NOX', 1988021, 123730, 
+    IF ( INTERPX( 'MYFILE', 'NOX', 1988021, 123730,
  &amp;              1, NCOLS, 1, NROWS, 1, 1, SFCNOX ) ) THEN
         !!       Layer 1 of variable 'NOX' interpolated to
         !!       12:37:30 Jan 21, 1988
@@ -244,7 +252,7 @@ Sample usage:
         ...
     END IF
     ...
-    IF ( INTERPX( 'MYFILE', 'NOX', 1988021, 123730, 
+    IF ( INTERPX( 'MYFILE', 'NOX', 1988021, 123730,
  &amp;              11, 33, 22, 55, 1, 3, BOXNOX ) ) THEN
         !!       Window of Layer 1-3 'NOX' interpolated to
         !!       12:37:30 Jan 21, 1988
@@ -255,7 +263,7 @@ Sample usage:
         ...
     END IF
     ...
-</PRE><P> 
+</PRE><P>
 
 <H2> C Usage: </H2>
 <PRE>
@@ -264,11 +272,11 @@ Sample usage:
     ...
     float  hno3[ NLAYS ][ NROWS ][ NCOLS ] ;
     ...
-    if ( interp3c( &quot;MYFILE&quot;, &quot;HNO3&quot;, 1988021, 123000, 
+    if ( interp3c( &quot;MYFILE&quot;, &quot;HNO3&quot;, 1988021, 123000,
                    NCOLS*NROWS*NLAYS, hno3 ) )
         {
-            /*  Variable 'HNO3' interpolated to date and time 
-                12:37:30  Jan 21, 1988 from MYFILE and put into 
+            /*  Variable 'HNO3' interpolated to date and time
+                12:37:30  Jan 21, 1988 from MYFILE and put into
                 array hno3
             */
         ...
@@ -279,24 +287,24 @@ Sample usage:
         ...
         }
     ...
-</PRE><P> 
+</PRE><P>
 
 <HR>
 
 <A HREF = "INIT3.html" >
 Previous:  <STRONG>INIT3</STRONG>
-</A><P> 
+</A><P>
 
 <A HREF = "OPEN3.html" >
 Next:  <STRONG>IOPARMS3</STRONG>
-</A><P> 
-
-<A HREF = "AA.html#ioapi"> 
-Up: <STRONG>I/O API:  Public Routines</STRONG> 
 </A><P>
 
-<A HREF = "AA.html"> 
-To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+<A HREF = "AA.html#ioapi">
+Up: <STRONG>I/O API:  Public Routines</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
 </A><P>
 
 </BODY>

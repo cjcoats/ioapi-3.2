@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVIRONMENT.html 253 2015-11-05 17:05:30Z coats $" -->
+<!-- "$Id: ENVIRONMENT.html 425 2016-09-21 18:35:25Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> Environment Variables for the I/O&nbsp;API </TITLE>
 </HEAD>
@@ -136,7 +136,8 @@ correctly&mdash;for example:
           the value requested, or not.  Setting PROMPTFLAG to &quot;N&quot;
           can be used, in conjunction with the selection of &quot;smart&quot;
           defaults within programs, to make it easier to write scripts for
-          running various programs.
+          running various programs that insist on using these prompt-style
+          interactive-orented routines.
           <P>
 </UL>
 <P>
@@ -153,7 +154,7 @@ later only</STRONG>:
           <P>
 
     <LI>  <STRONG>IOAPI_CMAQMETA</STRONG>
-    (<VAR>&lt;path to ASCII CMAQ metadata input file&gt.</VAR>
+    (<VAR>&lt;path to ASCII CMAQ metadata input file&gt;</VAR>
     <CODE>NONE</CODE>,
           with default <CODE>NONE</CODE>)
           controls whether standard CMAQ metadata will be written
@@ -162,11 +163,24 @@ later only</STRONG>:
           <P>
 
     <LI>  <STRONG>IOAPI_SMOKEMETA</STRONG>
-    (<VAR>&lt;path to ASCII SMOKE metadata input file&gt.</VAR>
+    (<VAR>&lt;path to ASCII SMOKE metadata input file&gt;</VAR>
     <CODE>NONE</CODE>,
           controls whether SMOKE-standard metadata will be written
           to the headers of newly-created files (currently under
           development, 10/2015).
+          <P>
+
+    <LI>  <STRONG>SNOOPTRY3, SNOOPSECS3</STRONG> control the
+          number of re-tries and the delay between re-tries (secs)
+          for <A HREF="BUFFERED.html#snoop">I/O&nbsp;API snoop-mode
+          operation.</A><BR>
+          Note that snoop-mode must be enabled in the
+          <VAR>Makefile</VAR> when you build <VAR>libioapi.a</VAR><BR>
+          <CODE>SNOOPTRY3&nbsp;=&nbsp;0</CODE> gives unlimited
+          re-tries.<BR>
+          <CODE>SNOOPTRY3&nbsp;&lt;&nbsp;0</CODE> or
+          <CODE>SNOOPSECS3&nbsp;&le;&nbsp;0</CODE> turn off snoop
+          mode.
           <P>
 </UL>
 <P>
@@ -182,8 +196,8 @@ later only</STRONG>:
     <CODE>M3AGMASK, M3AGMAX, M3COMBO, M3TPROC</CODE> and
     <CODE>VERTINTEGRAL</CODE> for I/O&nbsp;API version&nbsp;3.1 later
     than Nov.&nbsp;21, 2013, and programs built with I/O&nbsp;API
-    routines <CODE>BILIN()</CODE>, <CODE>BMATVEC()</CODE>, 
-    <CODE>DMATVEC</CODE>,  <CODE>CBARNES1()</CODE>, and 
+    routines <CODE>BILIN()</CODE>, <CODE>BMATVEC()</CODE>,
+    <CODE>DMATVEC</CODE>,  <CODE>CBARNES1()</CODE>, and
     <CODE>CBARNESN()</CODE> using I/O&nbsp;API versions later than
     Sept.&nbsp;12, 2014.
     <P>
@@ -192,6 +206,11 @@ later only</STRONG>:
 <H2>I/O&nbsp;API Environment-Variable Routines</H2>
 
 <BLOCKQUOTE>
+
+    Routine <A HREF = "SETENV.html"><CODE>SETENVVAR()</CODE></A> can be used
+    to set environment variables from within the currently-executing program.
+    <P>
+
     For single-valued environment variables of various types.
     <A HREF = "ENVDBLE.html"><CODE>ENVDBLE()</CODE></A>,
     <A HREF = "ENVINT.html"><CODE>ENVINT()</CODE></A>,
@@ -199,12 +218,13 @@ later only</STRONG>:
     <A HREF = "ENVSTR.html"><CODE>ENVSTR()</CODE></A>,
     and <A HREF = "ENVYN.html"><CODE>ENVYN()</CODE></A> can be used from programs to find
     values of types <CODE>DOUBLE PRECISION, INTEGER, REAL,
-    CHARACTER</CODE> string, or <CODE>LOGICAL</CODE>; 
+    CHARACTER</CODE> string, or <CODE>LOGICAL</CODE>;
     <A HREF = "ENVGETS.html"><CODE>ENVGET()</CODE></A> is a generic routine
     for single-value environment variables of any of these types.
     <P>
+
     <A HREF="LISTS.html">For environment variables whose values are
-    comma-delimited lists</A> <CODE>INTLIST(), REALLIST(),</CODE>, and
+    comma-delimited lists</A> <CODE>INTLIST(), REALLIST()</CODE>, and
     <CODE>STRLIST()</CODE> are type-specific for lists of  types
     <CODE>INTEGER, REAL,</CODE> or <CODE>CHARACTER</CODE> string;
     <CODE>ENVLIST()</CODE> is the generic. All of thes routines  log the
@@ -217,10 +237,6 @@ later only</STRONG>:
     not log  the transaction, is used internally by the I/O&nbsp;API; this
     should <EM>not</EM> be used by modeling codes, for log-integrity
     reasons. <P>
-
-    Routine <A HREF = "SETENV.html"><CODE>SETENVVAR()</CODE></A> can be used
-    to set environment variables for the currently-executing program.
-    <P>
 </BLOCKQUOTE>
 
 <HR>

@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64ifortdbg 386 2016-07-05 20:45:07Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64ifortdbg 424 2016-09-21 18:03:48Z coats $"
 #
 #  Michael Bane (UManchester UK) reports that for ifort version 9,
 #  -stack_temps -safe_cray_ptr are not supported and that there are
@@ -7,7 +7,7 @@
 
 AR   = ar
 CC   = icc
-FC   = ifort -auto -cm -w90 -w95 -warn notruncated_source -Bstatic
+FC   = ifort -auto -warn notruncated_source -Bstatic
 M4   = m4
 LINK = $(CC)
 
@@ -30,7 +30,7 @@ ARCHFLAGS = \
  -DAVOID_FLUSH=1 \
  -DBIT32=1
 PARFLAGS  =
-ARCHLIB   = -Vaxlib -Bstatic
+ARCHLIB   = -Bstatic
 
 M4DEFFILE = # $(PVM_ROOT)/conf/$(PVM_ARCH).m4
 PVMLIBS   = # -lpvm3

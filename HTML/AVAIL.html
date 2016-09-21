@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 357 2016-04-20 20:26:12Z coats $" -->
+<!-- "$Id: AVAIL.html 425 2016-09-21 18:35:25Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -45,7 +45,7 @@
               Linux, <A HREF="ERRORS.html#pgi"><EM><U>please read
               this!</U></EM></A></STRONG>
               <P>
-        <LI>  <STRONG><A HREF = "#medium">Notes on <CODE>Linux2_x86_64</CODE> 
+        <LI>  <STRONG><A HREF = "#medium">Notes on <CODE>Linux2_x86_64</CODE>
               memory models</A></STRONG>
               <P>
         <LI>  <STRONG><A HREF = "#large"><VAR>netCDF</VAR> and Large Files</A></STRONG>
@@ -90,7 +90,7 @@ Foreword
     software we will refrain from naming here.  There are very few
     upward compatibility issues between Versions&nbsp;3.1 and 3.2,
     mostly coming from the renaming and generalization of
-    <CODE>MODULE&nbsp;MATXATTS</CODE> as 
+    <CODE>MODULE&nbsp;MATXATTS</CODE> as
     <CODE>MODULE&nbsp;MODATTS3</CODE>.
     <P>
 
@@ -185,10 +185,45 @@ m3stat:
                        customization.
                        <P>
                        In particular, you will need to customize
-                       <VAR>make</VAR>-variables <CODE>BASEDIR</CODE> 
+                       <VAR>make</VAR>-variables <CODE>BASEDIR</CODE>
                        in all <VAR>Makefile</VAR>s, and <CODE>LIBS</CODE>
                        in  <VAR>m3tools/Makefile</VAR> to deal with
                        <A HREF="#ncf4">netCDF-4 library issues.</A>
+                       Additional definitions in <VAR>make</VAR>-variable
+                       <CODE>DEFINEFLAGS</CODE> turn on various optional
+                       capabilities:
+                       <DL>
+                            <DT> <CODE>IOAPI_NO_STDOUT</CODE>
+                            <DD> suppresses write-operations to the screen
+                                 in routines <CODE>INIT3(), M3MSG2(), M3MESG(),
+                                 M3ABORT()</CODE>.
+                            <DT> <CODE>IOAPICPL</CODE>
+                            <DD> turns on (PVM based) I/O&nbsp;
+                                <A HREF="BUFFERED.html#pvm"><U><VAR>coupling
+                                 mode</VAR></U></A>.
+                            <DT> <CODE>IOAPI_SNOOP</CODE>
+                            <DD> turns on <A HREF="BUFFERED.html#snoop"><U><VAR>snoop
+                                 mode</VAR></U></A> for read-operations:
+                                 iff timestep-flag not available, sleep
+                                 for <CODE>SNOOPSECS3</CODE> seconds.
+                                 then re-try, for up to
+                                 <CODE>SNOOPTRY3</CODE> attempts.<BR>
+                                 <EM>for I/O&nbsp;API-3.2 and later only</EM>
+                            <DT> <CODE>IO_360, IO_365</CODE>
+                            <DD> create the 360-day or 365-day <U><VAR>global climate</VAR></U>
+                                 versions of the library<BR>
+                                 <EM>365-day version for I/O&nbsp;API-3.2 and later
+                                 only</EM>
+                            <DT> <CODE>IOAPI_PNCF</CODE>
+                            <DD> turns on <A HREF="BUFFERED.html#pncf"><U><VAR>PnetCDF/MPI
+                                 distributed-file mode</VAR></U></A><BR>
+                                 <EM>for I/O&nbsp;API-3.2 and later only</EM>
+                            <DT> <CODE>IOAPI_NCF4</CODE>
+                            <DD> turns on netCDF-4 <CODE>INTEGER*8</CODE> operations,
+                                 and requires HDF-enabled netCDF-4 libraries, instead of
+                                 netCDF-3 (for the rest of your
+                                 <VAR>Makefile</VAR>s).
+                       </DL>
                        <P>
                        You may also need to customize the <CODE>Makeinclude.*</CODE>
                        configuration-files for the configurations) you
@@ -209,7 +244,7 @@ m3stat:
                        highly dependent upon the details of individual
                        installations.  Note that there are already a
                        number of specialized
-                       <CODE>Makeinclude.${BIN}</CODE>s 
+                       <CODE>Makeinclude.${BIN}</CODE>s
                        for various purposes; they should serve as
                        templates if you need these capabilities for
                        different compilers:
@@ -234,7 +269,7 @@ m3stat:
                         <EM>cd&nbsp;ioapi</EM>  and then
                         <EM>cp&nbsp;Makefile.pncf&nbsp;Makefile</EM>
                         and <VAR>setenv</VAR> environment variable
-                        <CODE>BIN</CODE> to one of the supported 
+                        <CODE>BIN</CODE> to one of the supported
                         distributed-I/O types
                         <CODE>Linux2_x86_64gfortmpi,
                         Linux2_x86_64ifortmpi,Linux2_x86_64pgmpi,
@@ -244,13 +279,14 @@ m3stat:
                         <OL>
                             <LI> <STRONG>PnetCDF enabled I/O&nbsp;API
                                  libraries are not compatible with
-                                 &quot;normal&quot; libraries.</STRONG> 
+                                 &quot;normal&quot; libraries.</STRONG>
                                  Make sure you keep them separate.
                             <LI> What is called <VAR>mpif90</VAR> is really
                                  a script that understands about an
                                  underlying compiler-set (e.g., Intel
-                                 <VAR>ifort/icc</VAR>, PGI 
+                                 <VAR>ifort/icc</VAR>, PGI
                                  <VAR>pgf90/pgcc</VAR>, etc.), a set of
+                                 (MPI-installation specific)
                                  <CODE>INCLUDE</CODE> files, and a set
                                  of<CODE>$quot;.a&quot;</CODE>
                                  library-files. <STRONG>These are not
@@ -277,7 +313,7 @@ m3stat:
                         <EM>m3tools</EM> directory.
                   <P>
                   <P>
-                  <LI> If you want to enable the <STRONG>360-day or 365-day 
+                  <LI> If you want to enable the <STRONG>360-day or 365-day
                         climatology year</STRONG> (365 for
                         <EM>I/O&nbsp;API 3.2 only</EM>) , customize your
                         <VAR>ioapi/Makefile</VAR> by adding
@@ -379,7 +415,7 @@ m3stat:
                         then install the appropriate MPI development
                         package, and download PnetCDF from
                         <A HREF="https://trac.mcs.anl.gov/projects/parallel-netcdf/wiki/Download">https://trac.mcs.anl.gov/projects/parallel-netcdf/wiki/Download</A>
-                        then build and install <VAR>libpnetcdf.a</VAR> and 
+                        then build and install <VAR>libpnetcdf.a</VAR> and
                         copy or link it to the appropriate object
                         directory.<BR>
                         Note that to a very large extent,
@@ -415,7 +451,7 @@ m3stat:
                         If you are doing a single-configuration
                         installation, you may customize
                         <VAR>make</VAR>-variables in the top level
-                        <VAR>Makefile</VAR> and do the following 
+                        <VAR>Makefile</VAR> and do the following
                         from the top level directory as a
                         short-cut:
                         <BLOCKQUOTE><CODE>
@@ -446,7 +482,7 @@ m3stat:
         <DD>  <DL "COMPACT">
                   <DT><STRONG><CODE>make dir</CODE></STRONG>
                   <DD>  Construct the build-directory <CODE>$OBJDIR</CODE>
-                        You only need to do this once for each 
+                        You only need to do this once for each
                         configuration <CODE>$BIN</CODE>
                   <DT><STRONG><CODE>make all</CODE></STRONG>
                   <DD>  Build all libraries and executables (assumes
@@ -593,7 +629,7 @@ or (PGI)
     <CODE>CALL&nbsp;NC*()</CODE> Fortran interfaces in terms of which
     the I/O&nbsp;API was originally implemented.  [If you can find any
     documentation indicating this intent on the web, I would enjoy
-    seeing it; <EM>I</EM> can't find it.]  
+    seeing it; <EM>I</EM> can't find it.]
     <P>
     I/O&nbsp;API Version&nbsp;3.2 was tediously re-coded to replace all
     943 of these calls by the newer <CODE>IERR=NF_*()</CODE> Fortran
@@ -668,7 +704,7 @@ or (PGI)
     <DL>
         <DT> <CODE>small</CODE>
         <DD> At most 2 GB each for static data (<CODE>COMMON</CODE>s,
-             etc.), <CODE>ALLOCATE</CODE>d arrays, program-stack, and 
+             etc.), <CODE>ALLOCATE</CODE>d arrays, program-stack, and
              program machine-code.
         <P>
         <DT> <CODE>medium</CODE>
@@ -693,7 +729,7 @@ or (PGI)
     The <CODE>medium</CODE> memory model is fully 64-bit for
     data, but 32-bit for the instruction-part of programs.
     Given enough RAM, it can handle virtually all environmental
-    programming needs.  It is the default for Sun/Oracle's 
+    programming needs.  It is the default for Sun/Oracle's
     Linux compilers; for Intel, GNU, Portland Group compilers,
     you need to add the following option to the compile and
     link commands
@@ -726,7 +762,7 @@ or (PGI)
 
     See <A HREF="http://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models">
     http://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models</A>
-    for a somewhat readable and very detailed account of the issues, 
+    for a somewhat readable and very detailed account of the issues,
     and also
     <A HREF="https://software.intel.com/en-us/node/525162">
     https://software.intel.com/en-us/node/525162</A>
@@ -755,7 +791,7 @@ or (PGI)
     yet supported by the I/O&nbsp;API (partly because the old and new
     <VAR>netCDF</VAR> formats are not fully compatible); design analysis
     is in progress at this time (May&nbsp;2005), and means are
-    necessary to specify which files will be opened with which format. 
+    necessary to specify which files will be opened with which format.
     Certain individuals, we are informed, have modified the
     I/O&nbsp;API to use the new 64-bit netCDF format.
     <P>
@@ -847,7 +883,7 @@ or (PGI)
     code is available from the CMAS Center web site for download in
     <VAR>tar-gzip</VAR>ped form
     <A HREF ="https://www.cmascenter.org/ioapi/download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
-    or is available on GitHub from 
+    or is available on GitHub from
     <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
     To install it from GitHub, go to the directory under which do the
     installation, and then do the command
@@ -1190,7 +1226,7 @@ or (PGI)
     Version&nbsp;2.2 of the I/O&nbsp;API library source code is
     <A HREF = "https://www.cmascenter.org/ioapi/download/ioapi_22.tar.gz">available
     here for download</A> in <VAR>tar-gzip</VAR>ped form. New features
-    of this release are <A HREF = "NEWSTUFF.html"> documented here</A>. 
+    of this release are <A HREF = "NEWSTUFF.html"> documented here</A>.
     The build procedure is the same as that for Version&nbsp;2.1,
     documented below, except for the following:
     <UL>
@@ -1454,7 +1490,7 @@ or (PGI)
     &copy; 2014-2016 UNC Institute for the Environment.
     <P>
     A <VAR>gzip</VAR>ped
-    <VAR>tar</VAR>-file snapshot for I/O&nbsp;API Version&nbsp;2.1 
+    <VAR>tar</VAR>-file snapshot for I/O&nbsp;API Version&nbsp;2.1
     documentation is
     <A HREF = "https://www.cmascenter.org/ioapi/download/ioapi_doc.tar.gz">available here.</A>;
     <P>
@@ -1486,7 +1522,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 357 2016-04-20 20:26:12Z coats $
+    $Id: AVAIL.html 425 2016-09-21 18:35:25Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

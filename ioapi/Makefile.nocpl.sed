@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.nocpl.sed 376 2016-06-03 20:45:50Z coats $"
+# VERSION "$Id: Makefile.nocpl.sed 424 2016-09-21 18:03:48Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
@@ -62,6 +62,10 @@
 #
 #     Defining IOAPI_NO_STDOUT suppresses WRITEs to the screen in
 #     routines INIT3(), M3MSG2(), M3MESG(), and M3ABORT().
+#
+#     Defining IOAPI_SNOOP turns on "snoop mode" for read-operations:
+#     if timestep-flag not available, sleep for SNOOPSECS3 seconds,
+#     then re-try, for up to SNOOPTRY3 attempts
 #
 #     Defining IO_360 or IO_365 creates the 360-day or 365-day "global climate"
 #     versions of the library.

@@ -10,7 +10,8 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     !!Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !! function body starts at line  121
+    !! function body   starts at line  141
+    !! Entry INITSNOOP starts at line  437
     !!
     !! FUNCTION:
     !!      returns TRUE with STEP = record number for this time step
@@ -24,6 +25,13 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     !!      appropriate "list" entry.
     !!
     !!      If VERBOSE, writes warning message when data not available.
+    !!
+    !!       If SNOOP is enabled: 
+    !!         - Initializes SNOOP-delay (secs) and max attempts by
+    !!           calling entry INITSNOOP() or from environment
+    !!           variables  SNOOPSECS3 and SNOOPTRY3
+    !!         - If SNOOPSECS3 > 0, repeatedly tries to read the TFLAG if
+    !!           end-of-file, for SNOOPTRY3 attempts at interval SNOOPSECS3 seconds.
     !!
     !! PRECONDITIONS REQUIRED:
     !!      FID is the file ID of either a "real" netCDF file or of a
@@ -63,12 +71,15 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     !!
     !!      Version  11/2015 by CJC: replace MPI_OFFSET_KIND by hard-coded INTEGER(8)
     !!      because OpenMPI-1.4.x does not follow the MPOI "standard" competently.
+    !!
+    !!      Version  10/2016 by CJC: "snoop" functionality
     !!***********************************************************************
 
     USE M3UTILIO
     USE MODNCFIO
 
     IMPLICIT NONE
+    LOGICAL  INITSNOOP
 
     !!...........   INCLUDES:
 
@@ -84,11 +95,20 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     INTEGER, INTENT(  OUT) :: STEP            !  time step record number
     LOGICAL, INTENT(IN   ) :: VERBOSE
 
+    INTEGER, INTENT(IN   ) :: DELAY           !  delay (secs) for SNOOP-mode retries
+    INTEGER, INTENT(IN   ) :: TRIES           !  max # of retry-attempts
 
     !!...........   EXTERNAL FUNCTIONS and their descriptions:
 
     INTEGER, EXTERNAL :: RDBFLAG         !  for BINFIL3 files
+    INTEGER, EXTERNAL :: SLEEP3          !  sleep for N secs
     LOGICAL, EXTERNAL :: SYNCFID
+
+
+    !!...........   SAVED LOCAL VARIABLES and their descriptions:
+
+    INTEGER, SAVE :: SLEEPSECS = IMISS3   !  "snoop" sleep-delay
+    INTEGER, SAVE :: SLEEPTRY  = -1       !  "snoop" max # of tries
 
 
     !!...........   SCRATCH LOCAL VARIABLES and their descriptions:
@@ -96,10 +116,12 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     INTEGER         F, I, V         !  loop counters over files, variables
     INTEGER         FLAG1, FLAG2    !  date:time scratch vbles
     INTEGER         IERR            !  netCDF error status return
+    INTEGER         SCNT            !  current number of "snoop" tries
     INTEGER         DIMT( 5 )       !  corner   for NF_GET_VARA_*()
     INTEGER         DELT( 5 )       !  diagonal for NF_GET_VARA_*()
     INTEGER         FLAGS( 2,MXVARS3 )!  flags from NF_GET_VARA_*()
     LOGICAL         EFLAG
+    LOGICAL         SFLAG           !  is this a "snoop"?
     CHARACTER*16    FNAME, VNAME
     CHARACTER*256   MESG            !  buffer for building error messages         !  netCDF error status return
 
@@ -115,6 +137,44 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 
     !!***********************************************************************
     !!  begin body of function  RDTFLAG
+
+    EFLAG = .FALSE.         !  no errors yet...
+
+    !!.......   If first call, initialize SNOOP structures
+
+#ifdef  IOAPI_SNOOP
+
+    IF ( SLEEPSECS .EQ. IMISS3 ) THEN
+
+        SLEEPSECS = ENVINT( 'SNOOPSECS3', 'Snoop delay (secs>0 to enable)', -1, IERR )
+        IF ( IERR .GT. 0 ) THEN
+            MESG = 'Bad environment variable "SNOOPSECS3"'
+            CALL M3WARN('SNOOPTFLAG', JDATE, JTIME, MESG )
+            EFLAG = .TRUE.
+        ELSE IF ( SLEEPSECS > 0 ) THEN
+            SLEEPTRY = ENVINT( 'SNOOPTRY3', 'Maximum number of snoop attempts', 10, IERR )
+            IF ( IERR .GT. 0 ) THEN
+                MESG = 'Bad environment variable "SNOOPTRY3"'
+                CALL M3WARN('SNOOPTFLAG', JDATE, JTIME, MESG )
+                EFLAG = .TRUE.
+            ELSE IF ( SLEEPTRY .EQ. 0 ) THEN
+                SLEEPTRY = 1999999999       !!  might as well be INTEGER*4 "infinity"
+            END IF
+        ELSE
+            SLEEPTRY = -2
+            CALL M3MESG( '"SNOOP" turned off for READ3/INTERP3' )
+        END IF
+
+        IF ( EFLAG ) THEN
+            SLEEPSECS = -2
+            SLEEPTRY  = -2
+            RDFLAG    = .FALSE.
+            RETURN
+        END IF
+
+    END IF          !  if sleepsecs < 0:  first call
+
+#endif
 
     !!.......   If list file-set, find which actual file contains this time step:
 
@@ -201,6 +261,11 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     END IF          ! if dictionary-file, or not
 
 
+    SCNT  = 1
+
+33  CONTINUE        !  head of "snoop" loop
+
+
     IF ( VOLAT3( FID ) ) THEN      !  volatile file:  synch with disk
 
         IF ( .NOT. SYNCFID( FID ) ) THEN
@@ -228,8 +293,6 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 
     END IF
 
-    EFLAG = .FALSE.         !  no errors yet...
-
 
     IF ( CDFID3( FID ) .EQ. BINFIL3 ) THEN       ! BINFIL3 file:
 
@@ -238,8 +301,16 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 !$OMP END CRITICAL( S_NC )
 
         IF ( IERR .EQ. 0 ) THEN
+
+            IF ( TSTEP3(FID) .NE. 0 .AND. SLEEPSECS .GT. 0  .AND.  SCNT .LT. SCNT ) THEN
+                I    = SLEEP3( SLEEPSECS )
+                SCNT = SCNT + 1
+                GO TO  33
+            END IF
+
             MESG = 'Error reading time-flags for BINIO3 file ' // FNAME
             EFLAG = .TRUE.
+
         END IF          !  if rdbflag() failed
 
     ELSE IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN     !  PnetCDF file:
@@ -253,17 +324,24 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 !$OMP CRITICAL( S_NC )
         IERR = NFMPI_GET_VARA_INT( CDFID3( FID ), TINDX3( FID ), DIMT, DELT, FLAGS )
 !$OMP END CRITICAL( S_NC )
+
         IF ( IERR .EQ. 8 ) THEN     !  timestep flag not yet written
 
+            IF ( TSTEP3(FID) .NE. 0 .AND. SLEEPSECS .GT. 0  .AND.  SCNT .LT. SCNT ) THEN
+                I    = SLEEP3( SLEEPSECS )
+                SCNT = SCNT + 1
+                GO TO  33
+            END IF
+
             EFLAG = .TRUE.
-            MESG  = 'Time step not yet written in file ' // FNAME
+            MESG  = 'Time step not yet written in pnetCDF file ' // FNAME
 
         ELSE IF ( IERR .NE. 0 ) THEN
 
-            WRITE( MESG,91010 ) 'netCDF error number', IERR
+            WRITE( MESG,91010 ) 'pnetCDF error number', IERR
             CALL M3MSG2( MESG )
             EFLAG = .TRUE.
-            MESG  = 'Error reading netCDF time step flag for '// FNAME
+            MESG  = 'Error reading pnetCDF time step flag for '// FNAME
 
         END IF
 #endif
@@ -283,10 +361,17 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 !$OMP CRITICAL( S_NC )
         IERR = NF_GET_VARA_INT( CDFID3( FID ), TINDX3( FID ), DIMT, DELT, FLAGS )
 !$OMP END CRITICAL( S_NC )
+
         IF ( IERR .EQ. 8 ) THEN     !  timestep flag not yet written
 
+            IF ( TSTEP3(FID) .NE. 0 .AND. SLEEPSECS .GT. 0  .AND.  SCNT .LT. SCNT ) THEN
+                I    = SLEEP3( SLEEPSECS )
+                SCNT = SCNT + 1
+                GO TO  33
+            END IF
+
             EFLAG = .TRUE.
-            MESG  = 'Time step not yet written in file ' // FNAME
+            MESG  = 'Time step not yet written in netCDF file ' // FNAME
 
         ELSE IF ( IERR .NE. 0 ) THEN
 
@@ -345,6 +430,45 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     END IF          !  if vid > 0, or not
 
     RDFLAG = ( .NOT.EFLAG )
+
+    RETURN
+
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+    ENTRY INITSNOOP( DELAY, TRIES )
+
+#ifdef  IOAPI_SNOOP
+      
+        IF ( DELAY .LE. 0 .OR. TRIES .LT. 0 ) THEN
+            SLEEPSECS = -2
+            SLEEPTRY  = -2
+            MESG = 'RDTFLAG():  SNOOP turned off'
+        ELSE IF IF ( TRIES .EQ. 0 ) THEN
+            SLEEPSECS = DELAY
+            SLEEPTRY  = 1999999999       !!  might as well be INTEGER*4 "infinity"
+            WRITE( MESG, '( A, I9, 1X, A )' )       &
+                'RDTFLAG():  Initializing SNOOP with DELAY=', DELAY
+        ELSE
+            SLEEPSECS = DELAY
+            SLEEPTRY  = TRIES
+            WRITE( MESG, '( A, I9, 1X, A, I9 )' )   &
+                'RDTFLAG():  Initializing SNOOP with DELAY=', DELAY,    &
+                '(secs) and TRIES=', TRIES
+        END IF
+
+        CALL M3MESG( '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-' )  
+        CALL M3MESG( MESG )
+        CALL M3MESG( '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-' )
+
+        INITSNOOP = .TRUE.
+
+#endif
+
+#ifndef  IOAPI_SNOOP
+        CALL M3MESG( '"SNOOP" not enabled in this I/O API buiod.' )
+        INITSNOOP = .FALSE.
+#endif
 
     RETURN
 

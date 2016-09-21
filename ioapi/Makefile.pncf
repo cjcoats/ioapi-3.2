@@ -64,6 +64,10 @@
 #     Defining IOAPI_NO_STDOUT suppresses WRITEs to the screen in
 #     routines INIT3(), M3MSG2(), M3MESG(), and M3ABORT().
 #
+#     Defining IOAPI_SNOOP turns on "snoop mode" for read-operations:
+#     if timestep-flag not available, sleep for SNOOPSECS3 seconds,
+#     then re-try, for up to SNOOPTRY3 attempts
+#
 #     Defining IO_360 or IO_365 creates the 360-day or 365-day "global climate"
 #     versions of the library.
 #

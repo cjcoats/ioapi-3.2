@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: XTRACT3.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: XTRACT3.html 425 2016-09-21 18:35:25Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> XTRACT3() and xtract3c() </TITLE>
 </HEAD>
@@ -72,6 +72,14 @@
     Returns .TRUE. (or 1) if the operation succeeds, .FALSE. (or 0)
     if it fails.  For failure, writes a <A HREF = "ENVIRONMENT.html"> 
     log </A> message indicating the nature of the failure.
+    <P>
+
+    <EM>For I/O&nbsp;API 3.2 or later:</EM>  If
+    <A HREF="BUFFERED.html#snoop"><VAR>snoop mode</VAR></A> is configured
+    in the <VAR>Makefile</VAR> when you build <VAR>libioapi.a</VAR>,
+    then environment variables <CODE>SNOOPTRY3, SNOOPSECS3</CODE> control the
+    number of re-tries and the delay between re-tries (secs) for
+    reading data under end-of-file conditions.
     <P>
 
     For Fortran-90 declaration:    

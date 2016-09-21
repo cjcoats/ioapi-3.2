@@ -2,23 +2,23 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BUFFERED.html 294 2016-01-20 18:01:28Z coats $" -->
-<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
-<TITLE> 
+<!-- "$Id: BUFFERED.html 425 2016-09-21 18:35:25Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE>
 REAL FILES, PARALLEL FILES,  AND &quot;VIRTUAL FILES&quot;
 </TITLE>
 </HEAD>
 
-<BODY BGCOLOR="#FFFFFF" 
-      TOPMARGIN="15" 
-      MARGINHEIGHT="15" 
-      LEFTMARGIN="15" 
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
       MARGINWIDTH="15">
-<H1> 
+<H1>
 REAL FILES AND &quot;VIRTUAL FILES&quot;
 </H1>
 
-<H2> 
+<H2>
 <A NAME="contents">Contents</A>
 </H2>
     <UL>
@@ -26,12 +26,13 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
         <LI>  <A HREF="#pncf"><VAR>PnetCDF</VAR> Distributed-I/O Files</A>
         <LI>  <A HREF="#list">File-Set File Lists</A>
         <LI>  <A HREF="#vol">VOLATILE Real Files</A>
+        <LI>  <A HREF="#snoop">SNOOP Mode File Handling</A>
         <LI>  <A HREF="#buf">BUFFERED Virtual Files</A>
         <LI>  <A HREF="#pvm">COUPLING-MODE Virtual Files</A>
         <LI>  <A HREF="#bin">Native-Binary Real Files</A>
     </UL>
 
-<H2> 
+<H2>
 <A NAME="intro">Introduction</A>
 </H2>
 
@@ -41,24 +42,24 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     <A HREF = "#vol">&quot;volatile&quot;</A> or not, and are
     implemented on top of either netCDF, PnetCDF,  or a native-binary
     implementation) and &quot;virtual files&quot; that may be used to
-    provide safe, structured exchange of data -- the latter of 
-    &quot;<A HREF = "DATATYPES.html#grdded">gridded</A>,&quot; 
-    &quot;<A HREF = "DATATYPES.html#bndary">boundary</A>,&quot; or 
-    &quot;<A HREF = "DATATYPES.html#custom">custom</A>&quot; types 
+    provide safe, structured exchange of data -- the latter of
+    &quot;<A HREF = "DATATYPES.html#grdded">gridded</A>,&quot;
+    &quot;<A HREF = "DATATYPES.html#bndary">boundary</A>,&quot; or
+    &quot;<A HREF = "DATATYPES.html#custom">custom</A>&quot; types
     only -- between either cooperating programs or different modules in
     the same program.  You may even  safely interchange between using
     real files and virtual files in  different executions of the same
     program merely by changing the values of the logical names for the
     files at program launch (this would allow you to  look at the data
     being shared between modules whenever you want to, for example, at
-    high temporal resolution).  There are two types of virtual files: 
+    high temporal resolution).  There are two types of virtual files:
     memory-resident <A HREF="#buf">BUFFERED</A> virtual files that can
     be used to share data between modules of a single program; and
     PVM-mailbox based <A HREF="#pvm">COUPLING-MODE</A> virtual files
     that  can be used to share data and coordinate scheduling between
     different  programs, even if they are executing on different
     machines half a continent apart across the Internet.
-    <P> 
+    <P>
 
     </BLOCKQUOTE>
 
@@ -67,14 +68,14 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> 
+<H2>
 <A NAME="pncf"><VAR>pnetCDF</VAR> Distributed-I/O Files</A>
 </H2>
 
     <BLOCKQUOTE>
 
     I/O&nbsp;API Version&nbsp;3.2 introduces support for distributed
-    parallel I/O using 
+    parallel I/O using
     <A HREF="https://trac.mcs.anl.gov/projects/parallel-netcdf"><VAR>PnetCDF</VAR></A>
     from Argonne National Laboratory, for use in CMAQ-5.1 and later. The
     original concept and the prototype code are due to Dr.&nbsp;David
@@ -104,15 +105,15 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
         <DD>Blank-delimited list with the column- and row-dimensions
         for the processor-grid<BR>
         <EM>Note that this list needs to be enclosed by quotes
-        (either single or double).</DD>
+        (either single or double).</EM></DD>
         <P>
     </DL>
     </BLOCKQUOTE>
     To declare that a particular file is to be used with PnetCDF
-    parallel I/O, you need a <CODE>MPI:</CODE> prefix on the 
+    parallel I/O, you need a <CODE>MPI:</CODE> prefix on the
     path-name in the usual <CODE>setenv</CODE> statement, as in
     the following example running on a 6&times;8 processor-grid
-    (48 processors in all):    
+    (48 processors in all):
     <PRE>
     setenv  GRIDDESC     /nas01/depts/ie/cempd/WRFCMAQ/CMAQv5.0.1.GRIDDESC.txt
     setenv  GRID_NAME    US36_CRO
@@ -129,7 +130,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> 
+<H2>
 <A NAME="list">File-Set File Lists</A>
 </H2>
 
@@ -144,7 +145,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     setenv FILE_N &lt;path name&gt;
     setenv ANAME  LIST:FILE_1,...,FILE_N
     </PRE>
-    subject to the requirement that the value for <CODE>ANAME</CODE> 
+    subject to the requirement that the value for <CODE>ANAME</CODE>
     has length at most 256.  In case of overlapping time step sequences,
     the rule is &quot;first file wins,&quot; i.e., if the data is
     available from the first file, <CODE>FILE_1</CODE>, use it; else if
@@ -176,7 +177,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 <HR> <!----------------------------------------------------------------->
 
 
-<H2> 
+<H2>
 <A NAME="vol">VOLATILE Real Files</A>
 </H2>
 
@@ -192,7 +193,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     ...
     setenv  QUX  &quot;/tmp/mydir/volatiledata.mymodel -v&quot;
     </PRE><P>
-    <P> 
+    <P>
 
     These file based lower layers attempt the I/O optimization of not
     writing a file's header&mdash;needed in order to interpret the file's
@@ -202,7 +203,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     writes them does a  <A HREF="SYNC3.html">SYNC3()</A> call for the
     individual files, or <A HREF="SHUT3.html">SHUT3()</A> or
     <A HREF="M3EXIT.html">M3EXIT()</A> (or making the files unreadable
-    if the program crashes unexpectedly). 
+    if the program crashes unexpectedly).
     This extra &quot;synch&quot; operation does cause some (usually
     small) performance penalty, but it allows other programs to read
     I/O&nbsp;API files while they are still being written, and prevents
@@ -216,7 +217,48 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> 
+
+<H2>
+<A NAME="snoop"><U><VAR>Snoop Mode</VAR></U>. File-Handling</A>
+</H2>
+
+    <BLOCKQUOTE>
+
+    I/O&nbsp;API <U><VAR>Snoop Mode</VAR></U> capability may be
+    activated by adding <CODE>-DIOAPI_SNOOP=1</CODE> to
+    <CODE>DEFINEFLAGS</CODE> in the <VAR>ioapi/Makefile</VAR>.
+    <P>
+    Snoop Mode is designed to enable &quot;pipelining&quot; of data
+    through multiple modeling/product-generation programs, e.g., for
+    forecast-modeling systems. This allows the generation of early-hour
+    products well before the entire forecast is complete; moreover,
+    it will enable the operating system to make better use of its
+    internal I/O-buffers, further increasing system modeling efficiency.
+    <P>
+    It is controlled by environment variables <CODE>SNOOPSECS3</CODE>
+    and <CODE>SNOOPTRY3</CODE>.  When it is active (positive-integer
+    values for these environment variables), when read-operations
+    <CODE>READ3(), XTRACT3(), INTERP3(), and DDTVAR3()</CODE> encounter
+    end-of-file, they  will re-try for up to  <CODE>SNOOPTRY3</CODE>
+    attempts, with delay <CODE>SNOOPSECS3</CODE> seconds in between
+    attempts.
+    <P>
+    If <CODE>SNOOPTRY3&nbsp;&lt;&nbsp;0</CODE> or
+    <CODE>SNOOPSECS3&nbsp;&le;&nbsp;0</CODE>, then <VAR>Snoop Mode</VAR>
+    is turned off.
+    <P>
+    If <CODE>SNOOPTRY3&nbsp;=&nbsp;0</CODE> then the number of
+    re-tries is (almost) unlimited.
+    <P>
+
+    </BLOCKQUOTE>
+
+    <EM><A HREF="#contents">Back to <STRONG>Contents</STRONG></A></EM>
+    <P>
+
+<HR> <!----------------------------------------------------------------->
+
+<H2>
 <A NAME="buf">BUFFERED Virtual Files</A>
 </H2>
 
@@ -228,8 +270,8 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     other restriction is that only two time steps of data are kept in
     the buffered file -- the &quot;even step&quot; and the  &quot;odd
     step&quot; (which in normal usage are the last two time  steps
-    written).  Otherwise, you write code to open, read, write, or 
-    interpolate data just as you would with a &quot;real&quot; file. 
+    written).  Otherwise, you write code to open, read, write, or
+    interpolate data just as you would with a &quot;real&quot; file.
     This provides for structured name based <EM>identity-tagged</EM>
     exchange of data between  different modules in the same program --
     since data are stored and  accessed by file-name, variable-name,
@@ -237,22 +279,22 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     request data not yet initialized (unlike the situation where data
     is exchanged via Fortran  <CODE>COMMON</CODE>s  - we've detected
     some obscure use-before-calculate bugs by replacing
-    <CODE>COMMON</CODE>s with BUFFERED virtual files.) 
+    <CODE>COMMON</CODE>s with BUFFERED virtual files.)
 
-    <P> 
+    <P>
 
-    To set up a buffered virtual file, <VAR>setenv</VAR> the value of 
+    To set up a buffered virtual file, <VAR>setenv</VAR> the value of
     the file's <A HREF = "LOGICALS.html"> logical name </A> to the
     value  <CODE>BUFFERED</CODE> (instead of to the pathname of a real
     physical  file), as given below:
-<PRE> 
+<PRE>
     ...
     #
     # myprogram uses &quot;qux&quot; for internal data sharing:
     #
     setenv qux BUFFERED
     ...
-    /user/mydir/myprogram 
+    /user/mydir/myprogram
     ...
 </PRE>
 <P>
@@ -262,7 +304,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
          <LI>  For all-variable <VAR>READ3()</VAR>
                and <VAR>WRITE3()</VAR> calls, all of the variables in
                the file must be of <A HREF = "DATATYPES.html#basic">
-               type <CODE>M3REAL</CODE></A>.  
+               type <CODE>M3REAL</CODE></A>.
          <LI>  Prior to the I/O&nbsp;API V&nbsp;2.2-beta-May-3-2002
                release, all variables in buffered virtual files must
                be of <A HREF = "DATATYPES.html#basic"> type
@@ -277,7 +319,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> 
+<H2>
 <A NAME="pvm">COUPLING-MODE Virtual Files</A>
 </H2>
 
@@ -286,66 +328,66 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     As part of the MCNC
     <A HREF = "http://terra.baronams.com:/projects/ppar/index.html">Practical
     Parallel Project</A>, MCNC developed an extended
-    <STRONG>Model Coupling Mode</STRONG> for the I/O&nbsp;API.  
-    This mode, implemented using 
-    <A HREF = "http://www.epm.ornl.gov:80/pvm/">PVM&nbsp;3.4</A> 
+    <STRONG>Model Coupling Mode</STRONG> for the I/O&nbsp;API.
+    This mode, implemented using
+    <A HREF = "http://www.epm.ornl.gov:80/pvm/">PVM&nbsp;3.4</A>
     mailboxes, allows the user to specify in
     the run-script whether &quot;file&quot; means a physical file on
     disk or a PVM mailbox-based communications channel (a
     <STRONG>virtual file</STRONG>), on the basis of the value of the
-    file's <A HREF = "ENVIRONMENT.html">logical name</A>:  
+    file's <A HREF = "ENVIRONMENT.html">logical name</A>:
     <PRE><STRONG>
     setenv FOO                &quot;virtual BAR&quot;
     setenv IOAPI_KEEP_NSTEPS  3
     </STRONG></PRE>
-    declares that <CODE>FOO</CODE> is the logical name of a virtual 
+    declares that <CODE>FOO</CODE> is the logical name of a virtual
     file whose physical name (in terms of PVM mailbox names) is
     <CODE>BAR</CODE>.  The additional environment variable
-    <CODE>IOAPI_KEEP_NSTEPS</CODE> determines the number of time 
-    steps to keep in PVM mailbox buffers -- if it is 3 (as here), and 
-    there are already 3 timesteps of variable <CODE>QUX</CODE> in the 
-    mailboxes for virtual file <CODE>FOO</CODE>, then writing a fourth 
-    time step of <CODE>QUX</CODE> to <CODE>FOO</CODE> causes the earliest 
-    time step of <CODE>QUX</CODE> to be erased, leaving only timesteps 2, 
+    <CODE>IOAPI_KEEP_NSTEPS</CODE> determines the number of time
+    steps to keep in PVM mailbox buffers -- if it is 3 (as here), and
+    there are already 3 timesteps of variable <CODE>QUX</CODE> in the
+    mailboxes for virtual file <CODE>FOO</CODE>, then writing a fourth
+    time step of <CODE>QUX</CODE> to <CODE>FOO</CODE> causes the earliest
+    time step of <CODE>QUX</CODE> to be erased, leaving only timesteps 2,
     3, and&nbsp;4.  This is necessary, so that the coupled modeling system
     does not require an infinite amount of memory for its sustained
-    operation.  If not set, <CODE>IOAPI_KEEP_NSTEPS</CODE> defaults 
+    operation.  If not set, <CODE>IOAPI_KEEP_NSTEPS</CODE> defaults
     to&nbsp;2 (the minimum needed to support <CODE>INTERP3()</CODE>'s
     double-buffering).
     <P>
-    
-    The (UNIX) environments in which the modeler launches multiple models 
-    each of which reads or writes from a virtual file must all agree 
-    on its physical name (usually achieved by sourcing some script that 
+
+    The (UNIX) environments in which the modeler launches multiple models
+    each of which reads or writes from a virtual file must all agree
+    on its physical name (usually achieved by sourcing some script that
     contains the relevant <VAR>setenv</VAR> commands).
     <P>
-    
+
     For models exchanging data via virtual files of the I/O&nbsp;API's
-    coupling mode, the I/O&nbsp;API schedules the various processes on 
+    coupling mode, the I/O&nbsp;API schedules the various processes on
     the basis of data availability:
     <UL>
         <LI>  The modeler must start up a PVM session that will
               &quot;contain&quot; all the virtual files and enroll in
-              it all those machines which will be running the various 
+              it all those machines which will be running the various
               modeling programs before starting up the various models
               in a coupled modeling system on those respective machines.
               <P>
         <LI>  <CODE>OPEN3()</CODE> calls for read-access to virtual
               files that haven't yet been opened for write access by
-              some other process put the caller to sleep until the 
+              some other process put the caller to sleep until the
               file is opened; and
               <P>
          <LI>  <CODE>READ3()</CODE>, <CODE>INTERP3()</CODE>, or
-              <CODE>DDTVAR3()</CODE> calls for virtual-file data which 
-              has not yet been written put the reading process to sleep 
-              until the data arrives, at which point the reader is 
-              awakened and given the data it requested.  
+              <CODE>DDTVAR3()</CODE> calls for virtual-file data which
+              has not yet been written put the reading process to sleep
+              until the data arrives, at which point the reader is
+              awakened and given the data it requested.
     </UL>
-    There are two requirements on the modeler: 
+    There are two requirements on the modeler:
     <UL>
-        <LI>  structuring reads and writes so as to avoid deadlocks 
-              (two or more models, each asleep while waiting for input 
-              from the other); and 
+        <LI>  structuring reads and writes so as to avoid deadlocks
+              (two or more models, each asleep while waiting for input
+              from the other); and
               <P>
         <LI>  providing enough feedbacks to prevent one process from
               &quot;racing ahead&quot; of the others.  In a one-way
@@ -353,10 +395,10 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
               artificial <VAR>synchronization files</VAR> which exist
               solely to provide these feedbacks.
     </UL>
-    Using coupling mode to construct complex modeling systems has several 
+    Using coupling mode to construct complex modeling systems has several
     advantages from the model-engineering point of view:
-    <UL>  
-        <LI>  Since data is tagged by variable-name, simulation date, 
+    <UL>
+        <LI>  Since data is tagged by variable-name, simulation date,
               and time, the system is not subject to data scrambling
               because of implicit programming assumptions about the
               data ordering, in the way that stream-like communications
@@ -368,32 +410,32 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
               inputs or outputs to/from PVM mailboxes).
               <P>
         <LI>  Readers and writers do not need to know about each other
-              in detail.  In particular, any reader only needs to know 
+              in detail.  In particular, any reader only needs to know
               that <EM>some</EM> writer will put the variables it needs
               into the mailbox.  Writers don't care whether readers
               even exist or not.  It is easy to change system configuration
               by just adding additional processes or by deleting processes
-              and replacing them by appropriate disk-based files containing 
+              and replacing them by appropriate disk-based files containing
               the data that would have been produced.  In MCNC's Real-Time
               Ozone Forecast System, for example, the set of programs that
               runs to compute each day's ozone forecast varies from day to
-              day, on the basis of such things as whether particular data 
+              day, on the basis of such things as whether particular data
               ingest feeds have succeeded or failed over the past two days.
               <P>
         <LI>  One writer can supply multiple readers without special
               programming (and without needing to know who they are).
               For example, in a coupled system with the
               MM5/<A HREF="MCPL.html">MCPL</A>
-              meteorology model, the SMOKE emissions model, and the 
+              meteorology model, the SMOKE emissions model, and the
               MAQSIP air quality model, MM5 produces 5 time-stepped
               output &quot;virtual files&quot;, some variables of two
               of which are read by SMOKE and all of which are read by
               MAQSIP; and SMOKE produces one output &quot;virtual
               files&quot; read by MAQSIP.  SMOKE is itself a system
               of five programs coupled together by virtual files and
-              fed by a number of additional disk-files produced 
+              fed by a number of additional disk-files produced
               off-line.  MAQSIP produces a &quot;synchronization file&quot;
-              read by MM5/MCIP and used to keep MM5/MCIP from running ahead 
+              read by MM5/MCIP and used to keep MM5/MCIP from running ahead
               and exhausting all memory available for mailbox-buffer space.
               <P>
     </UL>
@@ -406,14 +448,14 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> 
+<H2>
 <A NAME="bin">Native-Binary Real Files</A>
 </H2>
 
     <H3>Abstract:  Use</H3>
 
     <BLOCKQUOTE>
-    
+
     The following environment-variable assignment tells the I/O&nbsp;API
     that the indicated file is in the I/O&nbsp;API version of native
     binary representation, rather than netCDF or PVM-mailbox virtual:
@@ -444,7 +486,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     supplement the existing (and default) <STRONG>netCDF-file
     mode</STRONG>, the in-memory <STRONG>BUFFERED</STRONG> mode, and
     the PVM-based <STRONG>virtual mode</STRONG>.
-    <P> 
+    <P>
     Since this mode uses native machine binary representation for its
     data as its underlying data representation layer, it should offer
     somewhat greater performance than the machine independent lower
@@ -452,7 +494,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     where I/O performance is critical.  On the other hand, it is very
     desirable to keep the header metadata in a portable format, so that
     user-level programs can still read the data on binary-incompatible
-    platforms and perform the appropriate data conversion themselves. 
+    platforms and perform the appropriate data conversion themselves.
     For this reason, header metadata is stored in the portable formats,
     as described below.
     <P>
@@ -544,7 +586,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
              manner as the rest of the I/O&nbsp;API C code.
              <P>
        <LI>  Uses C <CODE><STRONG>stdio</STRONG></CODE>, and particularly
-             uses <CODE><STRONG>fseeko()</STRONG></CODE> for seeks 
+             uses <CODE><STRONG>fseeko()</STRONG></CODE> for seeks
              (instead of <CODE><STRONG>fseek()</STRONG></CODE>), in
              order to interoperate with large file systems (implies
              Linux <CODE>glibc</CODE> version &gt; 2.0).
@@ -626,7 +668,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
              </BLOCKQUOTE>
         <DT> <STRONG><CODE>REAL</CODE></STRONG>
         <DD> represented by a character string formatted with format
-             equivalent to the Fortran 
+             equivalent to the Fortran
              <CODE>FORMAT&nbsp;<STRONG>1PE15.9</STRONG></CODE>,
              followed by a trailing ASCII NULL
              <P>
@@ -717,7 +759,7 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
         <BLOCKQUOTE>
              INT4 <STRONG>FTYPE</STRONG>: File data type
              <BLOCKQUOTE>
-                 CUSTOM3, GRDDED3, BNDARY3, IDDATA3, PROFIL3, 
+                 CUSTOM3, GRDDED3, BNDARY3, IDDATA3, PROFIL3,
                  or SMATRX3
              </BLOCKQUOTE>
              <P>
@@ -910,14 +952,14 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
 
 <A HREF = "VBLE.html">
 Previous Section:  <STRONG>Variables and Layers and Time Steps</STRONG>
-</A><P> 
-
-<A HREF = "AA.html#conventions"> 
-Up: <STRONG>Conventions</STRONG> 
 </A><P>
 
-<A HREF = "AA.html"> 
-To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+<A HREF = "AA.html#conventions">
+Up: <STRONG>Conventions</STRONG>
+</A><P>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
 </A><P>
 
 </BODY>
