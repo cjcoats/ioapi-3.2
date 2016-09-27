@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BUFFERED.html 425 2016-09-21 18:35:25Z coats $" -->
+<!-- "$Id: BUFFERED.html 426 2016-09-27 14:56:14Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
 REAL FILES, PARALLEL FILES,  AND &quot;VIRTUAL FILES&quot;
@@ -121,6 +121,20 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     ...
     setenv  CHEMCONC3D   MPI:/tmp/mydir/cmaq.conc.US36_CRO.2015233.ncf
     </PRE>
+    <P>
+
+    <STRONG>I/O&nbsp;API builds usiing PnetCDF are not link compatible
+    with ordinary builds, and should be kept carefully separate from
+    them.</STRONG><BR>
+    You can build the I/O API to use PnetCDF/MPI distributed I/O using
+    the following binary types (or use them as templates to build your
+    own custom binary type):
+    <BLOCKQUOTE><DL>
+        <DT>Makeinclude.Linux2_x86_64gfortmpi
+        <DT>Makeinclude.Linux2_x86_64ifortmpi
+        <DT>Makeinclude.Linux2_x86_64pgmpi
+        <DT>Makeinclude.Linux2_x86_64sunmpi
+    </DL></BLOCKQUOTE>
     <P>
 
     </BLOCKQUOTE>
