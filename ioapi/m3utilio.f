@@ -2,7 +2,7 @@
         MODULE M3UTILIO
 
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !! Version "$Id: m3utilio.f 266 2015-11-20 16:59:47Z coats $"
+        !! Version "$Id: m3utilio.f 429 2016-10-06 18:13:54Z coats $"
         !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
         !! (c) 2007-2013 Carlie J. Coats, Jr., and
         !! (C) 2014 UNC Institute for the Environment.
@@ -61,7 +61,7 @@
             INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
             CHARACTER*72, PRIVATE, SAVE :: ID =
-     &'$Id:: m3utilio.f 266 2015-11-20 16:59:47Z coats                $'
+     &'$Id:: m3utilio.f 429 2016-10-06 18:13:54Z coats                $'
 
 
             !!........  PUBLIC Routines:
@@ -170,6 +170,50 @@
             END INTERFACE       !!  BILIN
 
             INTERFACE BMATVEC
+
+                !!  non-layered cases:
+
+                SUBROUTINE  BMATVEC01( M, N, P, IX, AX, V, Y )
+                INTEGER, INTENT(IN   ) :: M               ! length of input  vector
+                INTEGER, INTENT(IN   ) :: N               ! length of output vector
+                INTEGER, INTENT(IN   ) :: P               ! number of layers
+                INTEGER, INTENT(IN   ) :: IX( 4,N )       ! index array
+                REAL   , INTENT(IN   ) :: AX( 4,N )       ! 4-band coeff matrix
+                REAL   , INTENT(IN   ) :: V( M )          ! P-layered input  vector
+                REAL   , INTENT(  OUT) :: Y( N )          ! P-layered output vector
+                END SUBROUTINE  BMATVEC01
+
+                SUBROUTINE  BMATVEC02( M, NC, NR, P, IX, AX, V, Y )
+                INTEGER, INTENT(IN   ) :: M               ! length of input  vector
+                INTEGER, INTENT(IN   ) :: NC, NR          ! length of output vector
+                INTEGER, INTENT(IN   ) :: P               ! number of layers
+                INTEGER, INTENT(IN   ) :: IX( 4,NC*NR )   ! index array
+                REAL   , INTENT(IN   ) :: AX( 4,NC*NR )   ! 4-band coeff matrix
+                REAL   , INTENT(IN   ) :: V( M )          ! P-layered input  vector
+                REAL   , INTENT(  OUT) :: Y( NC,NR )      ! P-layered output vector
+                END SUBROUTINE  BMATVEC02
+
+                SUBROUTINE  BMATVEC021( MC, MR, N, P, IX, AX, V, Y )
+                INTEGER, INTENT(IN   ) :: MC, MR          ! length of input  vector
+                INTEGER, INTENT(IN   ) :: N               ! length of output vector
+                INTEGER, INTENT(IN   ) :: P               ! number of layers
+                INTEGER, INTENT(IN   ) :: IX( 4,N )       ! index array
+                REAL   , INTENT(IN   ) :: AX( 4,N )       ! 4-band coeff matrix
+                REAL   , INTENT(IN   ) :: V( MC,MR )      ! P-layered input  vector
+                REAL   , INTENT(  OUT) :: Y( N )          ! P-layered output vector
+                END SUBROUTINE  BMATVEC021
+
+                SUBROUTINE  BMATVEC022( MC,MR, NC,NR, P, IX, AX, V, Y )
+                INTEGER, INTENT(IN   ) :: MC, MR          ! length of input  vector
+                INTEGER, INTENT(IN   ) :: NC, NR          ! length of output vector
+                INTEGER, INTENT(IN   ) :: P               ! number of layers
+                INTEGER, INTENT(IN   ) :: IX( 4,NC*NR )   ! index array
+                REAL   , INTENT(IN   ) :: AX( 4,NC*NR )   ! 4-band coeff matrix
+                REAL   , INTENT(IN   ) :: V( MC,MR )      ! P-layered input  vector
+                REAL   , INTENT(  OUT) :: Y( NC,NR )      ! P-layered output vector
+                END SUBROUTINE  BMATVEC022
+
+                !!  layered cases:
 
                 SUBROUTINE  BMATVEC11( M, N, P, IX, AX, V, Y )
                 INTEGER, INTENT(IN   ) :: M               ! length of input  vector
