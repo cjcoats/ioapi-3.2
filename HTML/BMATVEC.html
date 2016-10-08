@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BMATVEC.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: BMATVEC.html 430 2016-10-07 14:52:54Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> BILIN() and BMATVEC() </TITLE>
 </HEAD>
@@ -109,6 +109,50 @@
         END SUBROUTINE  BILIN22
 
     INTERFACE BMATVEC( ..., IX, AX, ... )
+
+        !!  non-layered cases:  you really should be using BILIN(), but...
+
+        SUBROUTINE  BMATVEC01( M, N, P, IX, AX, V, Y )
+        INTEGER, INTENT(IN   ) :: M               ! length of input  vector
+        INTEGER, INTENT(IN   ) :: N               ! length of output vector
+        INTEGER, INTENT(IN   ) :: P               ! number of layers
+        INTEGER, INTENT(IN   ) :: IX( 4,N )       ! index array
+        REAL   , INTENT(IN   ) :: AX( 4,N )       ! 4-band coeff matrix
+        REAL   , INTENT(IN   ) :: V( M )          ! P-layered input  vector
+        REAL   , INTENT(  OUT) :: Y( N )          ! P-layered output vector
+        END SUBROUTINE  BMATVEC01
+
+        SUBROUTINE  BMATVEC02( M, NC, NR, P, IX, AX, V, Y )
+        INTEGER, INTENT(IN   ) :: M               ! length of input  vector
+        INTEGER, INTENT(IN   ) :: NC, NR          ! length of output vector
+        INTEGER, INTENT(IN   ) :: P               ! number of layers
+        INTEGER, INTENT(IN   ) :: IX( 4,NC*NR )   ! index array
+        REAL   , INTENT(IN   ) :: AX( 4,NC*NR )   ! 4-band coeff matrix
+        REAL   , INTENT(IN   ) :: V( M )          ! P-layered input  vector
+        REAL   , INTENT(  OUT) :: Y( NC,NR )      ! P-layered output vector
+        END SUBROUTINE  BMATVEC02
+
+        SUBROUTINE  BMATVEC021( MC, MR, N, P, IX, AX, V, Y )
+        INTEGER, INTENT(IN   ) :: MC, MR          ! length of input  vector
+        INTEGER, INTENT(IN   ) :: N               ! length of output vector
+        INTEGER, INTENT(IN   ) :: P               ! number of layers
+        INTEGER, INTENT(IN   ) :: IX( 4,N )       ! index array
+        REAL   , INTENT(IN   ) :: AX( 4,N )       ! 4-band coeff matrix
+        REAL   , INTENT(IN   ) :: V( MC,MR )      ! P-layered input  vector
+        REAL   , INTENT(  OUT) :: Y( N )          ! P-layered output vector
+        END SUBROUTINE  BMATVEC021
+
+        SUBROUTINE  BMATVEC022( MC,MR, NC,NR, P, IX, AX, V, Y )
+        INTEGER, INTENT(IN   ) :: MC, MR          ! length of input  vector
+        INTEGER, INTENT(IN   ) :: NC, NR          ! length of output vector
+        INTEGER, INTENT(IN   ) :: P               ! number of layers
+        INTEGER, INTENT(IN   ) :: IX( 4,NC*NR )   ! index array
+        REAL   , INTENT(IN   ) :: AX( 4,NC*NR )   ! 4-band coeff matrix
+        REAL   , INTENT(IN   ) :: V( MC,MR )      ! P-layered input  vector
+        REAL   , INTENT(  OUT) :: Y( NC,NR )      ! P-layered output vector
+        END SUBROUTINE  BMATVEC022
+
+        !!  layered cases:
 
         SUBROUTINE  BMATVEC11( M, N, P, IX, AX, V, Y )
         INTEGER, INTENT(IN   ) :: M               ! length of input  vector
