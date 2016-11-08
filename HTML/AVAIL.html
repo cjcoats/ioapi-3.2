@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 427 2016-09-27 18:47:35Z coats $" -->
+<!-- "$Id: AVAIL.html 433 2016-11-08 16:07:25Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -752,13 +752,13 @@ or (PGI)
     <P>
 
     <STRONG>Note that program-codes compiled with the different
-    memory models are binary-incompatible</STRONG>. Binary type
-    <CODE>${BIN}=Linux2_x86_64ifort_medium</CODE> is provided for
-    medium-memory-model use with the Intel compilers; it is simple
-    (but as yet un-tested) to adapt similar binary-types for GNU
-    or PGI compilers.  Note also that the Intel and PGI compilers do
-    not support static linking for the medium (or large, for Intel)
-    memory model.
+    memory models are binary-incompatible</STRONG>. Binary types
+    <CODE>${BIN}=Linux2_x86_64gfort_medium</CODE>.
+    <CODE>Linux2_x86_64ifort_medium</CODE> ,
+    <CODE>Linux2_x86_64pg_medium</CODE> are provided for
+    medium-memory-model use with the Intel, GNU, or PGI compilers.  Note
+    also that the Intel and PGI compilers do not support static linking
+    for the medium (or large, for Intel) memory model.
     <P>
 
     See <A HREF="http://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models">
@@ -1523,7 +1523,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 427 2016-09-27 18:47:35Z coats $
+    $Id: AVAIL.html 433 2016-11-08 16:07:25Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

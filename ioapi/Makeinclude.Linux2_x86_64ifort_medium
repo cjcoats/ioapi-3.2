@@ -1,4 +1,8 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64ifort_medium 424 2016-09-21 18:03:48Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64ifort_medium 431 2016-11-08 16:01:58Z coats $"
+#
+#  X86_64 "Medium memory model" version:  support stack-size, array-size,
+#  data-size larger than 2 GB
+#  See http://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models
 #
 #  Michael Bane (UManchester UK) reports that for ifort version 9,
 #  -stack_temps -safe_cray_ptr are not supported and that there are
@@ -14,7 +18,7 @@ LINK = $(CC)
 MODI = -I       ## Module-include-directory command
 E132 = -extend-source 132
 
-MFLAGS    = -traceback -mcmodel=medium -shared-intel
+MFLAGS    = -mcmodel=medium -shared-intel -traceback
 
 OMPFLAGS  = -openmp
 OMPLIBS   = -openmp

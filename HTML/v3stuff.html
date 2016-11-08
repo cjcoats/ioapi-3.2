@@ -1,0 +1,944 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: AA.html 151 2015-02-06 17:18:13Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
+<TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
+
+<H1>I/O&nbsp;API:  New Stuff with Versions 3.x</H1>
+
+<H2><A NAME = "contents">Contents&nbsp;/&nbsp;Agenda</A></H2>
+
+    <UL>
+        <LI>  <A HREF = "#git"     >On Github: I/O&nbsp;API-3.2-beta</A>
+        <LI>  <A HREF = "#CF"      >CF-compliant geospatial metadata option</A>
+        <LI>  <A HREF = "#PN"      >PNCF/MPI distributed I/O option</A>
+        <LI>  <A HREF = "#snoop"   >Snoop-Mode option for read-operations</A>
+        <LI>  <A HREF = "#m3atts"  >New Module <CODE>MODATTS3</CODE></A>
+        <LI>  <A HREF = "#gctp"    >New Module <CODE>MODGCTP</CODE></A>
+        <LI>  <A HREF = "#ncfio"   >New Module <CODE>MODNCFIO</CODE></A>
+        <LI>  <A HREF = "#generic" >New Fortran-90 Generic Routines</A>
+        <LI>  <A HREF = "#tools"   ><VAR>m3tools</VAR> Programs</A>
+        <LI>  <A HREF = "#subs"    >New <CODE>SUBROUTINE</CODE>s and <CODE>FUNCTION</CODE>s</A>
+        <LI>  <A HREF = "#gfort"   ><VAR>gfortran</VAR> hacks</A>
+        <LI>  <A HREF = "#ncf"     ><VAR>netCDF-4</VAR> Issues</A>
+        <LI>  <A HREF = "#climo"   >Climatology-year versions</A>
+        <LI>  <A HREF = "#other"   >Other Issues</A>
+        <LI>  <A HREF = "#todo"    >To-Do List/Discussion</A>
+    </UL>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "git">On Github: I/O&nbsp;API-3.2</A></H2>
+
+    <BLOCKQUOTE>
+    Version&nbsp;3.2 of the I/O&nbsp;API library code is
+    <A HREF = "https://www.cmascenter.org/ioapi/download/ioapi-3.2.tar.gz">available
+    here for download</A> in <VAR>gzip</VAR>ped-<VAR>tar</VAR> source
+    code form from the CMAS Center web-site, or is available on GitHub from
+    <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
+    To install a distribution-copy using <VAR>git</VAR> directly from
+    GitHub, go to the directory under which do the installation, and
+    then do the command
+    <PRE>
+    git clone https://github.com/cjcoats/ioapi-3.2
+    </PRE>
+    Sub-directories and files are:
+    <UL>
+        <LI><STRONG><VAR>HTML</VAR></STRONG>:  documentation directory
+        <LI><STRONG><VAR>ioapi</VAR></STRONG>: library source directory
+        <LI><STRONG><VAR>m3tools</VAR></STRONG>: tools-program source directory
+        <LI><STRONG><VAR>LICENSE</VAR></STRONG>:  GPL-2 text
+        <LI><STRONG><VAR>Makefile</VAR></STRONG>:  Top-level <VAR>make</VAR> file
+        <LI><STRONG><VAR>Makefile.template</VAR></STRONG>:  master copy of top-level <VAR>make</VAR> file
+        <LI><STRONG><VAR>README.TXT</VAR></STRONG>:  ASCII &quot;readme&quot;
+        <LI><STRONG><VAR>README.md</VAR></STRONG>:  markup-language &quot;readme&quot;
+        <LI><STRONG><VAR>VERSION.txt</VAR></STRONG>:  tarball-release date file
+        <LI><STRONG><VAR>exclude</VAR></STRONG>: file used in <VAR>make gtar</VAR> tarball-creation
+    </UL>
+    <STRONG>TO DO</STRONG>:  The HTML sub-directory in this
+    project-repository has the full set of documentation
+    git-configuration-managed as HTML pages, in a manner consistent with
+    the release-tarballs and the CMAS Center I/O&nbsp;API web-pages. 
+    I've read the GitHub docs on project pages, and found them
+    remarkably un-helpful.  Is it their idea that I need to create 
+    a duplicate copy of the docs and maintain both copies&nbsp;?!
+    <BR>
+    <EM>Help&nbsp;!!</EM>
+    <P>
+
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "CF">CF-compliant geospatial metadata option</A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.2:</EM><P>
+    Creation of CF-compliant geospatial metadata during file-creation
+    can be turned on by environment variable <CODE>IOAPI_CFMETA</CODE>:<BR>
+        <BLOCKQUOTE>
+        <VAR>setenv IOAPI_CFMETA&nbsp;&nbsp;Y</VAR>
+        </BLOCKQUOTE>
+        See also <CODE>MODULE&nbsp;MODATTS3</CODE> below.
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "PN">PnetCDF/MPI distributed I/O option</A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.2:</EM>
+    <P>
+    The I/O&nbsp;API can now be configured to use PnetCDF to provide
+    distributed I/O for CMAQ (turning this on is a build-time option for
+    the I/O API), on a file-by-file basis. Distributed I/O is only
+    supported for gridded files on the cross-point grid; to turn it on,
+    prefix the path-name by a <VAR>MPI:</VAR> prefix, as in the example
+    below:
+    <PRE>
+    setenv  CHEMCONC3D  MPI:/mydir/cmaq.conc.US36_CRO.2015233.ncf
+    </PRE>
+    <P>
+    <A HREF="BUFFERED.html#pncf">See this description.</A>
+    <P>
+    I/O&nbsp;API builds usiing PnetCDF are not link compatible
+    with ordinary builds, and should be kept carefully separate from
+    them.
+    You can build the I/O&nbsp;API to use PnetCDF/MPI distributed I/O
+    using the following binary types and <CODE>Makeinclude</CODE> files
+    (or use them as templates to build your own custom binary type):    
+    <BLOCKQUOTE><DL>
+        <DT>Makeinclude.Linux2_x86_64gfortmpi
+        <DT>Makeinclude.Linux2_x86_64ifortmpi
+        <DT>Makeinclude.Linux2_x86_64pgmpi
+        <DT>Makeinclude.Linux2_x86_64sunmpi
+    </DL></BLOCKQUOTE>
+    <P>
+    See also <CODE>MODULE&nbsp;MODNCFIO</CODE> below.
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "snoop">Snoop-Mode option for read-operations</A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.2:</EM>
+    <P>
+    The I/O&nbsp;API can now be configured (e.g., for
+    forecast-modeling-system operations) to enable
+    &quot;model-pipelining&quot; by responding to end-of-file conditions
+    with multiple re-tries, controlled by environment variables
+    <CODE>SNOOPTRY3, SNOOPSECS3</CODE>:
+        <BLOCKQUOTE>
+        If <CODE>SNOOPTRY3,&nbsp;SNOOPSECS3,&nbsp;&gt;&nbsp;0</CODE>,
+        when read-operations <CODE>READ3(), XTRACT3(), INTERP3(), and
+        DDTVAR3()</CODE> encounter end-of-file, they  will re-try for up
+        to  <CODE>SNOOPTRY3</CODE> attempts, with delay
+        <CODE>SNOOPSECS3</CODE> seconds in between attempts.
+        <P>
+        If <CODE>SNOOPTRY3&nbsp;=&nbsp;0,&nbsp;SNOOPSECS3&nbsp;&gt;&nbsp;0</CODE>
+        then the number of re-tries is (almost) unlimited.
+        <P>
+        If <CODE>SNOOPTRY3&nbsp;&lt;&nbsp;0</CODE> or
+        <CODE>SNOOPSECS3&nbsp;&le;&nbsp;0</CODE>, then <VAR>Snoop&nbsp;Mode</VAR>
+        is turned off.
+        <P>
+        </BLOCKQUOTE>
+        This not only allows the generation of early-hour products well
+        before the entire forecast is complete, it also enables
+        the operating system to make better use of its internal
+        I/O-buffers, further increasing modeling system efficiency.
+        <P>
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "m3atts">New Module <CODE>MODATTS3</CODE></A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.1:</EM>  <CODE>MODULE&nbsp;M3ATTS</CODE>
+    has only the matrix-attribute routines and metadata described
+    below.
+    <P>
+    <EM>I/O&nbsp;API-3.2:</EM><P>
+    New <A HREF="MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A>
+    replaces <CODE>MODULE&nbsp;MATXATTS</CODE> (so that all
+    <CODE>USE&nbsp;MATXATTS</CODE> statements need to become
+    <CODE>USE&nbsp;MODATTS3</CODE> in your codes):
+    <UL>
+        <LI> Matrix-attribute routines (add extra <VAR>netCDF</VAR>
+             file attributes to describe input and output grids
+             for matrix-files):
+             <UL>
+                 <LI>  <CODE>INITMTXATT()</CODE>
+                 <LI>  <CODE>GETMTXATT()</CODE>
+                 <LI>  <CODE>SETMTXATT()</CODE>
+                 <LI>  <CODE>CHKMTXATT()</CODE>
+                 <LI>  <CODE>ENDMTXATT()</CODE>
+             </UL>
+        <LI> <A HREF="http://cfconventions.org/">CF-convention</A>
+             geospatial-metadata routines make newly-created
+             files CF compliant (hopefully, subject to further
+             testing...):
+             <UL>
+                 <LI>  <CODE>INITCF()</CODE>
+                 <LI>  <CODE>SETCF()</CODE>
+                 <LI>  <CODE>ENDCF()</CODE>
+             </UL>
+        <LI> &quot;Standard&quot; CMAQ data structures 
+             and routines for CMAQ metadata, turned on
+             by environment variable <CODE>IOAPI_CMAQMETA</CODE>:
+             <BR>
+             <BLOCKQUOTE>
+              <VAR>setenv IOAPI_CMAQMETA&nbsp;&nbsp;Y</VAR>
+             </BLOCKQUOTE>
+             <UL>
+                 <LI>  <CODE>INITCMAQ()</CODE>
+                 <LI>  <CODE>ISCMAQ()</CODE>
+                 <LI>  <CODE>GETCMAQ()</CODE>
+                 <LI>  <CODE>LOGCMAQ()</CODE>
+                 <LI>  <CODE>SETCMAQ()</CODE>
+                 <LI>  <CODE>ENDCMAQ()</CODE>
+             </UL>
+        <LI> Place-holder for &quot;standard&quot; SMOKE
+             metadata data structures and routines (what this metadata
+             contains needs to be determined...), turned on by
+             environment variable <CODE>IOAPI_SMOKEMETA</CODE>:<BR>
+             <BLOCKQUOTE>
+              <VAR>setenv IOAPI_SMOKEMETA&nbsp;&nbsp;Y</VAR>
+             </BLOCKQUOTE>
+             <UL>
+                 <LI>  <CODE>INITSMOKE()</CODE>
+                 <LI>  <CODE>ISSMOKE()</CODE>
+                 <LI>  <CODE>GETSMOKE()</CODE>
+                 <LI>  <CODE>LOGSMOKE()</CODE>
+                 <LI>  <CODE>SETSMOKE()</CODE>
+                 <LI>  <CODE>ENDSMOKE()</CODE>
+             </UL>
+             Developing the data dictionary for standard SMOKE metadata
+             is an <A HREF = "#todo">open issue below</A>, that is
+             needed before the &quot;guts&quot; of these routines can be
+             filled in.
+    </UL> 
+
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "gctp">New Module <CODE>MODGCTP</CODE></A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.2:</EM><P>
+    New <A HREF="MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A> with
+    all the coordinate-transform related routines and
+    <CODE>INTERFACE</CODE>s:<BR> <EM>Old but modified:</EM> (moved from
+    <CODE>MODULE&nbsp;M3UTILIO</CODE>)
+      <UL>
+          <LI>  <CODE>INTERFACE</CODE> for 
+                <A HREF="GCTP.html"><CODE>GTPZ0()</CODE></A>
+          <LI>  <CODE>INTERFACE</CODE>s and new implementations for
+                <CODE>GTPZ0()</CODE>-spheroid initialization procedures
+                <A HREF="SETSPHERE.html"><CODE>SETSPHERE(), INITSPHERES(),
+                SPHEREDAT()</CODE></A>
+          <LI>  <CODE>INTERFACE</CODE>s and new implementations for
+                single-precision/single-point/specific-projection
+                coordinate-transform functions 
+                <A HREF="LAMBERT.html"><CODE>INITPROJ(), ..., 
+                LAMBERT(), ..., ALB2EQM()</CODE></A>
+                <P>
+      </UL>
+      <EM>New:</EM>
+      <UL>
+          <LI>  <CODE>PARAMETER</CODE>s <CODE>STDSPHERES(0:21)</CODE>
+                and <CODE>SPHERENAMES(0:21)</CODE> for GCTP spheroid
+                names and indices;
+          <LI>  <CODE>GTPZ0()</CODE>-argument initialization procedure
+                <A HREF="M3TOGTPZ.html"><CODE>M3TOGTPZ()</CODE></A>
+          <LI>  Scattered-point-array generic coordinate-transform
+                procedure <A HREF="XY2XY.html"><CODE>XY2XY()</CODE></A>
+          <LI>  Grid-node-array generic coordinate-transform
+                procedure <A HREF="GRID2XY.html"><CODE>GRID2XY()</CODE></A>
+          <LI>  High-performance OpenMP-Parallel generic bilinear
+                interpolation package 
+                <A HREF="GRID2INDX.html"><CODE>GRID2INDX(), PNTS2INDX(),
+                INDXMULT()</CODE></A>
+      </UL>
+      <P>
+
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "ncfio">New Module <CODE>MODNCFIO</CODE></A></H2>
+
+    <BLOCKQUOTE>
+    Due to inconsistencies between them, it was difficult to use
+    the vendor supplied <CODE>INCLUDE</CODE> files
+    <VAR>netcdf.inc</VAR> (or <VAR>NETCDF.EXT</VAR>) and <VAR>pnetcdf.inc</VAR> 
+    for the I/O&nbsp;API Distributed-I/O Mode: the latter defined
+    <U>some but not all</U> of the netCDF definitions that were
+    needed, so it was not possible to use <CODE>#ifdef</CODE>s 
+    to select between them.  New 
+    <A HREF="MODNCFIO.html"><CODE>MODULE&nbsp;MODNCFIO</CODE></A>
+    puts all the definitions in a consistent form in one place
+    (with conditional compilation, to determine whether or not
+    PnetCDF is active).
+    <P>
+    This module also supplies new routines for use with a specified
+    &quot;raw netCDF&quot; file:
+    <UL>
+        <LI> <CODE>DESCNCVAR()</CODE> returns the list of variables and
+             their types and dimensions, and 
+        <LI> <CODE>READNCVAR()</CODE> is a generic routine that reads
+             a specified 1-D, 2-D, 3-D, or 4-D variable of type
+             <CODE>INTEGER</CODE>, <CODE>REAL</CODE>,
+             <CODE>REAL*8</CODE>, <CODE>INTEGER*1</CODE>, or
+             <CODE>INTEGER*2</CODE>, with both fully-dimensioned and
+             single-indexed forms for the output-buffers.
+    </UL>
+    The upcoming SMOKE uses <CODE>READNCVAR()</CODE> to read global
+    gridded emissions data.  Many other uses (e.g., to read
+    <CODE>INTEGER*2</CODE> gridded NLDAS land-cover for CONUS) can easily
+    be imagined.
+    <P>
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H2><A NAME = "generic">New Fortran-90 Generic Routines</A></H2>
+
+    <BLOCKQUOTE>
+    Many of these are what's needed to provide explicit
+    <CODE>INTERFACE</CODE>s where arguments may have been previously
+    single-indexed or not, or to provide  for both <CODE>REAL</CODE> and
+    <CODE>REAL8</CODE> arguments, etc.  Transform routines in
+    <CODE>MODULE MODGCTP</CODE> exist in both same-sphere and
+    sphere-to-sphere forms.  In addition to the many generic
+    routines now found in <A HREF="M3ATTS.html"><CODE>MODULE&nbsp;M3ATTS</CODE></A>
+    and <A HREF="MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>,
+    the following are now defined in
+    <A HREF="M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
+    <P>
+    Note that these generic <CODE>INTERFACE</CODE>s require
+    <CODE>USE&nbsp;M3UTILIO</CODE>.
+
+    <DL>
+        <DT><CODE>SUBROUTINE BILIN()</CODE>:
+        <DD> <CODE>BILIN11L(), BILIN12L(), BILIN21L(), BILIN22L(),
+        BILIN11(), BILIN12(), BILIN2L(), BILIN22()</CODE><BR>
+        <EM>I/O&nbsp;API-3.2 and later</EM>
+        <P>
+
+        <DT><CODE>SUBROUTINE BMATVEC()</CODE>:
+        <DD> <CODE>BMATVEC11(), BMATVEC12(), BMATVEC2L(), BMATVEC22()</CODE>
+        <P>
+
+        <DT><CODE>LOGICAL FUNCTION ENVLIST()</CODE>:
+        <DD> <CODE>INTLIST(), REALIST(), DBLLIST(), STRLIST()</CODE><BR>
+        <EM>I/O&nbsp;API-3.2 and later</EM>
+        <P>
+
+        <DT><CODE>&lt;type&gt; FUNCTION ENVGET()</CODE>:
+        <DD> <CODE>BENVINT(), BENVDBLE(), BENVREAL(),
+        ENVINT(), ENVDBLE(), ENVREAL(),
+        ENVSTR(), ENVYN()</CODE><BR>
+        <EM>I/O&nbsp;API-3.2 and later</EM>
+        <P>
+
+        <DT><CODE>INTEGER FUNCTION FINDKEY()</CODE>:
+        <DD> <CODE>FINDC(), FIND1(), FIND2(), FIND3(), FIND4(),
+        FINDL1(), FINDL2(), FINDL3(), FINDL4(), FINDR1(), FINDR2(),
+        FINDR3(), FINDR4()</CODE><BR>
+        <EM>I/O&nbsp;API-3.1 and later</EM>
+        <P>
+
+        <DT><CODE>&lt;type&gt; FUNCTION GETVAL()</CODE>:
+        <DD> <CODE>GETDBLE(), GETDBLE1(), GETMENU(),
+        GETNUM(), GETNUM1(), GETREAL(), GETREAL1(),
+        GETYN()</CODE><BR>
+        <EM>I/O&nbsp;API-3.2 and later</EM>
+        <P>
+
+        <DT><CODE>INTEGER FUNCTION LOCATE()</CODE>:
+        <DD> <CODE>LOCAT1(), LOCAT2(), LOCAT3(), LOCAT4(), LOCATC(),
+        LOCATL1(), LOCATL2(), LOCATL3(), LOCATL4()
+        LOCATR1(), LOCATR2(), LOCATR3(), LOCATR4()</CODE><BR>
+        <EM>I/O&nbsp;API-3.1 and later</EM>
+        <P>
+
+        <DT><CODE>SUBROUTINE PMATVEC()</CODE>:
+        <DD> <CODE>PMATVEC11(), PMATVEC12(), PMATVEC21(), PMATVEC22()</CODE><BR>
+        <EM>I/O&nbsp;API-3.2 and later</EM>
+        <P>
+
+        <DT><CODE>SUBROUTINE SORTI()</CODE>:
+        <DD> <CODE>SORTIC4(), SORTIC8(), SORTINC4(), SORTINC8(),
+        SORTI1(), SORTI2(), SORTI3(), SORTI4(), SORTL1(), SORTL2(),
+        SORTL3(), SORTL4(), SORTR1(),SORTR2(), SORTR3(), SORTR4()</CODE><BR>
+        <EM>I/O&nbsp;API-3.1 and later</EM>
+        <P>
+
+        <DT><CODE>SUBROUTINE UNGRIDB()</CODE>:
+        <DD> <CODE>UNGRIDBS1(), UNGRIDBS2(), UNGRIDBD1(), UNGRIDBD2()</CODE>
+        <P>
+
+        <DT><CODE>SUBROUTINE UNGRIDI()</CODE>:
+        <DD> <CODE>UNGRIDIS1(), UNGRIDIS2(), UNGRIDID1(), UNGRIDID2()</CODE>
+        <P>
+    </DL>
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "tools"><VAR>m3tools</VAR> Programs</A></H2>
+
+    <BLOCKQUOTE>
+    <STRONG>Date-and-Time Manipulation for Scripting</STRONG>:<BR>
+    <EM>I/O&nbsp;API-3.1 and later:</EM><P>
+    <VAR>datshift, greg2jul, jul2greg, juldiff, julshift, timeshift</VAR><BR>
+    These echo the program's result (without any extraneous stuff). 
+    Here are some sample uses (where note that &quot;enclose in
+    back-quotes&quot; means to take the result of the program and use
+    it, e.g., as the right-hand side of <VAR>set&nbsp;...&nbsp;=&nbsp;</VAR>,
+    and that the <VAR>:r</VAR> &quot;root&quot;  and <VAR>:e</VAR>
+    &quot;extension&quot; operators take the left and right hand sides
+    of the period in shell-variable values):
+    <PRE>
+    set jdate = `greg2jul today`
+    set kdate = `greg2jul 20150103`             # converts Jan. 3, 2015 to YYYYDDD format
+    set idate = `julshift ${jdate} 7`           # Julian date for this day next week
+    set days  = `juldiff ${jdate} ${kdate}`     # is two less than today's day-number, assuming today in 2015005.
+    timeshift 2014029.120000 183000             # echoes 2014030.063000
+    set foo = `timeshift 2014029.120000 183000`
+    echo $foo:r                                 # echoes 2014030
+    echo $foo:e                                 # echoes 063000
+    </PRE>
+    <P>
+
+    <STRONG>New Programs</STRONG>:
+    <BLOCKQUOTE>
+    <U>I/O&nbsp;API-3.1 and later:</U>
+        <BLOCKQUOTE>
+        <VAR>bcwndw, camxtom3, dayagg, vertimeproc, vertintegral</VAR><P>
+        </BLOCKQUOTE>
+    <U>I/O&nbsp;API-3.2:</U>
+        <BLOCKQUOTE>
+        <VAR>findwndw, gridprobe, insertgrid, m3mask, m3probe, m3totxt,
+        wrfgriddesc, wrftom3</VAR><P>
+        </BLOCKQUOTE>
+    </BLOCKQUOTE>
+    <P>
+
+    <STRONG>OpenMP-Parallel Programs</STRONG>:
+    <BLOCKQUOTE>
+    <U>I/O&nbsp;API-3.2:</U>
+        <BLOCKQUOTE>
+        <VAR>bcwndw, dayagg, m3agmask, m3agmax, m3combo, m3cple, m3interp,
+        m3mask, m3tproc, mtxcalc mtxcple, presz, vertimeproc, vertintegral,
+        vertot
+        </VAR>
+        </BLOCKQUOTE>
+    </BLOCKQUOTE>
+    <P>
+
+    <STRONG>Fortran-90 &quot;Free&quot; (<VAR>.f90</VAR>) source format</STRONG>:
+        <BLOCKQUOTE>
+        <U>I/O&nbsp;API-3.2:</U>
+        <BLOCKQUOTE>
+        <VAR>bcwndw.f90, camxtom3.f90, datshift.f90, dayagg.f90, factor.f90,
+        fakestep.f90, fills.f90, greg2jul.f90, gregdate.f90, jul2greg.f90,
+        juldate.f90, juldiff.f90, julshift.f90, latlon.f90, m3combo.f90,
+        m3cple.f90, m3fake.f90, m3pair.f90, m3probe.f90, m3totxt.f90,
+        m3tproc.f90, m3tshift.f90, m3wndw.f90, mtxcalc.f90, pairstep.f90,
+        presz.f90, timeshift.f90, vertimeproc.f90, vertintegral.f90, vertot.f90
+        </VAR>
+        </BLOCKQUOTE>
+    </BLOCKQUOTE>
+    <P>
+
+    <STRONG>New <A HREF="SAMPLE.html">SAMPLE PROGRAMS</A> page</STRONG>:
+    updated to demonstrate I/O&nbsp;API-3.x capabilities and <CODE>MODULE</CODE>s,
+    <VAR>.f90</VAR> source format and coding:
+    <U>I/O&nbsp;API-3.2</U>
+    <P>
+
+    <STRONG>Removed program
+    <VAR>utmtool</VAR></STRONG> (deprecated in I/O&nbsp;API-3.0), in
+    favor of program <VAR>projtool</VAR> which has greatly extended
+    capabilities: <EM>I/O&nbsp;API-3.2</EM>
+    <P>
+
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "subs">New <CODE>SUBROUTINE</CODE>s and <CODE>FUNCTION</CODE>s</A></H2>
+
+
+    <BLOCKQUOTE>
+    <DL>
+        <DT><CODE>INTERFACE</CODE>-specific forms: <EM>I/O&nbsp;API-3.2</EM>
+        <DD>needed for <CODE>MODULE&nbsp;M3UTILIO</CODE> to provide
+        <CODE>INTERFACE</CODE>s for multiple argument-rank cases,
+        as described in the section on Fortran-90 Generics, above.
+        <P>
+        <DT><CODE>SUBROUTINE LASTTIME( SDATE,STIME,TSTEP,NRECS,
+        EDATE,ETIME )</CODE>: <EM>I/O&nbsp;API-3.1</EM>
+        <DD>computes the last date and time for a time step sequence,
+        robustly avoiding <CODE>INTEGER</CODE>-overflow problems
+        (Limit:  <CODE>NRECS</CODE> overflows beyond about 68 years with 1-sec
+        timestep, or 8947 years with 1-hour timestep.  I've done 33-year
+        runs with no problems, with I/O&nbsp;API-3.1 codes).
+        <P>
+        <DT><CODE>GETNUM1(), GETREAL1(), GETDBLE1()</CODE>: <EM>I/O&nbsp;API-3.2</EM>
+        <DD>Have only arguments for <CODE>DEFAULT</CODE> and <CODE>PROMPT</CODE>,
+        but not <CODE>LO, HI</CODE> as in <CODE>GETNUM(), GETREAL(), GETDBLE()</CODE>
+        <P>
+        <DT><CODE>BENVINT(), BENVDBLE(), BENVREAL()</CODE>: <EM>I/O&nbsp;API-3.2</EM>
+        <DD>accept bounded ranges of inputs:  <EM>do</EM> have
+        <CODE>LO, HI</CODE> arguments
+        <P>
+        <DT><CODE>M3TOGTPZ(),XY2XY(),GRID2XY(), GRID2INDX(), PNTS2INDX(), INDXMULT()</CODE>: 
+        <EM>I/O&nbsp;API-3.2</EM>
+        <DD> in <CODE>MODULE MODGCTP</CODE>
+        <P>
+        <DT><CODE>FINDL1(), FINDL2(), FINDL3(), FINDL4(), 
+                  LOCATL1(), LOCATL2(), LOCATL3(), LOCATL4(),
+                  SORTL1(), SORTL2(), SORTL3(), SORTL4()</CODE>:
+                  <EM>I/O&nbsp;API-3.1</EM>
+        <DD>...for <CODE>INTEGER*8</CODE> key-tuples
+        <P>
+        <DT><CODE>SORTINC4(), SORTINC8()</CODE>: <EM>I/O&nbsp;API-3.1</EM>
+        <DD>...only the first <CODE>N</CODE> characters are significant.
+        <P>
+        <DT><CODE>SORTIC8(), SORTINC8()</CODE>: <EM>I/O&nbsp;API-3.1</EM>
+        <DD>...use <CODE>INTEGER*8</CODE> table-subscripting, and require
+        compilation for the Medium-64 memory model to be useful
+        (<VAR>-mcmodel=medium</VAR> for <VAR>ifort</VAR>).  [SMOKE-CARB
+        request where they want to have more than 2G &quot;sources&quot;
+        for program <VAR>smkreport</VAR>)
+        <P>
+    </DL>
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "gfort"><VAR>gfortran</VAR> hacks</A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.1 and later:</EM><P>
+    Recent versions of <VAR>gfortran</VAR> insist on breaking
+    compatibility with all other compilers we use (and with earlier
+    versions of <VAR>gfortran</VAR>), not accepting
+    command-line-argument routines <CODE>IARGC()</CODE> and
+    <CODE>GETARG()</CODE> (which are an industry standard Fortran
+    extension), and accepting only Fortran-2003 routines
+    <CODE>GET_COMMAND_ARGUMENT()</CODE> and
+    <CODE>COMMAND_ARGUMENT_COUNT()</CODE>. This version conditionally
+    implements <CODE>IARGC()</CODE> and <CODE>GETARG()</CODE> internally
+    in <VAR>init3.F</VAR>, depending upon preprocessor-definition
+    <CODE>-DNEED_ARGS=1</CODE> which is now set in
+    <VAR>Makeinclude.Linux2_x86</VAR>,
+    <VAR>Makeinclude.Linux2_x86gfort</VAR>,
+    <VAR>Makeinclude.Linux2_x86_64,</VAR> and
+    <VAR>Makeinclude.Linux2_x86_64gfort</VAR>. Depending upon
+    <VAR>gfortran</VAR> version, you either need to have it, or need
+    <EM>not</EM> to have it.
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "climo">Climatology-Year Versions</A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.2 and later:</EM><P>
+    You can build the I/O&nbsp;API to use a 360-day or 365-day
+    climatology year, using the following binary types and
+    <CODE>Makeinclude</CODE> files:  
+    <BLOCKQUOTE><DL>
+        <DT>Makeinclude.Linux2_x86_64_360
+        <DT>Makeinclude.Linux2_x86_64_365
+        <DT>Makeinclude.Linux2_x86_64gfort_360
+        <DT>Makeinclude.Linux2_x86_64gfort_365
+        <DT>Makeinclude.Linux2_x86_64ifort_360
+        <DT>Makeinclude.Linux2_x86_64ifort_365
+        <DT>Makeinclude.Linux2_x86_64pg_360
+        <DT>Makeinclude.Linux2_x86_64pg_365
+    </DL></BLOCKQUOTE>
+    
+    Note that you need to keep these builds distinct from the
+    (not-compatible) &quot;normal&quot; builds
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "other">Other Issues</A></H2>
+
+    <BLOCKQUOTE>
+    <DL>
+        <DT><STRONG><CODE>INTEGER</CODE> Overflow Issues</STRONG>
+        <DD> Note that time intervals coded <CODE>HHMMSS</CODE> will suffer
+        INTEGER-overflow after a little more than 24.5 years; however, a
+        number of I/O&nbsp;API routines&mdash;<VAR>CURREC(), CURRSTEP(),
+        JSTEP3(), LASTTIME(), NEXTTIME()</VAR>&mdash;are carefully coded
+        so as to avoid such overflow, and can be used for time periods
+        as long as several thousand years.
+        <P>
+        Programs that use starting date and time and run-duration 
+        (formatted <CODE>YYYYDDD</CODE>, <CODE>HHMMSS</CODE>, and
+        <CODE>HHMMSS</CODE>) as run-control parameters will necessarily
+        have the matching overflow problems; it is recommended that
+        starting and ending dates and times be used instead.
+        This style is safe for multi-century runs...
+        <P>
+
+        <DT><STRONG>Environment variables</STRONG>
+        <DD> ...of length up to 64K are now supported internally for
+        I/O&nbsp;API-3.1 and later.  Note that your operating system may
+        well barf over this kind of thing&nbsp;&mdash; POSIX only
+        mandates up to 512 bytes&nbsp;;-(
+        <P>
+
+        <DT><STRONG>GET_ENVLIST()</STRONG>
+        <DD> <EM>Why re-invent the wheel? <STRONG>un-safely?</STRONG><BR>
+        ...and repeatedly? (there being 5 different copies of this routine in the
+        CMAQ-5.0.1 source!)</EM><BR>
+        There was <EM>already</EM> a well-written routine <CODE>STRLIST()</CODE>
+        with the same functionality, except that it did so safely, with
+        bounds-checking: by putting a too-long list into a CMAQ script,
+        I can crash CMAQ any time I want! This would <EM>not</EM> be
+        true if it used the already-written I/O&nbsp;API routines.
+        <P>
+
+        <DT><STRONG>CHECKMEM()</STRONG>
+        <DD><EM>Note that this is mostly found in SMOKE-descended codes,
+        and in SMOKE itself...</EM>
+        <BR>
+        Use of this routine <EM>violates Models-3 standards</EM> by
+        suppressing logging of the I/O-status argument, which when
+        non-zero is is the actual reason for program
+        failure&nbsp;&mdash; in one case I know of it cost more than two
+        person-weeks of debugging a development-version of SMOKE program
+        <VAR>movesmrg</VAR>, before I replaced this routine by one which
+        did report the I/O status, at which point it took me about ten
+        minutes to re-compile and do a test-run,  five more minutes to
+        look up the failure-status in Intel's web-docs, and  then a
+        final ten  minutes to find and fix the problem.
+        <P>
+        Moreover, <CODE>CHECKMEM()</CODE> use both suppresses
+        optimization opportunities and at the  same time makes the code
+        less readable.  For example, compare this  example taken from
+        <VAR>BDSNP_MOD.F</VAR>:
+    <PRE>
+         ALLOCATE( SOILM( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'SOILM', PNAME )
+         
+         ALLOCATE( SOILMPREV( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'SOILMPREV', PNAME )
+
+         ALLOCATE( SOILT( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'SOILT', PNAME )
+
+         ALLOCATE( ISLTYP( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'ISLTYP', PNAME )
+
+         ALLOCATE( DRYPERIOD( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'PTYPE', PNAME )
+         
+         ALLOCATE( NDEPRES( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'PTYPE', PNAME )
+         
+         ALLOCATE( NDEPRATE( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'PTYPE', PNAME )
+         
+         NDEPRATE = 0.0
+
+         ALLOCATE( PFACTOR( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'PFACTOR', PNAME )
+         
+         ALLOCATE( ARID( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'ARID', PNAME )
+         
+         ALLOCATE( NONARID( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'NONARID', PNAME )
+         
+         ALLOCATE( LANDFRAC( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'LANDFRAC', PNAME )
+         
+         ALLOCATE( FERT( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'FERT', PNAME )
+         
+         ALLOCATE( T1_NH3( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'T1_NH3', PNAME )
+         
+         ALLOCATE( T1_NO3( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'T1_NO3', PNAME )
+
+         ALLOCATE( T1_ON( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'T1_ON', PNAME )
+
+         ALLOCATE( EPICN( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'EPICN', PNAME )
+
+         ALLOCATE( CRF( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'CRF', PNAME )
+         
+         ALLOCATE( CRFAVG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'CRF', PNAME )
+         
+         ALLOCATE( PULSEAVG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'PULSEAVG', PNAME )
+         
+         ALLOCATE( BASESUM( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'BASESUM', PNAME )
+         
+C ------ Diagnostics -----------------------------------         
+         ALLOCATE( THETA_DIAG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'THETA_DIAG', PNAME )
+         
+         ALLOCATE( WET_DIAG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'WET_DIAG', PNAME )
+         
+         ALLOCATE( TEMP_DIAG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'TEMP_DIAG', PNAME )
+         
+         ALLOCATE( A_DIAG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'A_DIAG(', PNAME )
+         
+         ALLOCATE( AFERT_DIAG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'AFERT_DIAG', PNAME )
+         
+         ALLOCATE( NRES_FERT_DIAG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'NRES_FERT_DIAG', PNAME )
+         
+         ALLOCATE( NRES_DEP_DIAG( NCOLS,NROWS ), STAT=IOS )
+         CALL CHECKMEM( IOS, 'NRES_DEP_DIAG', PNAME )
+    </PRE>
+        (which hides its actual content among a forest of 
+        <CODE>CHECKMEM</CODE>s) with the following, which I find much more readable:
+    <PRE>
+         ALLOCATE( SOILM( NCOLS,NROWS ),
+     &amp;         SOILMPREV( NCOLS,NROWS ),
+     &amp;             SOILT( NCOLS,NROWS ),
+     &amp;            ISLTYP( NCOLS,NROWS ),
+     &amp;         DRYPERIOD( NCOLS,NROWS ),
+     &amp;           NDEPRES( NCOLS,NROWS ),
+     &amp;          NDEPRATE( NCOLS,NROWS ),
+     &amp;           PFACTOR( NCOLS,NROWS ),
+     &amp;              ARID( NCOLS,NROWS ),
+     &amp;           NONARID( NCOLS,NROWS ),
+     &amp;          LANDFRAC( NCOLS,NROWS ),
+     &amp;              FERT( NCOLS,NROWS ),
+     &amp;            T1_NH3( NCOLS,NROWS ),
+     &amp;            T1_NO3( NCOLS,NROWS ),
+     &amp;             T1_ON( NCOLS,NROWS ),
+     &amp;             EPICN( NCOLS,NROWS ),
+     &amp;               CRF( NCOLS,NROWS ),
+     &amp;            CRFAVG( NCOLS,NROWS ),
+     &amp;          PULSEAVG( NCOLS,NROWS ),
+     &amp;           BASESUM( NCOLS,NROWS ),
+     &amp;        THETA_DIAG( NCOLS,NROWS ),    !!  diagnostic variables:
+     &amp;          WET_DIAG( NCOLS,NROWS ),
+     &amp;         TEMP_DIAG( NCOLS,NROWS ),
+     &amp;            A_DIAG( NCOLS,NROWS ),
+     &amp;        AFERT_DIAG( NCOLS,NROWS ),
+     &amp;    NRES_FERT_DIAG( NCOLS,NROWS ),
+     &amp;     NRES_DEP_DIAG( NCOLS,NROWS ), STAT=IOS )
+         IF ( IOS .NE. 0 ) THEN
+
+             WRITE( MESG, '(A, I9)' ) 
+     &amp;          'ERROR allocating SOILM...NRES_DEP_DIAG.  STATUS=', IOS
+             CALL M3EXIT( PNAME, 0,0, MESG, 2 )
+         END IF
+         
+         NDEPRATE = 0.0
+    </PRE>
+        <P>
+
+        <DT><STRONG>Array-of-<VAR>TYPE</VAR> code architecture</STRONG>
+        <DD>If you take nVidia's courses on GPU programming, one of the
+        very first things they will say (using C-programmer language,
+        <VAR>struct</VAR> instead of Fortran-90 <VAR>TYPE</VAR>) is:
+        <BLOCKQUOTE>
+        Many codes can be structured either as
+        <VAR>array-of-structs</VAR>  or as <VAR>struct-of-arrays</VAR> (or
+        even as parallel arrays). <STRONG><VAR>Array-of-structs</VAR>
+        code will kill GPU-computing performance</STRONG>
+        </BLOCKQUOTE>
+        And actually the same is true for for killing performance on the
+        upcoming Intel PHI Xeons and, though to a lesser degree, for 
+        current cache based microprocessors...
+        <P>
+
+        <DT><STRONG>Module names</STRONG>
+        <DD>With a very few exceptions (Absoft, PathScale, Cray),
+        Fortran-90 compiler behavior for generating
+        <CODE>MODULE</CODE>-file names is
+        <BLOCKQUOTE>
+        Downcase the <CODE>MODULE</CODE>-name<BR>
+        Add a trailing <VAR>.mod</VAR>
+        </BLOCKQUOTE>
+        Therefore, if we name <CODE>MODULE</CODE>-source files by a similar
+        pair of rules:
+        <BLOCKQUOTE>
+        One <CODE>MODULE</CODE> per source-file<BR> <EM>Optionally, name
+        all modules &quot;<VAR>mod&lt;something&gt;</VAR>&quot; so that
+        module-source files are immediately obvious</EM><BR> Downcase
+        the <CODE>MODULE</CODE>-name for the base of the source-file
+        name, and add a trailing <VAR>.f</VAR> or  <VAR>.f90</VAR>, as
+        appropriate.<BR>
+        For example <CODE>MODULE&nbsp;MODQUX</CODE> should live in
+        source-file <VAR>modqux.f90</VAR> or...
+        </BLOCKQUOTE>
+        then we can put rule based&mdash;and correct!&mdash;
+        <CODE>MODULE</CODE> and precise dependency handling into 
+        <VAR>Makefiles</VAR>, and avoid a number of problems caused by
+        the hacks found in the current  systems. Here is an example of
+        some of the rules:
+        <BLOCKQUOTE>
+        <PRE>
+.SUFFIXES: .m4 .c .F .f ..f90 .mod
+...
+##########  Rules:
+%.o : %.mod        #  Disable "gmake"s obnoxious implicit Modula-2 rule !!
+%.f : %.F          #  Hack for some versions of  "gmake" + "gfortran"
+.f.mod:
+	cd ${OBJDIR}; $(FC) -c $(FFLAGS) ${SRCDIR}/$&lt;
+.f90.mod:
+	cd ${OBJDIR}; $(FC) -c $(FFLAGS) ${SRCDIR}/$&lt;
+...
+##########  Dependencies:
+
+foo.o : modbar.mod m3utilio.mod
+...
+        </PRE>
+        </BLOCKQUOTE>
+        By way of further example, the <VAR>Makefile</VAR> for one of my 
+        hydrology models has the following precise set of <CODE>MODULE</CODE>-related
+        dependency rules:
+        <BLOCKQUOTE>
+        <PRE>
+mod_noah.mod  mod_noah.o  : mod_calibparms.mod
+mod_route.mod mod_route.o : mod_noah.mod mod_rteparms.mod mod_calibparms.mod
+chanadj.o    : mod_rteparms.mod
+chaninit.o   : mod_rteparms.mod
+gis2route.o  : mod_rteparms.mod
+gridinit.o   : mod_route.mod mod_noah.mod mod_rteparms.mod mod_calibparms.mod
+mpoolinit.o  : mod_rteparms.mod
+nldastomet.o : ${LIBDIR}/modgribio.mod
+nldasmask.o  : ${LIBDIR}/modgribio.mod
+qbaseinit.o  : mod_noah.mod mod_rteparms.mod mod_calibparms.mod
+reflex.o     : mod_noah.mod mod_route.mod
+...
+        </PRE>
+        </BLOCKQUOTE>
+        <P>
+
+        <DT><STRONG></STRONG>
+        <DD>
+        <P>
+
+    </DL>
+    
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+<P>
+
+<H2><A NAME = "todo">To-Do List/Discussion</A></H2>
+
+    <BLOCKQUOTE>
+    <EM>Just to get things started:</EM>
+
+    <UL>
+
+        <LI> Define standard <VAR>SMOKE</VAR> metadata and
+        the interface(s) by which it is provided.  Then finish the relevant
+        routines in
+        <A HREF="MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A> accordingly.
+        <P>
+
+        <LI> Add a  <CODE>MODULE</CODE> that supports routines for GIS-raster-format
+        I/O (<CODE>INTEGER*[1,2,4]</CODE>&nbsp;BIL, GRIDFLOAT, ARC-ASCII,
+        ASC-ASCII, etc., as well as <VAR>gzip</VAR>ped forms of the same)?
+        <P>
+
+        <LI> Tension-spline interpolation module and tools-programs?
+        <P>
+
+        <LI> High-performance production-graphics programs
+             (<VAR>m3plot, mtxplot, ncfplot, gisplot</VAR>)?
+        <P>
+
+        <LI> <VAR>m3tools</VAR> development&mdash;new codes with
+        standardized, overflow-proof (starting date&amp;time; ending
+        date&amp;time) interfaces, free-format F90, OpenMP-parallel where
+        reasonable?
+        <P>
+
+    </UL>
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+Send comments to
+<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS>
+          Carlie J. Coats, Jr. <br>
+          cjcoats@email.unc.edu  </ADDRESS> </A><P>
+
+</BODY>
+</HTML>
+
