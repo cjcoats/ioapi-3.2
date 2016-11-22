@@ -2,7 +2,7 @@
         PROGRAM  M3EDHDR
 
 C***********************************************************************
-C Version "$Id: m3edhdr.f 287 2015-12-21 21:29:58Z coats $"
+C Version "$Id: m3edhdr.f 435 2016-11-22 18:10:58Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -141,14 +141,15 @@ C   begin body of program  M3EDHDR
      &' ',
      &'Comments and questions are welcome and can be sent to',
      &' ',
-     &'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',
+     &'    Carlie J. Coats, Jr.    carlie@jyarborough.com',
+     &'or',
      &'    UNC Institute for the Environment',
-     &'    100 Europa Dr., Suite 490 Rm 405',
+     &'    137 E. Franklin St. Suite 602 Room 613-C',
      &'    Campus Box 1105',
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3edhdr.f 287 2015-12-21 21:29:58Z coats                $',
+     &'$Id:: m3edhdr.f 435 2016-11-22 18:10:58Z coats                $',
      &' '
 
         ARGCNT = IARGC()

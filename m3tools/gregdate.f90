@@ -2,7 +2,7 @@
 PROGRAM GREGDATE
 
     !!***********************************************************************
-    !! Version "$Id: gregdate.f90 121 2015-01-20 22:24:38Z coats $"
+    !! Version "$Id: gregdate.f90 435 2016-11-22 18:10:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -55,37 +55,38 @@ PROGRAM GREGDATE
     !!***********************************************************************
     !!   begin body of program GREGDATE
 
-    WRITE( *,'( 5X, A )' ) ' ', ' ',                                &
- 'Program GREGDATE takes julian date (in form YYYYDDD) and',        &
- 'returns the date in form "Wkday, Month DD, YYYY".',               &
- ' ',                                                               &
- '    Usage:  "gregdate [<JDATE>]" ',                               &
- '    (alt    "gregdate [ YESTERDAY | TODAY | TOMORROW]") ',        &
- ' ',                                                               &
- '(if the JDATE command-line argument is missing, prompts the ',    &
- 'user for JDATE)',                                                 &
-' ',                                                                &
-'See URL',                                                          &
-'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',    &
-' ',                                                                &
-'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013',              &
-'Carlie J. Coats, Jr., and (C) 2002-2010 Baron Advanced',           &
-'Meteorological Systems, LLC.  Released under Version 2',           &
-'of the GNU General Public License. See enclosed GPL.txt, or',      &
-'URL',                                                              &
-''  ,                                                               &
-'    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',       &
-''  ,                                                               &
-'Comments and questions are welcome and can be sent to',            &
-' ',                                                                &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                &
-'    UNC Institute for the Environment',                            &
-'    100 Europa Dr., Suite 490 Rm 405',                             &
-'    Campus Box 1105',                                              &
-'    Chapel Hill, NC 27599-1105',                                   &
-' ',                                                                &
-'Program version: ',                                                &
-'$Id:: gregdate.f90 121 2015-01-20 22:24:38Z coats             $',  &
+    WRITE( *,'( 5X, A )' ) ' ', ' ',                                    &
+ 'Program GREGDATE takes julian date (in form YYYYDDD) and',            &
+ 'returns the date in form "Wkday, Month DD, YYYY".',                   &
+ ' ',                                                                   &
+ '    Usage:  "gregdate [<JDATE>]" ',                                   &
+ '    (alt    "gregdate [ YESTERDAY | TODAY | TOMORROW]") ',            &
+ ' ',                                                                   &
+ '(if the JDATE command-line argument is missing, prompts the ',        &
+ 'user for JDATE)',                                                     &
+' ',                                                                    &
+'See URL',                                                              &
+'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',        &
+' ',                                                                    &
+'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013',                  &
+'Carlie J. Coats, Jr., and (C) 2002-2010 Baron Advanced',               &
+'Meteorological Systems, LLC.  Released under Version 2',               &
+'of the GNU General Public License. See enclosed GPL.txt, or',          &
+'URL',                                                                  &
+''  ,                                                                   &
+'    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',           &
+''  ,                                                                   &
+'Comments and questions are welcome and can be sent to',                &
+'',                                                                     &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                   &
+'or',                                                                   &
+'    UNC Institute for the Environment',                                &
+'    100 Europa Dr., Suite 490 Rm 405',                                 &
+'    Campus Box 1105',                                                  &
+'    Chapel Hill, NC 27599-1105',                                       &
+'',                                                                     &
+'Program version: ',                                                    &
+'$Id:: gregdate.f90 435 2016-11-22 18:10:58Z coats $',    &
 ' '
 
 

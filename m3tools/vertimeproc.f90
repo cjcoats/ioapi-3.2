@@ -2,7 +2,7 @@
 PROGRAM VERTIMEPROC
 
     !!***************************************************************
-    !!  Version "$Id: vertimeproc.f90 176 2015-03-02 16:20:06Z coats $"
+    !!  Version "$Id: vertimeproc.f90 435 2016-11-22 18:10:58Z coats $"
     !!  Copyright (c) 2014 UNC Institute for the Environment
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!  See file "GPL.txt" for conditions of use.
@@ -106,15 +106,16 @@ PROGRAM VERTIMEPROC
 '    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',                   &
 ''  ,                                                                           &
 'Comments and questions are welcome and can be sent to'  ,                      &
-''  ,                                                                           &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu'  ,                          &
-'    UNC Institute for the Environment'  ,                                      &
-'    100 Europa Dr., Suite 490 Rm 405'  ,                                       &
-'    Campus Box 1105'  ,                                                        &
-'    Chapel Hill, NC 27599-1105'  ,                                             &
-'',                                                                             &
+'',                                                                         &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                       &
+'or',                                                                       &
+'    UNC Institute for the Environment',                                    &
+'    100 Europa Dr., Suite 490 Rm 405',                                     &
+'    Campus Box 1105',                                                      &
+'    Chapel Hill, NC 27599-1105',                                           &
+'',                                                                         &
 'Program version:',                                                             &
-'$Id: vertimeproc.f90 176 2015-03-02 16:20:06Z coats $',&
+'$Id: vertimeproc.f90 435 2016-11-22 18:10:58Z coats $',&
 ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN

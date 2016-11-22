@@ -2,7 +2,7 @@
 PROGRAM  VERTOT
 
     !!***********************************************************************
-    !! Version "$Id: vertot.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: vertot.f90 435 2016-11-22 18:10:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems, LLC.,
@@ -137,14 +137,15 @@ PROGRAM  VERTOT
 ''  ,                                                                       &
 'Comments and questions are welcome and can be sent to'  ,                  &
 '',                                                                         &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                        &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                       &
+'or',                                                                       &
 '    UNC Institute for the Environment',                                    &
 '    100 Europa Dr., Suite 490 Rm 405',                                     &
 '    Campus Box 1105',                                                      &
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertot.f90 101 2015-01-16 16:52:50Z coats $',&
+'$Id: vertot.f90 435 2016-11-22 18:10:58Z coats $',&
 ''
 
     IF ( ARGCNT .GT. 1 ) THEN

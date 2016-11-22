@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 433 2016-11-08 16:07:25Z coats $" -->
+<!-- "$Id: AVAIL.html 436 2016-11-22 18:23:01Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -25,7 +25,7 @@
 
     <UL>
        <LI>  <A HREF = "#v32">I/O&nbsp;API
-              Version&nbsp;3.2-<VAR>beta</VAR></A>: download and notes
+              Version&nbsp;3.2</A>: download and notes
         <LI>  <A HREF = "#v31">I/O&nbsp;API Version&nbsp;3.1</A>:
               download and notes
         <LI>  <A HREF = "#v30">I/O&nbsp;API Version&nbsp;3.0</A>:
@@ -710,7 +710,7 @@ or (PGI)
         <P>
         <DT> <CODE>medium</CODE>
         <DD> Program machine-code at most 2 GB; no restrictions on
-             data.
+             data (large arrays, large stack, large data are OK).
         <P>
         <DT><CODE>large</CODE>
         <DD> No restrictions on code or data.
@@ -751,10 +751,12 @@ or (PGI)
     </CODE></BLOCKQUOTE>
     <P>
 
-    <STRONG>Note that program-codes compiled with the different
-    memory models are binary-incompatible</STRONG>. Binary types
-    <CODE>${BIN}=Linux2_x86_64gfort_medium</CODE>.
-    <CODE>Linux2_x86_64ifort_medium</CODE> ,
+    <STRONG>Note that program-codes (object files and libraries)
+    compiled with the different memory models are binary-incompatible. 
+    All model-components need to be compiled with the same memory-model
+    flags. </STRONG>. Binary types
+    <CODE>${BIN}=Linux2_x86_64gfort_medium</CODE>,
+    <CODE>Linux2_x86_64ifort_medium</CODE>, and
     <CODE>Linux2_x86_64pg_medium</CODE> are provided for
     medium-memory-model use with the Intel, GNU, or PGI compilers.  Note
     also that the Intel and PGI compilers do not support static linking
@@ -877,20 +879,26 @@ or (PGI)
 
 <HR> <!----------------------------------------------------------------->
 
-<H3> <A NAME="v32">I/O&nbsp;API Version&nbsp;3.2-<VAR>beta</VAR> Availability</A></H3>
+<H3> <A NAME="v32">I/O&nbsp;API Version&nbsp;3.2 Availability</A></H3>
 
     <A HREF="NEWSTUFF.html#jan2015">NOTE, January 15, 2015:</A>
-    Version&nbsp;3.2-<VAR>beta</VAR> of the I/O&nbsp;API library source
-    code is available from the CMAS Center web site for download in
-    <VAR>tar-gzip</VAR>ped form
-    <A HREF ="https://www.cmascenter.org/ioapi/download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>,
-    or is available on GitHub from
+    Version&nbsp;3.2 of the I/O&nbsp;API library source code and
+    documentation is available from GitHub from
     <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
+    or for download in <VAR>tar-gzip</VAR>ped form  from the CMAS Center
+    web site
+    <A HREF ="https://www.cmascenter.org/ioapi/download/ioapi-3.2.tar.gz"><VAR>&lt;ioapi-3.2.tar.gz&gt;</VAR></A>.
     To install it from GitHub, go to the directory under which do the
     installation, and then do the command
     <PRE>
     git clone https://github.com/cjcoats/ioapi-3.2
     </PRE>
+    <CODE>git clone...</CODE>  will create a directory
+    <VAR>ioapi-3.2</VAR> with subdirectories  <VAR>ioapi</VAR>,
+    <VAR>m3tools</VAR>, and <VAR>HTML</VAR>, and various other files,
+    including the <VAR>LICENSE</VAR> and top-level <VAR>Makefile</VAR>;
+    unpacking the <CODE>tar</CODE>-ball will create everything under
+    that <VAR>ioapi-3.2</VAR> directory.
     <P>
 
     Due to <CODE>INTERFACE</CODE> changes in
@@ -1470,7 +1478,7 @@ or (PGI)
     for acknowledgements, copyright and licensing information.
     <P>
 
-    On the other hand, its <A HREF = "mailto:cjcoats@email.unc.edu">author</A>
+    On the other hand, its <A HREF = "mailto:carlie@jyarborough.com">author</A>
     thinks it is  <STRONG>good stuff<SUP>TM</SUP></STRONG> and welcomes
     comments and suggestions.
 
@@ -1517,13 +1525,13 @@ I/O&nbsp;API User Manual</A></EM></STRONG>
 <P>
 
 Send comments to
-<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS>
+<A HREF = "mailto:carlie@jyarborough.com"> <ADDRESS>
           Carlie J. Coats, Jr. <br>
-          cjcoats@email.unc.edu  </ADDRESS> </A><P>
+          carlie@jyarborough.com  </ADDRESS> </A><P>
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 433 2016-11-08 16:07:25Z coats $
+    $Id: AVAIL.html 436 2016-11-22 18:23:01Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

@@ -111,14 +111,15 @@ PROGRAM PRESZ
 ''  ,                                                                       &
 'Comments and questions are welcome and can be sent to'  ,                  &
 '',                                                                         &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                        &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                       &
+'or',                                                                       &
 '    UNC Institute for the Environment',                                    &
 '    100 Europa Dr., Suite 490 Rm 405',                                     &
 '    Campus Box 1105',                                                      &
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$$Id: presz.f90 174 2015-02-26 21:23:12Z coats $',&
+'$$Id: presz.f90 435 2016-11-22 18:10:58Z coats $',&
 ' '
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN

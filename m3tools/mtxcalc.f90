@@ -2,7 +2,7 @@
 PROGRAM MTXCALC
 
     !!***********************************************************************
-    !! Version "$Id: mtxcalc.f90 174 2015-02-26 21:23:12Z coats $"
+    !! Version "$Id: mtxcalc.f90 435 2016-11-22 18:10:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -11,7 +11,7 @@ PROGRAM MTXCALC
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  154
+    !!  program body starts at line  156
     !!
     !!  DESCRIPTION:
     !!      Take GRIDDESC names for input and output grids, and produce
@@ -51,6 +51,7 @@ PROGRAM MTXCALC
     !!      in-this-code (but external) BLDMATRIX; new environment variable
     !!      SCALEFAC; USE routine GRID2XY from MODULE MODGCTP; USE routine
     !!      SETMTXATT from MODULE MODATTS3; use generics for "GET*()", "ENV*()"
+    !!      Version  02/2016 by CJC:  bug-fix at lines 411&ff"  XLOC- XORFIG etc.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -206,14 +207,16 @@ PROGRAM MTXCALC
 '',                                                                             &
 'Comments and questions are welcome and can be sent to',                        &
 '',                                                                             &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                            &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                           &
+'or',                                                                           &
 '    UNC Institute for the Environment',                                        &
 '    100 Europa Dr., Suite 490 Rm 405',                                         &
 '    Campus Box 1105',                                                          &
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
+'',                                                                             &
 'Program version: ',                                                            &
-'$Id: mtxcalc.f90 174 2015-02-26 21:23:12Z coats $',&
+'$Id: mtxcalc.f90 435 2016-11-22 18:10:58Z coats $',&
 ' '
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -408,8 +411,8 @@ PROGRAM MTXCALC
 
             K = NX*C + I
             L = NY*R + J
-            X = XLOC( K,L )
-            Y = YLOC( K,L )
+            X = XLOC( K,L ) - XORIG2
+            Y = YLOC( K,L ) - YORIG2
             IF ( X .GE. 0.0D0  .AND. Y .GE. 0.0 ) THEN
                 COL = 1 + INT( DDX2 * X )
                 ROW = 1 + INT( DDY2 * Y )

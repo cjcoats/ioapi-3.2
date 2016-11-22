@@ -2,7 +2,7 @@
         PROGRAM AIRNOW2M3
 
 C***********************************************************************
-C Version "$Id: airnow2m3.f 101 2015-01-16 16:52:50Z coats $"
+C Version "$Id: airnow2m3.f 435 2016-11-22 18:10:58Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -122,14 +122,15 @@ C   begin body of program dummy
      &' ',
      &'Comments and questions are welcome and can be sent to',
      &' ',
-     &'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',
+     &'    Carlie J. Coats, Jr.    carlie@jyarborough.com',
+     &'or',
      &'    UNC Institute for the Environment',
      &'    137 E. Franklin St. Suite 602 Room 613-C',
      &'    Campus Box 1105',
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: airnow2m3.f 101 2015-01-16 16:52:50Z coats              $',
+     &'$Id:: airnow2m3.f 435 2016-11-22 18:10:58Z coats              $',
      &' '
 
         LDEV = INIT3()

@@ -76,7 +76,8 @@ PROGRAM WRFGRIDDESC
 ''  ,                                                                       &
 'Comments and questions are welcome and can be sent to'  ,                  &
 '',                                                                         &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                        &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                       &
+'or',                                                                       &
 '    UNC Institute for the Environment',                                    &
 '    100 Europa Dr., Suite 490 Rm 405',                                     &
 '    Campus Box 1105',                                                      &

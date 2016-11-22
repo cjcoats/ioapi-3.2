@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.cpl 424 2016-09-21 18:03:48Z coats $"
+# VERSION "$Id: Makefile.cpl 435 2016-11-22 18:10:58Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 # COPYRIGHT
@@ -268,26 +268,11 @@ nametest: ${LIB} ${OBJDIR}/libnetcdff.a
 	cd ${OBJDIR}; $(CC) $(CFLAGS) -c ${IODIR}/$(<:.m4=.c) -o $(<:.m4=.o)
 	rm -f $(<:.m4=.c)
 
-.F.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+.F.o .F90.o .F90.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
 	cd ${OBJDIR}; $(FC) -c $(FPPFLAGS) $(FFLAGS) ${IODIR}/$<
 
-.f.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+.f.o .f.mod .f90.o .f90.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
 	cd ${OBJDIR}; $(FC) -c $(FFLAGS) ${IODIR}/$<
-
-.f.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
-	cd ${OBJDIR}; $(FC) -c $(FFLAGS) ${IODIR}/$<
-
-.f90.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
-	cd ${OBJDIR};  ${FC} ${FFLAGS} -c ${IODIR}/$<
-
-.f90.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
-	cd ${OBJDIR};  ${FC} ${FFLAGS} -c ${IODIR}/$<
-
-.F90.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
-	cd ${OBJDIR}; $(FC) $(FPPFLAGS) $(FFLAGS) -c ${IODIR}/$<
-
-.F90.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
-	cd ${OBJDIR}; $(FC) $(FPPFLAGS) $(FFLAGS) -c ${IODIR}/$<
 
 
 #  ---------------------------  Dependencies:  --------------------------
@@ -315,11 +300,11 @@ ${OBJDIR}:
 #  gctp requires "SAVE all variables" flag;
 #  crtfil3, modatts3 and modgctp USE M3UTILIO
 
-init3.o:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+init3.o:  ${EXTS}
 	echo $(VFLAG)
 	cd ${OBJDIR}; $(FC) -c $(FPPFLAGS) $(FFLAGS) $(VFLAG) ${IODIR}/init3.F90 -o $@
 
-gctp.o: ${IODIR}/gctp.f ${IODIR}/Makeinclude.${BIN}
+gctp.o: ${IODIR}/gctp.f
 	cd ${OBJDIR}; $(FC) -c $(FSFLAGS) $(FFLAGS) ${IODIR}/gctp.f
 
 modatts3.o   modatts3.mod  :  m3utilio.mod modncfio.mod modpdata.mod

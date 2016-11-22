@@ -2,7 +2,7 @@
 PROGRAM JULDATE
 
     !!***********************************************************************
-    !! Version "$Id: juldate.f90 391 2016-07-12 18:55:38Z coats $"
+    !! Version "$Id: juldate.f90 435 2016-11-22 18:10:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -99,22 +99,23 @@ PROGRAM JULDATE
 '(C) 1995-2013 Carlie J. Coats, Jr., and (C) 2002-2010 Baron',        &
 'Advanced Meteorological Systems, LLC.  Released under Version 2',    &
 'of the GNU General Public License. See enclosed GPL.txt, or URL',    &
-''  ,                                                                       &
-'    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',               &
-''  ,                                                                       &
+''  ,                                                                 &
+'    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',         &
+''  ,                                                                 &
 'Comments and questions are welcome and can be sent to',              &
-' ',                                                                  &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                  &
+'',                                                                   &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                 &
+'or',                                                                 &
 '    UNC Institute for the Environment',                              &
 '    100 Europa Dr., Suite 490 Rm 405',                               &
 '    Campus Box 1105',                                                &
 '    Chapel Hill, NC 27599-1105',                                     &
-' ',                                                                  &
+'',                                                                   &
 'See URL',                                                            &
 'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',      &
 ' ',                                                                  &
 'Program version: ',                                                  &
-'$Id:: juldate.f90 391 2016-07-12 18:55:38Z coats              $',    &
+'$Id:: juldate.f90 435 2016-11-22 18:10:58Z coats $',&
 ' '
         CALL EXIT( 0 )
     END IF      !!  if

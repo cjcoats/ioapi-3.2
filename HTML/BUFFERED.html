@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BUFFERED.html 426 2016-09-27 14:56:14Z coats $" -->
+<!-- "$Id: BUFFERED.html 436 2016-11-22 18:23:01Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
 REAL FILES, PARALLEL FILES,  AND &quot;VIRTUAL FILES&quot;
@@ -135,6 +135,13 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
         <DT>Makeinclude.Linux2_x86_64pgmpi
         <DT>Makeinclude.Linux2_x86_64sunmpi
     </DL></BLOCKQUOTE>
+    When performing the link-step to create model-executables,
+    you will need to put the PnetCDF libraries in the library-build
+    directory, and add the PnetCDF libraries to the link-step
+    command line (assuming netCDF-4 style libraries below):
+    <BLOCKQUOTE><CODE>
+    ... -lpnetcdf -lnetcdff -lnetcdf ...
+    </CODE></BLOCKQUOTE>
     <P>
 
     </BLOCKQUOTE>

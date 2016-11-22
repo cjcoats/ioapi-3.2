@@ -2,7 +2,7 @@
 PROGRAM  VERTINTEGRAL
 
     !!***********************************************************************
-    !! Version "$Id: vertintegral.f90 224 2015-08-19 14:23:57Z coats $"
+    !! Version "$Id: vertintegral.f90 435 2016-11-22 18:10:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2009 UNC Institute for the Environment and
     !! Baron Advanced Meteorological Systems, LLC, and (C) 2015 UNC IE.
@@ -191,14 +191,15 @@ PROGRAM  VERTINTEGRAL
 ''  ,                                                                       &
 'Comments and questions are welcome and can be sent to'  ,                  &
 '',                                                                         &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                        &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                       &
+'or',                                                                       &
 '    UNC Institute for the Environment',                                    &
 '    100 Europa Dr., Suite 490 Rm 405',                                     &
 '    Campus Box 1105',                                                      &
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertintegral.f90 224 2015-08-19 14:23:57Z coats $',&
+'$Id: vertintegral.f90 435 2016-11-22 18:10:58Z coats $',&
 ''
 
     WRITE ( LUNIT,'( 5X , A )' )

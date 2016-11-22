@@ -2,7 +2,7 @@
 PROGRAM  M3TSHIFT
 
     !!***********************************************************************
-    !! Version "$Id: m3tshift.f90 379 2016-06-14 15:53:21Z coats $"
+    !! Version "$Id: m3tshift.f90 435 2016-11-22 18:10:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
@@ -111,14 +111,15 @@ PROGRAM  M3TSHIFT
 ''  ,                                                                       &
 'Comments and questions are welcome and can be sent to'  ,                  &
 '',                                                                         &
-'    Carlie J. Coats, Jr.    cjcoats@email.unc.edu',                        &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                       &
+'or',                                                                       &
 '    UNC Institute for the Environment',                                    &
 '    100 Europa Dr., Suite 490 Rm 405',                                     &
 '    Campus Box 1105',                                                      &
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tshift.f90 379 2016-06-14 15:53:21Z coats $',&
+'$Id: m3tshift.f90 435 2016-11-22 18:10:58Z coats $',&
 ' '
 
     ARGCNT = IARGC()

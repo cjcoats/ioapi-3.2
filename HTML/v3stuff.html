@@ -18,7 +18,7 @@
 <H2><A NAME = "contents">Contents&nbsp;/&nbsp;Agenda</A></H2>
 
     <UL>
-        <LI>  <A HREF = "#git"     >On Github: I/O&nbsp;API-3.2-beta</A>
+        <LI>  <A HREF = "#git"     >On Github: I/O&nbsp;API-3.2</A>
         <LI>  <A HREF = "#CF"      >CF-compliant geospatial metadata option</A>
         <LI>  <A HREF = "#PN"      >PNCF/MPI distributed I/O option</A>
         <LI>  <A HREF = "#snoop"   >Snoop-Mode option for read-operations</A>
@@ -31,6 +31,7 @@
         <LI>  <A HREF = "#gfort"   ><VAR>gfortran</VAR> hacks</A>
         <LI>  <A HREF = "#ncf"     ><VAR>netCDF-4</VAR> Issues</A>
         <LI>  <A HREF = "#climo"   >Climatology-year versions</A>
+        <LI>  <A HREF = "#mcmodel" >Memory-Model issues</A>
         <LI>  <A HREF = "#other"   >Other Issues</A>
         <LI>  <A HREF = "#todo"    >To-Do List/Discussion</A>
     </UL>
@@ -91,7 +92,8 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
         <BLOCKQUOTE>
         <VAR>setenv IOAPI_CFMETA&nbsp;&nbsp;Y</VAR>
         </BLOCKQUOTE>
-        See also <CODE>MODULE&nbsp;MODATTS3</CODE> below.
+        or by calling subroutine <CODE>INITCF()</CODE> in 
+        <CODE>MODULE&nbsp;MODATTS3</CODE>:  see below.
     </BLOCKQUOTE>
 
 Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -114,20 +116,28 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     setenv  CHEMCONC3D  MPI:/mydir/cmaq.conc.US36_CRO.2015233.ncf
     </PRE>
     <P>
-    <A HREF="BUFFERED.html#pncf">See this description.</A>
+    <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/BUFFERED.html#pncf">See this description.</A>
     <P>
-    I/O&nbsp;API builds usiing PnetCDF are not link compatible
-    with ordinary builds, and should be kept carefully separate from
-    them.
-    You can build the I/O&nbsp;API to use PnetCDF/MPI distributed I/O
-    using the following binary types and <CODE>Makeinclude</CODE> files
-    (or use them as templates to build your own custom binary type):    
-    <BLOCKQUOTE><DL>
+    I/O&nbsp;API libraries and builds using PnetCDF are not link
+    compatible with ordinary builds, and should be kept carefully
+    separate from them. You can build the I/O&nbsp;API to use
+    PnetCDF/MPI distributed I/O using
+    <VAR>make&nbsp;-f&nbsp;Makefile.pncf</VAR> and the following binary
+    types and <CODE>Makeinclude</CODE> files (or use them as templates
+    to build your own custom binary type):    
+    <BLOCKQUOTE><CODE><DL>
         <DT>Makeinclude.Linux2_x86_64gfortmpi
         <DT>Makeinclude.Linux2_x86_64ifortmpi
         <DT>Makeinclude.Linux2_x86_64pgmpi
         <DT>Makeinclude.Linux2_x86_64sunmpi
-    </DL></BLOCKQUOTE>
+    </DL></CODE></BLOCKQUOTE>
+    When performing the link-step to create model-executables,
+    you will need to put the PnetCDF libraries in the library-build
+    directory, and add the PnetCDF libraries to the link-step
+    command line:
+    <BLOCKQUOTE><CODE>
+    ... -lpnetcdf -lnetcdff -lnetcdf ...
+    </CODE></BLOCKQUOTE>
     <P>
     See also <CODE>MODULE&nbsp;MODNCFIO</CODE> below.
     </BLOCKQUOTE>
@@ -148,14 +158,14 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     with multiple re-tries, controlled by environment variables
     <CODE>SNOOPTRY3, SNOOPSECS3</CODE>:
         <BLOCKQUOTE>
-        If <CODE>SNOOPTRY3,&nbsp;SNOOPSECS3,&nbsp;&gt;&nbsp;0</CODE>,
-        when read-operations <CODE>READ3(), XTRACT3(), INTERP3(), and
-        DDTVAR3()</CODE> encounter end-of-file, they  will re-try for up
-        to  <CODE>SNOOPTRY3</CODE> attempts, with delay
+        If <CODE>SNOOPTRY3,&nbsp;SNOOPSECS3&nbsp;&gt;&nbsp;0</CODE>:
+        when read-operations <CODE>READ3(), XTRACT3(), INTERP3(),
+        CHECK3(), or DDTVAR3()</CODE> encounter end-of-file, they  will
+        re-try for up to  <CODE>SNOOPTRY3</CODE> attempts, with delay
         <CODE>SNOOPSECS3</CODE> seconds in between attempts.
         <P>
         If <CODE>SNOOPTRY3&nbsp;=&nbsp;0,&nbsp;SNOOPSECS3&nbsp;&gt;&nbsp;0</CODE>
-        then the number of re-tries is (almost) unlimited.
+        then the number of re-tries as above is (almost) unlimited.
         <P>
         If <CODE>SNOOPTRY3&nbsp;&lt;&nbsp;0</CODE> or
         <CODE>SNOOPSECS3&nbsp;&le;&nbsp;0</CODE>, then <VAR>Snoop&nbsp;Mode</VAR>
@@ -182,7 +192,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     below.
     <P>
     <EM>I/O&nbsp;API-3.2:</EM><P>
-    New <A HREF="MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A>
+    New <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A>
     replaces <CODE>MODULE&nbsp;MATXATTS</CODE> (so that all
     <CODE>USE&nbsp;MATXATTS</CODE> statements need to become
     <CODE>USE&nbsp;MODATTS3</CODE> in your codes):
@@ -197,15 +207,21 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
                  <LI>  <CODE>CHKMTXATT()</CODE>
                  <LI>  <CODE>ENDMTXATT()</CODE>
              </UL>
+             <P>
         <LI> <A HREF="http://cfconventions.org/">CF-convention</A>
-             geospatial-metadata routines make newly-created
-             files CF compliant (hopefully, subject to further
-             testing...):
+             geospatial-metadata routines, turned on by environment
+             variable <CODE>IOAPI_CFMETA</CODE>, make newly-created
+             files CF compliant:
+             <BR>
+             <BLOCKQUOTE>
+              <VAR>setenv IOAPI_CF&nbsp;&nbsp;Y</VAR>
+             </BLOCKQUOTE>
              <UL>
                  <LI>  <CODE>INITCF()</CODE>
                  <LI>  <CODE>SETCF()</CODE>
                  <LI>  <CODE>ENDCF()</CODE>
              </UL>
+             <P>
         <LI> &quot;Standard&quot; CMAQ data structures 
              and routines for CMAQ metadata, turned on
              by environment variable <CODE>IOAPI_CMAQMETA</CODE>:
@@ -221,6 +237,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
                  <LI>  <CODE>SETCMAQ()</CODE>
                  <LI>  <CODE>ENDCMAQ()</CODE>
              </UL>
+             <P>
         <LI> Place-holder for &quot;standard&quot; SMOKE
              metadata data structures and routines (what this metadata
              contains needs to be determined...), turned on by
@@ -240,6 +257,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
              is an <A HREF = "#todo">open issue below</A>, that is
              needed before the &quot;guts&quot; of these routines can be
              filled in.
+             <P>
     </UL> 
 
     </BLOCKQUOTE>
@@ -253,21 +271,21 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
 
     <BLOCKQUOTE>
     <EM>I/O&nbsp;API-3.2:</EM><P>
-    New <A HREF="MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A> with
+    New <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A> with
     all the coordinate-transform related routines and
     <CODE>INTERFACE</CODE>s:<BR> <EM>Old but modified:</EM> (moved from
     <CODE>MODULE&nbsp;M3UTILIO</CODE>)
       <UL>
           <LI>  <CODE>INTERFACE</CODE> for 
-                <A HREF="GCTP.html"><CODE>GTPZ0()</CODE></A>
+                <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/GCTP.html"><CODE>GTPZ0()</CODE></A>
           <LI>  <CODE>INTERFACE</CODE>s and new implementations for
                 <CODE>GTPZ0()</CODE>-spheroid initialization procedures
-                <A HREF="SETSPHERE.html"><CODE>SETSPHERE(), INITSPHERES(),
+                <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/SETSPHERE.html"><CODE>SETSPHERE(), INITSPHERES(),
                 SPHEREDAT()</CODE></A>
           <LI>  <CODE>INTERFACE</CODE>s and new implementations for
                 single-precision/single-point/specific-projection
                 coordinate-transform functions 
-                <A HREF="LAMBERT.html"><CODE>INITPROJ(), ..., 
+                <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/LAMBERT.html"><CODE>INITPROJ(), ..., 
                 LAMBERT(), ..., ALB2EQM()</CODE></A>
                 <P>
       </UL>
@@ -277,14 +295,14 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
                 and <CODE>SPHERENAMES(0:21)</CODE> for GCTP spheroid
                 names and indices;
           <LI>  <CODE>GTPZ0()</CODE>-argument initialization procedure
-                <A HREF="M3TOGTPZ.html"><CODE>M3TOGTPZ()</CODE></A>
+                <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/M3TOGTPZ.html"><CODE>M3TOGTPZ()</CODE></A>
           <LI>  Scattered-point-array generic coordinate-transform
-                procedure <A HREF="XY2XY.html"><CODE>XY2XY()</CODE></A>
+                procedure <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/XY2XY.html"><CODE>XY2XY()</CODE></A>
           <LI>  Grid-node-array generic coordinate-transform
-                procedure <A HREF="GRID2XY.html"><CODE>GRID2XY()</CODE></A>
+                procedure <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/GRID2XY.html"><CODE>GRID2XY()</CODE></A>
           <LI>  High-performance OpenMP-Parallel generic bilinear
                 interpolation package 
-                <A HREF="GRID2INDX.html"><CODE>GRID2INDX(), PNTS2INDX(),
+                <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/GRID2INDX.html"><CODE>GRID2INDX(), PNTS2INDX(),
                 INDXMULT()</CODE></A>
       </UL>
       <P>
@@ -306,7 +324,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <U>some but not all</U> of the netCDF definitions that were
     needed, so it was not possible to use <CODE>#ifdef</CODE>s 
     to select between them.  New 
-    <A HREF="MODNCFIO.html"><CODE>MODULE&nbsp;MODNCFIO</CODE></A>
+    <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/MODNCFIO.html"><CODE>MODULE&nbsp;MODNCFIO</CODE></A>
     puts all the definitions in a consistent form in one place
     (with conditional compilation, to determine whether or not
     PnetCDF is active).
@@ -315,7 +333,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     &quot;raw netCDF&quot; file:
     <UL>
         <LI> <CODE>DESCNCVAR()</CODE> returns the list of variables and
-             their types and dimensions, and 
+             their units, types, and dimensions, and 
         <LI> <CODE>READNCVAR()</CODE> is a generic routine that reads
              a specified 1-D, 2-D, 3-D, or 4-D variable of type
              <CODE>INTEGER</CODE>, <CODE>REAL</CODE>,
@@ -345,10 +363,10 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <CODE>REAL8</CODE> arguments, etc.  Transform routines in
     <CODE>MODULE MODGCTP</CODE> exist in both same-sphere and
     sphere-to-sphere forms.  In addition to the many generic
-    routines now found in <A HREF="M3ATTS.html"><CODE>MODULE&nbsp;M3ATTS</CODE></A>
-    and <A HREF="MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>,
+    routines now found in <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/M3ATTS.html"><CODE>MODULE&nbsp;M3ATTS</CODE></A>
+    and <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>,
     the following are now defined in
-    <A HREF="M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
+    <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
     <P>
     Note that these generic <CODE>INTERFACE</CODE>s require
     <CODE>USE&nbsp;M3UTILIO</CODE>.
@@ -361,7 +379,8 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
         <P>
 
         <DT><CODE>SUBROUTINE BMATVEC()</CODE>:
-        <DD> <CODE>BMATVEC11(), BMATVEC12(), BMATVEC2L(), BMATVEC22()</CODE>
+        <DD> <CODE>BMATVEC11(), BMATVEC12(), BMATVEC21(), BMATVEC22(),
+        BMATVEC01(), BMATVEC02(), BMATVEC021(), BMATVEC022()</CODE>
         <P>
 
         <DT><CODE>LOGICAL FUNCTION ENVLIST()</CODE>:
@@ -482,7 +501,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
         <VAR>bcwndw.f90, camxtom3.f90, datshift.f90, dayagg.f90, factor.f90,
         fakestep.f90, fills.f90, greg2jul.f90, gregdate.f90, jul2greg.f90,
         juldate.f90, juldiff.f90, julshift.f90, latlon.f90, m3combo.f90,
-        m3cple.f90, m3fake.f90, m3pair.f90, m3probe.f90, m3totxt.f90,
+        m3cple.f90, m3fake.f90, m3mask.f90, m3pair.f90, m3probe.f90, m3totxt.f90,
         m3tproc.f90, m3tshift.f90, m3wndw.f90, mtxcalc.f90, pairstep.f90,
         presz.f90, timeshift.f90, vertimeproc.f90, vertintegral.f90, vertot.f90
         </VAR>
@@ -490,7 +509,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     </BLOCKQUOTE>
     <P>
 
-    <STRONG>New <A HREF="SAMPLE.html">SAMPLE PROGRAMS</A> page</STRONG>:
+    <STRONG>New <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/SAMPLE.html">SAMPLE PROGRAMS</A> page</STRONG>:
     updated to demonstrate I/O&nbsp;API-3.x capabilities and <CODE>MODULE</CODE>s,
     <VAR>.f90</VAR> source format and coding:
     <U>I/O&nbsp;API-3.2</U>
@@ -610,8 +629,53 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
         <DT>Makeinclude.Linux2_x86_64pg_365
     </DL></BLOCKQUOTE>
     
-    Note that you need to keep these builds distinct from the
-    (not-compatible) &quot;normal&quot; builds
+    <STRONG>Note that you need to keep these builds distinct from the
+    (not-compatible) &quot;normal&quot; builds.</STRONG>
+    </BLOCKQUOTE>
+
+Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+<P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+<H2><A NAME = "mcmodel">Memory-Model Issues</A></H2>
+
+    <BLOCKQUOTE>
+    <EM>I/O&nbsp;API-3.2 and later:</EM><P>
+    See <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/AVAIL.html#medium">Notes on <CODE>Linux2_x86_64</CODE>
+    memory models</A>
+    <BR>
+    There are three different memory-models for programs on 64-bit
+    <CODE>x86_64</CODE> Linux machines, which offer differing 
+    degrees of support for huge (&gt;2&nbsp;GB) arrays and huge
+    object-files.  Most compilers default to the &quot;small&quot;
+    memory model, which suffices for the vast majority of uses.
+    You can build the I/O&nbsp;API to use the &quot;medium&quot;
+    memory model (at some cost in performance), using the following
+    binary types and <CODE>Makeinclude</CODE> files:  
+    <BLOCKQUOTE><DL>
+        <DT>Makeinclude.Linux2_x86_64gfort_medium
+        <DT>Makeinclude.Linux2_x86_64ifort_medium
+        <DT>Makeinclude.Linux2_x86_64pg_medium
+    </DL></BLOCKQUOTE>
+    Compiler-flags for memory model tend to take one of the 
+    following forms:
+    <BLOCKQUOTE><CODE>
+    -mcmodel=small<BR>
+    -mcmodel=medium<BR>
+    -mcmodel=large
+    </CODE></BLOCKQUOTE>
+    For CMAQ, you will need the medium memory model if your full
+    <CODE>CONC</CODE> field is larger than 2 GB, i.e., if your grid
+    dimensions are much larger than about 
+    300&nbsp;rows&nbsp;&times;&nbsp;400&nbsp;columns&nbsp;&times;&nbsp;40&nbsp;layers&nbsp;&times;&nbsp;100&nbsp;species
+    (or equivalent).
+    <P>
+    
+    <STRONG>Note that you need to build all model-components with the
+    same set of memory-model flags and to keep these builds distinct
+    from the (not-compatible) &quot;normal&quot; builds.</STRONG>
     </BLOCKQUOTE>
 
 Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -636,7 +700,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
         <CODE>HHMMSS</CODE>) as run-control parameters will necessarily
         have the matching overflow problems; it is recommended that
         starting and ending dates and times be used instead.
-        This style is safe for multi-century runs...
+        This latter style is safe for multi-century runs...
         <P>
 
         <DT><STRONG>Environment variables</STRONG>
@@ -661,21 +725,23 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
         <DD><EM>Note that this is mostly found in SMOKE-descended codes,
         and in SMOKE itself...</EM>
         <BR>
-        Use of this routine <EM>violates Models-3 standards</EM> by
-        suppressing logging of the I/O-status argument, which when
-        non-zero is is the actual reason for program
-        failure&nbsp;&mdash; in one case I know of it cost more than two
-        person-weeks of debugging a development-version of SMOKE program
-        <VAR>movesmrg</VAR>, before I replaced this routine by one which
-        did report the I/O status, at which point it took me about ten
-        minutes to re-compile and do a test-run,  five more minutes to
-        look up the failure-status in Intel's web-docs, and  then a
-        final ten  minutes to find and fix the problem.
+        Versions of this routine prior to the one found in SMOKE-4.0
+        <EM>violate Models-3 standards</EM> by suppressing logging of
+        the I/O-status argument, which when non-zero is is the actual
+        reason for program failure&nbsp;&mdash; in one case I know of it
+        cost more than two person-weeks of debugging a
+        development-version of SMOKE program <VAR>movesmrg</VAR>, before
+        I replaced this routine by one which did report the I/O status,
+        at which point it took me about ten minutes to re-compile and do
+        a test-run,  five more minutes to look up the failure-status in
+        Intel's web-docs, and  then a final ten  minutes to find and fix
+        the problem.
         <P>
         Moreover, <CODE>CHECKMEM()</CODE> use both suppresses
         optimization opportunities and at the  same time makes the code
         less readable.  For example, compare this  example taken from
-        <VAR>BDSNP_MOD.F</VAR>:
+        <VAR>BDSNP_MOD.F</VAR> (which hides its actual content among a
+        forest of  <CODE>CHECKMEM</CODE>s):
     <PRE>
          ALLOCATE( SOILM( NCOLS,NROWS ), STAT=IOS )
          CALL CHECKMEM( IOS, 'SOILM', PNAME )
@@ -761,8 +827,7 @@ C ------ Diagnostics -----------------------------------
          ALLOCATE( NRES_DEP_DIAG( NCOLS,NROWS ), STAT=IOS )
          CALL CHECKMEM( IOS, 'NRES_DEP_DIAG', PNAME )
     </PRE>
-        (which hides its actual content among a forest of 
-        <CODE>CHECKMEM</CODE>s) with the following, which I find much more readable:
+         with the following equivalent code, which I find much more readable:
     <PRE>
          ALLOCATE( SOILM( NCOLS,NROWS ),
      &amp;         SOILMPREV( NCOLS,NROWS ),
@@ -792,7 +857,6 @@ C ------ Diagnostics -----------------------------------
      &amp;    NRES_FERT_DIAG( NCOLS,NROWS ),
      &amp;     NRES_DEP_DIAG( NCOLS,NROWS ), STAT=IOS )
          IF ( IOS .NE. 0 ) THEN
-
              WRITE( MESG, '(A, I9)' ) 
      &amp;          'ERROR allocating SOILM...NRES_DEP_DIAG.  STATUS=', IOS
              CALL M3EXIT( PNAME, 0,0, MESG, 2 )
@@ -810,7 +874,7 @@ C ------ Diagnostics -----------------------------------
         Many codes can be structured either as
         <VAR>array-of-structs</VAR>  or as <VAR>struct-of-arrays</VAR> (or
         even as parallel arrays). <STRONG><VAR>Array-of-structs</VAR>
-        code will kill GPU-computing performance</STRONG>
+        code will kill GPU-computing performance.</STRONG>
         </BLOCKQUOTE>
         And actually the same is true for for killing performance on the
         upcoming Intel PHI Xeons and, though to a lesser degree, for 
@@ -875,7 +939,7 @@ mpoolinit.o  : mod_rteparms.mod
 nldastomet.o : ${LIBDIR}/modgribio.mod
 nldasmask.o  : ${LIBDIR}/modgribio.mod
 qbaseinit.o  : mod_noah.mod mod_rteparms.mod mod_calibparms.mod
-reflex.o     : mod_noah.mod mod_route.mod
+reflex.o     : mod_noah.mod mod_route.mod libnoah_phys.a
 ...
         </PRE>
         </BLOCKQUOTE>
@@ -905,7 +969,7 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
         <LI> Define standard <VAR>SMOKE</VAR> metadata and
         the interface(s) by which it is provided.  Then finish the relevant
         routines in
-        <A HREF="MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A> accordingly.
+        <A HREF = "https://www.cmascenter.org/ioapi/documentation/all_versions/html/MODATTS3.html"><CODE>MODULE&nbsp;MODATTS3</CODE></A> accordingly.
         <P>
 
         <LI> Add a  <CODE>MODULE</CODE> that supports routines for GIS-raster-format
@@ -935,9 +999,9 @@ Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
 <HR> <!- ------------------------------------------------------------- ->
 
 Send comments to
-<A HREF = "mailto:cjcoats@email.unc.edu"> <ADDRESS>
+<A HREF = "mailto:carlie@jyarborough.com"> <ADDRESS>
           Carlie J. Coats, Jr. <br>
-          cjcoats@email.unc.edu  </ADDRESS> </A><P>
+          carlie@jyarborough.com  </ADDRESS> </A><P>
 
 </BODY>
 </HTML>
