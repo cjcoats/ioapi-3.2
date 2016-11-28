@@ -1,7 +1,7 @@
 MODULE MODPDATA
 
     !!***********************************************************************
-    !! Version "$Id: modpdata.F90 292 2016-01-02 19:54:35Z coats $"
+    !! Version "$Id: modpdata.F90 437 2016-11-28 16:37:14Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -20,6 +20,9 @@ MODULE MODPDATA
     !!
     !!      Version  12/2015 by Carlie J. Coats, Jr., UNC IE: Do list-based
     !!      read for NPCOL_NPROW-values.  Bug-fixes and changes from D.Wong.
+    !!
+    !!      Version  11/28/2015 by Carlie J. Coats, Jr., bug-fix in SETUP_DECOMP(),
+    !!      following code report from David Wong, US EPA
     !!***********************************************************************
 
     USE M3UTILIO
@@ -126,22 +129,22 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DO R = 1, NPROW
         DO C = 1, NPCOL
             J = (R - 1) * NPCOL + C
-            NCOLS_PE( J ) = QC + MIN( RC / J, 1)
+            NCOLS_PE( J ) = QC + MIN( RC / C, 1)
             IF ( C == 1) THEN
                 COLSX_PE (1, J) = 1
             ELSE
-                COLSX_PE (1, J) = COLSX_PE (2, J-1) + 1
+                COLSX_PE (1, J) = COLSX_PE(2, J-1) + 1
             END IF
-            COLSX_PE (2, J) = COLSX_PE (1, J) + NCOLS_PE (J) -1
+            COLSX_PE (2, J) = COLSX_PE(1, J) + NCOLS_PE(J) - 1
 
-            NROWS_PE( J ) = QR + MIN( RR / J, 1)
+            NROWS_PE( J ) = QR + MIN( RR / R, 1)
             IF ( R == 1 ) THEN
-                ROWSX_PE (1, J) = 1
+                ROWSX_PE(1, J) = 1
             ELSE
                 K = J - NPCOL
-                ROWSX_PE (1, J) = ROWSX_PE (2, K) + 1
+                ROWSX_PE(1, J) = ROWSX_PE(2, K) + 1
             END IF
-            ROWSX_PE (2, J) = ROWSX_PE (1, J) + NROWS_PE( J ) - 1
+            ROWSX_PE(2, J) = ROWSX_PE(1, J) + NROWS_PE( J ) - 1
         END DO
         END DO
 
@@ -205,7 +208,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MESG = '"' // TRIM( PNAME ) // '":  Version'
         CALL M3MESG( MESG )
         CALL M3MESG( &
-'$Id: modpdata.F90 292 2016-01-02 19:54:35Z coats $' )
+'$Id: modpdata.F90 437 2016-11-28 16:37:14Z coats $' )
 
         CALL ENVSTR( 'NPCOL_NPROW', 'Processor decomposition: npcol x nprow', BLANK, EBUF, IERR )
         IF ( IERR .NE. 0 ) THEN
