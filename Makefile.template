@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.template 348 2016-03-26 14:21:09Z coats $"
+# VERSION "$Id: Makefile.template 440 2016-11-30 18:26:47Z coats $"
 #      EDSS/Models-3 I/O API Version 3.2.
 #.........................................................................
 # COPYRIGHT
@@ -138,7 +138,7 @@ BININST    = $(INSTALL)/$(BIN)
 CPLMODE    = nocpl
 IOAPIDEFS  = 
 PVMINCL    =
-NCFLIBS    = -lnetcdf -lnetcdff
+NCFLIBS    = -lnetcdff -lnetcdf
 
 #               ****   Variants   ****
 #
@@ -149,7 +149,7 @@ NCFLIBS    = -lnetcdf -lnetcdff
 # IOAPIDEFS = "-DIOAPICPL"
 #
 # CPLMODE   = pncf                  #  turn on PnetCDF distributed-file mode
-# NCFLIBS   = -lpnetcdf -lnetcdf -lnetcdff
+# NCFLIBS   = -lpnetcdf -lnetcdff -lnetcdf
 # IOAPIDEFS = "-DIOAPI_PNCF"
 # 
 # NCFLIBS   = -lnetcdf             #  Assumes netcdf-3-style unified libs
@@ -193,7 +193,7 @@ OBJDIR     = $(BASEDIR)/$(BIN)
 
 
 #      ----------------------   TOP-LEVEL TARGETS:   ------------------
-
+#
 all:  dirs fix configure
 	(cd $(IODIR)   ; make BIN=${BIN} all)
 	(cd $(TOOLDIR) ; make BIN=${BIN} all)

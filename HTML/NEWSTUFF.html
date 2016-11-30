@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 438 2016-11-28 16:40:25Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 439 2016-11-30 18:25:54Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 438 2016-11-28 16:40:25Z coats $
+    $Id: NEWSTUFF.html 439 2016-11-30 18:25:54Z coats $
     </EM>
     <HR>
 
@@ -34,7 +34,8 @@
                <P>
 
          <LI>  <A HREF = "#nov282016">
-               Bug fix in <CODE>MODPDATA/SETUP_DECOMP()</CODE>
+               Bug fix in <CODE>MODPDATA/SETUP_DECOMP()</CODE>,
+               top-level <CODE>Makefile.template</CODE>
                </A>
          <LI>  <A HREF = "#sep212016">
                I/O&nbsp;API Snoop Mode
@@ -166,6 +167,8 @@
                Bug-fixes from Christian Hogrefe in <VAR>m3tools</VAR> programs
                <CODE>JULDATE</CODE> and <CODE>M3XTRACT</CODE>
                </A>
+               top-level <CODE>Makefile.template</CODE>
+               top-level <CODE>Makefile.template</CODE>
         <LI>  <A HREF = "#may2611">
                Bug-fix for file type <CODE>CUSTOM3</CODE> in  <VAR>m3tools</VAR> program
                <CODE>M3STAT</CODE>
@@ -248,6 +251,7 @@
                support.
                </A>
          <LI>  <A HREF = "#jun1608">
+               top-level <CODE>Makefile.template</CODE>
                Experimental Albers Equal-Area Conic map projection
                support; MM5 and WRF spheres added to <CODE>GCTP()</CODE>
                and  <CODE>SETSPHERE()</CODE> by Steve Howard, NOAA/ASMD;
@@ -605,10 +609,20 @@
 
 <H2> <A NAME = "nov282016">
     Bug fix in <CODE>MODPDATA/SETUP_DECOMP()</CODE>
+    top-level <CODE>Makefile.template</CODE>
 </A></H2>
 
     <BLOCKQUOTE>
-    Subject says it.
+    Transcription error in <CODE>MODPDATA/SETUP_DECOMP()</CODE> reported
+    by David Wong,  US EPA, now fixed.
+    <P>
+    Master <CODE>Makefile.template</CODE> had an inadvertent and
+    backwards netCDF libraries definition; now corrected to 
+    <CODE><BLOCKQUOTE>
+    -lnetcdff -lnetcdf
+    </BLOCKQUOTE><CODE>
+    reported by Xiangshang Li, Unkiversity of Houston.
+    <P>
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -6247,7 +6261,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 438 2016-11-28 16:40:25Z coats $
+    $Id: NEWSTUFF.html 439 2016-11-30 18:25:54Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
