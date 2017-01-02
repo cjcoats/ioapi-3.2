@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: index.html 236 2015-10-14 19:52:34Z coats $" -->
+<!-- "$Id: index.html 441 2017-01-02 15:29:13Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     The EDSS/Models-3 I/O&nbsp;API
@@ -75,7 +75,7 @@
      There are only the following upward-compatibility issues:
      <DL>
         <DT>  <STRONG>I/O&nbsp;API-2.1 to I/O&nbsp;API-3.0:</STRONG>  <EM>2002</EM>
-        <DD>  <EM> requires re-linking</EM> due to <VAR>netCDF</VAR> API
+        <DD>  <U><EM> requires re-linking</EM></U> due to <VAR>netCDF</VAR> API
         changes&mdash;fully source- and object-file compatible:  uses
         <VAR>netCDF-3.x</VAR> which was not fully compatible with
         <VAR>netCDF-2.x</VAR>.
@@ -97,7 +97,7 @@
         <P>
 
         <DT>  <STRONG>I/O&nbsp;API-3.0 to I/O&nbsp;API-3.1:</STRONG> <EM>2013</EM>
-        <DD>  <EM>Requires re-compile:</EM> Fully source compatible but
+        <DD>  <U><EM>Requires re-compile:</EM></U> Fully source compatible but
         not object compatible&mdash;fundamental
         <CODE>PARAMETER&nbsp;MXVARS3</CODE>
         changed from 120 to 2048.
@@ -107,7 +107,6 @@
         <P>
 
         <DT>  <STRONG>I/O&nbsp;API-3.1 to I/O&nbsp;API-3.2:</STRONG>
-        <EM>beta-version, 2015</EM>
         <DD>  <EM>Minor source code changes required:</EM>
         <BR>
         Experimental <CODE>MODULE&nbsp;MATXATTS</CODE> becomes
@@ -120,12 +119,18 @@
         <CODE>MODULE&nbsp;M3UTILIO</CODE>.
         <BR>
         PnetCDF/MPI distributed I/O support for CMAQ.  New
-        <CODE>MODULE&nbsp;NCFIO</CODE> safely encapsulates netCDF and
+        <CODE>MODULE&nbsp;MODNCFIO</CODE> safely encapsulates netCDF and
         PnetCDF declarations, replacing include-file <CODE>NETCDF.EXT</CODE>
-        (and <CODE>pnetcdf.inc</CODE>).
+        (and <CODE>pnetcdf.inc</CODE>); <CODE>MODULE&nbsp;MODPDATA</CODE> 
+        encapsulates data structures and routines for distributed CMAQ
+        I/O.
+        <BR>
+        New <CODE>MODULE&nbsp;MODWRFIO</CODE> for WRF-netCDF I/O
+        (currently, read-routines are implemented, but write-routines
+        are only &quot;stubbed in.&quot;
         <BR>
         Replace netCDF-2 <CODE>CALL&nbsp;NC*()</CODE> statements
-        throughout with the cvorresponding netCDF-3
+        throughout with the corresponding netCDF-3
         <CODE>IERR&nbsp;=&nbsp;NF_*()</CODE>, to accommodate the fact
         that recent versions of netCDF-Fortran silently did away with
         the former.
@@ -236,16 +241,16 @@
                   <LI>  <VAR>sparse matrix</VAR> (as used in the
                         SMOKE emissions model)
 
-                  <LI>  <VAR>User customized&nbsp;/&nbsp;vector</VAR> to cover other
-                        potential applications.
+                  <LI>  <VAR>User customized&nbsp;/&nbsp;vector</VAR>
+                        to cover other potential applications.
 
               </UL>
 
         <LI>  They support three different <STRONG>time step
               structures:</STRONG>
               <UL>
-                  <LI>  <VAR>time-stepped</VAR> (with regular time-steps) like
-                        hourly model-output concentration fields or
+                  <LI>  <VAR>time-stepped</VAR> (with regular time-steps)
+                        like hourly model-output concentration fields or
                         twice-daily upper air meteorology observation
                         profiles, or
                   <LI>  <VAR>time-independent</VAR> like terrain height.
@@ -297,9 +302,9 @@
     Institute for the Environment. The I/O&nbsp;API source code and
     documentation are copyright  &copy; 1992-2002 MCNC and
     Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr.,  &copy; 2003-2013 BAMS,
-    &copy; 2005-2013 Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr., and &copy; 2014-
-    UNC Institute for the Environment.  The library source code is
-    distributed under the
+    &copy; 2005-2017 Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr., and &copy;
+    2014- UNC Institute for the Environment.  The library source code
+    is distributed under the
     <A HREF="https://www.gnu.org/licenses/lgpl-2.1.html">GNU
     Lesser (library) Public License (LGPL) Version&nbsp;2.1</A>,
     and the tools-program source code is distrubuted under the
@@ -313,7 +318,7 @@
     </BLOCKQUOTE>
 
     <PRE>
-    $Id: index.html 236 2015-10-14 19:52:34Z coats $
+    $Id: index.html 441 2017-01-02 15:29:13Z coats $
     </PRE>
 
  </BODY>
