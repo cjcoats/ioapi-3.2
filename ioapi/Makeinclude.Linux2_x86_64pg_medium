@@ -38,6 +38,7 @@ CPP  = cpp
 LINK = $(CC)
 
 MODI = "-module "       ## Module-include-directory command
+E132 = -extend
 
 MFLAGS    = -mcmodel=medium -fast # -Mnoupcase
 

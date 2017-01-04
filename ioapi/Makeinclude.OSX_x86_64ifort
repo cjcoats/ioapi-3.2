@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.OSX_x86_64ifort 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.OSX_x86_64ifort 444 2017-01-04 18:12:44Z coats $"
 #
 #  Library flags severely hacked to satisfy Sun's broken
 #  compiler-linker system
@@ -13,8 +13,9 @@ CPP  = cpp
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command
+E132 = -extend-source 132
 
-MFLAGS    = -traceback
+MFLAGS = -traceback
 
 OMPFLAGS  = 
 OMPLIBS   =

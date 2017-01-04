@@ -10,12 +10,16 @@ M4   = m4
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command
+E132 = -extend-source 132
 
 # MFLAGS  = -traceback                                          # generic
 # MFLAGS  = -traceback -msse4.1 -xSSE4.1                        # penryn
 # MFLAGS  = -traceback -mavx2   -xAVX    -march=corei7-avx      # SandyBridge
 # MFLAGS  = -traceback -mavx    -xAVX2   -march=corei7-avx2     # Haswell
 MFLAGS    = -traceback -xHost                                   # this-machine
+
+# OMPFLAGS  = -qopenmp      # for Intel compilers, version 16 or later
+# OMPLIBS   = -qopenmp
 
 OMPFLAGS  = -openmp
 OMPLIBS   = -openmp

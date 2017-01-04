@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ERRORS.html 434 2016-11-22 17:55:35Z coats $" -->
+<!-- "$Id: ERRORS.html 443 2017-01-04 17:23:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     I/O API Troubleshooting
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
 <H1>
-    EDSS/Models-3 I/O&nbsp;API Troubleshooting
+    I/O&nbsp;API Troubleshooting
 </H1>
 
 <H2><A NAME="contents">
@@ -26,20 +26,22 @@
 </A></H2>
 
     <UL>
+         <LI>  <A HREF="#dups">Errors after retrofitting
+               <CODE>MODULE&nbsp;M3UTILIO</CODE></A>
+         <LI>  <A HREF="#ccfc">Compiler/system-library compatibility issues</A>
          <LI>  <A HREF="AVAIL.html#ncf4">netCDF Version&nbsp;4 issues</A>
          <LI>  <A HREF="AVAIL.html#gfort"><VAR>gfortran</VAR> build issues</A>
-         <LI>  <A HREF="#dups">Errors after retrofitting
-              <CODE>MODULE&nbsp;M3UTILIO</CODE></A>
-         <LI>  <A HREF="#ccfc">Compiler/system-library compatibility issues</A>
+         <LI>  <A HREF="#intel16">Warning messages with v16 or later Intel
+               compilers</A>
          <LI>  <A HREF="#intern">&quot;Internal compiler error&quot; Problems</A>
          <LI>  <A HREF="#pgi">Link errors with <VAR>pgf90</VAR> and
-                <VAR>ifort</VAR> on <VAR>Linux</VAR></A>
+               <VAR>ifort</VAR> on <VAR>Linux</VAR></A>
          <LI>  <A HREF="#reloc"><VAR>relocation error</VAR> link issues
-                for <VAR>x86_64</VAR></A>
+               for <VAR>x86_64</VAR></A>
          <LI>  <A HREF="#instr">Error:  <CODE>Program Exception -
                illegal instruction</CODE></A>
          <LI>  <A HREF="#gcc"><VAR>gcc/g77</VAR> on <VAR>x86_64</VAR>
-                Problems</A>
+               Problems</A>
          <LI>  <A HREF="#irix"  >IRIX 7.4 Problems</A>
          <LI>  <A HREF="#ncferr"> netCDF Error Troubleshooting </A>
          <LI>  <A HREF="#ncf331"> netCDF 3.3.1 Error Numbers list </A>
@@ -67,7 +69,7 @@
     Each I/O&nbsp;API source file will have its version embedded in the file's
     header-comment, e.g.
     <PRE>
-    !! Version "$Id: ERRORS.html 434 2016-11-22 17:55:35Z coats $"
+    !! Version "$Id: ERRORS.html 443 2017-01-04 17:23:37Z coats $"
     </PRE>
 <P>
 
@@ -176,6 +178,29 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
     </UL>
 
 
+    <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2><A NAME="intel16">
+
+    Warning messages with recent Intel compilers
+
+</A></H2>
+
+    Starting with their Version&nbsp;16 compilers, Intel has introduced
+    a new compiler directive <CODE>-qopenmp</CODE> to enable OpenMP,
+    and has deprecated the previous <CODE>-openmp</CODE>. This
+    previous-version flag now results in a "deprecated flag" warning
+    from the compiler. Changing the <CODE>Makeinclude.*ifort*</CODE> to
+    match this compiler-change can eliminate this compile-warning for
+    the latest set of Intel compilers at the cost of making, for example,
+    <VAR>make</VAR>s, <CODE>Makeinclude</CODE>s, etc. incompatible with
+    Intel-16 ones.
+    <P>
+
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
@@ -208,11 +233,12 @@ make: *** [iobin3.o] Error 4
     </PRE></BLOCKQUOTE>
     <P>
 
-    A measure that generally works is to re-do the last compile-command,
-    but with a lower optimization, and then re-do the <VAR>make</VAR>.
-    It is useful to cut-and-paste the last command into a sub-shell
-    (enclosing the command by parentheses), with the &quot;-O3&quot;
-    eliminated or reduced to &quot;-O&quot;, as in the following example:
+    A measure that generally works is to re-do the last compile-command
+    manually, but with a lower optimization, and then re-do the
+    <VAR>make</VAR>. It is useful to cut-and-paste the last command into
+    a sub-shell (enclosing the command by parentheses), with the
+    &quot;-O3&quot; eliminated or reduced to &quot;-O&quot;, as in the
+    following example:
     <BLOCKQUOTE><PRE>
 ( cd /nas01/depts/ie/cempd/apps/CMAQ/v5.1/Linux2_x86_64ifortopenmpi;   \
   icc -c -DIOAPI_PNCF=1 -DAUTO_ARRAYS=1 -DF90=1 -DFLDMN=1 -DFSTR_L=int \
@@ -223,7 +249,7 @@ make: *** [iobin3.o] Error 4
     <P>
 
     This trick is also useful when trying to do highly-optimized builds
-    of other models (WRF, CMAQ, ...)
+    of other models that contain large, complex routines (WRF, CMAQ, ...)
     <P>
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
@@ -460,9 +486,11 @@ class `AREG'
     </DL>
     Well designed modeling codes will get approximately a 20-25%
     performance boost for using SSE4.2 instructions, a further 70-80%
-    boost for AVX, and a further 325-30% for AVX2.  Because of its
+    boost for AVX, and a further 25-30% for AVX2.  Because of its
     sloppy coding, WRF will get less than half that much speedup, and
-    CMAQ even less than that. Note that Intel and AMD have also improved
+    CMAQ even less than that (due to the fact that these codes are so
+    bottlenecked by main-memory operations that improving the arithmetic
+    doesn't help much) . Note that Intel and AMD have also improved
     the memory systems of the various processor generations, giving a
     further 5-10% performance boost per processor generation for that
     reason (independent of which instruction set you're using).
@@ -816,13 +844,6 @@ Other Problems
                <A HREF="#irix">See above.</A>
                <P>
 
-         <LI>  Why does <EM>something</EM> with log output, netCDF
-               crashes, netCDF failures, etc. happen with the SGI
-               Version&nbsp;7.4 compilers?
-               <P>
-               <A HREF="#irix">See above.</A>
-               <P>
-
          <LI>  Why does the I/O&nbsp;API &quot;hang&quot; inside
                <VAR>env*()</VAR> calls on my Linux box, using the
                Portland compilers?
@@ -894,18 +915,20 @@ Other Problems
          <LI>  &quot;Why do I get messages about unresolved symbols
                with names like <CODE>__mp_getlock</CODE>,
                <CODE>__mp_unlock</CODE>, or something else with
-               <CODE>_mp</CODE> in it?&quot;
+               <CODE>_mp</CODE> or <CODE>_kmp</CODE> in it?&quot;
                <P>
                This probably means that you are using a version of the
-               <CODE>libioapi.a</CODE> that is enabled for
-               <A HREF = "NEWSTUFF.html#taskp"> OpenMP parallel</A>
-               usage, but have not activated the system parallel
-               libraries.  On SGI, this means that you need to add a
-               directive <CODE>-lmp</CODE> at the end of the library
-               list in the final compile command that links the
-               executable (and similarly for other compilers).
-               See the variable <CODE>OMPLIBS</CODE> defined in
-               your machine/compiler's <VAR>Makeinclude.${BIN}</VAR>.
+               <CODE>libioapi.a</CODE> that is enabled for <A HREF =
+               "NEWSTUFF.html#taskp"> OpenMP parallel</A> usage, but
+               have not activated the system parallel libraries in your
+               model's build procedure.  For Intel compilers this means
+               that you need to add <CODE>-openmp</CODE> (for
+               compiler-version 15 or earlier) or <CODE>-openmp</CODE>
+               (for compiler-version 16 or later); for GNU compilers,
+               <CODE>-fopenmp</CODE>, and for PGI compilers,
+               <CODE>-mp</CODE>. See the variable <CODE>OMPLIBS</CODE>
+               defined in your machine/compiler's
+               <VAR>Makeinclude.${BIN}</VAR>.
                <P>
 
          <LI>  &quot;Why are my program log and my Fortran-style files
@@ -965,7 +988,7 @@ Other Problems
                <CODE>SHUT3()</CODE> or <CODE>M3EXIT()</CODE>.)
                <P>
 
-         <LI>  &quot;The log says OPEN3() could not open the file,
+         <LI>  &quot;The log says <CODE>OPEN3()</CODE> could not open the file,
                and specifies the <EM>logical name</EM> rather than
                the physical file name.&quot;
                <P>
@@ -973,14 +996,31 @@ Other Problems
                failed to execute correctly the <VAR>setenv</VAR> to define
                the logical name for the file.  Try using the <VAR>env</VAR>
                command in the script before you run the program, in order
-               to get started debugging your script.
+               to get started debugging your script, and then check the
+               value of the problem-file's logical name.
                <P>
 
          <LI>  &quot;Why does the linker say <CODE>ncabor_</CODE>
                or <CODE>open3_</CODE> (etc.) is an undefined symbol?&quot;
                <P>
-               There are three probable causes we've been observing:
+               There are four probable causes we've been observing:
                <UL>
+                   <LI>  <STRONG>NetCDF-4 Issues:</STRONG><P>
+                         There are now two separate libraries (with the
+                         Fortran and the C parts of netCDF); you now
+                         need libraries-flags
+                         <CODE>-lnetcdff&nbsp;-lnetcdf</CODE> (in that
+                         specific order).
+                         <BR>
+                         Netcdf-Fortran-4.4 and later seem to have
+                         dropped the older <CODE>CALL NC*()</CODE>
+                         interfaces in favor of the more recent 
+                         <CODE>IERR=NF_*()</CODE> ones.  I/O&nbsp;API
+                         Version&nbsp;3.2 has been tediously recoded to
+                         replace the 790-odd older-style calls by the
+                         newer ones, so you need to either use that, or
+                         use an older netCDF version.
+                         <P>
                    <LI>  <STRONG>Link command-line order:</STRONG><P>
                          Probably, the command line that links your
                          program has <CODE>-lnetcdf</CODE>

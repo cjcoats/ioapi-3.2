@@ -24,6 +24,7 @@ M4   = m4
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command
+E132 = -ffixed-line-length-132
 
 MFLAGS    = -mcmodel=medium -ffast-math -funroll-loops -m64  #  -Wall -Wsurprising -march=native -mtune=native
 

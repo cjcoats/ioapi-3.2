@@ -15,6 +15,7 @@ LINK = $(CC)
 
 ## Module-include-directory command
 MODI = -M
+E132 = -extend-source 132
 
 # MFLAGS    =  -xarch=native -xtarget=native -m64 -xdebugformat=dwarf
 MFLAGS    =  -xarch=avx -xtarget=sandybridge -m64 -xdebugformat=dwarf

@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64ifortdbg 424 2016-09-21 18:03:48Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64ifortdbg 444 2017-01-04 18:12:44Z coats $"
 #
 #  Michael Bane (UManchester UK) reports that for ifort version 9,
 #  -stack_temps -safe_cray_ptr are not supported and that there are
@@ -14,7 +14,14 @@ LINK = $(CC)
 MODI = -I       ## Module-include-directory command
 E132 = -extend-source 132
 
+# MFLAGS  = -traceback                                          # generic
+# MFLAGS  = -traceback -msse4.1 -xSSE4.1                        # penryn
+# MFLAGS  = -traceback -mavx2   -xAVX    -march=corei7-avx      # SandyBridge
+# MFLAGS  = -traceback -mavx    -xAVX2   -march=corei7-avx2     # Haswell
 MFLAGS    = -xHost -traceback
+
+# OMPFLAGS  = -qopenmp      # for Intel compilers, version 16 or later
+# OMPLIBS   = -qopenmp
 
 OMPFLAGS  = -openmp
 OMPLIBS   = -openmp

@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64 342 2016-03-22 18:42:22Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64 445 2017-01-04 18:14:08Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -17,6 +17,7 @@ M4   = m4
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command
+E132 = -ffixed-line-length-132
 
 MFLAGS    = -ffast-math -funroll-loops -m64  #  -Wall -Wsurprising -march=native -mtune=native
 

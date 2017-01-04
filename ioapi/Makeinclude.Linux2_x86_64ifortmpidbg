@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64ifortmpidbg 289 2015-12-31 16:29:08Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64ifortmpidbg 444 2017-01-04 18:12:44Z coats $"
 #
 #  Build MPI/PnetCDF distributed-file support using "mpif90" and "mpcc",
 #  where compilers are built "on top of" Intel compilers
@@ -10,6 +10,7 @@ M4   = m4
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command
+E132 = -extend-source 132
 
 # MFLAGS  = -traceback                                          # generic
 # MFLAGS  = -traceback -msse4.1 -xSSE4.1                        # penryn
@@ -17,8 +18,11 @@ MODI = -I       ## Module-include-directory command
 # MFLAGS  = -traceback -mavx    -xAVX2   -march=corei7-avx2     # Haswell
 MFLAGS    = -traceback -xHost                                   # this-machine
 
+# OMPFLAGS  = -qopenmp      # for Intel compilers, version 16 or later
+# OMPLIBS   = -qopenmp
 OMPFLAGS  = -openmp
 OMPLIBS   = -openmp
+
 COPTFLAGS = -g ${MFLAGS}
 FOPTFLAGS = -g -O0 -debug-parameters all -ftrapuv -check bounds -safe_cray_ptr \
   -convert big_endian -assume byterecl  ${MFLAGS}

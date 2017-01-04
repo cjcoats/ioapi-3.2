@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64ifort_medium 431 2016-11-08 16:01:58Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64ifort_medium 444 2017-01-04 18:12:44Z coats $"
 #
 #  X86_64 "Medium memory model" version:  support stack-size, array-size,
 #  data-size larger than 2 GB
@@ -18,10 +18,17 @@ LINK = $(CC)
 MODI = -I       ## Module-include-directory command
 E132 = -extend-source 132
 
-MFLAGS    = -mcmodel=medium -shared-intel -traceback
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback                                          # generic
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback -msse4.1 -xSSE4.1                        # penryn
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback -mavx2   -xAVX    -march=corei7-avx      # SandyBridge
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback -mavx    -xAVX2   -march=corei7-avx2     # Haswell
+MFLAGS    = -mcmodel=medium -shared-intel -traceback -xHost
 
-OMPFLAGS  = -openmp
-OMPLIBS   = -openmp
+# OMPFLAGS  = -qopenmp      # for Intel compilers, version 16 or later
+# OMPLIBS   = -qopenmp
+OMPFLAGS    = -openmp
+OMPLIBS     = -openmp
+
 COPTFLAGS = -O3 ${MFLAGS}
 FOPTFLAGS = -O3 -no-fp-port -unroll -stack_temps -safe_cray_ptr ${MFLAGS}
 FPPFLAGS  = -DF90=1

@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64sun 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64sun 444 2017-01-04 18:12:44Z coats $"
 #
 #       Linux for 64-bit x86_64 (AMD64, EMT64) using the
 #       Sun Studio Express compiler suite
@@ -12,6 +12,7 @@ LINK = $(CC)
 
 ## Module-include-directory command
 MODI = -M
+E132 = -extend-source 132
 
 # MFLAGS    =  -xarch=native -xtarget=native -m64 -xdebugformat=dwarf
 MFLAGS    =  -xarch=avx -xtarget=sandybridge -m64 -xdebugformat=dwarf

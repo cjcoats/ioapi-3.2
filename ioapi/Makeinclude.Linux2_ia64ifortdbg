@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_ia64ifortdbg 342 2016-03-22 18:42:22Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_ia64ifortdbg 444 2017-01-04 18:12:44Z coats $"
 
 AR   = ar
 CC   = icc
@@ -8,8 +8,9 @@ CPP  = cpp
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command
+E132 = -extend-source 132
 
-MFLAGS    = -tpp2 -traceback
+MFLAGS    = -xHost -traceback
 
 OMPFLAGS  = -openmp
 OMPLIBS   = -Vaxlib -openmp

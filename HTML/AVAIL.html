@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 442 2017-01-02 15:37:48Z coats $" -->
+<!-- "$Id: AVAIL.html 443 2017-01-04 17:23:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -263,6 +263,17 @@ m3stat:
                            <DD>medium-memory-model (large stack/large-array)
                                version of library
                        </DL>
+                       <P>
+                       Note also that starting with their
+                       Version&nbsp;16 (and later) compilers, Intel has
+                       introduced a new compiler directive
+                       <CODE>-qopenmp</CODE> to enable OpenMP, and has
+                       deprecated the previous <CODE>-openmp</CODE>
+                       (which now results in a "deprecated flag" warning.
+                       Changing the <CODE>Makeinclude.*ifort*</CODE> to
+                       match this compiler-change can eliminate this
+                       compile-warning in the latest set of Intel
+                       compilers.
                   <P>
                   <LI> <EM>I/O&nbsp;API 3.2 only</EM> If you want to enable the
                         <A HREF="BUFFERED.html#pncf">PnetCDF
@@ -1531,7 +1542,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 442 2017-01-02 15:37:48Z coats $
+    $Id: AVAIL.html 443 2017-01-04 17:23:37Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
