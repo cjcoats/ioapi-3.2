@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 447 2017-01-17 18:18:23Z coats $" -->
+<!-- "$Id: AVAIL.html 448 2017-03-22 10:23:06Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -190,6 +190,14 @@ m3stat:
                        in all <VAR>Makefile</VAR>s, and <CODE>LIBS</CODE>
                        in  <VAR>m3tools/Makefile</VAR> to deal with
                        <A HREF="#ncf4">netCDF-4 library issues.</A>
+                       For MS-Windows/Cygwin systems using the Cygwin
+                       netCDF libraries, you will need to change the
+                       <VAR>m3tools/Makefile</VAR> library-names slightly, from
+                       <CODE>-lnetcdff&nbsp;-lnetcdf</CODE> to
+                       <CODE>-lnetcdff.dll&nbsp;-lnetcdf.dll</CODE>,
+                       as well as not using the flag  <CODE>-fsecond-underscore</CODE>
+                       in the <VAR>Makeinclude.${BIN}</VAR>.
+                       <P>
                        Additional definitions in <VAR>make</VAR>-variable
                        <CODE>DEFINEFLAGS</CODE> turn on various optional
                        capabilities:

@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.pncf 231 2015-10-08 20:45:24Z coats $"
+# Version "$Id: Makefile.pncf 415 2017-03-22 10:23:06Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -57,6 +57,8 @@ LDFLAGS = -I$(IODIR) -DIOAPICPL $(DEFINEFLAGS) $(ARCHFLAGS)
 #
 #          nc-config --libs
 #          nf-config --libs
+#
+#  Cygwin libraries need "-lnetcdff.dll -lnetcdf.dll" below
 #
 #LIBS = -L${OBJDIR} -lioapi -lnetcdff -lnetcdf $(PVMLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)
 #LIBS = -L${OBJDIR} -lioapi `nf-config --libs` `nc-config --libs`  $(PVMLIBS) $(OMPLIBS) $(ARCHLIB) $(ARCHLIBS)

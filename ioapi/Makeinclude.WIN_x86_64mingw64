@@ -31,7 +31,7 @@ MFLAGS    = -ffast-math -funroll-loops -m64 # -Wall -Wsurprising -march=native -
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
 COPTFLAGS = -O3 ${MFLAGS}
-FOPTFLAGS = -O3 ${MFLAGS} -fsecond-underscore
+FOPTFLAGS = -O3 ${MFLAGS} # -fsecond-underscore
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 ARCHFLAGS = \

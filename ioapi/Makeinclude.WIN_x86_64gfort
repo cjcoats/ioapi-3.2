@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.WIN_x86gfort 415 2017-03-22 10:23:06Zcoats $"
+# Version "$Id: Makeinclude.WIN_x86gfort 415 2017-03-22 10:23:06Z coats $"
 #
 #  Makeinclude for Cygwin-Windows, using the Cygwin 32-bit gcc/gfortran compilers
 #  Must install Cygwin, together with Cygwin compilers and development environment
@@ -32,7 +32,7 @@ MFLAGS    = -ffast-math -funroll-loops # -m64 -Wall -Wsurprising -march=native -
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
 COPTFLAGS = -O3 ${MFLAGS}
-FOPTFLAGS = -O3 ${MFLAGS} # -fsecond-underscore
+FOPTFLAGS = -O3 ${MFLAGS} -fsecond-underscore
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 ARCHFLAGS = \
