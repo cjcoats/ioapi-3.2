@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ERRORS.html 443 2017-01-04 17:23:37Z coats $" -->
+<!-- "$Id: ERRORS.html 3 2017-04-13 14:54:46Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     I/O API Troubleshooting
@@ -28,6 +28,7 @@
     <UL>
          <LI>  <A HREF="#dups">Errors after retrofitting
                <CODE>MODULE&nbsp;M3UTILIO</CODE></A>
+         <LI>  <A HREF="#syms">Missing-symbol issues</A>
          <LI>  <A HREF="#ccfc">Compiler/system-library compatibility issues</A>
          <LI>  <A HREF="AVAIL.html#ncf4">netCDF Version&nbsp;4 issues</A>
          <LI>  <A HREF="AVAIL.html#gfort"><VAR>gfortran</VAR> build issues</A>
@@ -69,7 +70,7 @@
     Each I/O&nbsp;API source file will have its version embedded in the file's
     header-comment, e.g.
     <PRE>
-    !! Version "$Id: ERRORS.html 443 2017-01-04 17:23:37Z coats $"
+    !! Version "$Id: ERRORS.html 3 2017-04-13 14:54:46Z coats $"
     </PRE>
 <P>
 
@@ -112,13 +113,50 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
     <CODE>EXTERNAL</CODE> statements.
     <P>
 
+    <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
+    <P>
+
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2><A NAME="syms">
+
+     Missing-symbol issues
+
+</A></H2>
+
+    <EM>Problem:</EM>  When I try to link, I get &quot;missing
+    symbol&quot; errors.
+    <P>
+    If the symbols begin with <CODE>nc_</CODE> or <CODE>nf_</CODE>, this
+    may be <A HREF="AVAIL.html#ncf4">a netCDF3-netCDF4 or netCDF-library
+    oreder problem.</A>
+    <P>
+    Otherwise, especially if the symbols have a <CODE>mp</CODE> 
+    somewhere in them, you probably need to add the appropriate OpenMP
+    fiags to the compile and link commands used to build your program.
+    <P>
+    Note that for two decades, the I/O&nbsp;API has supported safe
+    OpenMP parallelism&mdash;in both models and in certain of the
+    <VAR>m3tools</VAR> programs.  That means that to build programs, you
+    need to use the compile- and link-options appropriate to this fact: 
+    see the variables <CODE>OMPFLAGS</CODE> (for the compile-stage) and
+    <CODE>OMPLIBS</CODE> (for the link-stage) from the 
+    <VAR>Makeinclude.${BIN}</VAR> used to build your I/O&nbsp;API
+    library, in order to see what is needed for your compiler.
+    <P>
+    Alternatively, 
+
+    <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
+    <P>
 
 
 <HR> <!----------------------------------------------------------------->
 
 <H2><A NAME="ccfc">
 
-     Compiler/system-library compatibility issues
+     Compiler/System-library compatibility issues
 
 </A></H2>
 

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 448 2017-03-22 10:23:06Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 3 2017-04-13 14:54:46Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 434 2016-11-22 17:55:35Z coats $
+    $Id: NEWSTUFF.html 3 2017-04-13 14:54:46Z coats $
     </EM>
     <HR>
 
@@ -33,10 +33,14 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
-         <LI>  <A HREF = "#mar222017">
-               Enhanced MS-Windows/Cygwin support
+         <LI>  <A HREF = "#apr032017">
+               Timestep-read operations and bug-fixes in <CODE>MODULE MODNCFIO</CODE>
                </A>
-         <LI>  <A HREF = "#sep212016">
+          <LI>  <A HREF = "#nov282016">
+               Bug fix in <CODE>MODPDATA/SETUP_DECOMP()</CODE>,
+               top-level <CODE>Makefile.template</CODE>
+               </A>
+        <LI>  <A HREF = "#sep212016">
                I/O&nbsp;API Snoop Mode
                </A>
          <LI>  <A HREF = "#aug172016">
@@ -166,6 +170,8 @@
                Bug-fixes from Christian Hogrefe in <VAR>m3tools</VAR> programs
                <CODE>JULDATE</CODE> and <CODE>M3XTRACT</CODE>
                </A>
+               top-level <CODE>Makefile.template</CODE>
+               top-level <CODE>Makefile.template</CODE>
         <LI>  <A HREF = "#may2611">
                Bug-fix for file type <CODE>CUSTOM3</CODE> in  <VAR>m3tools</VAR> program
                <CODE>M3STAT</CODE>
@@ -248,6 +254,7 @@
                support.
                </A>
          <LI>  <A HREF = "#jun1608">
+               top-level <CODE>Makefile.template</CODE>
                Experimental Albers Equal-Area Conic map projection
                support; MM5 and WRF spheres added to <CODE>GCTP()</CODE>
                and  <CODE>SETSPHERE()</CODE> by Steve Howard, NOAA/ASMD;
@@ -603,23 +610,42 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> <A NAME = "mar222017">
-    Enhanced MS-Windows/Cygwin Support
+<H2> <A NAME = "apr032017">
+               Timestep-read operations and bug-fixes in <CODE>MODULE MODNCFIO</CODE>
 </A></H2>
 
     <BLOCKQUOTE>
-    <EM>For I/O&nbsp;API 3.2 or later:</EM>  Cygwin now exists in 64-bit
-    form (in addition to the previous 32-bit form), and also provides
-    pre-built netCDF libraries <VAR>libnetcdff.dll.a</VAR> and
-    <VAR>libnetcdf.dll.a</VAR>, requiring appropriate changes to the
-    <VAR>m3tools/Makefile</VAR>s. There is a new binary type
-    <CODE>WIN_x86_64gfort</CODE> for 64-bit Cygwin. These changes are
-    now documented in  <A HREF="AVAIL.html#build">the I/O&nbsp;API
-    installation guide.</A>
+    Added routines <CODE>READNVSTEP*(FNAME,TSTEP,VNAME,...)</CODE>
+    for reading one time step (<CODE>TSTEP=1,2,3,...</CODE>) of the
+    indicated variable from time-stepped &quot;raw netCDF&quot; file
+    <CODE>FNAME</CODE>.
+    <P>
+    Bug-fixes in some of the <CODE>READNCVAR4D*()</CODE> routines
+    (<CODE>REAL</CODE> case was OK; others had a typo).
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
-    This is useful, for example, when trying to &quot;pipeline&quot;
-    processing for the models in a forecasting system.
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "nov282016">
+    Bug fix in <CODE>MODPDATA/SETUP_DECOMP()</CODE>
+    top-level <CODE>Makefile.template</CODE>
+</A></H2>
+
+    <BLOCKQUOTE>
+    Transcription error in <CODE>MODPDATA/SETUP_DECOMP()</CODE> reported
+    by David Wong,  US EPA, now fixed.
+    <P>
+    Master <CODE>Makefile.template</CODE> had an inadvertent and
+    backwards netCDF libraries definition; now corrected to 
+    <CODE><BLOCKQUOTE>
+    -lnetcdff -lnetcdf
+    </BLOCKQUOTE></CODE>
+    reported by Xiangshang Li, Unkiversity of Houston.
     <P>
     </BLOCKQUOTE>
 
@@ -6259,7 +6285,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 434 2016-11-22 17:55:35Z coats $
+    $Id: NEWSTUFF.html 3 2017-04-13 14:54:46Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
