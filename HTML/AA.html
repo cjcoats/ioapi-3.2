@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 446 2017-01-11 19:15:33Z coats $" -->
+<!-- "$Id: AA.html 6 2017-05-04 18:54:56Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -306,6 +306,12 @@ Contents
              <VAR>NETCDF.EXT</VAR> or <VAR>netcdf.inc</VAR>,
              and also includes new routines for inquiring about,
              and reading variables from &quot;raw&quot; netCDF files.
+             <P>
+        <DT> <A HREF = "MODMPASFIO.html">
+             <STRONG><VAR>MODULE MODMPASFIO</VAR></STRONG></A>:
+             Unstructured-grid description for MPAS domains, related
+             parameters and state variables,  MPAS-format-netCDF I/O
+             routines, and various utility routines
              <P>
         <DT> <A HREF = "INCLUDE.html#fdesc">
              <STRONG>FDESC3.EXT</STRONG>:
@@ -1379,6 +1385,15 @@ Contents
              <CODE>YYYYDDD.HHMMSS</CODE> by a specified time step
              <CODE>HHMMSS</CODE> and
              echo the result.
+        <P>
+        <DT> <STRONG>Programs for MPAS-grid and MPAS-format-netCDF file manipulation</STRONG>
+        <P>
+        <DT> <A HREF = "MPASWTEST.html"><STRONG>mpaswtest</STRONG></A>:
+             Compute weights for allocating a Lat-Lon specified arc
+             to a 2-D or 3-D MPAS grid.<BR>
+             Demonstration program for
+             <A HREF="MODMPASFIO.html"><CODE>MODULE MPASFIO</CODE></A>
+             <P>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -1473,7 +1488,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 446 2017-01-11 19:15:33Z coats $
+    $Id: AA.html 6 2017-05-04 18:54:56Z coats $
     </PRE>
 
 </BODY>

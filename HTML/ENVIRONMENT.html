@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVIRONMENT.html 425 2016-09-21 18:35:25Z coats $" -->
+<!-- "$Id: ENVIRONMENT.html 6 2017-05-04 18:54:56Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> Environment Variables for the I/O&nbsp;API </TITLE>
 </HEAD>
@@ -154,17 +154,15 @@ later only</STRONG>:
           <P>
 
     <LI>  <STRONG>IOAPI_CMAQMETA</STRONG>
-    (<VAR>&lt;path to ASCII CMAQ metadata input file&gt;</VAR>
-    <CODE>NONE</CODE>,
-          with default <CODE>NONE</CODE>)
+    (<VAR>NONE</VAR> (default), <VAR>ENV</VAR>, or
+          <VAR>&lt;path to ASCII CMAQ metadata input file&gt;</VAR><BR>
           controls whether standard CMAQ metadata will be written
-          to the headers of newly-created files (currently under
-          development, 10/2015).
+          to the headers of newly-created files.
           <P>
 
     <LI>  <STRONG>IOAPI_SMOKEMETA</STRONG>
-    (<VAR>&lt;path to ASCII SMOKE metadata input file&gt;</VAR>
-    <CODE>NONE</CODE>,
+    (<VAR>NONE</VAR> (default), <VAR>ENV</VAR>, or
+          <VAR>&lt;path to ASCII CMAQ metadata input file&gt;</VAR><BR>
           controls whether SMOKE-standard metadata will be written
           to the headers of newly-created files (currently under
           development, 10/2015).
@@ -181,6 +179,18 @@ later only</STRONG>:
           <CODE>SNOOPTRY3&nbsp;&lt;&nbsp;0</CODE> or
           <CODE>SNOOPSECS3&nbsp;&le;&nbsp;0</CODE> turn off snoop
           mode.
+          <P>
+
+    <LI>  <STRONG>MPAS_VERBOSE</STRONG>  <VAR>Y N [N]</VAR> controls
+          verbose diagnostic output in
+          <A HREF="MODMPASFIO.html"><CODE>MODULE MODMPASFIO</CODE></A>
+          <P>
+
+    <LI>  <STRONG>MPAS_CHKFILL</STRONG>  <VAR>Y N [Y]</VAR> controls
+          input &quot;hole-detection&quot; checks against netCDF
+          fill-values for intput read by  <A
+          HREF="MODMPASFIO.html"><CODE>MODULE MODMPASFIO</CODE></A>
+          routine <CODE>READMPAS()</CODE>
           <P>
 </UL>
 <P>

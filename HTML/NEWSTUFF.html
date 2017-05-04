@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 3 2017-04-13 14:54:46Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 6 2017-05-04 18:54:56Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 3 2017-04-13 14:54:46Z coats $
+    $Id: NEWSTUFF.html 6 2017-05-04 18:54:56Z coats $
     </EM>
     <HR>
 
@@ -33,8 +33,11 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#may032017">
+               <CODE>MODULE MODMPASFIO</CODE>
+               </A>
          <LI>  <A HREF = "#apr032017">
-               Timestep-read operations and bug-fixes in <CODE>MODULE MODNCFIO</CODE>
+               Timestep-read ooperations and bug-fixes in <CODE>MODULE MODNCFIO</CODE>
                </A>
           <LI>  <A HREF = "#nov282016">
                Bug fix in <CODE>MODPDATA/SETUP_DECOMP()</CODE>,
@@ -610,8 +613,40 @@
 
 <HR> <!----------------------------------------------------------------->
 
+<H2> <A NAME = "may032017">
+    <CODE>MODULE MODMPASFIO</CODE>
+</A></H2>
+
+    <BLOCKQUOTE>
+    MPAS is a (potentially-)global unstructured-grid weather model that
+    can be adapted for atmospheric chemistry, land-surface modeling, and
+    other tasks.  It uses its own format built on top of netCDF to store
+    and retrieve its model-data; the file structure is <EM>quite</EM>
+    complicated.
+    <P>
+    New <A HREF="MODMPASFIO.html"><CODE>MODULE&nbsp;MODMPASFIO</CODE></A>
+    addresses some of the difficulties in dealing with this complexity.
+    It provides parameters and state-variables for MPAS grid description,
+    routines for creating, opening, describing, reading, and writing
+    MPAS-netCDF files, as well as a number of grid related utility
+    routines.
+    <P>
+    Since this netCDF-format is quite complex, this can save you
+    from having to write several thousands of lines of code on your
+    own.  Additionally, it provides the data integrity facilities
+    and error checking that are necessary to construct models of
+    regulatory quality, for which the &quot;chain of custody&quot; for
+    the model data must be kept in a form adequate for use in court.
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "apr032017">
-               Timestep-read operations and bug-fixes in <CODE>MODULE MODNCFIO</CODE>
+    Timestep-read operations and bug-fixes in <CODE>MODULE MODNCFIO</CODE>
 </A></H2>
 
     <BLOCKQUOTE>
@@ -6285,7 +6320,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 3 2017-04-13 14:54:46Z coats $
+    $Id: NEWSTUFF.html 6 2017-05-04 18:54:56Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

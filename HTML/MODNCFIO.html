@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 3 2017-04-13 14:54:46Z coats $" -->
+<!-- "$Id: MODNCFIO.html 6 2017-05-04 18:54:56Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -15,7 +15,7 @@
 
 <!--#include virtual="/INCLUDES/header.html" -->
 
-<H1>    Fortran-90 <CODE>MODULE&nbsp;MODNCFIO</CODE> </H1>
+<H1>    Fortran-90 <CODE>MODULE MODNCFIO</CODE> </H1>
 
 <H2>Summary</H2>
 
@@ -29,6 +29,11 @@
     and related constants), and also includes new routines for
     inquiring about, and reading, variables from &quot;raw&quot; netCDF
     files.
+    <P>
+
+    <STRONG>See also</STRONG>
+    <A HREF = "MODWRFIO.html"><CODE>MODULE MODWRFIO</CODE></A> and 
+    <A HREF = "MODMPASFIO.html"><CODE>MODULE MODMPASFIO</CODE></A>.
     <P>
 
 </BLOCKQUOTE>
@@ -64,6 +69,11 @@
     preprocessor symbol <CODE>IOAPICPL</CODE> defined in
     <VAR>Makefile.cpl</VAR>, turns it into a total of 8 versions in
     all).
+    <P>
+
+    This module also provides routines for describing &quot;raw&quot;
+    netCDF files, and for reading either entire variables or entire
+    time steps of variables from them.
     <P>
 
     It is also hoped that the source code for this module is somewhat

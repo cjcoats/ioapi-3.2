@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: LOGICALS.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: LOGICALS.html 6 2017-05-04 18:54:56Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> FILES, LOGICAL NAMES AND PHYSICAL NAMES  </TITLE>
 </HEAD>
@@ -14,7 +14,7 @@
       MARGINWIDTH="15">
 <H1>    FILES, LOGICAL NAMES AND PHYSICAL NAMES  </H1>
         
-In dealing with the files, programs using the I/O API refer to
+In dealing with the files, programs using the I/O&nbsp;API refer to
 files by <STRONG>logical names</STRONG>, instead of forcing the 
 programmer and program-user to deal with hard-coded file names or
 hard-coded unit numbers.  One of the consequences of this is that 
@@ -40,7 +40,7 @@ program options and flags; in that case, the routines
 value associated with the an environment variable.  
 <P>
 
-The I/O API also uses a <A HREF = "ENVIRONMENT.html"> standard set 
+The I/O&nbsp;API also uses a <A HREF = "ENVIRONMENT.html"> standard set 
 of logical names  </A> <STRONG>LOGFILE, SCENDESC,</STRONG> and 
 <STRONG>EXECUTION_ID</STRONG> for the program's log, the 
 scenario/run description file, and the run's execution ID.  
@@ -49,7 +49,7 @@ uses a grid and coordinate description file with logical name
 <A HREF = "GRIDDESC.html"> <STRONG>GRIDDESC</STRONG> </A>.
 <P> 
 
-When you run a program that uses the I/O API, you begin with a 
+When you run a program that uses the I/O&nbsp;API, you begin with a 
 sequence of <VAR>setenv</VAR> commands that set the values for the
 program's logical names, much as you begin a (normal) Cray
 Fortran program with a sequence of <CODE>ASSIGN</CODE> commands for its
@@ -66,18 +66,48 @@ something like:
     ...
 </PRE><P>
 
-Note that you can declare a file
-<A HREF = "BUFFERED.html#vol">&quot;volatile&quot;</A> by adding
-a trailing (and quoted, so that <VAR>setenv</VAR> works correctly)
-<CODE>&nbsp;-v</CODE> to the value of the logical name, as indicated
-below; this has the effect of telling the I/O&nbsp;API to do a
-disk-synch before or after every input or output operation on that
-file.
-<PRE>
-    ...
-    setenv  QUX  &quot;/tmp/mydir/volatiledata.mymodel -v&quot;
-</PRE><P>
-
+Note that you can declare file properties by various prefixes and
+suffixes.  You may have to quote this value, so that <VAR>setenv</VAR>
+works correctly:
+<BLOCKQUOTE><DL>
+    <DT> <A HREF = "BUFFERED.html#vol">&quot;volatile&quot;</A>
+    <DD> add a trailing (and quoted) <CODE>&nbsp;-v</CODE> to the
+         value of the logical name
+         <BLOCKQUOTE><CODE>
+         setenv  QUX  &quot;/tmp/mydir/volatiledata.mymodel -v&quot;
+         </CODE></BLOCKQUOTE>
+        <P>
+    <DT> <A HREF = "BUFFERED.html#bin">&quot;native binary&quot;</A>
+    <DD> add the prefix <CODE>BIN:</CODE> to the value of the logical name
+         <BLOCKQUOTE><CODE>
+         setenv  FOO  BIN:/tmp/mydir/cmaq.conc.US36_CRO.2015233.dat
+         </CODE></BLOCKQUOTE>
+        <P>
+    <DT> <A HREF = "BUFFERED.html#buf">&quot;buffered&quot;</A>
+    <DD> <CODE>setenv  BAR  BUFFERED</CODE><BR>
+         where <CODE>BUFFERED</CODE> indicates the status of a 
+         &quot;virtual&quot; file that never is part of the file system.
+         <P>
+    <DT> <A HREF = "BUFFERED.html#pvm">&quot;PVM coupling-mode&quot;</A>
+    <DD> either add a prefix <CODE>&nbsp;virtual</CODE>(and use quotes),
+         or (for I/O&nbsp;API-3.2 or later) add the  prefix
+         <CODE>PVM:</CODE> to the value of the logical name
+         (which is then a PVM-mailbox name constructed by the system,
+         and not a file-system path):
+         <BLOCKQUOTE><CODE>
+         setenv  FOO  virtual my_file_spec1<BR>
+         </CODE>or<CODE><BR>
+         setenv  FOO  PVM:my_file_spec2
+         </CODE></BLOCKQUOTE>
+        <P>
+    <DT> <A HREF = "BUFFERED.html#pncf">&quot;PnetCDF distributed&quot;</A>
+    <DD> add the prefix <CODE>MPI:</CODE> to the value of the logical name
+         <BLOCKQUOTE><CODE>
+         setenv  FOO  MPI:/tmp/mydir/cmaq.conc.US36_CRO.2015233.ncf
+         </CODE></BLOCKQUOTE>
+        <P>
+</DL></BLOCKQUOTE>
+<P>
 
 <HR>
 
@@ -90,7 +120,7 @@ Up: <STRONG>Conventions</STRONG>
 </A><P>
 
 <A HREF = "AA.html"> 
-To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+To: <STRONG>Models-3/EDSS I/O&nbsp;API:   The Help Pages</STRONG> 
 </A><P>
 
 </BODY>

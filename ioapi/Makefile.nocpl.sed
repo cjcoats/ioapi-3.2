@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.nocpl.sed 435 2016-11-22 18:10:58Z coats $"
+# VERSION "$Id: Makefile.nocpl.sed 6 2017-05-04 18:54:56Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
@@ -174,7 +174,7 @@ wrtflag.F90     wrvars.F90
 
 mSRC = m3utilio.f
 
-m90SRC = modgctp.f90    modwrfio.f90
+m90SRC = modgctp.f90    modwrfio.f90    modmpasfio.f90
 
 M90SRC = modatts3.F90   modncfio.F90    modpdata.F90
 
@@ -309,6 +309,7 @@ modgctp.o    modgctp.mod   :  m3utilio.mod
 modpdata.o   modpdata.mod  :  m3utilio.mod modncfio.mod
 modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
 modncfio.o   modncfio.mod  :  m3utilio.mod
+modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
 
 chkfil3.o     :  m3utilio.mod
 ckdesc.o      :  m3utilio.mod
@@ -331,6 +332,7 @@ inqatt3.o     :  modncfio.mod modpdata.mod
 intppqv.o     :  m3utilio.mod
 kfindx.o      :  m3utilio.mod modncfio.mod
 kfopen.o      :  m3utilio.mod modncfio.mod
+kfread.o      :  m3utilio.mod modncfio.mod
 kfwrite.o     :  m3utilio.mod modncfio.mod
 m3abort.o     :  modncfio.mod
 open3.o       :  modncfio.mod modpdata.mod
@@ -350,8 +352,8 @@ rdgrnest.o    :  modncfio.mod
 rdiddata.o    :  modncfio.mod
 rdprofil.o    :  modncfio.mod
 rdsmatrx.o    :  modncfio.mod
-rdvars.o      :  m3utilio.mod modncfio.mod
 rdtflag.o     :  m3utilio.mod modncfio.mod
+rdvars.o      :  m3utilio.mod modncfio.mod
 read3.o       :  modncfio.mod
 read4d.o      :  m3utilio.mod modncfio.mod
 readsmet.o    :  m3utilio.mod
