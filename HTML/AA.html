@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 6 2017-05-04 18:54:56Z coats $" -->
+<!-- "$Id: AA.html 8 2017-05-05 15:11:49Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -252,6 +252,10 @@ Contents
              <STRONG>SPARSE MATRIX</STRONG>:
              </A>
              uses &quot;skyline-transpose&quot; representation
+        <DT> <A HREF = "MODMPASFIO.html#decl">
+             <STRONG>MPAS</STRONG>:
+             </A>
+             unstructured Voronoi grid:  <CODE>MODULE MPASFIO</CODE>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -511,6 +515,52 @@ Contents
    </DL></BLOCKQUOTE>
    <P>
 
+<H3> MPAS-format-netCDF Routines </H3>
+
+    <BLOCKQUOTE><DL>
+        <DT> <A HREF = "MODMPASFIO.html#init" >
+             <STRONG>INITMPGRID</STRONG>:
+             </A>
+             module initialization
+        <DT> <A HREF = "MODMPASFIO.html#shut" >
+             <STRONG>SHUTMPGRID</STRONG>:
+             </A>
+             module shutdown, flushing and closing all files
+        <DT> <A HREF = "MODMPASFIO.html#open" >
+             <STRONG>OPENMPAS</STRONG>:
+             </A>
+             open existing MPAS-format-netCDF input or output file
+        <DT> <A HREF = "MODMPASFIO.html#creat" >
+             <STRONG>CREATEMPAS</STRONG>:
+             </A>
+             create new MPAS-format-netCDF output file
+        <DT> <A HREF = "MODMPASFIO.html#desc" >
+             <STRONG>DESCMPAS</STRONG>:
+             </A>
+             read header and return description for MPAS-format file
+        <DT> <A HREF = "MODMPASFIO.html#read" >
+             <STRONG>READMPAS</STRONG>:
+             </A>
+             read variable or time step of variable from MPAS-format
+             input file
+        <DT> <A HREF = "MODMPASFIO.html#write" >
+             <STRONG>WRITEMPAS</STRONG>:
+             </A>
+             write variable or time step of variable to MPAS-format
+             output file
+        <DT> <A HREF = "MODMPASFIO.html#step" >
+             <STRONG>READMPSTEPS</STRONG>:
+             </A>
+             Read MPAS-format ASCII timestep-value list from an MPAS-format
+             file and convert to I/O&nbsp;API conventions
+        <DT> <A HREF = "MODMPASFIO.html#wstep" >
+             <STRONG>WRITEMPSTEP</STRONG>:
+             </A>
+             Write timestep-value record to an MPAS-format file
+             as MPAS-format ASCII 
+   </DL></BLOCKQUOTE>
+   <P>
+
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
 
@@ -561,7 +611,7 @@ Contents
                     interpolation package</A>
                     <BLOCKQUOTE><DL>
                         <DT> <STRONG><CODE>GRID2INDX</CODE></STRONG>
-                       <DD>  Compute bilinear
+                        <DD>  Compute bilinear
                              interpolation indices and coeffs for 
                              grid-to-grid interpolation
                         <DT> <STRONG><CODE>PNTS2INDX</CODE></STRONG>
@@ -652,6 +702,28 @@ Contents
              or BMATVEC)</A> and for incidence-matrix re-gridding,
              respectively.
              <P>
+        <DT> <A HREF = "MODMPASFIO.html#dist" >
+             <STRONG>SPHEREDIST</STRONG>:
+             </A>
+              compute spherical-Earth distance from  <CODE>(LAT1,LON1)</CODE>
+             to <CODE>(LAT2,LON2)</CODE>
+        <DT> <A HREF = "MODMPASFIO.html#find" >
+             <STRONG>FINDCELL</STRONG>:
+             </A>
+              find subscript for MPAS-grid cell  containing  the point
+              <CODE>(ALAT,ALON)</CODE>
+        <DT> <A HREF = "MODMPASFIO.html#find" >
+             <STRONG>FINDVRTX</STRONG>:
+             </A>
+              find subscript for MPAS-grid vertex closest to the point
+              <CODE>(ALAT,ALON)</CODE> (equivalently, for MPAS-grid 
+              dual-cell  containing  the point <CODE>(ALAT,ALON)</CODE>
+        <DT> <A HREF = "MODMPASFIO.html#wght" >
+             <STRONG>ARC2MPAS</STRONG>:
+             </A>
+              compute 2-D and 3-D weights for arc-segment between
+              points  <CODE>(LAT1,LON1[,HGT1])</CODE> and 
+              <CODE>(LAT2,LON2[,HGT2])</CODE> (e.g., for SMOKE)
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -772,6 +844,12 @@ Contents
              </A>
              get the year-to-day conversion factor (1/365 or 1/366)
              for the given year.
+             <P>
+        <DT> <A HREF = "MODMPASFIO.html#date" >
+             <STRONG><CODE>MPSTR2DT()</CODE> and <CODE>MPDT2STR()</CODE></STRONG>:
+             </A>
+              convert MPAS-format ASCII date&amp;time to/from I/O&nbsp;API
+             convention <CODE>JDATE:JTIME</CODE>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -1488,7 +1566,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 6 2017-05-04 18:54:56Z coats $
+    $Id: AA.html 8 2017-05-05 15:11:49Z coats $
     </PRE>
 
 </BODY>

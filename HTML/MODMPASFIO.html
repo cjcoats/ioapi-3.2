@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 6 2017-05-04 18:54:56Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 8 2017-05-05 15:11:49Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -609,7 +609,7 @@ INITREARTH()</CODE></A></H2>
         <LI><CODE> USE MODMPASFIO</CODE>
             <P>
         <LI>Call <CODE>INITMPGRID()</CODE> before calling
-             <CODE>FINDCELL()</CODE></EM> or <CODE>FINDVRTX()</CODE>
+             <CODE>FINDCELL()</CODE> or <CODE>FINDVRTX()</CODE>
             <P>
     </UL></BLOCKQUOTE>
     <P>
@@ -620,7 +620,9 @@ INITREARTH()</CODE></A></H2>
         <P>
         <DT> <CODE>FINDVRTX()</CODE>:
         <DD> Find the subscript for the vertex at the center of the
-             dual-mesh cell that contains the point <CODE>(ALAT,ALON)</CODE>.
+             dual-mesh cell that contains the point <CODE>(ALAT,ALON)</CODE>
+             or equivalently find the subscript for the vertex closest
+             tothe point <CODE>(ALAT,ALON)</CODE>
         <P>
     </DL>
 
