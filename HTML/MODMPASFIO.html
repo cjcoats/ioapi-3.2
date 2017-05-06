@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 8 2017-05-05 15:11:49Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 9 2017-05-06 21:12:54Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -64,7 +64,7 @@
         <DT>  <A HREF = "#step" ><CODE>READMPSTEPS()</CODE></A>
         <DD> Read MPAS-format ASCII timestep-value list from an MPAS-format
              file and convert to I/O&nbsp;API conventions.
-        <DT>  <A HREF = "#wstp" ><CODE>WRITEMPSTEP()</CODE></A>
+        <DT>  <A HREF = "#wstep" ><CODE>WRITEMPSTEP()</CODE></A>
         <DD> Write timestep-value record to an MPAS-format file
              as MPAS-format ASCII 
         <DT>  <A HREF = "#read" ><CODE>READMPAS()</CODE></A>
@@ -237,8 +237,8 @@
              adding standard time and vertical dimensions).
              <P>
 
-             Note that <A HREF="open"><CODE>OPENMPAS()</CODE></A> and
-             <A HREF="create"><CODE>CREATEMPAS()</CODE></A> have provisions
+             Note that <A HREF="#open"><CODE>OPENMPAS()</CODE></A> and
+             <A HREF="#create"><CODE>CREATEMPAS()</CODE></A> have provisions
              for defining additional dimensions on a per-file basis.
              (Having a potentially open-ended set of dimensions and
              their names adds substantial complexity&nbsp;;-(&nbsp;).
@@ -540,7 +540,7 @@ INITREARTH()</CODE></A></H2>
     <P>
 
     The third (<CODE>INITREARTH()</CODE>) form is used to re-initialize
-    the Earth-radius for use in <A HREF="dist"><CODE>SPHEREDIST()</CODE></A>,
+    the Earth-radius for use in <A HREF="#dist"><CODE>SPHEREDIST()</CODE></A>,
     for the case that function is used in stand-alone form.
     <P>
 
@@ -560,9 +560,9 @@ INITREARTH()</CODE></A></H2>
 
     <BLOCKQUOTE>
 
-    Flush and close all files opened by <CODE><A HREF="open">INITMPGRID()</A></CODE>,
-    <CODE><A HREF="open">OPENMPAS()</A></CODE> or
-    <CODE><A HREF="creat">CREATEMPAS()</A></CODE>, and deallocate and
+    Flush and close all files opened by <CODE><A HREF="#init">INITMPGRID()</A></CODE>,
+    <CODE><A HREF="#open">OPENMPAS()</A></CODE> or
+    <CODE><A HREF="#create">CREATEMPAS()</A></CODE>, and deallocate and
     clear internal state variables and other data structures.
     <P>
 
@@ -622,7 +622,7 @@ INITREARTH()</CODE></A></H2>
         <DD> Find the subscript for the vertex at the center of the
              dual-mesh cell that contains the point <CODE>(ALAT,ALON)</CODE>
              or equivalently find the subscript for the vertex closest
-             tothe point <CODE>(ALAT,ALON)</CODE>
+             to the point <CODE>(ALAT,ALON)</CODE>
         <P>
     </DL>
 
@@ -938,7 +938,7 @@ INITREARTH()</CODE></A></H2>
     
     <EM>See also</EM> <A HREF="#date"><CODE>MPSTR2DT()</CODE> and
     <CODE>MPDT2STR()</CODE></A>, and 
-    <A HREF="#wstp"><CODE>WRITEMPSTEP()</CODE></A>, below.
+    <A HREF="#wstep"><CODE>WRITEMPSTEP()</CODE></A>, below.
     <P>
 
     </BLOCKQUOTE>
@@ -949,7 +949,7 @@ INITREARTH()</CODE></A></H2>
 <HR> <!- ------------------------------------------------------------- ->
 
 
-<H2><A NAME = "wstp"><CODE>WRITEMPSTEP()</CODE></A></H2>
+<H2><A NAME = "wstep"><CODE>WRITEMPSTEP()</CODE></A></H2>
 
     <PRE>
     LOGICAL FUNCTION WRITEMPSTEP( FNAME, VNAME, ISTEP, JDATE, JTIME )
@@ -1359,7 +1359,9 @@ INITREARTH()</CODE></A></H2>
               &quot;raw&quot; netCDF files.<BR> Note that these routines
               do a open-action-close sequence within each routine, and
               so are not compatible with the corresponding MPAS-file
-              operations provided by this module; you should only call
+              operations provided by this module (which presumes that
+              once files are opened, they stay opened until you call
+              <CODE>SHUTMPGRID()</CODE>); you should only call
               them prior to using <CODE>OPENMPAS()</CODE> (or you may
               have obscure &quot;double-free&quot; errors).
          <P>
@@ -1452,7 +1454,7 @@ INITREARTH()</CODE></A></H2>
     <P>
     
     <EM>See also</EM> <A HREF="#step"><CODE>READMPSTEPS()</CODE></A> and
-    <A HREF="#wstp"><CODE>WRITEMPSTEP()</CODE></A>, above.
+    <A HREF="#wstep"><CODE>WRITEMPSTEP()</CODE></A>, above.
     <P>
 
     </BLOCKQUOTE>
