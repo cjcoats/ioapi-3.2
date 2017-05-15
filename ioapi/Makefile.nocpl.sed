@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.nocpl.sed 6 2017-05-04 18:54:56Z coats $"
+# VERSION "$Id: Makefile.nocpl.sed 11 2017-05-09 13:12:36Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
@@ -207,6 +207,7 @@ all: ${LIB} ${MODS} fixed_src
 
 mod:  ${MODS}
 
+modmpasfio.o modmpasfio.mod:  m3utilio.mod modncfio.mod
 clean:  ${OBJDIR}
 	cd ${OBJDIR}; rm $(fOBJ); rm $(FOBJ); rm $(MOBJ); rm $(COBJ); rm ${LIB} ${MODS}
 	cd ${SRCDIR}; rm *.o core* *.mod *.MOD
@@ -304,8 +305,10 @@ init3.o:  ${EXTS}
 gctp.o: ${IODIR}/gctp.f
 	cd ${OBJDIR}; $(FC) -c $(FSFLAGS) $(FFLAGS) ${IODIR}/gctp.f
 
+m3utilio.o   m3utilio.mod  :  ${EXTS}
 modatts3.o   modatts3.mod  :  m3utilio.mod modncfio.mod modpdata.mod
 modgctp.o    modgctp.mod   :  m3utilio.mod
+modmpasfio.o modmpasfio.mod:  m3utilio.mod modncfio.mod
 modpdata.o   modpdata.mod  :  m3utilio.mod modncfio.mod
 modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
 modncfio.o   modncfio.mod  :  m3utilio.mod
