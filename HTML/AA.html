@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 9 2017-05-06 21:12:54Z coats $" -->
+<!-- "$Id: AA.html 13 2017-05-15 18:02:52Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -512,6 +512,29 @@ Contents
              </A>
              write <VAR>&lt;time step sequence &gt;</VAR> of
              <VAR>&lt;variable&gt;</VAR> to <VAR>&lt;file&gt;</VAR>
+   </DL></BLOCKQUOTE>
+   <P>
+
+<H3> &quot;Raw&quot; netCDF Routines </H3>
+
+    <BLOCKQUOTE><DL>
+        <DT> <A HREF = "MODNCFIO.html#create" >
+             <STRONG>CREATENC</STRONG>:
+             </A>
+             Create a new &quot;raw netCDF&quot; file.
+        <DT> <A HREF = "MODNCFIO.html#desc" >
+             <STRONG>DESCNCVAR</STRONG>:
+             </A>
+             Return the list of variables, together with their units,
+             types, and dimension-info.
+        <DT> <A HREF = "MODNCFIO.html#read" >
+             <STRONG>READNCVAR</STRONG>:
+             </A>
+             Read a variable, or a timestep of a variable
+        <DT> <A HREF = "MODNCFIO.html#write" >
+             <STRONG>WRITENCVAR</STRONG>:
+             </A>
+             Write a variable, or a timestep of a variable
    </DL></BLOCKQUOTE>
    <P>
 
@@ -1566,7 +1589,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 9 2017-05-06 21:12:54Z coats $
+    $Id: AA.html 13 2017-05-15 18:02:52Z coats $
     </PRE>
 
 </BODY>

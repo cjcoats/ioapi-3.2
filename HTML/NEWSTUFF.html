@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 6 2017-05-04 18:54:56Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 12 2017-05-15 17:56:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 6 2017-05-04 18:54:56Z coats $
+    $Id: NEWSTUFF.html 12 2017-05-15 17:56:33Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,11 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#may142017">
+               <CODE>MODULE MODNCFIO</CODE>:  add
+               <CODE>CREATENC()</CODE>,
+               <CODE>WRITENCVAR()</CODE>; bug-fixes
+               </A>
          <LI>  <A HREF = "#may032017">
                <CODE>MODULE MODMPASFIO</CODE>
                </A>
@@ -613,6 +618,37 @@
 
 <HR> <!----------------------------------------------------------------->
 
+<H2> <A NAME = "may142017">
+    <CODE>MODULE MODNCFIO</CODE>:  add <CODE>CREATENC()</CODE>,
+    <CODE>WRITENCVAR()</CODE>; bug-fixes
+</A></H2>
+
+    <BLOCKQUOTE>
+
+    <UL>
+        <LI> See <A HREF="MODNCFIO.html#create"><CODE>CREATENC()</CODE></A>
+             documentation:  create a new &quot;raw&quot; netCDF output
+             file.
+        <LI> See <A HREF="MODNCFIO.html#write"><CODE>WRITENCVAR()</CODE></A>
+             documentation:  generic routine for writing whole-variable
+             or timestep-of-variable to &quot;raw&quot; netCDF output
+             file.
+        <LI> <A HREF="MODNCFIO.html#read"><CODE>READNCVAR()</CODE></A>
+             is now generic-only (with no public type-specific routines).
+    </UL>
+    <P>
+
+    Bug-fixes for argument-mismatch in error-condition calls to
+    <CODE>NF_STRERROR()</CODE>.
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "may032017">
     <CODE>MODULE MODMPASFIO</CODE>
 </A></H2>
@@ -676,7 +712,7 @@
     by David Wong,  US EPA, now fixed.
     <P>
     Master <CODE>Makefile.template</CODE> had an inadvertent and
-    backwards netCDF libraries definition; now corrected to 
+    backwards netCDF libraries definition; now corrected to
     <CODE><BLOCKQUOTE>
     -lnetcdff -lnetcdf
     </BLOCKQUOTE></CODE>
@@ -6320,7 +6356,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 6 2017-05-04 18:54:56Z coats $
+    $Id: NEWSTUFF.html 12 2017-05-15 17:56:33Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
