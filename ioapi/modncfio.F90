@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 12 2017-05-15 17:56:33Z coats $"
+    !!  Version "$Id: modncfio.F90 16 2017-05-17 16:24:21Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -1837,7 +1837,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         CHARACTER(LEN=512)          EQNAME
 
         INTEGER         FID, DID, VID, F, FMODE
-        INTEGER         ISTAT, IERR, ID, I, K, M, N, V, VV
+        INTEGER         IERR, ID, I, K, M, N, V, VV
         INTEGER         NAMELEN, UNITLEN, DESCLEN
         
         LOGICAL         EFLAG, AFLAG
@@ -1857,7 +1857,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( PNAME // ' Error opening "' // TRIM( FNAME ) // '"' )
             CREATENC = .FALSE.
             RETURN
-        END IF              !!  istat nonzero:  NF_CREATE() failed
+        END IF              !!  ierr nonzero:  NF_CREATE() failed
 
         EFLAG = .FALSE.     !!  no errors yet
 
@@ -1984,7 +1984,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_CLOSE( FID )
-        IF ( ISTAT .NE. 0 ) THEN
+        IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( NF_STRERROR( IERR ) )
             CALL M3MESG( PNAME // ' Error closing "' // TRIM( FNAME ) // '"' )
             EFLAG = .TRUE.
