@@ -2,7 +2,7 @@
         PROGRAM M3INTERP
 
 C***********************************************************************
-C Version "$Id: m3interp.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: m3interp.f 14 2017-05-17 14:58:37Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -208,7 +208,7 @@ C   begin body of program M3INTERP
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3interp.f 435 2016-11-22 18:10:58Z coats               $',
+     &'$Id:: m3interp.f 14 2017-05-17 14:58:37Z coats                $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -320,7 +320,7 @@ C...............  Setup for mode of operation:  copy or interpolate:
             IF ( FTYPE3D .EQ. GRDDED3 ) THEN
                 SIZE = NCOLS3D * NROWS3D * NLAYS3D
             ELSE IF ( FTYPE3D .EQ. BNDARY3 ) THEN
-                SIZE = NCOLS3D * NROWS3D * NLAYS3D
+                SIZE = ( 2 * ( NCOLS3D + NROWS3D + 2*NTHIK3D ) )*NLAYS3D
             ELSE IF ( FTYPE3D .EQ. CUSTOM3 ) THEN
                 SIZE = NCOLS3D * NROWS3D * NLAYS3D
             ELSE
@@ -431,10 +431,10 @@ C...............  Setup for mode of operation:  copy or interpolate:
 C...............  Allocate buffers; compute re-gridding matrix
 
             ALLOCATE( BUF1 ( NCOLS1*NROWS1, NLAYS1 ),
-     &                BUF2( NCOLS2*NROWS2, NLAYS1 ),
-     &                IX2   ( NCOLS2*NROWS2 ),
-     &                PX2   ( NCOLS2*NROWS2 ),
-     &                PY2   ( NCOLS2*NROWS2 ),  STAT = ISTAT )
+     &                BUF2 ( NCOLS2*NROWS2, NLAYS1 ),
+     &                IX2  ( NCOLS2*NROWS2 ),
+     &                PX2  ( NCOLS2*NROWS2 ),
+     &                PY2  ( NCOLS2*NROWS2 ),  STAT = ISTAT )
 
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10)' )
