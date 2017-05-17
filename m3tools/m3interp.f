@@ -2,7 +2,7 @@
         PROGRAM M3INTERP
 
 C***********************************************************************
-C Version "$Id: m3interp.f 14 2017-05-17 14:58:37Z coats $"
+C Version "$Id: m3interp.f 15 2017-05-17 15:54:47Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -208,7 +208,7 @@ C   begin body of program M3INTERP
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3interp.f 14 2017-05-17 14:58:37Z coats                $',
+     &'$Id:: m3interp.f 15 2017-05-17 15:54:47Z coats                $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -330,7 +330,7 @@ C...............  Setup for mode of operation:  copy or interpolate:
                 EFLAG = .TRUE.
             END IF
 
-            ALLOCATE( BUF1( NCOLS3D*NROWS3D, NLAYS3D ), STAT = ISTAT )
+            ALLOCATE( BUF1( SIZE, NLAYS3D ), STAT = ISTAT )
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10 )' )
      &               'Buffer allocation failed:  STAT=', ISTAT
@@ -521,7 +521,7 @@ C...............  Process output time step sequence
                 DO  V = 1, NVARS3D
 
                     IF ( .NOT. INTERP3( FNAME, VNAME3D(V), PNAME,
-     &                                  JDATE, JTIME, NSIZE1, BUF1
+     &                                  JDATE, JTIME, SIZE, BUF1
      &                                  ) ) THEN
                         MESG = 'Failure reading variable "' //
      &                         TRIM( VNAME3D( V ) ) //
