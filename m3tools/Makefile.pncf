@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.pncf 6 2017-05-04 18:54:56Z coats $"
+# Version "$Id: Makefile.pncf 19 2017-05-18 15:43:33Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -207,6 +207,7 @@ insertgrid.o    : m3utilio.mod  modgctp.mod
 latlon.o        : m3utilio.mod  modgctp.mod
 m3combo.o       : m3utilio.mod  modatts3.mod
 m3cple.o        : m3utilio.mod  modgctp.mod modatts3.mod
+m3edhdr.o       : m3utilio.mod  modncfio.mod
 m3hdr.o         : m3utilio.mod  modatts3.mod
 m3interp.o      : m3utilio.mod  modgctp.mod modatts3.mod
 m3mask.o        : m3utilio.mod  modgctp.mod
