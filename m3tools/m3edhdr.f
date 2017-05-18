@@ -2,7 +2,7 @@
         PROGRAM  M3EDHDR
 
 C***********************************************************************
-C Version "$Id: m3edhdr.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: m3edhdr.f 19 2017-05-18 15:43:33Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -37,6 +37,7 @@ C       instead of NC*() netCDF-2 calls.
 C***********************************************************************
 
       USE M3UTILIO
+      USE MODNCFIO
 
       IMPLICIT NONE
 
@@ -46,7 +47,6 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
 C...........   INCLUDES:
 
-        INCLUDE 'NETCDF.EXT'  !  netCDF parameter definitions
         INCLUDE 'STATE3.EXT'  !  I/O API internal data structures
 
 C...........   PARAMETERS and their descriptions:
@@ -149,7 +149,7 @@ C   begin body of program  M3EDHDR
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3edhdr.f 435 2016-11-22 18:10:58Z coats                $',
+     &'$Id:: m3edhdr.f 19 2017-05-18 15:43:33Z coats                 $',
      &' '
 
         ARGCNT = IARGC()
@@ -257,7 +257,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( P_ALP .NE. P_ALP3D ) THEN
 
-                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'P_ALP', NCDOUBLE, 1, P_ALP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -280,7 +280,7 @@ C.......   Head of loop:  choose next edit operation.
 
                         IF ( P_BET .NE. P_BET3D ) THEN
 
-                            IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                            IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'P_BET', NCDOUBLE, 1, P_BET )
 
                             IF ( IERR .NE. 0 ) THEN
@@ -301,7 +301,7 @@ C.......   Head of loop:  choose next edit operation.
 
                         IF ( P_GAM .NE. P_GAM3D ) THEN
 
-                            IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                            IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'P_GAM', NCDOUBLE, 1, P_GAM )
 
                             IF ( IERR .NE. 0 ) THEN
@@ -323,7 +323,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( XCENT .NE. XCENT3D ) THEN
 
-                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'XCENT', NCDOUBLE, 1, XCENT )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -343,7 +343,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( YCENT .NE. YCENT3D ) THEN
 
-                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'YCENT', NCDOUBLE, 1, YCENT )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -367,7 +367,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( XORIG .NE. XORIG3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'XORIG', NCDOUBLE, 1, XORIG )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -387,7 +387,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( YORIG .NE. YORIG3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'YORIG', NCDOUBLE, 1, YORIG )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -407,7 +407,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( XCELL .NE. XCELL3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'XCELL', NCDOUBLE, 1, XCELL )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -427,7 +427,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( YCELL .NE. YCELL3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'YCELL', NCDOUBLE, 1, YCELL )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -457,7 +457,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( VGTYP .NE. VGTYP3D ) THEN
 
-                    IERR = NF_PUT_ATT_INT( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL,
      &                             'VGTYP', NF_INT, 1, VGTYP )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -480,7 +480,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( VGTOP .NE. VGTOP3D ) THEN
 
-                        IERR = NF_PUT_ATT_REAL( FID, NCGLOBAL,
+                        IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL,
      &                              'VGTOP', NCFLOAT, 1, VGTOP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -510,7 +510,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( CFLAG ) THEN
 
-                    IERR = NF_PUT_ATT_REAL( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL,
      &                          'VGLVLS', NCFLOAT, NLAYS3D+1, VGLVS )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -542,7 +542,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( SDATE .NE. SDATE3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'SDATE',
+                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'SDATE',
      &                              NF_INT, 1, SDATE )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -561,7 +561,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( STIME .NE. STIME3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'STIME',
+                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'STIME',
      &                              NF_INT, 1, STIME )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -580,7 +580,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( TSTEP .NE. TSTEP3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'TSTEP',
+                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'TSTEP',
      &                              NF_INT, 1, TSTEP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -603,7 +603,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( SDATE .NE. SDATE3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'SDATE',
+                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'SDATE',
      &                              NF_INT, 1, SDATE )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -622,7 +622,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( STIME .NE. STIME3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'STIME',
+                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'STIME',
      &                              NF_INT, 1, STIME )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -641,7 +641,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( TSTEP .NE. TSTEP3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'TSTEP',
+                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'TSTEP',
      &                              NF_INT, 1, TSTEP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -739,7 +739,7 @@ C.......   Head of loop:  choose next edit operation.
 
 33              CONTINUE        !  end loop revising variables
 
-                IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'VAR-LIST',
+                IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'VAR-LIST',
      &                       NAMLEN3 * NVARS3D, VNAME3D )
                 IF ( IERR .NE. 0 ) THEN
 
@@ -759,7 +759,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 ELSE    !  else not a lat-lon grid
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'XORIG', NCDOUBLE, 1, XORIG3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -771,7 +771,7 @@ C.......   Head of loop:  choose next edit operation.
                         XORIG3D = 1.0D3 * XORIG3D
                     END IF      !  if ncapt() failed
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'YORIG', NCDOUBLE, 1, YORIG3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -783,7 +783,7 @@ C.......   Head of loop:  choose next edit operation.
                         YORIG3D = 1.0D3 * YORIG3D
                     END IF      !  if ncapt() failed
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                     'XCELL', NCDOUBLE, 1, 1.0D3 * XCELL3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -795,7 +795,7 @@ C.......   Head of loop:  choose next edit operation.
                         XCELL3D = 1.0D3 * XCELL3D
                     END IF      !  if ncapt() failed
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                     'YCELL', NCDOUBLE, 1, 1.0D3 * YCELL3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -813,7 +813,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 XORIG = XORIG - 0.5D0 * XCELL3D
 
-                IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'XORIG', NCDOUBLE, 1, XORIG )
 
                 IF ( IERR .NE. 0 ) THEN
@@ -827,7 +827,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 YORIG = YORIG - 0.5D0 * YCELL3D
 
-                IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
+                IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
      &                             'YORIG', NCDOUBLE, 1, YORIG )
 
                 IF ( IERR .NE. 0 ) THEN
@@ -846,7 +846,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( NAMBUF .NE. GDNAM3D ) THEN
 
-                    IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'GDNAM',
+                    IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'GDNAM',
      &                           NAMLEN3, NAMBUF )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -895,7 +895,7 @@ C.......   Head of loop:  choose next edit operation.
                     FDESC3D( K ) = BLANK
                 END DO
 
-                IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'FILEDESC',
+                IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'FILEDESC',
      &                       MXDLEN3 * MXDESC3, FDESC3D )
 
                     IF ( IERR .NE. 0 ) THEN
