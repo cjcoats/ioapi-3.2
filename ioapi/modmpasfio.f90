@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 6 2017-05-04 18:54:56Z coats $"
+    !!  Version "$Id: modmpasfio.f90 1 2017-06-10 18:05:20Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -21,6 +21,7 @@ MODULE MODMPASFIO
     !!
     !!  REVISION  HISTORY:
     !!      Beta version  05/2017 by Carlie J. Coats, Jr., Ph.D.
+    !!      Version       05/17/2017 by CJC:  bug-fix in time-dimension handling
     !!...................................................................................
 
     USE MODNCFIO
@@ -167,7 +168,7 @@ MODULE MODMPASFIO
     CHARACTER*64, PUBLIC, PROTECTED, SAVE :: MESH_ID   = CMISS3     !!  for tracking mesh provenance.
     CHARACTER*64, PUBLIC, PROTECTED, SAVE :: MESH_SPEC = CMISS3     !!  version of MPAS Mesh specification
 
-    INTEGER, PUBLIC, PROTECTED, SAVE :: MPSTEPS = 0  !!  # of primary cells in the mesh
+    INTEGER, PUBLIC, PROTECTED, SAVE :: MPSTEPS = 0  !!  # of time steps
     INTEGER, PUBLIC, PROTECTED, SAVE :: MPCELLS      !!  # of primary cells in the mesh
     INTEGER, PUBLIC, PROTECTED, SAVE :: MPEDGES      !!  # of edges in the mesh
     INTEGER, PUBLIC, PROTECTED, SAVE :: MPVRTXS      !!  # of vertices in the mesh
@@ -333,7 +334,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 6 2017-05-04 18:54:56Z coats $',     &
+        'Version $Id: modmpasfio.f90 1 2017-06-10 18:05:20Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -5741,11 +5742,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS0DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS0DDT = .FALSE.
             RETURN
@@ -5821,11 +5822,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS0DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS0DRT = .FALSE.
             RETURN
@@ -5901,11 +5902,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS0DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS0DIT = .FALSE.
             RETURN
@@ -5981,11 +5982,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS0DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS0DST = .FALSE.
             RETURN
@@ -6061,11 +6062,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS0DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS0DBT = .FALSE.
             RETURN
@@ -6147,11 +6148,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS1DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS1DDT = .FALSE.
             RETURN
@@ -6235,11 +6236,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS1DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS1DRT = .FALSE.
             RETURN
@@ -6323,11 +6324,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS1DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS1DIT = .FALSE.
             RETURN
@@ -6411,11 +6412,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS1DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS1DST = .FALSE.
             RETURN
@@ -6500,11 +6501,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS1DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS1DBT = .FALSE.
             RETURN
@@ -6594,11 +6595,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS2DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS2DDT = .FALSE.
             RETURN
@@ -6690,11 +6691,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS2DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS2DRT = .FALSE.
             RETURN
@@ -6787,11 +6788,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS2DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS2DIT = .FALSE.
             RETURN
@@ -6883,11 +6884,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS2DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS2DST = .FALSE.
             RETURN
@@ -6980,11 +6981,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS2DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS2DBT = .FALSE.
             RETURN
@@ -7082,11 +7083,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS3DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS3DDT = .FALSE.
             RETURN
@@ -7187,11 +7188,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS3DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS3DRT = .FALSE.
             RETURN
@@ -7291,11 +7292,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS3DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS3DIT = .FALSE.
             RETURN
@@ -7396,11 +7397,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS3DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS3DST = .FALSE.
             RETURN
@@ -7500,11 +7501,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS3DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS3DBT = .FALSE.
             RETURN
@@ -7610,11 +7611,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS4DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS4DDT = .FALSE.
             RETURN
@@ -7722,11 +7723,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS4DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS4DRT = .FALSE.
             RETURN
@@ -7834,11 +7835,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS4DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS4DIT = .FALSE.
             RETURN
@@ -7946,11 +7947,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS4DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS4DST = .FALSE.
             RETURN
@@ -8058,11 +8059,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  No Time-dimension in ' // FNAME )
             READMPAS4DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             READMPAS4DBT = .FALSE.
             RETURN
@@ -10097,11 +10098,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS0DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS0DDT = .FALSE.
             RETURN
@@ -10178,11 +10179,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS0DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS0DRT = .FALSE.
             RETURN
@@ -10259,11 +10260,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS0DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS0DIT = .FALSE.
             RETURN
@@ -10340,11 +10341,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS0DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS0DST = .FALSE.
             RETURN
@@ -10421,11 +10422,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS0DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 1,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 1,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS0DBT = .FALSE.
             RETURN
@@ -10508,11 +10509,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS1DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS1DDT = .FALSE.
             RETURN
@@ -10597,11 +10598,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS1DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS1DRT = .FALSE.
             RETURN
@@ -10686,11 +10687,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS1DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS1DIT = .FALSE.
             RETURN
@@ -10775,11 +10776,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS1DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS1DST = .FALSE.
             RETURN
@@ -10864,11 +10865,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS1DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 2,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 2,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS1DBT = .FALSE.
             RETURN
@@ -10959,11 +10960,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS2DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS2DDT = .FALSE.
             RETURN
@@ -11055,11 +11056,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS2DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS2DRT = .FALSE.
             RETURN
@@ -11152,11 +11153,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS2DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS2DIT = .FALSE.
             RETURN
@@ -11249,11 +11250,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS2DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS2DST = .FALSE.
             RETURN
@@ -11346,11 +11347,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS2DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 3,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 3,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS2DBT = .FALSE.
             RETURN
@@ -11449,11 +11450,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS3DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS3DDT = .FALSE.
             RETURN
@@ -11554,11 +11555,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS3DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS3DRT = .FALSE.
             RETURN
@@ -11659,11 +11660,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS3DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS3DIT = .FALSE.
             RETURN
@@ -11764,11 +11765,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS3DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS3DST = .FALSE.
             RETURN
@@ -11869,11 +11870,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS3DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 4,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 4,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS3DBT = .FALSE.
             RETURN
@@ -11980,11 +11981,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS4DDT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS4DDT = .FALSE.
             RETURN
@@ -12093,11 +12094,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS4DRT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS4DRT = .FALSE.
             RETURN
@@ -12206,11 +12207,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS4DIT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS4DIT = .FALSE.
             RETURN
@@ -12319,11 +12320,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS4DST = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS4DST = .FALSE.
             RETURN
@@ -12432,11 +12433,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        IF ( MPTIMDID( F ) .NE. NF_UNLIMITED ) THEN
+        IF ( MPTIMDID( F ) .EQ. IMISS3 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  No Time-dimension in ' // FNAME )
             WRITEMPAS4DBT = .FALSE.
             RETURN
-        ELSE IF ( MPVDIDS( 5,V,F ) .NE. NF_UNLIMITED ) THEN
+        ELSE IF ( MPVDIDS( 5,V,F ) .NE. MPTIMDID( F ) ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  Bad NDIM1 for "' // TRIM( VNAME ) // '" in ' // FNAME )
             WRITEMPAS4DBT = .FALSE.
             RETURN

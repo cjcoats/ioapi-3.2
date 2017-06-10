@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 12 2017-05-15 17:56:33Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 1 2017-06-10 18:05:20Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 12 2017-05-15 17:56:33Z coats $
+    $Id: NEWSTUFF.html 1 2017-06-10 18:05:20Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,10 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#may172017">
+               Bug-fixes in <CODE>MODULE MODNCFIO</CODE> and
+               <VAR>m3tools</VAR> program <VAR>m3interp</VAR>
+               </A>
          <LI>  <A HREF = "#may142017">
                <CODE>MODULE MODNCFIO</CODE>:  add
                <CODE>CREATENC()</CODE>,
@@ -234,6 +238,7 @@
                Bug-fix in <VAR>INQATT3()</VAR>
                </A>
          <LI>  <A HREF = "#mar0909">
+
                Bug-fix in <VAR>M3COMBO</VAR>
                </A>
          <LI>  <A HREF = "#feb2409">
@@ -409,6 +414,7 @@
                                    and <CODE>envdblec()</CODE></A>
         <LI>  <A HREF = "#dec2904">Bug fix for <CODE>WRATT3</CODE></A>
         <LI>  <A HREF = "#dec0904">Range checks for
+
                                    <CODE>NVARS</CODE> in
                                    <CODE>OPEN3</CODE></A>
         <LI>  <A HREF = "#dec0104">Bug fix in
@@ -610,6 +616,27 @@
         0000000000001440 T ncclos_
     </VAR></BLOCKQUOTE>
     <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "may172017">
+    Bug-fixes in <CODE>MODULE MODNCFIO</CODE>, <CODE>MODULE
+    MODMPASFIO</CODE> , and <VAR>m3tools</VAR>
+    program <VAR>m3interp</VAR>
+</A></H2>
+
+    <BLOCKQUOTE>
+    Subject says it:  bugs in time step versions of read/write
+    routines; with time interpolation of <CODE>BNDARY3</CODE> 
+    boundary condition data structures.
+    <P>
+    Thanks to Joey Huang for reporting the <VAR>m3tools</VAR> bug.
+    <P
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -6356,7 +6383,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 12 2017-05-15 17:56:33Z coats $
+    $Id: NEWSTUFF.html 1 2017-06-10 18:05:20Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

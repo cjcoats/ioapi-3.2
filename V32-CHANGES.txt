@@ -273,15 +273,23 @@ See
     This module also supplies new routines for use with a specified
     (non-timestepped) "raw netCDF" file.
 
+      * CREATENC() creates a new "raw netCDF" file, according to
+        the file-description supplied as arguments.
+
       * DESCNCVAR() returns the list of variables and their types
         and dimensions for a specified file, and
 
-      * READNCVAR() reads a specified 1-D, 2-D, or 3-D variable
-        from a specified file.
+      * READNCVAR() reads a specified 1-D, 2-D, 3-D, or 4D variable
+        or timestep-of-variable from a specified file.
+
+      * WRITENCVAR() writesa specified 1-D, 2-D, 3-D, or 4D variable
+        or timestep-of-variable to a specified file.
 
     Examples of such files are  EDGAR and GEIA global emissions
-    files: see <http://edgar.jrc.ec.europa.eu/> and
-    <http://www.geiacenter.org/access>.
+    and GEOS[Chem] met/chem files: see
+        <http://edgar.jrc.ec.europa.eu/>,
+        <http://www.geiacenter.org/access>,
+        <http://acmg.seas.harvard.edu/geos/>
 
 ----------------------------------------------------------------------
 
@@ -307,6 +315,20 @@ See
       * WRITEWRF() not yet implemented (stub only)
 
       * CLOSEWRF() closes the current WRF-netCDF file.
+
+----------------------------------------------------------------------
+
+NEW Module MODMPASFIO
+
+See
+<https://www.cmascenter.org/ioapi/documentation/3.1/html/MODMPASFIO.html>
+
+    This module supplies new routines and data structures for opening,
+    creating, reading, writing, and manipulating "MPAS netCDF" files and
+    their (unstructured) grids.
+
+    See <https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf>
+    for details about these files.
 
 ----------------------------------------------------------------------
 

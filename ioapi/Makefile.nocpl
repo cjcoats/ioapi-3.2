@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.nocpl 11 2017-05-09 13:12:36Z coats $"
+# VERSION "$Id: Makefile.nocpl 1 2017-06-10 18:05:20Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 # COPYRIGHT
@@ -214,8 +214,7 @@ clean:  ${OBJDIR}
 	cd ${SRCDIR}; rm *.o core* *.mod *.MOD
 
 install: ${INSTDIR}
-	echo "Installing in ${INSTDIR}" ; cd ${OB
-modmpasfio.o modmpasfio.mod:  m3utilio.mod modncfio.modJDIR}; cp ${LIB} ${INSTDIR}
+	echo "Installing in ${INSTDIR}" ; cd ${OBJDIR}; cp ${LIB} ${INSTDIR}
 
 dir:
 	mkdir -p ${OBJDIR}
