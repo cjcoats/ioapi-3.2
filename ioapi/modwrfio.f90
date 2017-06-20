@@ -2,7 +2,7 @@
 MODULE MODWRFIO
 
     !!********************************************************************
-    !!  Version "$Id: modwrfio.f90 1698 2013-11-12 15:56:38Z coats@borel $"
+    !!  Version "$Id: modwrfio.f90 4 2017-06-20 17:43:15Z coats $"
     !!  Copyright (C) 2010-2013 Baron Advanced Meteorological Systems, and
     !!            (C) 2015 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -63,13 +63,13 @@ MODULE MODWRFIO
     INTERFACE READWRF
         MODULE PROCEDURE RDWRF1DDBLE, RDWRF2DDBLE, RDWRF3DDBLE,     &
                          RDWRF1DREAL, RDWRF2DREAL, RDWRF3DREAL,     &
-                         RDWRF1DINT, RDWRF2DINT, RDWRF3DINT
+                         RDWRF1DINT,  RDWRF2DINT,  RDWRF3DINT
     END INTERFACE READWRF
 
     INTERFACE WRITEWRF
         MODULE PROCEDURE WRWRF1DDBLE, WRWRF2DDBLE, WRWRF3DDBLE,     &
                          WRWRF1DREAL, WRWRF2DREAL, WRWRF3DREAL,     &
-                         WRWRF1DINT, WRWRF2DINT, WRWRF3DINT
+                         WRWRF1DINT,  WRWRF2DINT,  WRWRF3DINT
     END INTERFACE WRITEWRF
 
 
@@ -229,7 +229,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 'NOTE:  Current version supports at most one input file.',              &
 '',                                                                     &
 'Module version:',                                                      &
-'$Id: modwrfio.f90 1698 2013-11-12 15:56:38Z coats@borel $',            &
+'$Id: modwrfio.f90 4 2017-06-20 17:43:15Z coats $',            &
 '',                                                                     &
 'Copyright (C) 2013 Baron Advanced Meteorological Systems, LLC.,',      &
 '(C) 2015 UNC Institute for the Environment.',                          &

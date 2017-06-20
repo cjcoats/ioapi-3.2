@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: INCLUDE.html 7 2017-05-04 19:15:26Z coats $" -->
+<!-- "$Id: INCLUDE.html 4 2017-06-20 17:43:15Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> MODULES AND PUBLIC INCLUDE FILES </TITLE>
 </HEAD>
@@ -28,14 +28,17 @@
                                   and <STRONG>is the preferred way of
                                   accessing them from Fortran program
                                   code.</STRONG>
+                                  <P>
         <LI> <A HREF = "MODATTS3.html"><VAR>MODULE MODATTS3</VAR></A>:
                                   parameters and routines for saving
                                   metadata for CF compliance, geospatial
                                   transforms, and CMAQ and SMOKE runs.
+                                  <P>
         <LI> <A HREF = "MODGCTP.html"><VAR>MODULE MODGCTP</VAR></A>:
                                   <CODE>PARAMETER</CODE>s and routines
                                   for geospatial transforms and
                                   interpolation.
+                                  <P>
         <LI> <A HREF = "MODNCFIO.html"><VAR>MODULE MODNCFIO</VAR></A>:
                                   <CODE>PARAMETER</CODE>s and function
                                   declarations for netCDF and for
@@ -51,13 +54,13 @@
                                   Also includes &quot;raw netCDF&quot;
                                   get-description routine
                                   <CODE>DESCNCVAR()</CODE> and
-                                  read-a-variable generic routine
-                                  <CODE>READNCVAR()</CODE>
+                                  read/write-a-variable generic routines
+                                  <CODE>READNCVAR()</CODE> and
+                                  <CODE>WRITENCVAR()</CODE>
+                                  <P>
         <LI> <A HREF = "MODWRFIO.html"><VAR>MODULE MODWRFIO</VAR></A>:
-                                  routines for opening and reading
-                                  WRF netCDF files.
-                                  (place-holder for write:  routine
-                                  not yet implemented)
+                                  routines for opening or creating,
+                                  reading, and writing WRF netCDF files.
                                   <P>
         <LI> <A HREF = "MODMPASFIO.html"><VAR>MODULE MODMPASFIO</VAR></A>:
                                   parameters and state variables for

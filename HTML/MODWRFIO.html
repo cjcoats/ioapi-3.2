@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODWRFIO.html 6 2017-05-04 18:54:56Z coats $" -->
+<!-- "$Id: MODWRFIO.html 4 2017-06-20 17:43:15Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODWRFIO</TITLE>
 </HEAD>
@@ -53,7 +53,8 @@
 
     <H3><CODE>CRTWRF()</CODE></H3>
     Opens/creates a new WRF-netCDF format file with logical name FNAME for
-    read/write.
+    read/write.<BR>
+    <EM>Not yet implemented!  (place-holder only; returns <CODE>.FALSE.</CODE>.)</EM>
     <PRE>
     LOGICAL FUNCTION CRTWRF( FNAME, GNAME, FSTATUS )
         CHARACTER(LEN=*), INTENT(IN   ) :: FNAME        !!  logical file name
@@ -72,14 +73,12 @@
     LOGICAL FUNCTION READWRF( VNAME, JDATE, JTIME, NCOLS, [NROWS, [NLAYS,]] BUF )
         CHARACTER(LEN=*), INTENT(IN   ) :: VNAME
         INTEGER         , INTENT(IN   ) :: JDATE, JTIME
-        INTEGER         , INTENT(IN   ) :: NSIZE
+        INTEGER         , INTENT(IN   ) :: NCOLS[, NROWS[, NLAYS,]]
         &lt;type&gt;          , INTENT(  OUT) :: BUF( NCOLS, [NROWS, [NLAYS,]] )
     </PRE>
     <P>
 
     <H3><CODE>WRITEWRF()</CODE></H3>
-    <EM>Not yet implemented!  (place-holder only; returns <CODE>.FALSE.</CODE>.)</EM>
-    <P>
     Writes the indicated time step for the indicated variable to the
     current WRF-netCDF format file.  The variable may be 1-D, 2-D, or
     3-D, and of one of the types <CODE>{ M3INT, M3REAL, M3DBLE
@@ -87,6 +86,11 @@
     available, if the type or dimensionality is not supported, or if
     there is a write-failure.
     <PRE>
+    LOGICAL FUNCTION WRITEWRF( VNAME, JDATE, JTIME, NCOLS, [NROWS, [NLAYS,]] BUF )
+        CHARACTER(LEN=*), INTENT(IN   ) :: VNAME
+        INTEGER         , INTENT(IN   ) :: JDATE, JTIME
+        INTEGER         , INTENT(IN   ) :: NCOLS[, NROWS[, NLAYS,]]
+        &lt;type&gt;          , INTENT(  OUT) :: BUF( NCOLS[, NROWS[, NLAYS,]] )
     </PRE>
     <P>
 
