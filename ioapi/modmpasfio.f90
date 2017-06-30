@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 1 2017-06-10 18:05:20Z coats $"
+    !!  Version "$Id: modmpasfio.f90 6 2017-06-30 17:23:30Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -334,7 +334,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 1 2017-06-10 18:05:20Z coats $',     &
+        'Version $Id: modmpasfio.f90 6 2017-06-30 17:23:30Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -1463,11 +1463,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!......................   begin body of function
 
         I1 = SCAN( CBUF,          DELIMS )
-        I2 = SCAN( CBUF( I1+1: ), DELIMS )
-        I3 = SCAN( CBUF( I2+1: ), DELIMS )
-        I4 = SCAN( CBUF( I3+1: ), DELIMS )
-        I5 = SCAN( CBUF( I4+1: ), DELIMS )
-        I6 = SCAN( CBUF( I5+1: ), DELIMS )
+        I2 = SCAN( CBUF( I1+1: ), DELIMS ) + I1
+        I3 = SCAN( CBUF( I2+1: ), DELIMS ) + I2
+        I4 = SCAN( CBUF( I3+1: ), DELIMS ) + I3
+        I5 = SCAN( CBUF( I4+1: ), DELIMS ) + I4
+        I6 = SCAN( CBUF( I5+1: ), DELIMS ) + I5
 
         YEAR = STR2INT( CBUF(     :I1-1 ) )
         MNTH = STR2INT( CBUF( I1+1:I2-1 ) )

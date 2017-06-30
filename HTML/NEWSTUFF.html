@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 1 2017-06-10 18:05:20Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 7 2017-06-30 18:05:19Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 1 2017-06-10 18:05:20Z coats $
+    $Id: NEWSTUFF.html 7 2017-06-30 18:05:19Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,10 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#jun302017">
+               Bug-fixes in <CODE>MODULE MODMPASFIO</CODE> and
+               log-message reductions for <CODE>MODULE MODNCFIO</CODE>
+               </A>
          <LI>  <A HREF = "#may172017">
                Bug-fixes in <CODE>MODULE MODNCFIO</CODE> and
                <VAR>m3tools</VAR> program <VAR>m3interp</VAR>
@@ -624,6 +628,26 @@
 
 <HR> <!----------------------------------------------------------------->
 
+<H2> <A NAME = "jun302017">
+    Bug-fixes in <CODE>MODULE MODMPASFIO</CODE> and
+    log-message reductions for <CODE>MODULE MODNCFIO</CODE>
+</A></H2>
+
+    <BLOCKQUOTE>
+    Bug in <CODE>MODMPASFIO/MPSTR2DT()</CODE>  which then causes bad
+    results from <CODE>MODMPASFIO/READMPSTEPS()</CODE>.
+    <P>
+    Eliminate (annoyingly-numerous) &quot;Processing coordinate
+    transform&quot; messages in <CODE>MODULE MODNCFIO</CODE>.
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "may172017">
     Bug-fixes in <CODE>MODULE MODNCFIO</CODE>, <CODE>MODULE
     MODMPASFIO</CODE> , and <VAR>m3tools</VAR>
@@ -636,7 +660,7 @@
     boundary condition data structures.
     <P>
     Thanks to Joey Huang for reporting the <VAR>m3tools</VAR> bug.
-    <P
+    <P>
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -789,7 +813,7 @@
     variables.
     <P>
 
-    Bug in library-order for <VAR>m3tools/Makefile</VAR>s reported
+    Bug in library-order for <VAR>m3tools/Makefile</VAR>s, reported
     by Luís Carvalheiro, CESAM, Universidade de Aveiro.  Fixed.
     </BLOCKQUOTE>
 
@@ -6383,7 +6407,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 1 2017-06-10 18:05:20Z coats $
+    $Id: NEWSTUFF.html 7 2017-06-30 18:05:19Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

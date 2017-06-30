@@ -2,7 +2,7 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 417 2016-08-24 19:16:52Z coats $"
+    !!  Version "$Id: modgctp.f90 5 2017-06-30 15:57:51Z coats $"
     !!  Copyright (c) 2014-2015 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -225,7 +225,7 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 417 2016-08-24 19:16:52Z coats                     $'
+'$Id:: modgctp.f90 5 2017-06-30 15:57:51Z coats                       $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:
@@ -533,9 +533,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
         !!...............  Set up arguments for call to GTP0:
 
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
         IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
@@ -710,10 +707,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
         !!...............  Set up arguments for call to GTP0:
-
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
 
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
@@ -961,9 +954,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
         !!...............  Set up arguments for call to GTP0:
 
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
         IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
@@ -1214,10 +1204,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
         !!...............  Set up arguments for call to GTP0:
-
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
 
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
@@ -1507,9 +1493,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Next, calculate Lat-Lon for PNTS2 cell-centers
         !!...............  Set up arguments for call to GTP0:
 
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
         IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
@@ -1744,10 +1727,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Next, calculate Lat-Lon for PNTS2 cell-centers
         !!...............  Set up arguments for call to GTP0:
-
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
 
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
@@ -2266,9 +2245,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
 
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
         TPOUT = 0.0D0
@@ -2407,10 +2383,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
-
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
 
         IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,     &
                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
@@ -2629,9 +2601,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
 
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
         IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
@@ -2805,10 +2774,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
-
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
 
         IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
@@ -3076,9 +3041,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
 
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
         EFLAG = .FALSE.
 
         IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
@@ -3255,10 +3217,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
-
-        CALL M3MESG( BLANK )
-        CALL M3MESG( 'Processing coordinate transforms...' )
-        CALL M3MESG( BLANK )
 
         TPOUT = 0.0D0
         IPR    = 0              !!  print error messages, if any
