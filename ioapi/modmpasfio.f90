@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 6 2017-06-30 17:23:30Z coats $"
+    !!  Version "$Id: modmpasfio.f90 10 2017-07-04 23:53:58Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -334,7 +334,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 6 2017-06-30 17:23:30Z coats $',     &
+        'Version $Id: modmpasfio.f90 10 2017-07-04 23:53:58Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -1063,8 +1063,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IF ( IA .EQ. IZ ) THEN
             NSEGS      = 1
-            CELLS( 1 ) = I
-            CALL VERTWT( AHGT, ZHGT, 1.0, I, 1, NLAYS, NMAX, ZGRID, WGHTS )
+            CELLS( 1 ) = IA
+            CALL VERTWT( AHGT, ZHGT, 1.0, IA, 1, NLAYS, NMAX, ZGRID, WGHTS )
             ARC2MPAS3D = .TRUE.
             RETURN
         END IF
@@ -1087,7 +1087,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                     NSEGS       = NN
                     CELLS( NN ) = N
                     WW          = SPHEREDIST( YY, XX, ZLAT, ZLON ) / DARC           !!  this fraction of total distance
-                    CALL VERTWT( ZZ, ZHGT, WW, I, N, NLAYS, NMAX, ZGRID, WGHTS )
+                    CALL VERTWT( ZZ, ZHGT, WW, II, N, NLAYS, NMAX, ZGRID, WGHTS )
                     ARC2MPAS3D = .TRUE.
                     RETURN
                 END IF
@@ -1128,7 +1128,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                     ZZZ = ZZ + V * ( ZHGT - ZZ )
                     CELLS( NN ) = N
                     WW          = SPHEREDIST( YY, XX, YYY, XXX ) / DARC           !!  this fraction of total distance
-                    CALL VERTWT( ZZ, ZZZ, WW, I, NN, NLAYS, NMAX, ZGRID, WGHTS )
+                    CALL VERTWT( ZZ, ZZZ, WW, II, NN, NLAYS, NMAX, ZGRID, WGHTS )
                     II          = N     !!  this cell
                     KK          = K     !!  this edge
                     XX          = XXX
@@ -1303,14 +1303,6 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         ZLO = MIN( Z1, Z2 )
         ZHI = MAX( Z1, Z2 )
 
-        IF ( ZLO .LT. ZGRID(1,II) ) THEN
-            CALL M3EXIT( 'MODMPASFIO/VERTWT', 0, 0, 'Z below bottom of model', 2 )
-        END IF
-
-        IF ( ZHI .GE. ZGRID(NLAYS+1,II) ) THEN
-            CALL M3EXIT( 'MODMPASFIO/VERTWT', 0, 0, 'Z above top of model', 2 )
-        END IF
-
         LLO = 1
         LHI = 1
         DO L = 1, NLAYS
@@ -1327,7 +1319,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DDZ = 1.0 / ( ZHI - ZLO )
 
         WGHTS( LLO,NN ) = WW * DDZ * ( ZGRID( LLO+1,II ) - ZLO )
-        WGHTS( LHI,NN ) = WW * DDZ * ( ZHI  -  ZGRID( LHI,II ) )
+        WGHTS( LHI,NN ) = WW * DDZ * ( ZHI  -  ZGRID( LHI-1,II ) )
 
         DO L = LLO+1, LHI-1
             WGHTS( L,NN ) = WW * DDZ * ( ZGRID( L+1,II ) - ZGRID( L,II ) )
@@ -1661,7 +1653,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         START(1) = 1
         START(2) = ISTEP
         COUNT(1) = MPVDIMS( 1,V,F )
-        COUNT(2) = ISTEP
+        COUNT(2) = 1
 
         ISTAT = NF_PUT_VARA_TEXT( FID, VID, START, COUNT, CBUF )
         IF ( ISTAT .NE. 0 ) THEN
@@ -1675,6 +1667,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         RETURN
 
     END FUNCTION WRITEMPSTEP
+
+
     !!.......................................................................
     !!      Open a new input MPAS-file according to the given mode
     !!.......................................................................
@@ -3349,6 +3343,42 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END IF              !  ierr nonzero:  operation failed
 
             DSCBUF = 'M^2'
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+        END IF              !  ierr nonzero:  operation failed
+
+        VV = VV + 1
+        MPVNAME( VV,F )   = 'xtime'
+        MPVTYPE( VV,F )   = M3CHAR
+        MPVDCNT( VV,F )   = 2
+        MPVDNAM( 1,VV,F ) = DNAME( 3 )      !!  StrLen 
+        MPVDNAM( 2,VV,F ) = DNAME( 1 )      !!  Time
+        MPVDIMS( 1,VV,F ) = DSIZE( 3 )
+        MPVDIMS( 2,VV,F ) = DSIZE( 1 )
+        MPVDIDS( 1,VV,F ) = DIMID( 3 )
+        MPVDIDS( 2,VV,F ) = DIMID( 1 )
+        IERR = NF_DEF_VAR( FID, MPVNAME( VV,F ), MPVTYPE( VV,F ), MPVDCNT( VV,F ), MPVDIDS( 1,VV,F ), MPVARID( VV,F ) )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( NF_STRERROR( IERR ) )
+            CALL M3MESG( PNAME // ' Error creating variable "' // TRIM( MPVNAME(VV,F) ) // '" for ' // FNAME )
+            EFLAG = .TRUE.
+
+        ELSE
+
+            DSCBUF = MPVNAME( VV,F )
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+            DSCBUF = 'YYYY-MM-DD_HH:MM:SS'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
                 CALL M3MESG( NF_STRERROR( IERR ) ) 
