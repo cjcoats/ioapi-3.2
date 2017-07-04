@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 1 2017-06-10 18:05:20Z coats $"
+    !!  Version "$Id: modncfio.F90 9 2017-07-04 23:50:30Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -7414,7 +7414,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -7522,7 +7522,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -7630,7 +7630,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -7738,7 +7738,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -7846,7 +7846,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -7971,7 +7971,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -8096,7 +8096,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -8221,7 +8221,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -8346,7 +8346,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -8471,7 +8471,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -8613,7 +8613,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -8755,7 +8755,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -8897,7 +8897,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -9039,7 +9039,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -9181,7 +9181,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -9341,7 +9341,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -9500,7 +9500,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -9659,7 +9659,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -9818,7 +9818,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -9977,7 +9977,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -10153,7 +10153,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -10329,7 +10329,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -10505,7 +10505,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -10681,7 +10681,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -10857,7 +10857,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16165,7 +16165,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16273,7 +16273,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16381,7 +16381,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16489,7 +16489,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16597,7 +16597,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END IF          !  ierr nonzero:  NF_INQ_VAR() failed
 
         DIMS(1) = ISTEP
-        DELS(1) = ISTEP
+        DELS(1) = 1
         ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16722,7 +16722,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16847,7 +16847,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -16972,7 +16972,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -17097,7 +17097,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -17222,7 +17222,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(1) = 1
         DIMS(2) = ISTEP
         DELS(1) = NCOLS
-        DELS(2) = ISTEP
+        DELS(2) = 1
         ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -17364,7 +17364,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -17506,7 +17506,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -17648,7 +17648,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -17790,7 +17790,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -17932,7 +17932,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DIMS(3) = ISTEP
         DELS(1) = NCOLS
         DELS(2) = NROWS
-        DELS(3) = ISTEP
+        DELS(3) = 1
         ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -18092,7 +18092,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -18251,7 +18251,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -18410,7 +18410,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -18569,7 +18569,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -18728,7 +18728,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(1) = NCOLS
         DELS(2) = NROWS
         DELS(3) = NLAYS
-        DELS(4) = ISTEP
+        DELS(4) = 1
         ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -18904,7 +18904,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -19080,7 +19080,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -19256,7 +19256,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -19432,7 +19432,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
@@ -19608,7 +19608,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         DELS(2) = NROWS
         DELS(3) = NLAYS
         DELS(4) = NSPCS
-        DELS(5) = ISTEP
+        DELS(5) = 1
         ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
