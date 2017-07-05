@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 10 2017-07-04 23:53:58Z coats $"
+    !!  Version "$Id: modmpasfio.f90 11 2017-07-05 20:07:18Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -156,9 +156,9 @@ MODULE MODMPASFIO
            'areaTriangle        ',  &       !! 32
            'kiteAreasOnVertex   '   /)      !! 33
 
-    INTEGER, SAVE :: NMPASDIMIDS( NMPASDIMS )     !!  netCDF dimension-IDs
-    INTEGER, SAVE :: MPASDIMSIZE( NMPASDIMS )     !!  netCDF dimension-extents
-    INTEGER, SAVE :: MPASTIMEDID = IMISS3         !!  time-dimension ID
+    INTEGER, PUBLIC, PROTECTED, SAVE :: NMPASDIMIDS( NMPASDIMS )     !!  netCDF dimension-IDs
+    INTEGER, PUBLIC, PROTECTED, SAVE :: MPASDIMSIZE( NMPASDIMS )     !!  netCDF dimension-extents
+    INTEGER, PUBLIC, PROTECTED, SAVE :: MPASTIMEDID = IMISS3         !!  time-dimension ID
 
 
     !!........   Public variables:  MPAS-file "header":
@@ -334,7 +334,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 10 2017-07-04 23:53:58Z coats $',     &
+        'Version $Id: modmpasfio.f90 11 2017-07-05 20:07:18Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -1618,8 +1618,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             WRITEMPSTEP = .FALSE.
             RETURN
         END IF
-
+        FID = MPCDFID ( F )
         TID = MPTIMDID( F )
+
         IF ( TID .EQ. IMISS3 ) THEN
             CALL M3MESG( PNAME// ' File "' // TRIM(FNAME) // '" time-dimension undefined' )
             WRITEMPSTEP = .FALSE.
@@ -5783,7 +5784,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -5863,7 +5864,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -5943,7 +5944,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_GET_VARA_INT( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6023,7 +6024,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6103,7 +6104,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6191,7 +6192,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6279,7 +6280,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6367,7 +6368,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_GET_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6455,7 +6456,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6544,7 +6545,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6640,7 +6641,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6736,7 +6737,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6833,7 +6834,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_GET_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -6929,7 +6930,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7026,7 +7027,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7130,7 +7131,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7235,7 +7236,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7339,7 +7340,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_GET_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7444,7 +7445,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7548,7 +7549,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7660,7 +7661,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7772,7 +7773,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7884,7 +7885,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_GET_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -7996,7 +7997,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -8108,7 +8109,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/READMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10139,7 +10140,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10220,7 +10221,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10301,7 +10302,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10382,7 +10383,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10463,7 +10464,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DIMS( 1 ) = ISTEP
-        DELS( 1 ) = ISTEP
+        DELS( 1 ) = 1
         IERR  = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, SCALAR )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10552,7 +10553,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10641,7 +10642,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10730,7 +10731,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10819,7 +10820,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -10908,7 +10909,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 1 ) = 1
         DIMS( 2 ) = ISTEP
         DELS( 1 ) = NDIM1
-        DELS( 2 ) = ISTEP
+        DELS( 2 ) = 1
         IERR  = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11005,7 +11006,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11101,7 +11102,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11198,7 +11199,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11295,7 +11296,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11392,7 +11393,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DIMS( 3 ) = ISTEP
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
-        DELS( 3 ) = ISTEP
+        DELS( 3 ) = 1
         IERR  = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11497,7 +11498,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11602,7 +11603,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11707,7 +11708,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11812,7 +11813,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -11917,7 +11918,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 1 ) = NDIM1
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
-        DELS( 4 ) = ISTEP
+        DELS( 4 ) = 1
         IERR  = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -12030,7 +12031,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -12143,7 +12144,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -12256,7 +12257,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -12369,7 +12370,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
@@ -12482,7 +12483,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DELS( 2 ) = NDIM2
         DELS( 3 ) = NDIM3
         DELS( 4 ) = NDIM4
-        DELS( 5 ) = ISTEP
+        DELS( 5 ) = 1
         IERR  = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, ARRAY )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/WRITEMPAS():  error writing "' // TRIM( VNAME ) // '" to ' // FNAME )
