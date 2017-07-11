@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 11 2017-07-05 20:07:18Z coats $"
+    !!  Version "$Id: modmpasfio.f90 12 2017-07-11 18:54:42Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -334,7 +334,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 11 2017-07-05 20:07:18Z coats $',     &
+        'Version $Id: modmpasfio.f90 12 2017-07-11 18:54:42Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -1087,7 +1087,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                     NSEGS       = NN
                     CELLS( NN ) = N
                     WW          = SPHEREDIST( YY, XX, ZLAT, ZLON ) / DARC           !!  this fraction of total distance
-                    CALL VERTWT( ZZ, ZHGT, WW, II, N, NLAYS, NMAX, ZGRID, WGHTS )
+                    CALL VERTWT( ZZ, ZHGT, WW, II, NN, NLAYS, NMAX, ZGRID, WGHTS )
                     ARC2MPAS3D = .TRUE.
                     RETURN
                 END IF
