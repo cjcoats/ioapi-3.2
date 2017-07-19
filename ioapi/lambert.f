@@ -44,53 +44,53 @@
         LOGICAL          LL2ALB
 
 C***********************************************************************
-C Version "$Id: lambert.f 326 2016-03-08 00:12:12Z coats $"
+C Version "$Id: lambert.f 13 2017-07-19 15:54:52Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine LAMBERT body starts at line  314
-C  entry      POLSTE       starts at line  413
-C  entry      TRMERC       starts at line  521
-C  entry      EQMERC       starts at line  664
-C  entry      ALBERS       starts at line  792
-C  entry      SETLAM       starts at line  883
-C  entry      SETPOL       starts at line  955
-C  entry      SETTRM       starts at line 1027
-C  entry      SETEQM       starts at line 1089
-C  entry      SETALB       starts at line 1152
-C  entry      LAM2LL       starts at line 1226
-C  entry      LL2LAM       starts at line 1288
-C  entry      LAM2UTM      starts at line 1356
-C  entry      UTM2LAM      starts at line 1420
-C  entry      LAM2POL      starts at line 1488
-C  entry      POL2LAM      starts at line 1567
-C  entry      POL2LL       starts at line 1651
-C  entry      LL2POL       starts at line 1713
-C  entry      POL2UTM      starts at line 1780
-C  entry      UTM2POL      starts at line 1842
-C  entry      TRM2LL       starts at line 1911
-C  entry      LL2TRM       starts at line 1973
-C  entry      LAM2TRM      starts at line 2040
-C  entry      TRM2LAM      starts at line 2119
-C  entry      TRM2UTM      starts at line 2202
-C  entry      UTM2TRM      starts at line 2266
-C  entry      TRM2POL      starts at line 2334
-C  entry      POL2TRM      starts at line 2418
-C  entry      EQM2LL       starts at line 2496
-C  entry      LL2EQM       starts at line 2558
-C  entry      LAM2EQM      starts at line 2625
-C  entry      EQM2LAM      starts at line 2704
-C  entry      EQM2UTM      starts at line 2788
-C  entry      UTM2EQM      starts at line 2852
-C  entry      EQM2POL      starts at line 2920
-C  entry      POL2EQM      starts at line 3004
-C  entry      EQM2TRM      starts at line 3081
-C  entry      TRM2EQM      starts at line 3164
-C  entry      ALB2LL       starts at line 3244
-C  entry      LL2ALB       starts at line 3307
+C  subroutine LAMBERT body starts at line  316
+C  entry      POLSTE       starts at line  415
+C  entry      TRMERC       starts at line  526
+C  entry      EQMERC       starts at line  653
+C  entry      ALBERS       starts at line  781
+C  entry      SETLAM       starts at line  872
+C  entry      SETPOL       starts at line  944
+C  entry      SETTRM       starts at line 1016
+C  entry      SETEQM       starts at line 1078
+C  entry      SETALB       starts at line 1136
+C  entry      LAM2LL       starts at line 1210
+C  entry      LL2LAM       starts at line 1272
+C  entry      LAM2UTM      starts at line 1340
+C  entry      UTM2LAM      starts at line 1404
+C  entry      LAM2POL      starts at line 1472
+C  entry      POL2LAM      starts at line 1551
+C  entry      POL2LL       starts at line 1637
+C  entry      LL2POL       starts at line 1697
+C  entry      POL2UTM      starts at line 1764
+C  entry      UTM2POL      starts at line 1826
+C  entry      TRM2LL       starts at line 1895
+C  entry      LL2TRM       starts at line 1957
+C  entry      LAM2TRM      starts at line 2024
+C  entry      TRM2LAM      starts at line 2103
+C  entry      TRM2UTM      starts at line 2185
+C  entry      UTM2TRM      starts at line 2250
+C  entry      TRM2POL      starts at line 2318
+C  entry      POL2TRM      starts at line 2402
+C  entry      EQM2LL       starts at line 2480
+C  entry      LL2EQM       starts at line 2542
+C  entry      LAM2EQM      starts at line 2609
+C  entry      EQM2LAM      starts at line 2687
+C  entry      EQM2UTM      starts at line 2772
+C  entry      UTM2EQM      starts at line 2838
+C  entry      EQM2POL      starts at line 2904
+C  entry      POL2EQM      starts at line 2988
+C  entry      EQM2TRM      starts at line 3065
+C  entry      TRM2EQM      starts at line 3148
+C  entry      ALB2LL       starts at line 3228
+C  entry      LL2ALB       starts at line 3290
 C
 C  FUNCTION:
 C     LAMBERT:  set up  GTPZ0() for a particular named Lambert.
@@ -170,6 +170,8 @@ C       Modified 03/20010 by CJC: F90 changes for I/O API v3.1
 C
 C       Version 11/2015 by CJC for I/O API 3.2:  stand-alone versions 
 C       of routines, for call from C, etc.
+C
+C       Version 11/2015 by CJC:  bug-fixes for SETEQM, EQMERC, TRMERC.
 C***********************************************************************
 
         INCLUDE 'PARMS3.EXT'
@@ -552,7 +554,7 @@ C...........   DSCGRID, as appropriate:
         END IF          !  if dscoord failed
 
         IF ( CTYPE .NE. TRMGRD3 ) THEN
-            WRITE( MESG,94010 ) 'Projection not Lambert:  type ', CTYPE
+            WRITE( MESG,94010 ) 'Projection not TRM:  type ', CTYPE
             CALL M3WARN( 'LAMBERT/TRMERC', 0, 0, MESG )
             TRMERC = .FALSE.
             RETURN
@@ -679,7 +681,7 @@ C...........   DSCGRID, as appropriate:
         END IF          !  if dscoord failed
 
         IF ( CTYPE .NE. EQMGRD3 ) THEN
-            WRITE( MESG,94010 ) 'Projection not Lambert:  type ', CTYPE
+            WRITE( MESG,94010 ) 'Projection not EQM:  type ', CTYPE
             CALL M3WARN( 'LAMBERT/EQMERC', 0, 0, MESG )
             EQMERC = .FALSE.
             RETURN
@@ -1081,12 +1083,7 @@ C.......   Set up anonymous Equatorial Mercator from arguments:
 
 C.......   Check validity of input parameters:
 
-        IF ( NINT( ABS( A ) ) .NE. 1 ) THEN
-            WRITE( MESG, 94020 ) 'Bad pole A =', A
-            CALL M3WARN( 'LAMBERT/SETEQM', 0, 0, MESG )
-            SETEQM = .FALSE.
-            RETURN
-        ELSE IF ( C .LT. -180.0 ) THEN
+        IF ( C .LT. -180.0 ) THEN
             WRITE( MESG, 94020 ) 'Bad central longitude C =', C
             CALL M3WARN( 'LAMBERT/SETEQM', 0, 0, MESG )
             SETEQM = .FALSE.
@@ -2104,7 +2101,6 @@ C.....................................................................
 C.......   Convert from Transverse Mercator to Lambert:
 
         ENTRY  TRM2LAM( U, V, X, Y )
-
 C.......   Check initialization:
 
         IF ( LZONE .LT. 64 ) THEN
