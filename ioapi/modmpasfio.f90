@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 12 2017-07-11 18:54:42Z coats $"
+    !!  Version "$Id: modmpasfio.f90 15 2017-08-08 15:24:49Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -22,6 +22,7 @@ MODULE MODMPASFIO
     !!  REVISION  HISTORY:
     !!      Beta version  05/2017 by Carlie J. Coats, Jr., Ph.D.
     !!      Version       05/17/2017 by CJC:  bug-fix in time-dimension handling
+    !!      Version       08/11/2017 by CJC:  bug-fixes for ALONE, KAREAS
     !!...................................................................................
 
     USE MODNCFIO
@@ -334,7 +335,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 12 2017-07-11 18:54:42Z coats $',     &
+        'Version $Id: modmpasfio.f90 15 2017-08-08 15:24:49Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -498,7 +499,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IF ( .NOT.READMPAS( FNAME, 'edgesOnVertex',   MPVORDR, MPVRTXS, VEDGES   ) )   EFLAG = .TRUE.
 
         IF ( .NOT.READR8_1D( FNAME, 'latCell',      F, MPCELLS, ALATC  ) )   EFLAG = .TRUE.
-        IF ( .NOT.READR8_1D( FNAME, 'lonCell',      F, MPCELLS, ALATC  ) )   EFLAG = .TRUE.
+        IF ( .NOT.READR8_1D( FNAME, 'lonCell',      F, MPCELLS, ALONC  ) )   EFLAG = .TRUE.
         IF ( .NOT.READR8_1D( FNAME, 'latEdge',      F, MPEDGES, ALATE  ) )   EFLAG = .TRUE.
         IF ( .NOT.READR8_1D( FNAME, 'lonEdge',      F, MPEDGES, ALONE  ) )   EFLAG = .TRUE.
         IF ( .NOT.READR8_1D( FNAME, 'latVertex',    F, MPVRTXS, ALATV  ) )   EFLAG = .TRUE.
@@ -3482,20 +3483,20 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!........  Write standard Variables:  note that Lat- and Lon-coordinates
         !!........  must convert to MPAS radians-unit usage.
 
-        IF ( .NOT.WRITEMPAS( FNAME, 'indexToCellID',   MPCELLS, CELLID ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'indexToEdgeID',   MPEDGES, EDGEID ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'indexToVertexID', MPVRTXS, VRTXID ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'indexToCellID',  MPCELLS, CELLID ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'indexToEdgeID',  MPEDGES, EDGEID ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'indexToVertexID',MPVRTXS, VRTXID ) )   EFLAG = .TRUE.
 
-        IF ( .NOT.WRITEMPAS( FNAME, 'nEdgesOnCell',    MPCELLS, NBNDYE ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'nEdgesOnEdge',    MPEDGES, NEDGEE ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'nEdgesOnCell',   MPCELLS, NBNDYE ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'nEdgesOnEdge',   MPEDGES, NEDGEE ) )   EFLAG = .TRUE.
 
-        IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnCell',     MPBNDYC, MPCELLS, BNDYCELL ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'edgesOnCell',     MPBNDYC, MPCELLS, BNDYEDGE ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'verticesOnCell',  MPBNDYC, MPCELLS, BNDYVRTX ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnEdge',           2, MPEDGES, ECELLS   ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'verticesOnEdge',        2, MPEDGES, EVRTXS   ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnVertex',   MPVORDR, MPVRTXS, VCELLS   ) )   EFLAG = .TRUE.
-        IF ( .NOT.WRITEMPAS( FNAME, 'edgesOnVertex',   MPVORDR, MPVRTXS, VEDGES   ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnCell',    MPBNDYC, MPCELLS, BNDYCELL ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'edgesOnCell',    MPBNDYC, MPCELLS, BNDYEDGE ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'verticesOnCell', MPBNDYC, MPCELLS, BNDYVRTX ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnEdge',          2, MPEDGES, ECELLS   ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'verticesOnEdge',       2, MPEDGES, EVRTXS   ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnVertex',  MPVORDR, MPVRTXS, VCELLS   ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'edgesOnVertex',  MPVORDR, MPVRTXS, VEDGES   ) )   EFLAG = .TRUE.
 
         RADIANS( 1:MPCELLS ) = PI180F * ALATC( 1:MPCELLS )
         IF ( .NOT.WRITEMPAS( FNAME, 'latCell',      MPCELLS, RADIANS ) )  EFLAG = .TRUE.
@@ -3524,6 +3525,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IF ( .NOT.WRITEMPAS( FNAME, 'angleEdge',    MPEDGES, RADIANS ) )  EFLAG = .TRUE.
         IF ( .NOT.WRITEMPAS( FNAME, 'areaCell',     MPCELLS, CAREAS  ) )  EFLAG = .TRUE.
         IF ( .NOT.WRITEMPAS( FNAME, 'areaTriangle', MPVRTXS, VAREAS  ) )  EFLAG = .TRUE.
+
+        IF ( .NOT.WRITEMPAS( FNAME, 'kiteAreasOnVertex',MPVORDR, MPVRTXS, KAREAS ) )  EFLAG = .TRUE.
 
         IF ( EFLAG ) THEN
             IERR        = NF_ABORT( FID )
