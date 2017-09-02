@@ -2,7 +2,7 @@
 PROGRAM  VERTINTEGRAL
 
     !!***********************************************************************
-    !! Version "$Id: vertintegral.f90 17 2017-09-02 16:47:59Z coats $"
+    !! Version "$Id: vertintegral.f90 18 2017-09-02 19:07:43Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2009 UNC Institute for the Environment and
     !! Baron Advanced Meteorological Systems, LLC,(C) 2015-2016 UNC IE.,
@@ -202,7 +202,7 @@ PROGRAM  VERTINTEGRAL
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertintegral.f90 17 2017-09-02 16:47:59Z coats $',&
+'$Id: vertintegral.f90 18 2017-09-02 19:07:43Z coats $',&
 ''
 
     WRITE ( LUNIT,'( 5X , A )' )
@@ -395,8 +395,8 @@ PROGRAM  VERTINTEGRAL
 
     !!...............  create output file:  uses grid description from METFILE
 
-    SDATE3D = JDATE
-    STIME3D = JTIME
+    SDATE3D = SDATE
+    STIME3D = STIME
     NLAYS3D = 1
     NVARS3D = NVARS_OUT
     VNAME3D = VNAMEO

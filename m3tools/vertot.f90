@@ -2,7 +2,7 @@
 PROGRAM  VERTOT
 
     !!***********************************************************************
-    !! Version "$Id: vertot.f90 17 2017-09-02 16:47:59Z coats $"
+    !! Version "$Id: vertot.f90 18 2017-09-02 19:07:43Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1992-2002, 2017 Carlie J. Coats, Jr,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems, LLC.,
@@ -147,7 +147,7 @@ PROGRAM  VERTOT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertot.f90 17 2017-09-02 16:47:59Z coats $',&
+'$Id: vertot.f90 18 2017-09-02 19:07:43Z coats $',&
 ''
 
     IF ( ARGCNT .GT. 1 ) THEN
@@ -282,8 +282,8 @@ PROGRAM  VERTOT
 
     IF ( OUTFLAG ) THEN     !  create output file
 
-        SDATE3D = JDATE
-        STIME3D = JTIME
+        SDATE3D = SDATE
+        STIME3D = STIME
         NLAYS3D = 1
         NVARS3D = NVARS
         DO I = 1, NVARS
