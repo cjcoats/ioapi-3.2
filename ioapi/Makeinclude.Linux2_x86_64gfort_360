@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfort 342 2016-03-22 18:42:22Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfort_360 1 2017-06-10 18:05:20Z coats $"
 #
 #   -- Flags for building 360-day climatological (no-leap-year) 
 #     version of the  I/O API (etc.)
@@ -20,7 +20,8 @@ FC   = gfortran
 M4   = m4
 LINK = $(CC)
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
 E132 = -ffixed-line-length-132
 
 MFLAGS    = -ffast-math -funroll-loops -m64  #  -Wall -Wsurprising -march=native -mtune=native

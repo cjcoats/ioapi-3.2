@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.OSF1 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.OSF1 1 2017-06-10 18:05:20Z coats $"
 #
 #   Enhancements due to Jinyou Liang, California Air Resources Board
 
@@ -9,7 +9,8 @@ M4   = m4
 CPP  = cpp
 LINK = cc
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
 
 MFLAGS    = -arch host -tune host
 

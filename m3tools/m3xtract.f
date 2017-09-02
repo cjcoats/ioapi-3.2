@@ -2,16 +2,16 @@
         PROGRAM  M3XTRACT
 
 C***********************************************************************
-C Version "$Id: m3xtract.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: m3xtract.f 17 2017-09-02 16:47:59Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
+C Copyright (C) 1992-2002 MCNC,
 C (C) 2003-2013 Baron Advanced Meteorological Systems,
-C (C) 2007-2013 Carlie J. Coats, Jr., and
+C (C) 2007-2013, 2017 Carlie J. Coats, Jr., and
 C (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  130
+C  program body starts at line  134
 C
 C  FUNCTION:
 C       extracts a subset of variables from the input file for a
@@ -56,6 +56,8 @@ C       Version  02/2015 by CJC: Support for M3INT8 variables;
 C       bug-fix for multi-layer case
 C
 C       Version  06/2016 by CJC:  copy CMAQ metadata, if present
+C
+C       Version  09/2017 by CJC for I/O API v3.2:  Enhanced default RUNLEN
 C***********************************************************************
 
       USE M3UTILIO
@@ -104,6 +106,8 @@ C...........   LOCAL VARIABLES and their descriptions:
         CHARACTER*16    ANAME   !  scratch buffer for variable names
         INTEGER         SDATE   !  starting date, from user
         INTEGER         STIME   !  starting time, from user
+        INTEGER         EDATE   ! ending date
+        INTEGER         ETIME   ! ending time
         INTEGER         JDATE   !  current date
         INTEGER         JTIME   !  current time
         INTEGER         TSTEP   !  time step, from INAME header
@@ -168,7 +172,7 @@ C   begin body of program  M3XTRACT
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3xtract.f 435 2016-11-22 18:10:58Z coats               $',
+     &'$Id:: m3xtract.f 17 2017-09-02 16:47:59Z coats                $',
      &' '
 
         ARGCNT = IARGC()
@@ -225,6 +229,7 @@ C   begin body of program  M3XTRACT
         SDATE  = SDATE3D
         STIME  = STIME3D
         TSTEP  = TSTEP3D
+        CALL LASTTIME( SDATE, STIME, TSTEP, MXREC3D, EDATE, ETIME )
 
         IF ( FTYPE3D .EQ. GRDDED3 ) THEN
             SIZE = NCOLS3D * NROWS3D
@@ -394,7 +399,7 @@ C.......   Get starting date and time, and duration:
      &                  'Enter starting date (YYYYDDD) for run' )
             STIME  = GETNUM( 0, 239999, STIME3D,
      &                  'Enter starting time (HHMMSS) for run' )
-            RUNLEN = SEC2TIME( MXREC3D * TIME2SEC( TSTEP3D ) )
+            RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
             RUNLEN = GETNUM( 0, 999999999, RUNLEN,
      &                  'Enter duration (HHMMSS) for run' )
             NSTEPS = TIME2SEC( TSTEP )

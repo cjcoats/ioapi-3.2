@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86path 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86path 1 2017-06-10 18:05:20Z coats $"
 #
 #       Linux for X86_64 using the PathScale EKO compiler suite
 #       Flags set up compatibility with "gcc/g77" built packages and
@@ -6,12 +6,14 @@
 
 AR   = ar
 CC   = pathcc  -m32
-FC   = pathf90 -m32 -fsecond-underscore
+FC   = pathf95 -m32 -fsecond-underscore
 M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
+E132 = -extend-source
 
 MFLAGS    = -march=opteron -mcpu=opteron -OPT:Olimit=0
 

@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64ifort 100 2015-01-16 16:52:16Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64ifort_360 1 2017-06-10 18:05:20Z coats $"
 #
 #  Version to define 360-day/no-leap-year climatology version of I/O API
 
@@ -8,7 +8,8 @@ FC   = ifort -auto -warn notruncated_source -Bstatic -static-intel
 M4   = m4
 LINK = $(CC)
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
 E132 = -extend-source 132
 
 # MFLAGS  = -traceback                                          # generic

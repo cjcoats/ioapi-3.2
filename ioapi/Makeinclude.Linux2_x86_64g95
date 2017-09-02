@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64g95 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64g95 1 2017-06-10 18:05:20Z coats $"
 
 AR   = ar
 CC   = gcc
@@ -8,7 +8,9 @@ M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
+E132 = -ffixed-line-length-132
 
 MFLAGS    = -march=opteron -ffast-math -funroll-loops
 
@@ -21,7 +23,7 @@ FSFLAGS   = -fstatic
 ARCHFLAGS = \
 -DFLDMN=1 -DAUTO_ARRAYS=1 -DF90=1 -DSECOND_UNDERSCORE=1 # -DIOAPI_NOFLUSH=1
 PARFLAGS  =
-ARCHLIB   = -lc
+ARCHLIB   = -L/lib64 -lc
 # ARCHLIB   = -lc -lgfortran -lg2c
 
 M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4

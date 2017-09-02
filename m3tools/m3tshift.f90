@@ -2,16 +2,16 @@
 PROGRAM  M3TSHIFT
 
     !!***********************************************************************
-    !! Version "$Id: m3tshift.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: m3tshift.f90 17 2017-09-02 16:47:59Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
-    !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
-    !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.,
+    !! (C) 1995-2002,2005-2014, 2017 Carlie J. Coats, Jr.,
+    !! (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.,
     !! and (C) 2014-2016 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  89
+    !!  program body starts at line  93
     !!
     !!  FUNCTION:
     !!       extracts a subset of variables from the input file for a
@@ -36,6 +36,8 @@ PROGRAM  M3TSHIFT
     !!      inlined SUBROUTINE TSHIFT, explicit ALLOCATE. Support for M3INT8 variables.
     !!
     !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
+    !!
+    !!      Version  09/2017 by CJC for I/O API v3.2:  Enhanced default RUNLEN
     !!***********************************************************************
 
     USE M3UTILIO
@@ -68,6 +70,8 @@ PROGRAM  M3TSHIFT
     INTEGER         STIME   !  starting  input time, from user
     INTEGER         TDATE   !  starting output date, from user
     INTEGER         TTIME   !  starting output time, from user
+    INTEGER         EDATE   ! ending date
+    INTEGER         ETIME   ! ending time
     INTEGER         JDATE   !  current  input date
     INTEGER         JTIME   !  current  input time
     INTEGER         KDATE   !  current output date
@@ -119,7 +123,7 @@ PROGRAM  M3TSHIFT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tshift.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: m3tshift.f90 17 2017-09-02 16:47:59Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -183,6 +187,7 @@ PROGRAM  M3TSHIFT
     SDATE  = SDATE3D
     STIME  = STIME3D
     TSTEP  = TSTEP3D
+    CALL LASTTIME( SDATE, STIME, TSTEP, MXREC3D, EDATE, ETIME )
 
 
     !!.......   Get starting date and time, and duration:
@@ -205,10 +210,12 @@ PROGRAM  M3TSHIFT
         TSOUT  = GETNUM( 0, 999999999, TSTEP, 'Enter output time step (HHMMSS) for run' )
 
         IF ( TSOUT .NE. 0 ) THEN
-            RUNLEN = SEC2TIME( MXREC3D * TIME2SEC( TSTEP3D ) )
+            RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
             RUNLEN = GETNUM( 0, 999999999, RUNLEN, 'Enter duration (HHMMSS) for run' )
-            NSTEPS = TIME2SEC( TSTEP )
-            NSTEPS = ( TIME2SEC( RUNLEN ) + NSTEPS - 1 ) / NSTEPS
+            JDATE  = SDATE
+            JTIME  = STIME
+            CALL NEXTIME( JDATE, JTIME, RUNLEN )
+            NSTEPS = CURREC( JDATE, JTIME, SDATE, STIME, TSTEP, EDATE, ETIME )
         ELSE
             NSTEPS = 1
         END IF

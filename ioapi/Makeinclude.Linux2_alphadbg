@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_alphadbg 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_alphadbg 1 2017-06-10 18:05:20Z coats $"
 #
 #       Linux for Alpha using the Digital/Cq/HP compiler suite,
 #       debugging enabled

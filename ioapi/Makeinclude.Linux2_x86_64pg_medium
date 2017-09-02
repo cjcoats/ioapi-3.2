@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64pg 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64pg_medium 1 2017-06-10 18:05:20Z coats $"
 #
 #  X86_64 "Medium memory model" version:  support stack-size, array-size,
 #  data-size larger than 2 GB

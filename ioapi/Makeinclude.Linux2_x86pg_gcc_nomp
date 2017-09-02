@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86pg_gcc_nomp 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86pg_gcc_nomp 1 2017-06-10 18:05:20Z coats $"
 #
 #  In some ways, this is the most problematical install, because of 
 #  the way  various compilers create linker-visible object names for
@@ -29,7 +29,9 @@ M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = "-module        ## Module-include-directory command
+## Module-include-directory command
+MODI = "-module "
+E132 = -Mextend
 
 MFLAGS    = # -Mnoupcase 
 

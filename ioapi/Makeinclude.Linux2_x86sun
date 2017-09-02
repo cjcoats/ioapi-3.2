@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86sun 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86sun 1 2017-06-10 18:05:20Z coats $"
 #
 #       Linux for 32-bit x86 using the Sun Studio Express compiler suite
 
@@ -9,7 +9,9 @@ M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = -M       ## Module-include-directory command
+## Module-include-directory command
+MODI = -M
+E132 = -e
 
 MFLAGS    =  -xarch=native -xtarget=native -xdebugformat=dwarf
 

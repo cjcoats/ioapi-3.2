@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64g95dbg 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64g95dbg 1 2017-06-10 18:05:20Z coats $"
 
 AR   = ar
 CC   = gcc
@@ -8,7 +8,9 @@ M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
+E132 = -ffixed-line-length-132
 
 MFLAGS    = -march=opteron
 
@@ -18,7 +20,7 @@ COPTFLAGS = -g ${MFLAGS}
 FOPTFLAGS = -g ${MFLAGS} -fbounds-check -ftrace=full
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fstatic
-ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DF90=1 -DSECOND_UNDERSCORE=1
+ARCHFLAGS = -DFLDMN=1 -D_G95=1 -DAUTO_ARRAYS=1 -DF90=1 -DSECOND_UNDERSCORE=1
 PARFLAGS  =
 ARCHLIB   =  -ftrace=full -lc
 # ARCHLIB   = -lc -lgfortran -lg2c

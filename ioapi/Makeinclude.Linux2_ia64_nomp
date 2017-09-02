@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_ia64_nomp 342 2016-03-22 18:42:22Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_ia64_nomp 1 2017-06-10 18:05:20Z coats $"
 #
 #
 #       Linux for IA64 using the Intel compiler suite, OpenMP disabled

@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64pathdbg 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64pathdbg 1 2017-06-10 18:05:20Z coats $"
 #
 #       Linux for X86_64 using the PathScale EKO compiler suite
 #       Flags set up compatibility with "gcc/g77" built packages and
@@ -12,6 +12,7 @@ CPP  = cpp
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command
+E132 = =extend-source
 
 MFLAGS    = -march=opteron -mcpu=opteron -static -OPT:Olimit=0
 

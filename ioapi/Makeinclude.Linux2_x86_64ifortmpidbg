@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64ifortmpidbg 444 2017-01-04 18:12:44Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64ifortmpidbg 1 2017-06-10 18:05:20Z coats $"
 #
 #  Build MPI/PnetCDF distributed-file support using "mpif90" and "mpcc",
 #  where compilers are built "on top of" Intel compilers

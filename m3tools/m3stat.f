@@ -2,14 +2,15 @@
         PROGRAM  M3STAT
 
 C***********************************************************************
-C Version "$Id: m3stat.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: m3stat.f 17 2017-09-02 16:47:59Z coats $"
 C EDSS/Models-3 M3TOOLS.
-C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
-C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
+C Copyright (C) 1992-2002 MCNC,
+C (C) 1995-2002,2005-2013,2017 Carlie J. Coats, Jr.,
+C and (C) 2002-2011 Baron Advanced Meteorological Systems. LLC.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  103
+C  program body starts at line  108
 C
 C  FUNCTION:
 C       Compute statistics for a user-specified GRIDDED, BOUNDARY,
@@ -41,6 +42,8 @@ C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C
 C      Version 05/2011 by CJC:  STATACUST() arglist bugfix for case CUSTOM3 & VARMODE
+C
+C      Version  09/2017 by CJC for I/O API v3.2:  Enhanced default RUNLEN
 C***********************************************************************
 
       USE M3UTILIO
@@ -82,6 +85,8 @@ C...........   LOCAL VARIABLES and their descriptions:
         REAL            T       !  scratch threshold
         INTEGER         SDATE   !  starting date, from user
         INTEGER         STIME   !  starting time, from user
+        INTEGER         EDATE   ! ending date
+        INTEGER         ETIME   ! ending time
         INTEGER         JDATE   !  current date
         INTEGER         JTIME   !  current time
         INTEGER         RUNLEN  !  duration, HHMMSS from user
@@ -137,7 +142,7 @@ C   begin body of program  M3STAT
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3stat.f 435 2016-11-22 18:10:58Z coats                 $',
+     &'$Id:: m3stat.f 17 2017-09-02 16:47:59Z coats                  $',
      &' '
 
         ARGCNT = IARGC()
@@ -214,6 +219,7 @@ C...........   Get and save input file description:
         SDATE  = SDATE3D
         STIME  = STIME3D
         NSTEPS = MXREC3D
+        CALL LASTTIME( SDATE, STIME, TSTEP, NSTEPS, EDATE, ETIME )
 
 
 C.......   Copy variable-names.  Get max string-lengths for use in
@@ -459,7 +465,7 @@ C...........   Get time period studied:
      &          'Enter starting date (YYYYDDD) for run' )
             STIME = GETNUM( 0, 239999, STIME3D,
      &          'Enter starting time (HHMMSS) for run' )
-            RUNLEN = SEC2TIME( MXREC3D * TIME2SEC( TSTEP3D ) )
+            RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
             RUNLEN = GETNUM( 0, 999999999, RUNLEN,
      &                  'Enter duration (HHMMSS) for run' )
             NSTEPS = TIME2SEC( TSTEP )

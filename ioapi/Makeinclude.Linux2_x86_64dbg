@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64dbg 342 2016-03-22 18:42:22Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64dbg 1 2017-06-10 18:05:20Z coats $"
 #
 #       Linux for x86 using the GNU compiler suite
 #
@@ -8,7 +8,9 @@ FC = gfortran
 M4 = m4
 LINK = $(CC)
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
+E132 = -ffixed-line-length-132
 
 # MFLAGS = #  -mcpu=opteron -march=opteron \
 #             -ffast-math -funroll-loops -fschedule-insns

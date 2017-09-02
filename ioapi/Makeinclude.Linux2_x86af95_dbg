@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86af95_dbg 100 2015-01-16 16:52:16Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86af95_dbg 1 2017-06-10 18:05:20Z coats $"
 # Flags for Absoft "f95" on x86
 #
 #  NOTE that these flags are important to being able to 
@@ -15,7 +15,8 @@ FC = f95
 M4 = m4
 LINK = $(CC)
 
-MODI = -p       ## Module-include-directory command
+## Module-include-directory command
+MODI = -p
 
 OMPFLAGS  = # -mp
 OMPLIBS   = # -lmp

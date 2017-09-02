@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86 342 2016-03-22 18:42:22Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86 1 2017-06-10 18:05:20Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers

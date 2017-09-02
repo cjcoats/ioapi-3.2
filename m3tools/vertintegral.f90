@@ -2,14 +2,15 @@
 PROGRAM  VERTINTEGRAL
 
     !!***********************************************************************
-    !! Version "$Id: vertintegral.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: vertintegral.f90 17 2017-09-02 16:47:59Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2009 UNC Institute for the Environment and
-    !! Baron Advanced Meteorological Systems, LLC, and (C) 2015 UNC IE.
+    !! Baron Advanced Meteorological Systems, LLC,(C) 2015-2016 UNC IE.,
+    !! and (C) 2017 Carlie J. Coats, Jr,
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  147
+    !!  program body starts at line  150
     !!
     !!  DESCRIPTION:
     !!       For a user-specified GRIDDED Models-3 CMAQ CONC file
@@ -46,6 +47,8 @@ PROGRAM  VERTINTEGRAL
     !!      Version  08/2015 by CJC:  enhanced splash-screen; more-robust
     !!      check for DENS and ZF in METFILE; integration-interval bounded
     !!      by LAY_LO, LAY_HI
+    !!
+    !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNLEN
     !!***********************************************************************
 
     USE M3UTILIO
@@ -199,7 +202,7 @@ PROGRAM  VERTINTEGRAL
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertintegral.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: vertintegral.f90 17 2017-09-02 16:47:59Z coats $',&
 ''
 
     WRITE ( LUNIT,'( 5X , A )' )
@@ -326,7 +329,7 @@ PROGRAM  VERTINTEGRAL
     ELSE
         SDATE  = GETNUM( SDATE3D, 9999999, SDATE3D, 'Enter starting date (YYYYDDD) for run' )
         STIME  = GETNUM(       0,  239999, STIME3D, 'Enter starting time (HHMMSS) for run' )
-        RUNLEN = SECSDIFF( SDATE, STIME, EDATE, ETIME )
+        RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
         RUNLEN = GETNUM( 0, 999999999, RUNLEN, 'Enter duration (HHMMSS) for run' )
         JDATE  = SDATE
         JTIME  = STIME

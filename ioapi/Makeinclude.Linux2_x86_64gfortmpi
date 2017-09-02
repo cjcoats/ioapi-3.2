@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfort 100 2015-01-16 16:52:16Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfortmpi 1 2017-06-10 18:05:20Z coats $"
 #
 #  Build MPI/PnetCDF distributed-file support using "mpif90" and "mpcc",
 #  where compilers are built "on top of" Gnu compilers
@@ -20,7 +20,8 @@ FC   = mpif90
 M4   = m4
 LINK = $(CC)
 
-MODI = -I       ## Module-include-directory command
+## Module-include-directory command
+MODI = -I
 E132 = -ffixed-line-length-132
 
 MFLAGS    = -ffast-math -funroll-loops -m64  #  -Wall -Wsurprising -march=native -mtune=native

@@ -2,9 +2,9 @@
 PROGRAM  VERTOT
 
     !!***********************************************************************
-    !! Version "$Id: vertot.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: vertot.f90 17 2017-09-02 16:47:59Z coats $"
     !! EDSS/Models-3 M3TOOLS.
-    !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr,
+    !! Copyright (C) 1992-2002 MCNC, (C) 1992-2002, 2017 Carlie J. Coats, Jr,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems, LLC.,
     !! and (C) 2015 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -41,6 +41,8 @@ PROGRAM  VERTOT
     !!      USE M3UTILIO, and related changes.
     !!
     !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source
+    !!
+    !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNBLEN
     !!***********************************************************************
 
     USE M3UTILIO
@@ -145,7 +147,7 @@ PROGRAM  VERTOT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertot.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: vertot.f90 17 2017-09-02 16:47:59Z coats $',&
 ''
 
     IF ( ARGCNT .GT. 1 ) THEN
@@ -270,7 +272,7 @@ PROGRAM  VERTOT
     ELSE
         SDATE  = GETNUM( SDATE3D, 9999999, SDATE3D, 'Enter starting date (YYYYDDD) for run' )
         STIME  = GETNUM(       0,  239999, STIME3D, 'Enter starting time (HHMMSS) for run' )
-        RUNLEN = SECSDIFF( SDATE, STIME, EDATE, ETIME )
+        RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
         RUNLEN = GETNUM( 0, 999999999, RUNLEN, 'Enter duration (HHMMSS) for run' )
         JDATE  = SDATE
         JTIME  = STIME

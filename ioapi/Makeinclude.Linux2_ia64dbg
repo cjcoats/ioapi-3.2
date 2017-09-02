@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_ia64dbg 342 2016-03-22 18:42:22Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_ia64dbg 1 2017-06-10 18:05:20Z coats $"
 #
 #   For gcc/gfortran 4.0.x and 4.1.x:  OMPFLAGS, OMPLIBS empty
 

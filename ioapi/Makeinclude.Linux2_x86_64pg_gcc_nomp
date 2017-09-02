@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Linux2_x86_64pg_gcc_nomp 444 2017-01-04 18:12:44Z coats $"
+# VERSION "$Id: Makeinclude.Linux2_x86_64pg_gcc_nomp 1 2017-06-10 18:05:20Z coats $"
 #
 #  In some ways, this is the most problematical install, because of 
 #  the way  various compilers create linker-visible object names for

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 15 2017-08-08 15:24:49Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 17 2017-09-02 16:47:59Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 15 2017-08-08 15:24:49Z coats $
+    $Id: NEWSTUFF.html 17 2017-09-02 16:47:59Z coats $
     </EM>
     <HR>
 
@@ -33,8 +33,13 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#sep022017">
+               Bug-fixes in programs <CODE>VERTOT,
+               VERTINTEGRAL</CODE>, other enhancements
+               </A>
          <LI>  <A HREF = "#aug112017">
-               Bug-fixes for inin <CODE>MODULE MODMPASFIO</CODE>
+               Bug-fixes in <CODE>MODULE MODMPASFIO</CODE>
+               l</A>
          <LI>  <A HREF = "#jul192017">
                Bug-fixes in <CODE>EQMERC, SETEQM, SETTRM</CODE>
                </A>
@@ -638,10 +643,35 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> <A NAME = "aug112017">
-   Bug-fixes for inin <CODE>MODULE MODMPASFIO</CODE> 
+<H2> <A NAME = "sep022017">
+   Bug-fixes in programs <CODE>VERTOT, VERTINTEGRAL</CODE>
 </A></H2>
 
+    <BLOCKQUOTE>
+    Bug reported by Kathy Brehme, Edward Anderson: incorrect default
+    <CODE>RUNLEN</CODE> in <VAR>m3tools</VAR> program
+    <VAR>vertot</VAR>. Same bug existed in <VAR>vertintegral</VAR>; bug
+    fixed in both.
+    <P>
+    Enhanced default for <CODE>RUNLEN</CODE> in <VAR>m3tools</VAR>
+    programs <VAR>m3stat, m3tshift, m3wndw, m3xtract</VAR>.
+    <P>
+    Enhanced <CODE>Makeinclude.*</CODE>: <VAR>make</VAR>-variables
+    <CODE>MODI, E132</CODE> for module-include path, 132-column-fixed
+    source format.
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "aug112017">
+   Bug-fixes for <CODE>MODULE MODMPASFIO</CODE> 
+</A></H2>
+
+    <BLOCKQUOTE>
     Bug-fixes for incorrect read  of variables <VAR>lonCell</VAR> and
     write of <VAR>kiteAreasOnVertex</VAR> to/from file headers, in
     <CODE>MODULE&nbsp;MODMPASFIO</CODE>.
@@ -683,7 +713,7 @@
 
     <BLOCKQUOTE>
     Subject says it:  in both of these, there was a consistent error
-    in values for the <CODEW>DELS()</CODE> argument for the time step
+    in values for the <CODE>DELS()</CODE> argument for the time step
     dimension.
     <P>
     </BLOCKQUOTE>
@@ -6473,7 +6503,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 15 2017-08-08 15:24:49Z coats $
+    $Id: NEWSTUFF.html 17 2017-09-02 16:47:59Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

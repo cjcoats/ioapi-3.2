@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64 342 2016-03-22 18:42:22Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64_360 1 2017-06-10 18:05:20Z coats $"
 #
 #   -- Flags for building 360-day climatological (no-leap-year) 
 #     version of the  I/O API (etc.)

@@ -2,7 +2,7 @@
 PROGRAM  M3WNDW
 
     !!***********************************************************************
-    !! Version "$Id: m3wndw.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: m3wndw.f90 17 2017-09-02 16:47:59Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
@@ -75,6 +75,8 @@ PROGRAM  M3WNDW
     INTEGER         NVARS   !  number of vbles in WNAME
     INTEGER         SDATE   !  starting date, from user
     INTEGER         STIME   !  starting time, from user
+    INTEGER         EDATE   ! ending date
+    INTEGER         ETIME   ! ending time
     INTEGER         JDATE   !  current date
     INTEGER         JTIME   !  current time
     INTEGER         TSTEP   !  time step, from INAME header
@@ -141,7 +143,7 @@ PROGRAM  M3WNDW
 '    Chapel Hill, NC 27599-1105',                                       &
 '',                                                                     &
 'Program version: ',                                                    &
-'$Id: m3wndw.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: m3wndw.f90 17 2017-09-02 16:47:59Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -211,6 +213,7 @@ PROGRAM  M3WNDW
     YORIG1 = YORIG3D
     XCELL1 = XCELL3D
     YCELL1 = YCELL3D
+    CALL LASTTIME( SDATE, STIME, TSTEP, MXREC3D, EDATE, ETIME )
 
 
     !!.......   Get starting date and time, and duration:
@@ -225,7 +228,7 @@ PROGRAM  M3WNDW
 
         SDATE  = GETNUM( SDATE3D, 9999999, SDATE3D, 'Enter starting date (YYYYDDD) for run' )
         STIME  = GETNUM(       0,  239999, STIME3D, 'Enter starting time  (HHMMSS) for run' )
-        RUNLEN = SEC2TIME( MXREC3D * TIME2SEC( TSTEP3D ) )
+        RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
         RUNLEN = GETNUM( 0, 999999999, RUNLEN,      'Enter duration (HHMMSS) for run' )
         NSTEPS = TIME2SEC( TSTEP )
         NSTEPS = ( TIME2SEC( RUNLEN ) + NSTEPS - 1 ) / NSTEPS
