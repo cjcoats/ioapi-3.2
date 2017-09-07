@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 15 2017-08-08 15:24:49Z coats $"
+    !!  Version "$Id: modmpasfio.f90 20 2017-09-07 20:28:05Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -23,6 +23,8 @@ MODULE MODMPASFIO
     !!      Beta version  05/2017 by Carlie J. Coats, Jr., Ph.D.
     !!      Version       05/17/2017 by CJC:  bug-fix in time-dimension handling
     !!      Version       08/11/2017 by CJC:  bug-fixes for ALONE, KAREAS
+    !!      Version       09/07/2017 by CJC:  add extra global attributes "Conventions"
+    !!          and "model_name", required for NCAR's Java "MPASConventionl.java"
     !!...................................................................................
 
     USE MODNCFIO
@@ -335,7 +337,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 15 2017-08-08 15:24:49Z coats $',     &
+        'Version $Id: modmpasfio.f90 20 2017-09-07 20:28:05Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -2152,7 +2154,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CALL M3MESG( NF_STRERROR( IERR ) )
             CALL M3MESG( PNAME // ' Error creating netCDF file attribute "mesh_id" for ' // FNAME )
             EFLAG = .TRUE.
-        END IF          !  ierr nonzero:  operation failed
+        END IF          !  ierr nonzero:  operation failed         !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'mesh_spec',  LEN_TRIM( MESH_SPEC ), MESH_ID )
         IF ( IERR .NE. 0 ) THEN
@@ -2168,6 +2170,22 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
+        !!........  The following are NOWHERE mentioned in the MPAS file specification,
+        !!........  but *are* required for the NCAR Java "MPASConvention.java" to work.
+
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'Conventions',  LEN_TRIM( 'MPAS' ), 'MPAS' )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( NF_STRERROR( IERR ) )
+            CALL M3MESG( PNAME // ' Error creating netCDF file attribute "mesh_id" for ' // FNAME )
+            EFLAG = .TRUE.
+        END IF          !  ierr nonzero:  operation failed
+
+        IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'model_name',  LEN_TRIM( 'mpas' ), 'mpas' )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( NF_STRERROR( IERR ) )
+            CALL M3MESG( PNAME // ' Error creating netCDF file attribute "mesh_id" for ' // FNAME )
+            EFLAG = .TRUE.
+        END IF          !  ierr nonzero:  operation failed
 
         !!........  Dimensions:  First, "standard" dimensions; then extra "user" dimensions:
 

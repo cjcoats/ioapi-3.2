@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 17 2017-09-02 16:47:59Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 19 2017-09-07 20:25:25Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 17 2017-09-02 16:47:59Z coats $
+    $Id: NEWSTUFF.html 19 2017-09-07 20:25:25Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,10 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#sep092017">
+               Add extra attributes to new MPAS-files, for
+               <VAR>VERDI</VAR>
+               </A>
          <LI>  <A HREF = "#sep022017">
                Bug-fixes in programs <CODE>VERTOT,
                VERTINTEGRAL</CODE>, other enhancements
@@ -643,7 +647,7 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> <A NAME = "sep022017">
+<H2> <A NAME = "sep092017">
    Bug-fixes in programs <CODE>VERTOT, VERTINTEGRAL</CODE>
 </A></H2>
 
@@ -659,6 +663,29 @@
     Enhanced <CODE>Makeinclude.*</CODE>: <VAR>make</VAR>-variables
     <CODE>MODI, E132</CODE> for module-include path, 132-column-fixed
     source format.
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "sep022017">
+   Add extra attributes to new MPAS-files, for <VAR>VERDI</VAR>
+</A></H2>
+
+    <BLOCKQUOTE>
+    <VAR>VERDI</VAR> uses NCAR's Java <CODE>MPASConvention.java</CODE>
+    for MPAS-file recognition.  This code requires global
+    file-attributes <CODE>model_name</CODE> and  <CODE>Conventions</CODE>
+    for file recognition.  <U>These attributes are nowhere mentioned
+    in the MPAS file specification document.</U>
+    <P>
+
+    <CODE><A HREF="MODMPASFIO.html">MODULE&nbsp;MODMPASFIO</A></CODE>
+    routine <CODE>CREATEMPAS()</CODE> now puts these attributes into the
+    file headers.
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -6503,7 +6530,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 17 2017-09-02 16:47:59Z coats $
+    $Id: NEWSTUFF.html 19 2017-09-07 20:25:25Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
