@@ -2,7 +2,7 @@
 PROGRAM  VERTOT
 
     !!***********************************************************************
-    !! Version "$Id: vertot.f90 18 2017-09-02 19:07:43Z coats $"
+    !! Version "$Id: vertot.f90 21 2017-09-09 20:53:06Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1992-2002, 2017 Carlie J. Coats, Jr,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems, LLC.,
@@ -42,7 +42,7 @@ PROGRAM  VERTOT
     !!
     !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source
     !!
-    !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNBLEN
+    !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNLEN
     !!***********************************************************************
 
     USE M3UTILIO
@@ -90,7 +90,8 @@ PROGRAM  VERTOT
     INTEGER         RUNLEN  !  duration, HHMMSS from user
     INTEGER         TSTEP   !  time step, from INAME header
     INTEGER         NRECS   !  duration in TSTEPs
-    INTEGER         I, V    !  scratch variable
+    INTEGER         I, J    !  scratch variable
+    INTEGER         N, V    !  scratch variable
     INTEGER         VMAX    !  string length for names
     INTEGER         UMAX    !  string length for units
     INTEGER         DMAX    !  string length for descriptions
@@ -147,7 +148,7 @@ PROGRAM  VERTOT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertot.f90 18 2017-09-02 19:07:43Z coats $',&
+'$Id: vertot.f90 21 2017-09-09 20:53:06Z coats $',&
 ''
 
     IF ( ARGCNT .GT. 1 ) THEN
@@ -266,13 +267,14 @@ PROGRAM  VERTOT
     STATOUT = GETYN( 'Do you want an output  statistics file?', .TRUE. )
 
     IF ( TSTEP .EQ. 0 ) THEN
-        JDATE  = 0
-        JTIME  = 0
+        SDATE  = 0
+        STIME  = 0
         NRECS = 1
     ELSE
         SDATE  = GETNUM( SDATE3D, 9999999, SDATE3D, 'Enter starting date (YYYYDDD) for run' )
         STIME  = GETNUM(       0,  239999, STIME3D, 'Enter starting time (HHMMSS) for run' )
-        RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
+        N      = CURREC( EDATE, ETIME, SDATE, STIME, TSTEP3D, I, J )
+        RUNLEN = SEC2TIME( N * TIME2SEC( TSTEP3D ) )
         RUNLEN = GETNUM( 0, 999999999, RUNLEN, 'Enter duration (HHMMSS) for run' )
         JDATE  = SDATE
         JTIME  = STIME
@@ -311,6 +313,8 @@ PROGRAM  VERTOT
     !!.......   Process this period in the input file:
 
     IF ( RUNIT .LT. 0 ) RUNIT = LUNIT
+    JDATE = SDATE
+    JTIME = STIME
     DO  I = 1, NRECS
 
         CALL VERSTEP( NCOLS, NROWS, NLAYS, NVARS,   &
