@@ -2,7 +2,7 @@
 PROGRAM  VERTOT
 
     !!***********************************************************************
-    !! Version "$Id: vertot.f90 21 2017-09-09 20:53:06Z coats $"
+    !! Version "$Id: vertot.f90 22 2017-09-14 16:31:19Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1992-2002, 2017 Carlie J. Coats, Jr,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems, LLC.,
@@ -42,7 +42,8 @@ PROGRAM  VERTOT
     !!
     !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source
     !!
-    !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNLEN
+    !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNLEN;
+    !!      format-cleanup
     !!***********************************************************************
 
     USE M3UTILIO
@@ -148,7 +149,7 @@ PROGRAM  VERTOT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertot.f90 21 2017-09-09 20:53:06Z coats $',&
+'$Id: vertot.f90 22 2017-09-14 16:31:19Z coats $',&
 ''
 
     IF ( ARGCNT .GT. 1 ) THEN
@@ -195,12 +196,12 @@ PROGRAM  VERTOT
         DMAX = MAX( DMAX , LEN_TRIM( VDESC3D( I ) ) )
     END DO
 
-    WRITE( *,'( 5X, A )' ) ' ',                         &
-        'The list of variables in this file is:',       &
-        ' ',                                            &
-        ( VNAME3D( I )( 1:VMAX ) // ' ('  //            &
-          UNITS3D( I )( 1:UMAX ) // '): ' //            &
-          VDESC3D( I )( 1:DMAX ), I = 1, NVARS3D )
+    CALL M3MESG( '' )
+    CALL M3MESG( 'The list of variables in this file is:' )
+    WRITE( *,'( I8, ":  ", A )' )                           &
+        ( I, VNAME3D( I )( 1:VMAX ) // ' ('  //             &
+             UNITS3D( I )( 1:UMAX ) // '): ' //             &
+             VDESC3D( I )( 1:DMAX ), I = 1, NVARS3D )
 
     IF ( NVARS3D .EQ. 1 ) THEN
 
@@ -279,7 +280,7 @@ PROGRAM  VERTOT
         JDATE  = SDATE
         JTIME  = STIME
         CALL NEXTIME( JDATE, JTIME, RUNLEN )
-        NRECS  = CURREC( JDATE, JTIME, SDATE, STIME, TSTEP, EDATE, ETIME )
+        NRECS  = CURREC( JDATE, JTIME, SDATE, STIME, TSTEP, EDATE, ETIME ) - 1  ! fencepost problem
     END IF          !  time-independent file, or not
 
     IF ( OUTFLAG ) THEN     !  create output file
