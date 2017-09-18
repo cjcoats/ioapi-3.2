@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 12 2017-05-15 17:56:33Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 23 2017-09-18 19:52:36Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -273,39 +273,42 @@
         the <A HREF="https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf">MPAS
         Mesh Specification document</A>:
         <PRE>
-        indexToCellID             !!  1
-        indexToEdgeID             !!  2
-        indexToVertexID           !!  3
-        edgesOnCell               !!  4
-        edgesOnEdge               !!  5
-        cellsOnCell               !!  6
-        edgesOnCell               !!  7
-        verticesOnCell            !!  8
-        cellsOnEdge               !!  9
-        verticesOnEdge            !! 10
-        cellsOnVertex             !! 11
-        edgesOnVertex             !! 12
-        latCell                   !! 13
-        lonCell                   !! 14
-        latEdge                   !! 15
-        lonEdge                   !! 16
-        latVertex                 !! 17
-        lonVertex                 !! 18
-        xCell                     !! 19
-        yCell                     !! 20
-        zCell                     !! 21
-        xEdge                     !! 22
-        yEdge                     !! 23
-        zEdge                     !! 24
-        xVertex                   !! 25
-        yVertex                   !! 26
-        zVertex                   !! 27
-        dvEdge                    !! 28
-        dcEdge                    !! 29
-        angleEdge                 !! 30
-        areaCell                  !! 31
-        areaTriangle              !! 32
-        kiteAreasOnVertex         !! 33
+        indexToCellID           !!  1
+        indexToEdgeID           !!  2
+        indexToVertexID         !!  3
+        nEdgesOnCell            !!  4
+        nEdgesOnEdge            !!  5
+        cellsOnCell             !!  6
+        edgesOnCell             !!  7
+        verticesOnCell          !!  8
+        cellsOnEdge             !!  9
+        edgesOnEdge             !! 10
+        verticesOnEdge          !! 11
+        cellsOnVertex           !! 12
+        edgesOnVertex           !! 13
+        latCell                 !! 14
+        lonCell                 !! 15
+        latEdge                 !! 16
+        lonEdge                 !! 17
+        latVertex               !! 18
+        lonVertex               !! 19
+        xCell                   !! 20
+        yCell                   !! 21
+        zCell                   !! 22
+        xEdge                   !! 23
+        yEdge                   !! 24
+        zEdge                   !! 25
+        xVertex                 !! 26
+        yVertex                 !! 27
+        zVertex                 !! 28
+        weightsOnEdge           !! 29
+        dvEdge                  !! 30
+        dcEdge                  !! 31
+        angleEdge               !! 32
+        areaCell                !! 33
+        areaTriangle            !! 34
+        kiteAreasOnVertex       !! 35
+        meshDensity             !! 36
         </PRE>
         <P>
     </DL>
@@ -411,10 +414,10 @@
         <DT><CODE>INTEGER   VEDGES(MPVORDR, MPVRTXS)</CODE>
         <DD> (<VAR>edgesOnVertex</VAR>):    indices of edges that radiate from a given vertex
         <P>
-       <DT><CODE>INTEGER EEDGES(2, MPBNDYC, MPEDGES)</CODE>
-        <DD> (<VAR>edgesOnEdge</VAR>):  Edge indices that are used to reconstruct tangential velocities.
+       <DT><CODE>INTEGER EEDGES(2*MPBNDYC, MPEDGES)</CODE>
+        <DD> (<VAR>edgesOnEdge</VAR>):  Edge indices used to reconstruct tangential velocities.
         <P>
-        <DT><CODE>REAL*8  EWGHTS(2, MPBNDYC, MPEDGES)</CODE>
+        <DT><CODE>REAL*8  EWGHTS(2*MPBNDYC, MPEDGES)</CODE>
         <DD> (<VAR>weightsOnEdge</VAR>):  Weights used to reconstruct tangential velocities.
         <P>
         <DT><CODE>REAL*8  ALATC(MPCELLS)</CODE>
@@ -485,6 +488,10 @@
         <DD> (<VAR>kiteAreasOnVertex</VAR>):  area of the intersection
              of the dual-mesh triangle centered at the given vertex
              with the original-mesh cells that intersect it.
+        <P>
+        <DT><CODE>REAL*8  MSHDEN(MPCELLS)</CODE>
+        <DD> (<VAR>meshDensity</VAR>):  Value of the generating density
+             function at each cell center (used for irregular meshes)
         <P>
     </DL>
     </BLOCKQUOTE>

@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 20 2017-09-07 20:28:05Z coats $"
+    !!  Version "$Id: modmpasfio.f90 23 2017-09-18 19:52:36Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -25,6 +25,8 @@ MODULE MODMPASFIO
     !!      Version       08/11/2017 by CJC:  bug-fixes for ALONE, KAREAS
     !!      Version       09/07/2017 by CJC:  add extra global attributes "Conventions"
     !!          and "model_name", required for NCAR's Java "MPASConventionl.java"
+    !!      Version       09/18/2017 by CJC:  add standard variables "edgesOnEdge"
+    !!          "weightsOnEdge", and "meshDensity"
     !!...................................................................................
 
     USE MODNCFIO
@@ -109,7 +111,7 @@ MODULE MODMPASFIO
 
     INTEGER     , PUBLIC, PARAMETER :: MPSTRLEN  = 64
     INTEGER     , PUBLIC, PARAMETER :: NMPASDIMS = 11
-    INTEGER     , PUBLIC, PARAMETER :: NMPASVARS = 33
+    INTEGER     , PUBLIC, PARAMETER :: NMPASVARS = 36
 
     CHARACTER(LEN=16), PUBLIC, PARAMETER :: MPASDIMNAMES( NMPASDIMS ) = (/   &
            'Time           ',       &       !!  1
@@ -128,36 +130,39 @@ MODULE MODMPASFIO
            'indexToCellID       ',  &       !!  1
            'indexToEdgeID       ',  &       !!  2
            'indexToVertexID     ',  &       !!  3
-           'edgesOnCell         ',  &       !!  4
-           'edgesOnEdge         ',  &       !!  5
+           'nEdgesOnCell        ',  &       !!  4
+           'nEdgesOnEdge        ',  &       !!  5
            'cellsOnCell         ',  &       !!  6
            'edgesOnCell         ',  &       !!  7
            'verticesOnCell      ',  &       !!  8
            'cellsOnEdge         ',  &       !!  9
-           'verticesOnEdge      ',  &       !! 10
-           'cellsOnVertex       ',  &       !! 11
-           'edgesOnVertex       ',  &       !! 12
-           'latCell             ',  &       !! 13
-           'lonCell             ',  &       !! 14
-           'latEdge             ',  &       !! 15
-           'lonEdge             ',  &       !! 16
-           'latVertex           ',  &       !! 17
-           'lonVertex           ',  &       !! 18
-           'xCell               ',  &       !! 19
-           'yCell               ',  &       !! 20
-           'zCell               ',  &       !! 21
-           'xEdge               ',  &       !! 22
-           'yEdge               ',  &       !! 23
-           'zEdge               ',  &       !! 24
-           'xVertex             ',  &       !! 25
-           'yVertex             ',  &       !! 26
-           'zVertex             ',  &       !! 27
-           'dvEdge              ',  &       !! 28
-           'dcEdge              ',  &       !! 29
-           'angleEdge           ',  &       !! 30
-           'areaCell            ',  &       !! 31
-           'areaTriangle        ',  &       !! 32
-           'kiteAreasOnVertex   '   /)      !! 33
+           'edgesOnEdge         ',  &       !! 10
+           'verticesOnEdge      ',  &       !! 11
+           'cellsOnVertex       ',  &       !! 12
+           'edgesOnVertex       ',  &       !! 13
+           'latCell             ',  &       !! 14
+           'lonCell             ',  &       !! 15
+           'latEdge             ',  &       !! 16
+           'lonEdge             ',  &       !! 17
+           'latVertex           ',  &       !! 18
+           'lonVertex           ',  &       !! 19
+           'xCell               ',  &       !! 20
+           'yCell               ',  &       !! 21
+           'zCell               ',  &       !! 22
+           'xEdge               ',  &       !! 23
+           'yEdge               ',  &       !! 24
+           'zEdge               ',  &       !! 25
+           'xVertex             ',  &       !! 26
+           'yVertex             ',  &       !! 27
+           'zVertex             ',  &       !! 28
+           'weightsOnEdge       ',  &       !! 29
+           'dvEdge              ',  &       !! 30
+           'dcEdge              ',  &       !! 31
+           'angleEdge           ',  &       !! 32
+           'areaCell            ',  &       !! 33
+           'areaTriangle        ',  &       !! 34
+           'kiteAreasOnVertex   ',  &       !! 35
+           'meshDensity         '   /)      !! 36
 
     INTEGER, PUBLIC, PROTECTED, SAVE :: NMPASDIMIDS( NMPASDIMS )     !!  netCDF dimension-IDs
     INTEGER, PUBLIC, PROTECTED, SAVE :: MPASDIMSIZE( NMPASDIMS )     !!  netCDF dimension-extents
@@ -178,6 +183,7 @@ MODULE MODMPASFIO
     INTEGER, PUBLIC, PROTECTED, SAVE :: MPVLVLS      !!  # of vertical levels
     INTEGER, PUBLIC, PROTECTED, SAVE :: MPVORDR      !!  max vertex-order:  # of cells/edges per vertex
     INTEGER, PUBLIC, PROTECTED, SAVE :: MPBNDYC      !!  max # of vertices/edges per cell
+    INTEGER, PUBLIC, PROTECTED, SAVE :: MPBNDY2      !!  2 * max # of vertices/edges per cell
 
     REAL(8), PUBLIC, PROTECTED, SAVE :: REARTH = 6370.0d3           !! from MM5/WRF-ARW usage
 
@@ -199,8 +205,7 @@ MODULE MODMPASFIO
     INTEGER, PUBLIC, PROTECTED, SAVE, ALLOCATABLE  ::   VCELLS(:,:) !! (MPVORDR,MPVRTXS): Cell indices that radiate from a given vertex.
     INTEGER, PUBLIC, PROTECTED, SAVE, ALLOCATABLE  ::   VEDGES(:,:) !! (MPVORDR,MPVRTXS): Edge indices that radiate from a given vertex
 
-    INTEGER, PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: EEDGES(:,:,:) !! 2,MPBNDYC,MPEDGES): Edge indices used to reconstruct tangential velocities.
-    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: EWGHTS(:,:,:) !! 2,MPBNDYC,MPEDGES): weights used to reconstruct tangential velocities.
+    INTEGER, PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: EEDGES(:,:) !! (MPBNDY2,MPEDGES): Edge indices used to reconstruct tangential velocities.
 
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALATC(:)      !! (MPCELLS):  latitude-degrees for cell-centers
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALONC(:)      !! (MPCELLS): longitude-degrees for cell-centers
@@ -217,14 +222,15 @@ MODULE MODMPASFIO
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ZEDGE(:)      !! (MPCELLS): Z-coordinate for edge-centers
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: XVRTX(:)      !! (MPVRTXS): X-coordinate for vertices
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: YVRTX(:)      !! (MPVRTXS): Y-coordinate for vertices
-    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ZVRTX(:)      !! (MPVRTXS): Z-coordinate for vertices
-
+    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ZVRTX(:)      !! (MPVRTXS): Z-coordinate for vertice
+    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: EWGHTS(:,:)   !! (MPBNDY2,MPEDGES): weights used to reconstruct tangential velocities.
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: DVEDGE(:)     !! (MPEDGES):  edge lengths (M)
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: DCEDGE(:)     !! (MPEDGES):  distance between the cell-centers that saddle a given edge (M)
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: EANGLE(:)     !! (MPEDGES):  angle from edge-normal vector to Easting
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: CAREAS(:)     !! (MPCELLS):  cell areas (M^2)
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: VAREAS(:)     !! (MPVRTXS):  dual-mesh triangle areas (M^2)
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: KAREAS(:,:)   !! (MPBNDYC,MPCELLS):  kite-area:  intersection of cell with dual-cell centered at vertex
+    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: MSHDEN(:)     !! (MPCELLS):  mesh density (none)
 
 
     !!........   Private variables and parameters:
@@ -256,6 +262,7 @@ MODULE MODMPASFIO
     INTEGER     , SAVE :: MPEDGDID( MXFILE3 ) = IMISS3           !!  netCDF edge-dimension IDs
     INTEGER     , SAVE :: MPVRTDID( MXFILE3 ) = IMISS3           !!  netCDF vertex-dimension IDs
     INTEGER     , SAVE :: MPBDYDID( MXFILE3 ) = IMISS3           !!  netCDF bdy-cell-dimension IDs
+    INTEGER     , SAVE :: MP2BDYID( MXFILE3 ) = IMISS3           !!  netCDF bdy-cell-dimension IDs
     INTEGER     , SAVE :: MPDEGDID( MXFILE3 ) = IMISS3           !!  netCDF vertex-degree dimension IDs
     INTEGER     , SAVE :: MPLVLDID( MXFILE3 ) = IMISS3           !!  netCDF level-dimension IDs
     INTEGER     , SAVE :: MPNRECS ( MXFILE3 ) = 0                !!  netCDF max step-number (1,2,...)
@@ -264,8 +271,8 @@ MODULE MODMPASFIO
     INTEGER     , SAVE :: MPNEDGES( MXFILE3 )                    !!  number of edges, per file
     INTEGER     , SAVE :: MPNVRTXS( MXFILE3 )                    !!  number of vertics, per file
     INTEGER     , SAVE :: MPNVLVLS( MXFILE3 )                    !!  number of levels, per file
-    INTEGER     , SAVE :: MPNVORDR( MXFILE3 )                    !!  number of levels, per file
-    INTEGER     , SAVE :: MPNBNDYC( MXFILE3 )                    !!  number of levels, per file
+    INTEGER     , SAVE :: MPNVORDR( MXFILE3 )                    !!  max cells per vertex, per file
+    INTEGER     , SAVE :: MPNBNDYC( MXFILE3 )                    !!  max edges per cell, per file
     CHARACTER*32, SAVE :: MPVNAME ( MXVARS3, MXFILE3 ) = CMISS3  !!  variable-names table
     INTEGER     , SAVE :: MPVARID ( MXVARS3, MXFILE3 )           !!  netCDF variable-IDs
     INTEGER     , SAVE :: MPVTYPE ( MXVARS3, MXFILE3 )           !!  netCDF variable-types (M3REAL, etc.)
@@ -337,7 +344,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 20 2017-09-07 20:28:05Z coats $',     &
+        'Version $Id: modmpasfio.f90 23 2017-09-18 19:52:36Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -378,6 +385,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MPVRTXS = MPNVRTXS( 1 )
         MPVORDR = MPNVORDR( 1 )
         MPBNDYC = MPNBNDYC( 1 )
+        MPBNDY2 = MPNBNDYC( 1 ) * 2
         MPVLVLS = MPNVLVLS( 1 )
 
         MPASDIMSIZE(  1 ) = NF_UNLIMITED
@@ -388,7 +396,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MPASDIMSIZE(  6 ) = MPVRTXS
         MPASDIMSIZE(  7 ) = MPVORDR
         MPASDIMSIZE(  8 ) = MPBNDYC
-        MPASDIMSIZE(  9 ) = 2 * MPBNDYC
+        MPASDIMSIZE(  9 ) = MPBNDY2     !! = 2 * MPBNDYC
         MPASDIMSIZE( 10 ) = MPVLVLS
         MPASDIMSIZE( 11 ) = MPVLVLS + 1
 
@@ -442,12 +450,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                  BNDYCELL( MPBNDYC, MPCELLS ),      &
                  BNDYEDGE( MPBNDYC, MPCELLS ),      &
                  BNDYVRTX( MPBNDYC, MPCELLS ),      &
-                   ECELLS(      2, MPEDGES ),       &
-                   EVRTXS(      2, MPEDGES ),       &
+                   ECELLS(       2, MPEDGES ),      &
+                   EVRTXS(       2, MPEDGES ),      &
                    VCELLS( MPVORDR, MPVRTXS ),      &
                    VEDGES( MPVORDR, MPVRTXS ),      &
-                EEDGES( 2, MPBNDYC, MPEDGES ),      &
-                EWGHTS( 2, MPBNDYC, MPEDGES ),      &
+                 EEDGES( 2*MPBNDYC, MPEDGES ),      &
+                 EWGHTS( 2*MPBNDYC, MPEDGES ),      &
                     ALATC( MPCELLS ),               &
                     ALONC( MPCELLS ),               &
                     ALATE( MPEDGES ),               &
@@ -467,6 +475,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                    DCEDGE( MPEDGES ),               &
                    EANGLE( MPEDGES ),               &
                    CAREAS( MPCELLS ),               &
+                   MSHDEN( MPCELLS ),               &
                    VAREAS( MPVRTXS ),               &
                    KAREAS( MPVORDR, MPVRTXS ),      STAT = ISTAT )
 
@@ -494,6 +503,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IF ( .NOT.READMPAS( FNAME, 'cellsOnCell',     MPBNDYC, MPCELLS, BNDYCELL ) )   EFLAG = .TRUE.
         IF ( .NOT.READMPAS( FNAME, 'edgesOnCell',     MPBNDYC, MPCELLS, BNDYEDGE ) )   EFLAG = .TRUE.
+        IF ( .NOT.READMPAS( FNAME, 'edgesOnEdge',   2*MPBNDYC, MPEDGES, EEDGES   ) )   EFLAG = .TRUE.
         IF ( .NOT.READMPAS( FNAME, 'verticesOnCell',  MPBNDYC, MPCELLS, BNDYVRTX ) )   EFLAG = .TRUE.
         IF ( .NOT.READMPAS( FNAME, 'cellsOnEdge',           2, MPEDGES, ECELLS   ) )   EFLAG = .TRUE.
         IF ( .NOT.READMPAS( FNAME, 'verticesOnEdge',        2, MPEDGES, EVRTXS   ) )   EFLAG = .TRUE.
@@ -520,8 +530,10 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IF ( .NOT.READR8_1D( FNAME, 'angleEdge',    F, MPEDGES, EANGLE ) )   EFLAG = .TRUE.
         IF ( .NOT.READR8_1D( FNAME, 'areaCell',     F, MPCELLS, CAREAS ) )   EFLAG = .TRUE.
         IF ( .NOT.READR8_1D( FNAME, 'areaTriangle', F, MPVRTXS, VAREAS ) )   EFLAG = .TRUE.
+        IF ( .NOT.READR8_1D( FNAME, 'meshDensity',  F, MPCELLS, MSHDEN ) )   EFLAG = .TRUE.
 
-        IF ( .NOT.READR8_2D( FNAME, 'kiteAreasOnVertex', F, MPVORDR, MPVRTXS, KAREAS ) )   EFLAG = .TRUE.
+        IF ( .NOT.READR8_2D( FNAME, 'weightsOnEdge',     F, 2*MPBNDYC, MPEDGES, EWGHTS ) )   EFLAG = .TRUE.
+        IF ( .NOT.READR8_2D( FNAME, 'kiteAreasOnVertex', F,   MPVORDR, MPVRTXS, KAREAS ) )   EFLAG = .TRUE.
 
         IF ( EFLAG ) THEN
             DEALLOCATE( MPDATES, MPTIMES,                                   &
@@ -529,7 +541,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                         BNDYCELL, BNDYEDGE, BNDYVRTX, ECELLS, EVRTXS,       &
                         VCELLS, VEDGES, EEDGES, EWGHTS, ALATC, ALONC,       &
                         ALATE, ALONE, ALATV, ALONV, XCELL, YCELL, ZCELL,    &
-                        XEDGE, YEDGE, ZEDGE, XVRTX, YVRTX, ZVRTX,           &
+                        XEDGE, YEDGE, ZEDGE, XVRTX, YVRTX, ZVRTX, MSHDEN,   &
                         DVEDGE, DCEDGE, EANGLE, CAREAS, VAREAS, KAREAS, STAT = ISTAT )
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10 )' ) 'Deallocation failed:  STAT=', ISTAT
@@ -1430,7 +1442,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                     ALATC,  ALONC,  ALATE, ALONE, ALATV, ALONV,     &
                     XCELL,  YCELL,  ZCELL, XEDGE, YEDGE, ZEDGE,     &
                     XVRTX,  YVRTX,  ZVRTX, DVEDGE, DCEDGE, EANGLE,  &
-                    CAREAS, VAREAS, KAREAS, STAT = ISTAT )
+                    CAREAS, VAREAS, KAREAS, MSHDEN, STAT = ISTAT )
 
         IF ( ISTAT .NE. 0 ) THEN
             CALL M3MESG( 'MODMPASFIO/SHUTMPGRID:  Error with DEALLOCATE()' )
@@ -1892,6 +1904,27 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END IF          !  ISTAT nonzero:  operation failed
         END IF          !  ISTAT nonzero:  operation failed
 
+        ISTAT = NF_INQ_DIMID( FID, 'maxEdges2', ID )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = PNAME // 'Error reading maxEdges-dimension ID for "' //TRIM(FNAME)// '"'
+            CALL M3MESG( NF_STRERROR(ISTAT) )
+            CALL M3MESG( MESG )
+            EFLAG = .TRUE.
+        ELSE
+            MP2BDYID( F ) = ID
+            ISTAT = NF_INQ_DIMLEN( FID, ID, NBNDYC )
+            IF ( ISTAT .NE. 0 ) THEN
+                MESG = PNAME // 'Error reading maxEdges2-dim for "' //TRIM(FNAME)// '"'
+                CALL M3MESG( NF_STRERROR(ISTAT) )
+                CALL M3MESG( MESG )
+                EFLAG = .TRUE.
+            ELSE IF ( NBNDYC .NE. 2*MPNBNDYC( F ) ) THEN
+                MESG = PNAME // 'Inconsistent maxEdges2-dim for "' //TRIM(FNAME)// '"'
+                CALL M3MESG( MESG )
+                EFLAG = .TRUE.
+            END IF          !  ISTAT nonzero:  operation failed
+        END IF          !  ISTAT nonzero:  operation failed
+
         ISTAT = NF_INQ_DIMID( FID, 'vertexDegree', ID )
         IF ( ISTAT .NE. 0 ) THEN
             MESG = PNAME // 'Error reading vertexDegree-dime ID for "' //TRIM(FNAME)// '"'
@@ -2216,6 +2249,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 IF ( DSIZES( N ) .NE. MPASDIMSIZE( I ) ) THEN
                     CALL M3MESG( PNAME // ' WARNING: inconsistent dim "' // TRIM( DNAMES( N ) ) // '" for ' // FNAME )
                 END IF
+                EFLAG = .TRUE.
                 CYCLE
             END IF
 
@@ -2248,6 +2282,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MPVRTDID( F ) = DIMID(  6 )
         MPDEGDID( F ) = DIMID(  7 )
         MPBDYDID( F ) = DIMID(  8 )
+        MP2BDYID( F ) = DIMID(  9 )
         MPLVLDID( F ) = DIMID( 10 )
 
         MPNRECS ( F ) = DSIZE(  1 )
@@ -2497,6 +2532,42 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END IF              !  ierr nonzero:  operation failed
 
         END IF              !  ierr nonzero:  operation failed
+
+        VV = VV + 1
+        MPVNAME( VV,F )   = 'edgesOnEdge'
+        MPVTYPE( VV,F )   = M3INT
+        MPVDCNT( VV,F )   = 2
+        MPVDNAM( 1,VV,F ) = DNAME( 9 )
+        MPVDIMS( 1,VV,F ) = DSIZE( 9 )
+        MPVDIDS( 1,VV,F ) = DIMID( 9 )
+        MPVDNAM( 2,VV,F ) = DNAME( 5 )
+        MPVDIMS( 2,VV,F ) = DSIZE( 5 )
+        MPVDIDS( 2,VV,F ) = DIMID( 5 )
+        IERR = NF_DEF_VAR( FID, MPVNAME( VV,F ), MPVTYPE( VV,F ), MPVDCNT( VV,F ), MPVDIDS( 1,VV,F ), MPVARID( VV,F ) )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( NF_STRERROR( IERR ) )
+            CALL M3MESG( PNAME // ' Error creating variable "' // TRIM( MPVNAME(VV,F) ) // '" for ' // FNAME )
+            EFLAG = .TRUE.
+
+        ELSE
+
+            DSCBUF = MPVNAME( VV,F )
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+            DSCBUF = 'none'
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+        END IF              !  ierr nonzero:  operation failed
 
         VV = VV + 1
         MPVNAME( VV,F )   = 'verticesOnCell'
@@ -3172,6 +3243,42 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF              !  ierr nonzero:  operation failed
 
         VV = VV + 1
+        MPVNAME( VV,F )   = 'weightsOnEdge'
+        MPVTYPE( VV,F )   = M3DBLE
+        MPVDCNT( VV,F )   = 2
+        MPVDNAM( 1,VV,F ) = DNAME( 9 )
+        MPVDIMS( 1,VV,F ) = DSIZE( 9 )
+        MPVDIDS( 1,VV,F ) = DIMID( 9 )
+        MPVDNAM( 2,VV,F ) = DNAME( 5 )
+        MPVDIMS( 2,VV,F ) = DSIZE( 5 )
+        MPVDIDS( 2,VV,F ) = DIMID( 5 )
+        IERR = NF_DEF_VAR( FID, MPVNAME( VV,F ), MPVTYPE( VV,F ), MPVDCNT( VV,F ), MPVDIDS( 1,VV,F ), MPVARID( VV,F ) )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( NF_STRERROR( IERR ) )
+            CALL M3MESG( PNAME // ' Error creating variable "' // TRIM( MPVNAME(VV,F) ) // '" for ' // FNAME )
+            EFLAG = .TRUE.
+
+        ELSE
+
+            DSCBUF = MPVNAME( VV,F )
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+            DSCBUF = 'none'
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+        END IF              !  ierr nonzero:  operation failed
+
+        VV = VV + 1
         MPVNAME( VV,F )   = 'dvEdge'
         MPVTYPE( VV,F )   = M3DBLE
         MPVDCNT( VV,F )   = 1
@@ -3373,6 +3480,38 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF              !  ierr nonzero:  operation failed
 
         VV = VV + 1
+        MPVNAME( VV,F )   = 'meshDensity'
+        MPVTYPE( VV,F )   = M3DBLE
+        MPVDCNT( VV,F )   = 1
+        MPVDNAM( 1,VV,F ) = DNAME( 4 )
+        MPVDIMS( 1,VV,F ) = DSIZE( 4 )
+        MPVDIDS( 1,VV,F ) = DIMID( 4 )
+        IERR = NF_DEF_VAR( FID, MPVNAME( VV,F ), MPVTYPE( VV,F ), MPVDCNT( VV,F ), MPVDIDS( 1,VV,F ), MPVARID( VV,F ) )
+        IF ( IERR .NE. 0 ) THEN
+            CALL M3MESG( NF_STRERROR( IERR ) )
+            CALL M3MESG( PNAME // ' Error creating variable "' // TRIM( MPVNAME(VV,F) ) // '" for ' // FNAME )
+            EFLAG = .TRUE.
+
+        ELSE
+            DSCBUF = MPVNAME( VV,F )
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+            DSCBUF = 'none'
+            IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
+            IF ( IERR .NE. 0 ) THEN
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
+                EFLAG = .TRUE.
+            END IF              !  ierr nonzero:  operation failed
+
+        END IF              !  ierr nonzero:  operation failed
+
+        VV = VV + 1
         MPVNAME( VV,F )   = 'xtime'
         MPVTYPE( VV,F )   = M3CHAR
         MPVDCNT( VV,F )   = 2
@@ -3510,6 +3649,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnCell',    MPBNDYC, MPCELLS, BNDYCELL ) )   EFLAG = .TRUE.
         IF ( .NOT.WRITEMPAS( FNAME, 'edgesOnCell',    MPBNDYC, MPCELLS, BNDYEDGE ) )   EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'edgesOnEdge',  2*MPBNDYC, MPEDGES, EEDGES   ) )   EFLAG = .TRUE.
         IF ( .NOT.WRITEMPAS( FNAME, 'verticesOnCell', MPBNDYC, MPCELLS, BNDYVRTX ) )   EFLAG = .TRUE.
         IF ( .NOT.WRITEMPAS( FNAME, 'cellsOnEdge',          2, MPEDGES, ECELLS   ) )   EFLAG = .TRUE.
         IF ( .NOT.WRITEMPAS( FNAME, 'verticesOnEdge',       2, MPEDGES, EVRTXS   ) )   EFLAG = .TRUE.
@@ -3544,7 +3684,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IF ( .NOT.WRITEMPAS( FNAME, 'areaCell',     MPCELLS, CAREAS  ) )  EFLAG = .TRUE.
         IF ( .NOT.WRITEMPAS( FNAME, 'areaTriangle', MPVRTXS, VAREAS  ) )  EFLAG = .TRUE.
 
-        IF ( .NOT.WRITEMPAS( FNAME, 'kiteAreasOnVertex',MPVORDR, MPVRTXS, KAREAS ) )  EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'weightsOnEdge',    2*MPBNDYC, MPEDGES, EWGHTS ) )  EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'kiteAreasOnVertex',MPVORDR,   MPVRTXS, KAREAS ) )  EFLAG = .TRUE.
+        IF ( .NOT.WRITEMPAS( FNAME, 'meshDensity',      MPCELLS,            MSHDEN ) )  EFLAG = .TRUE.
 
         IF ( EFLAG ) THEN
             IERR        = NF_ABORT( FID )
