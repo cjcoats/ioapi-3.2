@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 23 2017-09-18 19:52:36Z coats $"
+    !!  Version "$Id: modmpasfio.f90 24 2017-09-22 16:13:49Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -344,7 +344,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 23 2017-09-18 19:52:36Z coats $',     &
+        'Version $Id: modmpasfio.f90 24 2017-09-22 16:13:49Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -1423,10 +1423,6 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        INITFLAG = .FALSE.
-        MPSTEPS  = 0
-        MPCOUNT  = 0
-
         DO F = 1, MPCOUNT
             FID = MPCDFID( F )
             IERR =  NF_CLOSE( FID )
@@ -1448,7 +1444,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CALL M3MESG( 'MODMPASFIO/SHUTMPGRID:  Error with DEALLOCATE()' )
         END IF
 
-       RETURN
+        INITFLAG = .FALSE.
+        MPSTEPS  = 0
+        MPCOUNT  = 0
+
+        RETURN
 
     END  SUBROUTINE SHUTMPGRID
 
