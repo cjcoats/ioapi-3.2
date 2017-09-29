@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 24 2017-09-22 16:13:49Z coats $"
+    !!  Version "$Id: modmpasfio.f90 25 2017-09-29 18:16:22Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -26,7 +26,8 @@ MODULE MODMPASFIO
     !!      Version       09/07/2017 by CJC:  add extra global attributes "Conventions"
     !!          and "model_name", required for NCAR's Java "MPASConventionl.java"
     !!      Version       09/18/2017 by CJC:  add standard variables "edgesOnEdge"
-    !!          "weightsOnEdge", and "meshDensity"
+    !!                   "weightsOnEdge", and "meshDensity"
+    !!      Version       09/29/2017 by CJC:  bug-fix in CREATEMPAS()
     !!...................................................................................
 
     USE MODNCFIO
@@ -344,7 +345,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 24 2017-09-22 16:13:49Z coats $',     &
+        'Version $Id: modmpasfio.f90 25 2017-09-29 18:16:22Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -2209,14 +2210,14 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'Conventions',  LEN_TRIM( 'MPAS' ), 'MPAS' )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( NF_STRERROR( IERR ) )
-            CALL M3MESG( PNAME // ' Error creating netCDF file attribute "mesh_id" for ' // FNAME )
+            CALL M3MESG( PNAME // ' Error creating netCDF file attribute "Conventions" for ' // FNAME )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
         IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'model_name',  LEN_TRIM( 'mpas' ), 'mpas' )
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( NF_STRERROR( IERR ) )
-            CALL M3MESG( PNAME // ' Error creating netCDF file attribute "mesh_id" for ' // FNAME )
+            CALL M3MESG( PNAME // ' Error creating netCDF file attribute "model_name" for ' // FNAME )
             EFLAG = .TRUE.
         END IF          !  ierr nonzero:  operation failed
 
@@ -2248,8 +2249,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             IF ( I .GT. 0 ) THEN
                 IF ( DSIZES( N ) .NE. MPASDIMSIZE( I ) ) THEN
                     CALL M3MESG( PNAME // ' WARNING: inconsistent dim "' // TRIM( DNAMES( N ) ) // '" for ' // FNAME )
+                    EFLAG = .TRUE.
                 END IF
-                EFLAG = .TRUE.
                 CYCLE
             END IF
 
