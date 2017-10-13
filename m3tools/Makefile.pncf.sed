@@ -1,10 +1,10 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.pncf.sed 17 2017-09-02 16:47:59Z coats $"
+# Version "$Id: Makefile.pncf.sed 26 2017-10-13 17:30:06Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
-#    (C) 2005-2014 Carlie J. Coats, Jr., and
+#    (C) 2005-2014, 2017 Carlie J. Coats, Jr., and
 #    (C) 2014-2015 UNC Institute for the Environment
 # Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 # See file "GPL.txt" for conditions of use.
@@ -82,13 +82,14 @@ statgrid.f      stati.f         statiddat.f     statm.f         stats.f         
 statspars.f     statstep.f
 
 f90SRC = \
-bcwndw.f90      camxtom3.f90    \
-datshift.f90    factor.f90      fakestep.f90    fills.f90       greg2jul.f90    \
-gregdate.f90    insertgrid.f90  jul2greg.f90    juldate.f90     juldiff.f90     \
-julshift.f90    latlon.f90      m3fake.f90      m3mask.f90      m3pair.f90      \
-m3probe.f90     m3totxt.f90     m3tproc.f90     m3tshift.f90    m3wndw.f90      \
-mtxcalc.f90     pairstep.f90    presz.f90       timeshift.f90   vertot.f90      \
-vertimeproc.f90 vertintegral.f90                wrfgriddesc.f90 wrftom3.f90
+bcwndw.f90      camxtom3.f90    datshift.f90    factor.f90      fakestep.f90    \
+fills.f90       findwndw.f90    greg2jul.f90    gregdate.f90    gridprobe.f90   \
+insertgrid.f90  jul2greg.f90    juldate.f90     juldiff.f90     julshift.f90    \
+latlon.f90      m3fake.f90      m3mask.f90      m3pair.f90      m3probe.f90     \
+m3totxt.f90     m3tproc.f90     m3tshift.f90    m3wndw.f90      mtxcalc.f90     \
+pairstep.f90    presz.f90       timeshift.f90   vertot.f90      vertimeproc.f90 \
+vertintegral.f90                wrfgriddesc.f90 wrftom3.f90                     \
+mpasdiff.f90    mpasstat.f90
 
 OBJ = $(fSRC:.f=.o) $(f90SRC:.f90=.o)
 
@@ -102,7 +103,8 @@ m3merge         m3pair          m3probe         m3stat          m3totxt         
 m3tproc         m3tshift        m3wndw          m3xtract        mtxblend        \
 mtxbuild        mtxcalc         mtxcple         presterp        presz           \
 projtool        selmrg2d        timeshift       vertot          vertimeproc     \
-vertintegral    wrfgriddesc     wrftom3
+vertintegral    wrfgriddesc     wrftom3         \
+mpasdiff        mpasstat
 
 
 
@@ -314,6 +316,12 @@ m3xtract:  m3xtract.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 m4cple: m4cple.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+mpasdiff: mpasdiff.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+mpasstat: mpasstat.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 mtxblend: mtxblend.o
