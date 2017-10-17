@@ -1,10 +1,10 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.nocpl 26 2017-10-13 17:30:06Z coats $"
+# Version "$Id: Makefile.nocpl 28 2017-10-17 15:08:21Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
-#    (C) 2005-2014 Carlie J. Coats, Jr., and
+#    (C) 2005-2014, 2017 Carlie J. Coats, Jr., and
 #    (C) 2014-2016 UNC Institute for the Environment
 # Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 # See file "GPL.txt" for conditions of use.

@@ -2,7 +2,7 @@
 PROGRAM MPASSTAT
 
     !!***********************************************************************
-    !!  Copyright (c) 2017 UNC Institute for the Environment.
+    !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!  See file "GPL.txt" for conditions of use.
     !!.......................................................................
@@ -97,7 +97,7 @@ PROGRAM MPASSTAT
 'and ending date&time for the report period, and the layer range',              &
 '(as appropriate).',                                                            &
 '',                                                                             &
-'Program copyright (C) 2017 UNC Institute for the Environment.',                &
+'Program copyright (C) 2017 Carlie J. Coats, Jr.',                              &
 'Released under Version 2 of the GNU General Public License.',                  &
 'See enclosed GPL.txt, or URL',                                                 &
 ''  ,                                                                           &

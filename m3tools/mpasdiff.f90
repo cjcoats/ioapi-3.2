@@ -2,7 +2,7 @@
 PROGRAM MPASDIFF
 
     !!***********************************************************************
-    !!  Copyright (c) 2017 UNC Institute for the Environment.
+    !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!  See file "GPL.txt" for conditions of use.
     !!.......................................................................
@@ -14,8 +14,7 @@ PROGRAM MPASDIFF
     !!      Difference-ops borrowed from I/O API "gridops.f"
     !!
     !!  REVISION  HISTORY:
-    !!      Prototype  09/2017 by Carlie J. Coats, Jr., UNC IE
-    !!
+    !!      Prototype  10/13/2017 by Carlie J. Coats, Jr., UNC IE
     !!.......................................................................
 
     USE MODMPASFIO
@@ -178,9 +177,9 @@ PROGRAM MPASDIFF
 'layer ranges.',                                                                &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id:: mpasdiff.f90 26 2017-10-13 17:30:06Z coats                       $',     &
+'$Id:: mpasdiff.f90 28 2017-10-17 15:08:21Z coats                       $',     &
 '',                                                                             &
-'Program copyright (C) 2017 UNC Institute for the Environment.',                &
+'Program copyright (C) 2017 Carlie J. Coats, Jr.',                              &
 'Released under Version 2 of the GNU General Public License.',                  &
 'See enclosed GPL.txt, or URL',                                                 &
 ''  ,                                                                           &

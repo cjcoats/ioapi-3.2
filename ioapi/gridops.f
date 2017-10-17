@@ -2,7 +2,7 @@
         SUBROUTINE GRIDOPS( NCOL, NROW, NSPC, NLEV, A, B, C )
 
 C***********************************************************************
-C Version "$Id: gridops.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: gridops.f 27 2017-10-13 17:52:55Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems,
@@ -11,9 +11,9 @@ C (C) 2014 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  subroutine GRIDOPS body starts at line  131
-C  entry      PICKOPS body starts at line  346
-C  entry      NAMEDOP body starts at line  361
+C  subroutine GRIDOPS body starts at line  132
+C  entry      PICKOPS body starts at line  347
+C  entry      NAMEDOP body starts at line  362
 C
 C  PRECONDITIONS REQUIRED:  Call entry PICKOPS before calling GRIDOPS
 C                           Valid OPNAME for NAMEDOP
@@ -53,7 +53,8 @@ C
 C  REVISION  HISTORY:
 C       prototype 09/1992 by CJC
 C       Modified  03/2010 by CJC: F9x changes for I/O API v3.1
-C       Modified 02/2015 by CJC for I/O API 3.2: USE M3UTILIO
+C       Modified  02/2015 by CJC for I/O API 3.2: USE M3UTILIO
+C       Modified  10/2017 by CJC for I/O API 3.2: bugfix for Modes 13,14,17
 C***********************************************************************
 
         USE M3UTILIO
@@ -72,7 +73,7 @@ C...........   ARGUMENTS and their descriptions:
 C...........   Parameter:
 
         INTEGER, PARAMETER :: OPCOUNT = 19         !  dimension for OP(*); number of ops
-        REAL   , PARAMETER :: MISSING = 9.999E37   !  fill value for zero-divide cells
+        REAL   , PARAMETER :: MISSING = BADVAL3    !  fill value for zero-divide cells
 
         CHARACTER*72, PARAMETER :: DIFMNU ( OPCOUNT ) = (/
      &'(pointwise) difference                           A - B        ',        !  1
@@ -265,7 +266,7 @@ C   begin body of subroutine  GRIDOPS
 130             CONTINUE
 
                 IF ( U .NE. 0.0 ) THEN
-                    U = SQRT( U *V )
+                    U = SQRT( U*U )
                     DO  131  I = J, J+K-1
                         C( I ) = U * ( A( I ) - B( I ) )
 131                 CONTINUE
@@ -291,7 +292,7 @@ C   begin body of subroutine  GRIDOPS
 140             CONTINUE
 
                 IF ( U .NE. 0.0 ) THEN
-                    U = SQRT( U *V )
+                    U = SQRT( U *U )
                     DO  142  I = J, J+K-1
                         C( I ) = U * ( B( I ) - A( I ) )
 142                 CONTINUE
@@ -315,10 +316,10 @@ C   begin body of subroutine  GRIDOPS
                 C( I ) = MAX( A( I ), B( I ) )
 166         CONTINUE
 
-        ELSE IF ( DIFMODE .EQ. 17 ) THEN         !  max
+        ELSE IF ( DIFMODE .EQ. 17 ) THEN         !  min
 
             DO 177  I = 1, NCOL*NROW*NSPC*NLEV
-                C( I ) = MAX( A( I ), B( I ) )
+                C( I ) = MIN( A( I ), B( I ) )
 177         CONTINUE
 
         ELSE IF ( DIFMODE .EQ. 18 ) THEN         !  grid A
