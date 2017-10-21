@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 25 2017-09-29 18:16:22Z coats $"
+    !!  Version "$Id: modmpasfio.f90 30 2017-10-21 01:07:49Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -37,7 +37,8 @@ MODULE MODMPASFIO
 
     PUBLIC :: INITMPGRID, INITREARTH, SHUTMPGRID, OPENMPAS, CREATEMPAS,     &
               DESCMPAS, READMPSTEPS, WRITEMPSTEP, READMPAS, WRITEMPAS,      &
-              ARC2MPAS, FINDCELL, FINDVRTX, SPHEREDIST, MPSTR2DT, MPDT2STR
+              ARC2MPAS, FINDCELL, FINDVRTX, SPHEREDIST, MPSTR2DT, MPDT2STR, &
+              MPINTERP
 
 
     !!........   Generic interfaces:
@@ -99,13 +100,20 @@ MODULE MODMPASFIO
     END INTERFACE FINDVRTX
 
     INTERFACE CHKFILL     !!  PRIVATE procedure to check input-data against netCDF fill-values
-        MODULE PROCEDURE                                                                &
+        MODULE PROCEDURE                                                           &
             CHKFILL_0DD,  CHKFILL_1DD,  CHKFILL_2DD,  CHKFILL_3DD,  CHKFILL_4DD,   &
             CHKFILL_0DR,  CHKFILL_1DR,  CHKFILL_2DR,  CHKFILL_3DR,  CHKFILL_4DR,   &
             CHKFILL_0DI,  CHKFILL_1DI,  CHKFILL_2DI,  CHKFILL_3DI,  CHKFILL_4DI,   &
             CHKFILL_0DS,  CHKFILL_1DS,  CHKFILL_2DS,  CHKFILL_3DS,  CHKFILL_4DS,   &
             CHKFILL_0DB,  CHKFILL_1DB,  CHKFILL_2DB,  CHKFILL_3DB,  CHKFILL_4DB
     END INTERFACE CHKFILL
+
+    INTERFACE MPINTERP
+        MODULE PROCEDURE  MPINTERP0DD,  MPINTERP1DD,  MPINTERP2DD,  MPINTERPE2DD,                   &
+                          MPINTERP0DF,  MPINTERP1DF,  MPINTERP2DF,  MPINTERPE2DF,                   &
+                          MPINTERPL0DD, MPINTERPL1DD, MPINTERPL2DD, MPINTERPEL2DD, MPINTERPGL2DD,   &
+                          MPINTERPL0DF, MPINTERPL1DF, MPINTERPL2DF, MPINTERPEL2DF, MPINTERPGL2DF
+    END INTERFACE MPINTERP
 
 
     !!........   Parameters:  required MPAS-file "header" structure:
@@ -345,7 +353,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 25 2017-09-29 18:16:22Z coats $',     &
+        'Version $Id: modmpasfio.f90 30 2017-10-21 01:07:49Z coats $',     &
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
@@ -13452,6 +13460,917 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     END FUNCTION CHKFILL_0DB
 
+
+    !!.............................................................................
+    !!  MPINTERP:  Interpolate MPAS-cell-variable Z to lat-lon location(s) <Y=ALAT,X=ALON>:
+    !!      See  https://codeplea.com/triangular-interpolation
+    !!  For 2-D grids, if AFLAG, normalize the result by the ratio of input-cell areas
+    !!  to output-cell areas (as is necessary for mass-per-cell emissions)
+    !!  Forms for points, sets of points, and 2-D grids of points and for
+    !!  non-layered and layered variables to be interpolated.
+    !!  Note that layered results follow MPAS layer-subscript-first conventions.
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERP0DF( Y, X, Z, V )
+        REAL,    INTENT(IN   ) :: Y, X              !!  latitude, longitude (degrees)
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )      !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V                 !!  result
+
+        MPINTERP0DF = MPINTERP0DD( DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERP0DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERP0DD( Y, X, Z, V )
+        REAL(8), INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )
+        REAL,    INTENT(  OUT) :: V
+        INTEGER     K, KK, K0, K1, K2, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+
+        K0 = FINDCELL( Y, X )
+        IF ( K0 .LT. 0 ) THEN
+            MPINTERP0DD = .FALSE.
+            RETURN
+        ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+            MPINTERP0DD = .FALSE.
+            RETURN
+        END IF
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        K1 = BNDYCELL(1,K0)
+        K2 = BNDYCELL(2,K0)
+        D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+        D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+        IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+            DD = D1
+            KK = K1
+            D1 = D2
+            K1 = K2
+            D2 = DD
+            K2 = KK
+        END IF
+
+        DO N = 3, NBNDYE(K0)
+            K = BNDYCELL(N,K0)
+            D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+            IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                D2 = D1
+                K2 = K1
+                D1 = D
+                K1 = K
+            ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                D2 = D
+                K2 = K
+            END IF
+        END DO
+
+        X0 = ALONC( K0 )
+        Y0 = ALATC( K0 )
+        X1 = ALONC( K1 )
+        Y1 = ALATC( K1 )
+        X2 = ALONC( K2 )
+        Y2 = ALATC( K2 )
+        DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+        W0 = ( ( Y1 - Y2 )*( X  - X2 ) + ( X2 - X1 )*( Y  - Y2 ) ) * DD
+        W1 = ( ( Y2 - Y0 )*( X  - X2 ) + ( X0 - X2 )*( Y  - Y2 ) ) * DD
+        W2 = 0.0 - W0 - W1
+
+        V = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+
+        MPINTERP0DD = .TRUE.
+        RETURN
+
+    END FUNCTION MPINTERP0DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERP1DF( NPTS, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS
+        REAL,    INTENT(IN   ) :: Y( NPTS )             !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )          !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NPTS )
+
+        MPINTERP1DF = MPINTERP1DD( NPTS, DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERP1DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERP1DD( NPTS, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS
+        REAL(8), INTENT(IN   ) :: Y( NPTS )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NPTS )
+        INTEGER     I, K, KK, K0, K1, K2, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO I = 1, NPTS
+
+            K0 = FINDCELL( Y( I ), X( I ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I) - X2 ) + ( X2 - X1 )*( Y(I) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I) - X2 ) + ( X0 - X2 )*( Y(I) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            V( I ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+        
+        END DO
+
+        MPINTERP1DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERP1DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERP2DF( NC, NR, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL,    INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )            !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NC, NR )
+
+        MPINTERP2DF = MPINTERP2DD( NC, NR, DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERP2DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERP2DD( NC, NR, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NC, NR )
+        INTEGER     I, J, K, KK, K0, K1, K2, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO J = 1, NR
+        DO I = 1, NC
+
+            K0 = FINDCELL( Y( I,J ), X( I,J ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            V( I,J ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+        
+        END DO
+        END DO
+
+        MPINTERP2DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERP2DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPE2DF( NC, NR, A, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL,    INTENT(IN   ) :: A                     !!  area of output-grid cells
+        REAL,    INTENT(IN   ) :: Y( NC, NR )           !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NC, NR )           !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )          !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NC, NR )
+
+        MPINTERPE2DF = MPINTERPE2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPE2DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPE2DD( NC, NR, A, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: A                     !!  area of output-grid cells
+        REAL(8), INTENT(IN   ) :: Y( NC, NR )           !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NC, NR )           !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NC, NR )
+        INTEGER     I, J, K, KK, K0, K1, K2, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO J = 1, NR
+        DO I = 1, NC
+
+            K0 = FINDCELL( Y( I,J ), X( I,J ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = CAREAS( K0 ) / ( A * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            V( I,J ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+        
+        END DO
+        END DO
+
+        MPINTERPE2DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPE2DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPG2DF( NC, NR, A, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL,    INTENT(IN   ) :: A( NC, NR )           !!  area of output-grid cells
+        REAL,    INTENT(IN   ) :: Y( NC, NR )           !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NC, NR )           !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )          !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NC, NR )
+
+        MPINTERPG2DF = MPINTERPG2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPG2DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPG2DD( NC, NR, A, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: A( NC, NR )           !!  area of output-grid cells
+        REAL(8), INTENT(IN   ) :: Y( NC, NR )           !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NC, NR )           !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NC, NR )
+        INTEGER     I, J, K, KK, K0, K1, K2, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO J = 1, NR
+        DO I = 1, NC
+
+            K0 = FINDCELL( Y( I,J ), X( I,J ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = CAREAS( K0 ) / ( A(I,J) * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            V( I,J ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+        
+        END DO
+        END DO
+
+        MPINTERPG2DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPG2DD
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERPL0DF( Y, X, NL, Z, V )
+        REAL,    INTENT(IN   ) :: Y, X              !!  latitude, longitude (degrees)
+        INTEGER, INTENT(IN   ) :: NL                !!  number of layers
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )   !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NL )           !!  result
+
+        MPINTERPL0DF = MPINTERPL0DD( DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPL0DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPL0DD( Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NL
+        REAL(8), INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NL )
+        INTEGER     K, KK, K0, K1, K2, L, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+
+        K0 = FINDCELL( Y, X )
+        IF ( K0 .LT. 0 ) THEN
+            MPINTERPL0DD = .FALSE.
+            RETURN
+        ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+            MPINTERPL0DD = .FALSE.
+            RETURN
+        END IF
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        K1 = BNDYCELL(1,K0)
+        K2 = BNDYCELL(2,K0)
+        D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+        D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+        IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+            DD = D1
+            KK = K1
+            D1 = D2
+            K1 = K2
+            D2 = DD
+            K2 = KK
+        END IF
+
+        DO N = 3, NBNDYE(K0)
+            K = BNDYCELL(N,K0)
+            D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+            IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                D2 = D1
+                K2 = K1
+                D1 = D
+                K1 = K
+            ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                D2 = D
+                K2 = K
+            END IF
+        END DO
+
+        X0 = ALONC( K0 )
+        Y0 = ALATC( K0 )
+        X1 = ALONC( K1 )
+        Y1 = ALATC( K1 )
+        X2 = ALONC( K2 )
+        Y2 = ALATC( K2 )
+        DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+        W0 = ( ( Y1 - Y2 )*( X  - X2 ) + ( X2 - X1 )*( Y  - Y2 ) ) * DD
+        W1 = ( ( Y2 - Y0 )*( X  - X2 ) + ( X0 - X2 )*( Y  - Y2 ) ) * DD
+        W2 = 0.0 - W0 - W1
+
+        DO L = 1, NL
+            V( NL ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
+        END DO
+
+        MPINTERPL0DD = .TRUE.
+        RETURN
+
+    END FUNCTION MPINTERPL0DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPL1DF( NPTS, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS, NL
+        REAL,    INTENT(IN   ) :: Y( NPTS )             !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )       !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NL,NPTS )
+
+        MPINTERPL1DF = MPINTERPL1DD( NPTS, DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPL1DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPL1DD( NPTS, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS, NL
+        REAL(8), INTENT(IN   ) :: Y( NPTS )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NL,NPTS )
+        INTEGER     I, K, KK, K0, K1, K2, L, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO I = 1, NPTS
+
+            K0 = FINDCELL( Y( I ), X( I ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I) - X2 ) + ( X2 - X1 )*( Y(I) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I) - X2 ) + ( X0 - X2 )*( Y(I) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            DO L = 1, NL
+                V( L,I ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
+            END DO
+        
+        END DO
+
+        MPINTERPL1DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPL1DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPL2DF( NC, NR, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL,    INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )         !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NL, NC, NR )
+
+        MPINTERPL2DF = MPINTERPL2DD( NC, NR, DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPL2DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPL2DD( NC, NR, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL(8), INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL, MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NL, NC, NR )
+        INTEGER     I, J, K, KK, K0, K1, K2, L, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO J = 1, NR
+        DO I = 1, NC
+
+            K0 = FINDCELL( Y( I,J ), X( I,J ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            DO L = 1, NL
+                V( L,I,J ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
+            END DO
+        
+        END DO
+        END DO
+
+        MPINTERPL2DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPL2DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPEL2DF( NC, NR, A, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL,    INTENT(IN   ) :: A                       !!  area of output-grid cell
+        REAL,    INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )         !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NL, NC, NR )
+
+        MPINTERPEL2DF = MPINTERPEL2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPEL2DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPEL2DD( NC, NR, A, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL(8), INTENT(IN   ) :: A
+        REAL(8), INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL, MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NL, NC, NR )
+        INTEGER     I, J, K, KK, K0, K1, K2, L, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO J = 1, NR
+        DO I = 1, NC
+
+            K0 = FINDCELL( Y( I,J ), X( I,J ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = CAREAS( K0 ) / ( A * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            DO L = 1, NL
+                V( L,I,J ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
+            END DO
+        
+        END DO
+        END DO
+
+        MPINTERPEL2DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPEL2DD
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPGL2DF( NC, NR, A, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL,    INTENT(IN   ) :: A( NC, NR )             !!  area of output-grid cells
+        REAL,    INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL,    INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )         !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NL, NC, NR )
+
+        MPINTERPGL2DF = MPINTERPGL2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPGL2DF
+
+    !!.............................................................................
+
+    LOGICAL FUNCTION MPINTERPGL2DD( NC, NR, A, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL(8), INTENT(IN   ) :: A( NC, NR )
+        REAL(8), INTENT(IN   ) :: Y( NC, NR )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
+        REAL,    INTENT(IN   ) :: Z( NL, MPCELLS )
+        REAL,    INTENT(  OUT) :: V( NL, NC, NR )
+        INTEGER     I, J, K, KK, K0, K1, K2, L, N
+        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
+        REAL        W0, W1, W2
+        LOGICAL     EFLAG
+        
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+        DO J = 1, NR
+        DO I = 1, NC
+
+            K0 = FINDCELL( Y( I,J ), X( I,J ) )
+            IF ( K0 .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            K1 = BNDYCELL(1,K0)
+            K2 = BNDYCELL(2,K0)
+            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
+            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
+            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
+                DD = D1
+                KK = K1
+                D1 = D2
+                K1 = K2
+                D2 = DD
+                K2 = KK
+            END IF
+
+            DO N = 3, NBNDYE(K0)
+                K = BNDYCELL(N,K0)
+                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
+                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
+                    D2 = D1
+                    K2 = K1
+                    D1 = D
+                    K1 = K
+                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
+                    D2 = D
+                    K2 = K
+                END IF
+            END DO
+
+            X0 = ALONC( K0 )
+            Y0 = ALATC( K0 )
+            X1 = ALONC( K1 )
+            Y1 = ALATC( K1 )
+            X2 = ALONC( K2 )
+            Y2 = ALATC( K2 )
+            DD = CAREAS( K0 ) / ( A(I,J) * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
+            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
+            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
+            W2 = 0.0 - W0 - W1
+
+            DO L = 1, NL
+                V( L,I,J ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
+            END DO
+        
+        END DO
+        END DO
+
+        MPINTERPGL2DD = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPGL2DD
 
 
     !!.............................................................................

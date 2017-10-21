@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 26 2017-10-13 17:30:06Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 30 2017-10-21 01:07:49Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -36,6 +36,8 @@
             <A HREF = "MPASDIFF.html"><STRONG><VAR>mpasdiff</VAR></STRONG></A>
         <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
             <A HREF = "MPASSTAT.html"><STRONG><VAR>mpasstat</VAR></STRONG></A>
+        <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
+            <A HREF = "MPASTOM3.html"><STRONG><VAR>mpastom3</VAR></STRONG></A>
         <DT> <VAR><STRONG>m3tools</STRONG></VAR>sample program
              <A HREF = "MPASWTEST.html"><STRONG><VAR>mpaswtest</VAR></STRONG></A>.
     </DL></BLOCKQUOTE>
@@ -82,6 +84,9 @@
         <DT>  <A HREF = "#write"><CODE>WRITEMPAS()</CODE></A>
         <DD> write variable or time step of variable to MPAS-format
              output file
+        <DT>  <A HREF = "#interp"><CODE>MPINTERP()</CODE></A>
+        <DD> Interpolate an MPAS-grid variable to a point, set of
+             points, or 2-D grid of points.
         <DT>  <A HREF = "#dist" ><CODE>SPHEREDIST()</CODE></A>
         <DD> compute spherical-Earth distance from  <CODE>(LAT1,LON1)</CODE>
              to <CODE>(LAT2,LON2)</CODE>
@@ -96,6 +101,12 @@
 <H2><A NAME = "notes">Notes and Limitations</A></H2>
 
     <OL>
+        <LI> <EM>LIMITATION:</EM>  There may be problems with
+             <CODE>FINDCELL()</CODE>, <CODE>FINDVRTX()</CODE>,
+             and <CODE>MPINTERP()</CODE> when the domain is not
+             whole-Earth (therefore having b oundary-cells) and the
+             requested operation is for a boundary cell.
+             <P>
         <LI> MPAS is a potentially-global unstructured-grid weather
              model that currently is being adapted for atmospheric
              chemistry, land-surface modeling, and other tasks.<BR>
@@ -1426,6 +1437,91 @@ INITREARTH()</CODE></A></H2>
              for writing &quot;raw&quot; netCDF.
     </UL>
 
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H2><A NAME = "interp"><CODE>MPINTERP()</CODE></A></H2>
+
+    <BLOCKQUOTE>
+
+    This is a generic routine for interpolating possibly-layered
+    MPAS-grid variables to Lat-Lon specified points, sets of points,
+    or (2-D) grids of points, with optional area-re-weighting for
+    emissions data with &quot;per-cell&quot; units.  
+    <P>
+    </BLOCKQUOTE>
+
+    <PRE>
+    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, Z, V0 )
+    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, Z, V0 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, Z, V1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, Z, V1 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, Z, V2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, Z, V2 )
+    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, NLAY, ZL, VL0 )
+    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, NLAY, ZL, VL0 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, NLAY, ZL, VL1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, NLAY, ZL, VL1 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, NLAY, ZL, VL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, NLAY, ZL, VL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AR, LATR2, LONR2, Z, V2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AD, LATD2, LOND2, Z, V2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AR, LATR2, LONR2, NLAY, ZL, VL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AD, LATD2, LOND2, NLAY, ZL, VL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGR, LATR2, LONR2, Z, V2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGD, LATD2, LOND2, Z, V2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGR, LATR2, LONR2, NLAY, ZL, VL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGD, LATD2, LOND2, NLAY, ZL, VL2 )
+        INTEGER, INTENT(IN   ) :: NPTS
+        INTEGER, INTENT(IN   ) :: NCOL, NROW
+        INTEGER, INTENT(IN   ) :: NLAY
+        REAL,    INTENT(IN   ) :: AR                  !!  area of output-grid cell
+        REAL*8,  INTENT(IN   ) :: AD
+        REAL,    INTENT(IN   ) :: AGR( NCOL,NROW )    !!  ...for Lat-Lon or non-regular grids
+        REAL*8,  INTENT(IN   ) :: AGD( NCOL,NROW )
+        REAL,    INTENT(IN   ) :: LATR0, LONR0
+        REAL*8,  INTENT(IN   ) :: LATD0, LOND0
+        REAL,    INTENT(IN   ) :: LATR1( NPTS ), LONR1( NPTS )
+        REAL*8,  INTENT(IN   ) :: LATD1( NPTS ), LOND1( NPTS )
+        REAL,    INTENT(IN   ) :: LATR2( NCOL,NROW ), LONR2( NCOL,NROW )
+        REAL*8,  INTENT(IN   ) :: LATD2( NCOL,NROW ), LOND2( NCOL,NROW )
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )        !!  MPAS-grid variable to be interpolated
+        REAL,    INTENT(IN   ) :: ZL( NLAY,MPCELLS )  !!  layered...
+        REAL,    INTENT(  OUT) :: V0                  !!  result of interpolation
+        REAL,    INTENT(  OUT) :: V1( NPTS )
+        REAL,    INTENT(  OUT) :: V2( NCOL,NROW )
+        REAL,    INTENT(  OUT) :: VL0( NLAY )
+        REAL,    INTENT(  OUT) :: VL1( NLAY,NPTS )
+        REAL,    INTENT(  OUT) :: VL2( NLAY,NCOL,NROW )
+    </PRE>
+
+    <BLOCKQUOTE>
+    Returns <CODE>TRUE</CODE> iff the interpolation can be done properly
+    (i.e., if each point is surrounded by MPAS-grid cell-centers).  Note
+    that <CODE>Z</CODE> variables are subscripted by the number
+    <CODE>MPCELLS</CODE> of MPAS grid cells, and that layered results
+    keep the MPAS-convention layer-subscript-first subscript ordering.
+    <P>
+
+    Calls using output-grid cell-area arguments
+    <CODE>A&nbsp;=&nbsp;AR,AD,AGR,AGD</CODE> re-normalize the output
+    result by the ratio of the relevant cell-areas <CODE>CAREA/A*</CODE>
+    so that the emissions-per-grid-cell-per... units for emissions are
+    retained.
+    <P>
+
+    See <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
+    for a reference on the interpolation formulas.
+    <P>
+
+    <EM>See also</EM> <STRONG><VAR>m3tools</VAR></STRONG> program
+    <A HREF="MPASTOM3.html"></A>.
+    <P>
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>

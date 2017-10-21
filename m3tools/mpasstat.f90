@@ -119,7 +119,7 @@ PROGRAM MPASSTAT
 
     CALL M3MESG( 'The list of variables in this file is:' )
     DO  L = 1, FVARS
-        WRITE( *, '( I2, ": ", A )' ) L, VNAMES( L )
+        WRITE( *, '( I3, ": ", A )' ) L, VNAMES( L )
     END DO
     WRITE( *, '(A)' ) ''
     V     = GETNUM( 1, FVARS, 1, 'Enter number for the variable to analyze' )

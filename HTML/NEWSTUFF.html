@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 19 2017-09-07 20:25:25Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 31 2017-10-21 01:45:58Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 19 2017-09-07 20:25:25Z coats $
+    $Id: NEWSTUFF.html 31 2017-10-21 01:45:58Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,11 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#oct202017">
+               <VAR>m3tools</VAR> programs <VAR>mpasdiff, mpasstat,
+               mpastom3</VAR><BR>
+               <CODE>MODMPASFIO</CODE> generic routine <CODE>MPINTERP()</CODE> 
+               </A>
          <LI>  <A HREF = "#sep092017">
                Add extra attributes to new MPAS-files, for
                <VAR>VERDI</VAR>
@@ -639,6 +644,44 @@
         0000000000001440 T ncclos_
     </VAR></BLOCKQUOTE>
     <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "oct202017">
+       <VAR>m3tools</VAR> programs <VAR>mpasdiff, mpasstat,
+       mpastom3</VAR><BR>
+       <CODE>MODMPASFIO</CODE> generic routine <CODE>MPINTERP()</CODE>
+</A></H2>
+
+    <BLOCKQUOTE>
+    New <VAR>m3tools</VAR> programs:
+    <DL>
+        <DT><A HREF="MPASDIFF.html"><VAR>mpasdiff</VAR></A>
+        <DD>Compare two variables or layer-ranges of variables
+            from one or two MPAS-format-netCDF files, using the
+            <A HREF="GRIDOPS.html">standard list of differencing
+            operations</A>
+        <DT><A HREF="MPASSTAT.html"><VAR>mpasstat</VAR></A>
+        <DD>Compute statistics (MEAN, SIGMA, MAX, MIN, and their
+            locations), for a variable or layer-ranges of a variable
+            from an MPAS-format-netCDF file.
+        <DT><A HREF="MPASTOM3.html"><VAR>mpastom3</VAR></A>
+        <DD>Interpolate a set of variables from an MPAS-format-netCDF
+            file for a specified time step sequence to a grid specified
+            by an I/O&nbsp;API gridded Lat-Lon file, and write the
+            result to a gridded I/O&nbsp;API file.
+    </DL>
+    <P>
+    New <CODE>MODMPASFIO</CODE> generic routine 
+    <A HREF="MODMPASFIO.html#interp.html"<CODE>MPINTERP()</CODE></A>
+    for interpolating MPAS-grid data to a Lat-Lon specified point, set
+    of points, or 2-D grid of points, using barycentric-linear
+    interpolation.
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -2623,7 +2666,7 @@ for <CODE>BUFFERED</CODE> files
     At the request of US&nbsp;EPA, full strength <VAR>DESC3()</VAR>
     for <CODE>BUFFERED</CODE> files was added, for use in the upcoming
     version of CMAQ.  To see whether the library is built on this
-    code-version, <CODE>IF(.NOT.<A HREF="">CHKBUF3()</A>)&nbsp;STOP </CODE>:
+    code-version, <CODE>IF(.NOT.<A HREF="CHKBUF3.html">CHKBUF3()</A>)&nbsp;STOP </CODE>:
     you get a link-failure with previous editions of the library.
     <P>
 
@@ -6530,7 +6573,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 19 2017-09-07 20:25:25Z coats $
+    $Id: NEWSTUFF.html 31 2017-10-21 01:45:58Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
