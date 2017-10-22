@@ -1,0 +1,118 @@
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- "$Id: MPASTOM3.html 35 2017-10-22 21:08:47Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<TITLE> Program MPASSTAT </TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" 
+      TOPMARGIN="15" 
+      MARGINHEIGHT="15" 
+      LEFTMARGIN="15" 
+      MARGINWIDTH="15">
+<H1>    Program MPASTOM3 </H1>
+
+<H2> Usage </H2>
+    <BLOCKQUOTE>
+<PRE>
+setenv  LLFILE    &lt;path name for input gridded I/O API Lat-Lon file&gt;
+setenv  MPFILE    &lt;path name for MPAS-format-netCDF input file&gt;
+setenv  OUTFILE   &lt;path name for output gridded I/O API file&gt;
+mpastom3  &lt;and respond to the prompts&gt;
+</PRE>
+
+    where <VAR>LLFILE</VAR> is the <A HREF = "LOGICALS.html">logical
+    name of a gridded I/O API Lat-Lon file (e.g., <CODE>GRID_CRO_2D</CODE>),
+    <VAR>MPFILE</VAR> is the logical name of an MPAS-format-netCDF input
+    file with the variables to be interpolated, and <VAR>OUTFILE</VAR>
+    is the logical name of the output gridded I/O API file.
+    <P>
+    </BLOCKQUOTE>
+
+
+<H2> Summary </H2>
+
+    <BLOCKQUOTE>
+    The <CODE>MPASSTAT</CODE> program interpolates sets of
+    <CODE>REAL</CODE> variables from an MPAS-gridded input file to a
+    regular I/O&nbsp;API grid using  barycentric-linear interpolation,
+    and writes the results to a gridded I/O API file.  All the variables
+    for a particular run must have the same dimensionality (either
+    layered or non-layered, either time-stepped or time independent, and
+    with horizontal dimension <CODE>MODMPASFIO/MPCELLS</CODE>).
+    <P> 
+
+    <STRONG>The program will prompt you</STRONG> for the list of
+    variable-names, their units, and descriptions,  and (as appropriate)
+    for the starting and ending date&time for the processing period.
+    <P> 
+    
+    Note that the set of analyses which can be performed by one
+    execution is quite complex and context-dependent (being determined
+    by the file being processed).  If you want to run this program in
+    <STRONG>batch mode</STRONG>  (from a script), the recommended way to
+    develop the script is to  run the program once interactively noting
+    the pattern of responses  to prompts which generate the particular
+    analysis you want.  The  pattern of responses then becomes either a
+    command-input file which  is redirected into the program in the
+    script, or becomes a  &quot;here-document&quot; fed into the
+    execution.
+    <P>
+
+    Source code for program <CODE>mpastom3</CODE> is available
+    <A HREF = "gpl.txt">under the GNU GPL License, Version 2</A>,
+    and can be downloaded here <A HREF = "AVAIL.html">from CMAS</A> or
+    here <A HREF="https://github.com/cjcoats/ioapi-3.2">from GitHub</A>.
+    <P>
+    Copyright &copy; 2017 UNC Institute for the Environment, and 
+    Carlie J. Coats, Jr.
+    <P>
+    </BLOCKQUOTE>
+
+
+<STRONG>See Also:</STRONG>
+    <UL>
+        <LI> Fortran-90 <A HREF = "MODMPASFIO.html"><CODE>MODULE
+             MODMPASFIO</CODE></A> with state-variables for MPAS
+             unstructured-grid description, utilities for computations
+             on those grids, and routines for input and output of data
+             in MPAS-format-netCDF files.
+             <P>
+        <LI> <VAR><STRONG>m3tools</STRONG></VAR> program
+             <A HREF = "MPASDIFF.html"><STRONG><VAR>mpasdiff</VAR></STRONG></A>
+             for comparing variables or layer-ranges of variables in 
+             MPAS-format-netCDF files.
+        <LI>  <VAR>m3tools</VAR> program <A HREF = "MPASDIFF.html"><VAR>mpasdiff</VAR></A>
+              for statistics of [layer-range of] variable-to-variable
+              comparisons for MPAS-format-netCDF files.
+        <LI> <VAR><STRONG>m3tools</STRONG></VAR> sample program              
+             <A HREF = "MPASWTEST.html"><STRONG><VAR>mpaswtest</VAR></STRONG></A>
+             demonstrating MPAS operations and I/O.
+    </UL>
+    <P> 
+
+
+<HR>
+
+<A HREF = "MPASSTAT.html" >
+Previous:  <STRONG>MPASSTAT</STRONG>
+</A><P> 
+
+<A HREF = "MPASWTEST.html" >
+Next:  <STRONG>MPASWTEST</STRONG>
+</A><P> 
+
+<A HREF = "AA.html#tools"> 
+Up: <STRONG>Related Programs</STRONG> 
+</A><P>
+
+<A HREF = "AA.html"> 
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+</A><P>
+
+    
+</BODY>
+</HTML>
+
