@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 33 2017-10-22 15:27:46Z coats $"
+    !!  Version "$Id: mpastom3.f90 34 2017-10-22 20:19:43Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -134,7 +134,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 33 2017-10-22 15:27:46Z coats $',&
+'$Id: mpastom3.f90 34 2017-10-22 20:19:43Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -166,14 +166,15 @@ BLANK, BAR, BLANK
         CALL M3EXIT( PNAME, 0,0, 'Could not read header for "MPFILE"', 2 )
     ELSE
         NCELLS = MPCELLS
-        T = MAX( INDEX1( 'xtime', MPVARS, VNAMES ) ,        &
-                 INDEX1( 'xTime', MPVARS, VNAMES ) )
+        T = MAX( INDEX1( 'xtime', MPVARS, MPNAMES ) ,        &
+                 INDEX1( 'xTime', MPVARS, MPNAMES ) )
     END IF
 
     ALLOCATE( LAT( NCOLS,NROWS ), LON( NCOLS,NROWS ),       &
               FDATES( MPRECS ), FTIMES( MPRECS ), STAT = ISTAT )
     IF ( ISTAT .NE. 0 ) THEN
         WRITE( MESG, '( A, I10 )' ) 'LAT/LON/DATE buffer allocation failed:  STAT=', ISTAT
+        CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
     END IF
 
     IF ( T .LE. 0 ) THEN
@@ -181,36 +182,39 @@ BLANK, BAR, BLANK
         IFLAG = .TRUE.
         CALL M3MESG( 'MPFILE is time independent' )
     ELSE IF ( .NOT.READMPSTEPS( 'MPFILE', MPNAMES( T ), N, MPRECS, FDATES, FTIMES ) )  THEN
-        CALL M3EXIT( PNAME, 0, 0, 'Error read-ng time-variable "'//VNAMES( T )//'" from MPFILE', 2 )
+        CALL M3EXIT( PNAME, 0, 0, 'Error reading time-variable "'//VNAMES( T )//'" from MPFILE', 2 )
     END IF
 
-    IF ( .NOT.READ3( 'LLFILE', 'LAT', N, 0, 0, LAT) )  THEN
+    IF ( .NOT.READ3( 'LLFILE', 'LAT', 1, 0, 0, LAT ) )  THEN
         CALL M3EXIT( PNAME, 0, 0, 'Error reading variable "LAT" from LLFILE', 2 )
     END IF
 
-    IF ( .NOT.READ3( 'LLFILE', 'LON', N, 0, 0, LON) )  THEN
+    IF ( .NOT.READ3( 'LLFILE', 'LON', 1, 0, 0, LON ) )  THEN
         CALL M3EXIT( PNAME, 0, 0, 'Error reading variable "LON" from LLFILE', 2 )
     END IF
 
 
     !!.......   Get list of variables to process:
 
+    CALL M3MESG( BLANK )
     CALL M3MESG( 'The list of variables in this file is:' )
     DO  L = 1, MPVARS
         WRITE( *, '( I3, ": ", A )' ) L, MPNAMES( L )
     END DO
 
     IFLAG = .FALSE.     !!  are LFLAG, TFLAG initialized?
-    L     = 36
+    L     = 37          !!  number of MPAS header-variables
+
     DO I = 1, MXVARS3
 
-        V = GETNUM( 0, MPVARS, L+1, 'Enter number for the variable to interpolate, or 0 to quit.' )
+        L = MOD( L, MPVARS ) + 1
+        V = GETNUM( 0, MPVARS, L, 'Enter number for the variable to interpolate, or 0 to quit.' )
         IF ( V .EQ. 0 )  EXIT
         
         INAMES( I ) = MPNAMES( V )
 
-        K = INDEX1( 'nCells',    MPNDIMS( V ), DNAME( :,V ) )
-        N = INDEX1( 'Time', MPNDIMS( V ), DNAME( :,V ) )
+        K = INDEX1( 'nCells', MPNDIMS( V ), DNAME( :,V ) )
+        N = INDEX1( 'Time',   MPNDIMS( V ), DNAME( :,V ) )
 
         IF ( .NOT.IFLAG ) THEN      !!  initialize LFLAG, TFLAG
 
@@ -218,7 +222,7 @@ BLANK, BAR, BLANK
             LFLAG = ( K .EQ. 2 )
             IF ( LFLAG ) THEN
                 CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" is layered' )
-                MPLAYS = MPDIMS( K,V )
+                MPLAYS = MPDIMS( 1,V )
             ELSE IF ( K .EQ. 1 ) THEN
                 CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" is not layered' )
                 MPLAYS = 1
@@ -236,17 +240,20 @@ BLANK, BAR, BLANK
 
         END IF      !!  if initializing LFLAG, TFLAG
 
+        IF ( MPNDIMS( V ) .GT. 3 ) THEN
+            EFLAG = .TRUE.
+            CALL M3MESG( 'Incorrect number of dimensions for variable "' //TRIM( INAMES( I ) ) // '"' )
+        END IF
+
         IF ( K .LE. 0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Variables must have MPAS cell-dimension "nCells".' )
-        END IF
-
-        IF ( ( K .NE. 2 ) .AND. LFLAG ) THEN
+        ELSE IF ( ( K .NE. 2 ) .AND. LFLAG ) THEN
             CALL M3MESG( 'INCONSISTENCY: Variable "' //TRIM( INAMES( I ) ) // '" is not layered' )
         ELSE IF ( ( K .EQ. 2 ) .AND. .NOT.LFLAG ) THEN
             CALL M3MESG( 'INCONSISTENCY: Variable "' //TRIM( INAMES( I ) ) // '" is layered' )
         ELSE IF ( LFLAG ) THEN
-            IF ( MPLAYS .NE. MPDIMS( K,V ) ) THEN
+            IF ( MPLAYS .NE. MPDIMS( 1,V ) ) THEN
                 EFLAG = .TRUE.
                 CALL M3MESG( 'INCONSISTENCY: bad layer-dimensioning for variable "' //TRIM( INAMES( I ) ) // '"' )
             END IF
@@ -257,15 +264,18 @@ BLANK, BAR, BLANK
             CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" not of type REAL' )
         END IF
 
-        IF ( TFLAG .AND. N .LE. 0 ) THEN
+        IF ( N .LE. 1 ) THEN
+            EFLAG = .TRUE.
+            CALL M3MESG( 'Bad time-dimensioning for variable "' //TRIM( INAMES( I ) ) // '"' )
+        ELSE IF ( N .LE. 0  .AND. TFLAG  ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'INCONSISTENCY: Variable is time independent' )
-        ELSE IF ( N .GT. 0 ) THEN
+        ELSE IF ( N .GT. 0 .AND. .NOT.TFLAG ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'INCONSISTENCY: Variable is time stepped' )
         END IF
 
-        MESG = 'Interpolated from MPAS-file variable "' // TRIM( INAMES( V ) ) // '"'
+        MESG = 'Interpolated from MPAS-file variable "' // TRIM( INAMES( I ) ) // '"'
         CALL GETSTR( 'Enter output name for variable', MPNAMES( V ), VNAMES( I ) )
         CALL GETSTR( 'Enter units       for variable', MPUNITS( V ), VUNITS( I ) )
         CALL GETSTR( 'Enter description for variable', MESG        , VDESCS( I ) )

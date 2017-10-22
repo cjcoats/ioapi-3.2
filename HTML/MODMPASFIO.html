@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 30 2017-10-21 01:07:49Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 34 2017-10-22 20:19:43Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -529,46 +529,153 @@ INITREARTH()</CODE></A></H2>
     and an explicit variant:
     </BLOCKQUOTE>
     <PRE>
+    LOGICAL FUNCTION INITREARTH( RADEARTH )
+        REAL(8), INTENT( IN ) :: RADEARTH        !!  Earth-radius (Meters)
+
     LOGICAL FUNCTION INITMPGRID( FNAME )
         CHARACTER*(*), INTENT( IN ) :: FNAME    !!  logical file name
 
-    LOGICAL FUNCTION INITMPGRID(  )             !!  for later extension...
+    LOGICAL FUNCTION INITMPGRID( NCELLS,           &
+                                 NEDGES,           &
+                                 NVRTXS,           &
+                                 NVLVLS,           &
+                                 NVORDR,           &
+                                 NBNDYC,           &
+                                 NBNDY2,           &
+                                 CELLID1,          &
+                                 EDGEID1,          &
+                                 VRTXID1,          &
+                                 NBNDYE1,          &
+                                 NEDGEE1,          &
+                                 BYCELL1,          &
+                                 BYEDGE1,          &
+                                 BYVRTX1,          &
+                                 ECELLS1,          &
+                                 EVRTXS1,          &
+                                 VCELLS1,          &
+                                 VEDGES1,          &
+                                 EEDGES1,          &
+                                 ALATC1,           &
+                                 ALONC1,           &
+                                 ALATE1,           &
+                                 ALONE1,           &
+                                 ALATV1,           &
+                                 ALONV1,           &
+                                 XCELL1,           &
+                                 YCELL1,           &
+                                 ZCELL1,           &
+                                 XEDGE1,           &
+                                 YEDGE1,           &
+                                 ZEDGE1,           &
+                                 XVRTX1,           &
+                                 YVRTX1,           &
+                                 ZVRTX1,           &
+                                 EWGHTS1,          &
+                                 DVEDGE1,          &
+                                 DCEDGE1,          &
+                                 EANGLE1,          &
+                                 CAREAS1,          &
+                                 VAREAS1,          &
+                                 KAREAS1,          &
+                                 MSHDEN1,          &
+                                 ONSPHERE1,        &
+                                 MESH_ID1,         &
+                                 MESH_SPEC1,       &
+                                 REARTH1 )
 
-    LOGICAL FUNCTION INITREARTH( RADEARTH )
-        REAL(8), INTENT( IN ) :: RADEARTH        !!  Earth-radius (Meters)
+        INTEGER, INTENT( IN ) :: NCELLS                     !!  # of primary cells in the mesh
+        INTEGER, INTENT( IN ) :: NEDGES                     !!  # of edges in the mesh
+        INTEGER, INTENT( IN ) :: NVRTXS                     !!  # of vertices in the mesh
+        INTEGER, INTENT( IN ) :: NVLVLS                     !!  # of vertical levels
+        INTEGER, INTENT( IN ) :: NVORDR                     !!  max vertex-order:  # of cells/edges per vertex
+        INTEGER, INTENT( IN ) :: NBNDYC                     !!  max # of vertices/edges per cell
+        INTEGER, INTENT( IN ) :: NBNDY2                     !!  2 * max # of vertices/edges per cell
+        INTEGER, INTENT( IN ) :: CELLID1( NCELLS )          !! (NCELLS): global cell-ID
+        INTEGER, INTENT( IN ) :: EDGEID1( NEDGES )          !! (NEDGES): global edge-ID
+        INTEGER, INTENT( IN ) :: VRTXID1( NVRTXS )          !! (NVRTXS): global vertex-ID
+        INTEGER, INTENT( IN ) :: NBNDYE1( NCELLS )          !! (NCELLS): # of edges per cell
+        INTEGER, INTENT( IN ) :: NEDGEE1( NEDGES )          !! (NEDGES): # of edges per edge 1(0 or 1)
+        INTEGER, INTENT( IN ) :: BYCELL1( NBNDYC, NCELLS )  !! (NBNDYC,NCELLS): boundary-cell indices for this cell
+        INTEGER, INTENT( IN ) :: BYEDGE1( NBNDYC, NCELLS )  !! (NBNDYC,NCELLS): boundary-edge indices for this cell
+        INTEGER, INTENT( IN ) :: BYVRTX1( NBNDYC, NCELLS )  !! (NBNDYC,NCELLS): boundary-vertex indices for this cell
+        INTEGER, INTENT( IN ) :: ECELLS1(      2,NEDGES )   !! (2,NEDGES): cell indices for this edge
+        INTEGER, INTENT( IN ) :: EVRTXS1(      2,NEDGES )   !! (2,NEDGES): vertex indices for this edge
+        INTEGER, INTENT( IN ) :: VCELLS1( NVORDR,NVRTXS )   !! (NVORDR,NVRTXS): Cell indices that radiate from a given vertex.
+        INTEGER, INTENT( IN ) :: VEDGES1( NVORDR,NVRTXS )   !! (NVORDR,NVRTXS): Edge indices that radiate from a given vertex
+        INTEGER, INTENT( IN ) :: EEDGES1( 2*NBNDYC,NEDGES ) !! (NBNDY2,NEDGES): Edge indices used to reconstruct tangential velocities.
+        REAL(8), INTENT( IN ) ::  ALATC1( NCELLS )          !! (NCELLS):  latitude-degrees for cell-centers
+        REAL(8), INTENT( IN ) ::  ALONC1( NCELLS )          !! (NCELLS): longitude-degrees for cell-centers
+        REAL(8), INTENT( IN ) ::  ALATE1( NEDGES )          !! (NEDGES):  latitude-degrees for edge-centers
+        REAL(8), INTENT( IN ) ::  ALONE1( NEDGES )          !! (NEDGES): longitude-degrees for edge-centers
+        REAL(8), INTENT( IN ) ::  ALATV1( NVRTXS )          !! (NVRTXS):  latitude-degrees for vertices
+        REAL(8), INTENT( IN ) ::  ALONV1( NVRTXS )          !! (NVRTXS): longitude-degrees for vertices
+        REAL(8), INTENT( IN ) ::  XCELL1( NCELLS )          !! (NCELLS): X-coordinate for cell-centers
+        REAL(8), INTENT( IN ) ::  YCELL1( NCELLS )          !! (NCELLS): Y-coordinate for cell-centers
+        REAL(8), INTENT( IN ) ::  ZCELL1( NCELLS )          !! (NCELLS): Z-coordinate for cell-centers
+        REAL(8), INTENT( IN ) ::  XEDGE1( NEDGES )          !! (NCELLS): X-coordinate for edge-centers
+        REAL(8), INTENT( IN ) ::  YEDGE1( NEDGES )          !! (NCELLS): Y-coordinate for edge-centers
+        REAL(8), INTENT( IN ) ::  ZEDGE1( NEDGES )          !! (NCELLS): Z-coordinate for edge-centers
+        REAL(8), INTENT( IN ) ::  XVRTX1( NVRTXS )          !! (NVRTXS): X-coordinate for vertices
+        REAL(8), INTENT( IN ) ::  YVRTX1( NVRTXS )          !! (NVRTXS): Y-coordinate for vertices
+        REAL(8), INTENT( IN ) ::  ZVRTX1( NVRTXS )          !! (NVRTXS): Z-coordinate for vertice
+        REAL(8), INTENT( IN ) :: EWGHTS1( 2*NBNDYC,NEDGES ) !! (NBNDY2,NEDGES): weights used to reconstruct tangential velocities.
+        REAL(8), INTENT( IN ) :: DVEDGE1( NEDGES )          !! (NEDGES):  edge lengths 1(M)
+        REAL(8), INTENT( IN ) :: DCEDGE1( NEDGES )          !! (NEDGES):  distance between the cell-centers that saddle a given edge 1(M)
+        REAL(8), INTENT( IN ) :: EANGLE1( NEDGES )          !! (NEDGES):  angle from edge-normal vector to Easting
+        REAL(8), INTENT( IN ) :: CAREAS1( NCELLS )          !! (NCELLS):  cell areas 1(M^2)
+        REAL(8), INTENT( IN ) :: VAREAS1( NVRTXS )          !! (NVRTXS):  dual-mesh triangle areas 1(M^2)
+        REAL(8), INTENT( IN ) :: KAREAS1( NVORDR, NVRTXS )  !! (NBNDYC,NCELLS):  kite-area:  intersection of cell with dual-cell centered at vertex
+        REAL(8), INTENT( IN ) :: MSHDEN1( NCELLS )          !! (NCELLS):  mesh density 1(none)
+        CHARACTER*64, OPTIONAL, INTENT( IN ) :: ONSPHERE1
+        CHARACTER*64, OPTIONAL, INTENT( IN ) :: MESH_ID1
+        CHARACTER*64, OPTIONAL, INTENT( IN ) :: MESH_SPEC1
+        REAL(8),      OPTIONAL, INTENT( IN ) :: REARTH1    !!  Earth-radius (M)
     </PRE>
     <BLOCKQUOTE>
 
-    <EM><U>Preconditions:</U></EM>
-    <BLOCKQUOTE><UL>
-        <LI><CODE> USE MODMPASFIO</CODE>
-            <P>
-        <LI><CODE> setenv FNAME <VAR>path for input initialization file</VAR></CODE>
-            <P>
-        <LI><CODE> setenv MPAS_VERBOSE T <VAR>or</VAR> F</CODE><BR>
-            to turn on verbose logging
-            <P>
-        <LI><CODE> setenv MPAS_CHKFILL T <VAR>or</VAR> F</CODE><BR>
-            to turn on input-data checking (to detect &quot;gaps&quot;
-            in the input data)
-            <P>
-    </UL></BLOCKQUOTE>
-
-    The first of these forms is the &quot;usual&quot; one; it initializes
-    all of the internal data structures from an input MPAS-format file
-    <CODE>FNAME</CODE>, and must be called before one calls any of the
-    other public routines except <CODE>SPHEREDIST()</CODE>
-    <P>
-
-    The second form is a place-holder for possible later use, where
-    an MPAS-grid specification is provided by arguments instead of
-    from an MPAS-file header.  It is not yet implemented, and will
-    currently return <CODE>FALSE</CODE>.
-    <P>
-
-    The third (<CODE>INITREARTH()</CODE>) form is used to re-initialize
+    The <CODE>INITREARTH()</CODE> form is used to re-initialize
     the Earth-radius for use in <A HREF="#dist"><CODE>SPHEREDIST()</CODE></A>,
     for the case that function is used in stand-alone form.
+    <P>
+
+    <EM><U>Preconditions for <CODE>INITMPGRID()</CODE>:</U></EM>
+    <BLOCKQUOTE><DL>
+        <DT><CODE> USE MODMPASFIO</CODE>
+        <P>
+        <DT><CODE> setenv FNAME <VAR>path for input initialization file</VAR></CODE>
+        <DD>for the first form
+        <DT><CODE> setenv MPAS_VERBOSE T <VAR>or</VAR> F</CODE>
+        <DD>to turn on verbose logging
+        <DT><CODE> setenv MPAS_CHKFILL T <VAR>or</VAR> F</CODE>
+        <DD>to turn on input-data checking (to detect &quot;gaps&quot;
+            in the input data)
+    </DL></BLOCKQUOTE>
+
+    The first <CODE>INITMPGRID()</CODE> form is the &quot;usual&quot;
+    one; it initializes all of the internal data structures from an
+    input MPAS-format file <CODE>FNAME</CODE>, and must be called before
+    one calls any of the other public routines except
+    <CODE>SPHEREDIST()</CODE>.  This is the usual form (and the form you
+    should use):  the MPAS grid specification is <STRONG>very
+    complicated</STRONG>, and the MPAS-model-initialization software
+    will get it correct for you; you should not normally go around
+    re-inventing this wheel.
+    <P>
+
+    The second <CODE>INITMPGRID()</CODE> form is a for use with
+    <STRONG>Fortran-90 keywoard arguments</STRONG>, where a complete
+    MPAS-grid specification is provided by arguments instead of from an
+    MPAS-file header.<BR> Note that you must correctly specify
+    <EM>all</EM> of these arguments, and should do so by name, e.g.
+    <BLOCKQUOTE><CODE>
+    FLAG = INITMPGRID( &amp;
+        <BLOCKQUOTE>
+        NCELLS = &lt;value&gt; &amp;<BR>
+        ...
+        REARTH1 = &lt;value&gt; &amp;<BR>
+        )
+        </BLOCKQUOTE>
+    </CODE></BLOCKQUOTE>
     <P>
 
     </BLOCKQUOTE>

@@ -2,8 +2,8 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 30 2017-10-21 01:07:49Z coats $"
-    !!  Copyright (c) 2017 Carlie J. Coats, Jr.
+    !!  Version "$Id: modmpasfio.f90 34 2017-10-22 20:19:43Z coats $"
+    !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
     !!........................................................................
@@ -304,7 +304,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!...................................................................................
 
 
-    LOGICAL FUNCTION INITREARTH( RADEARTH )           !!  initialize REARTH from argument
+    LOGICAL FUNCTION INITREARTH( RADEARTH )     !!  initialize REARTH from argument
 
         REAL*8, INTENT( IN ) :: RADEARTH        !!  Earth-radius (Meters)
 
@@ -316,21 +316,270 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!.......................................................................
+    !!  initialize MODMPASFIO from arguments:
 
 
-    LOGICAL FUNCTION INITMPGRIDA( )           !!  initialize from arguments
+    LOGICAL FUNCTION INITMPGRIDA( NCELLS,           &
+                                  NEDGES,           &
+                                  NVRTXS,           &
+                                  NVLVLS,           &
+                                  NVORDR,           &
+                                  NBNDYC,           &
+                                  NBNDY2,           &
+                                  CELLID1,          &
+                                  EDGEID1,          &
+                                  VRTXID1,          &
+                                  NBNDYE1,          &
+                                  NEDGEE1,          &
+                                  BYCELL1,          &
+                                  BYEDGE1,          &
+                                  BYVRTX1,          &
+                                  ECELLS1,          &
+                                  EVRTXS1,          &
+                                  VCELLS1,          &
+                                  VEDGES1,          &
+                                  EEDGES1,          &
+                                  ALATC1,           &
+                                  ALONC1,           &
+                                  ALATE1,           &
+                                  ALONE1,           &
+                                  ALATV1,           &
+                                  ALONV1,           &
+                                  XCELL1,           &
+                                  YCELL1,           &
+                                  ZCELL1,           &
+                                  XEDGE1,           &
+                                  YEDGE1,           &
+                                  ZEDGE1,           &
+                                  XVRTX1,           &
+                                  YVRTX1,           &
+                                  ZVRTX1,           &
+                                  EWGHTS1,          &
+                                  DVEDGE1,          &
+                                  DCEDGE1,          &
+                                  EANGLE1,          &
+                                  CAREAS1,          &
+                                  VAREAS1,          &
+                                  KAREAS1,          &
+                                  MSHDEN1,          &
+                                  ONSPHERE1,        &
+                                  MESH_ID1,         &
+                                  MESH_SPEC1,       &
+                                  REARTH1 )
 
-        CALL M3MESG( 'MODMPASFIO/INITMPGRIDA:  not yet implemented' )
-        INITMPGRIDA = .FALSE.
+        !!........  Arguments
+
+        INTEGER, INTENT( IN ) :: NCELLS                     !!  # of primary cells in the mesh
+        INTEGER, INTENT( IN ) :: NEDGES                     !!  # of edges in the mesh
+        INTEGER, INTENT( IN ) :: NVRTXS                     !!  # of vertices in the mesh
+        INTEGER, INTENT( IN ) :: NVLVLS                     !!  # of vertical levels
+        INTEGER, INTENT( IN ) :: NVORDR                     !!  max vertex-order:  # of cells/edges per vertex
+        INTEGER, INTENT( IN ) :: NBNDYC                     !!  max # of vertices/edges per cell
+        INTEGER, INTENT( IN ) :: NBNDY2                     !!  2 * max # of vertices/edges per cell
+        INTEGER, INTENT( IN ) :: CELLID1( NCELLS )          !! (NCELLS): global cell-ID
+        INTEGER, INTENT( IN ) :: EDGEID1( NEDGES )          !! (NEDGES): global edge-ID
+        INTEGER, INTENT( IN ) :: VRTXID1( NVRTXS )          !! (NVRTXS): global vertex-ID
+        INTEGER, INTENT( IN ) :: NBNDYE1( NCELLS )          !! (NCELLS): # of edges per cell
+        INTEGER, INTENT( IN ) :: NEDGEE1( NEDGES )          !! (NEDGES): # of edges per edge (0 or 1)
+        INTEGER, INTENT( IN ) :: BYCELL1( NBNDYC,NCELLS )   !! (NBNDYC,NCELLS): boundary-cell indices for this cell
+        INTEGER, INTENT( IN ) :: BYEDGE1( NBNDYC,NCELLS )   !! (NBNDYC,NCELLS): boundary-edge indices for this cell
+        INTEGER, INTENT( IN ) :: BYVRTX1( NBNDYC,NCELLS )   !! (NBNDYC,NCELLS): boundary-vertex indices for this cell
+        INTEGER, INTENT( IN ) :: ECELLS1(      2,NEDGES )   !! (2,NEDGES): cell indices for this edge
+        INTEGER, INTENT( IN ) :: EVRTXS1(      2,NEDGES )   !! (2,NEDGES): vertex indices for this edge
+        INTEGER, INTENT( IN ) :: VCELLS1( NVORDR,NVRTXS )   !! (NVORDR,NVRTXS): Cell indices that radiate from a given vertex.
+        INTEGER, INTENT( IN ) :: VEDGES1( NVORDR,NVRTXS )   !! (NVORDR,NVRTXS): Edge indices that radiate from a given vertex
+        INTEGER, INTENT( IN ) :: EEDGES1( NBNDY2,NEDGES )   !! (NBNDY2,NEDGES): Edge indices used to reconstruct tangential velocities.
+        REAL(8), INTENT( IN ) ::  ALATC1( NCELLS )          !! (NCELLS):  latitude-degrees for cell-centers
+        REAL(8), INTENT( IN ) ::  ALONC1( NCELLS )          !! (NCELLS): longitude-degrees for cell-centers
+        REAL(8), INTENT( IN ) ::  ALATE1( NEDGES )          !! (NEDGES):  latitude-degrees for edge-centers
+        REAL(8), INTENT( IN ) ::  ALONE1( NEDGES )          !! (NEDGES): longitude-degrees for edge-centers
+        REAL(8), INTENT( IN ) ::  ALATV1( NVRTXS )          !! (NVRTXS):  latitude-degrees for vertices
+        REAL(8), INTENT( IN ) ::  ALONV1( NVRTXS )          !! (NVRTXS): longitude-degrees for vertices
+        REAL(8), INTENT( IN ) ::  XCELL1( NCELLS )          !! (NCELLS): X-coordinate for cell-centers
+        REAL(8), INTENT( IN ) ::  YCELL1( NCELLS )          !! (NCELLS): Y-coordinate for cell-centers
+        REAL(8), INTENT( IN ) ::  ZCELL1( NCELLS )          !! (NCELLS): Z-coordinate for cell-centers
+        REAL(8), INTENT( IN ) ::  XEDGE1( NEDGES )          !! (NCELLS): X-coordinate for edge-centers
+        REAL(8), INTENT( IN ) ::  YEDGE1( NEDGES )          !! (NCELLS): Y-coordinate for edge-centers
+        REAL(8), INTENT( IN ) ::  ZEDGE1( NEDGES )          !! (NCELLS): Z-coordinate for edge-centers
+        REAL(8), INTENT( IN ) ::  XVRTX1( NVRTXS )          !! (NVRTXS): X-coordinate for vertices
+        REAL(8), INTENT( IN ) ::  YVRTX1( NVRTXS )          !! (NVRTXS): Y-coordinate for vertices
+        REAL(8), INTENT( IN ) ::  ZVRTX1( NVRTXS )          !! (NVRTXS): Z-coordinate for vertice
+        REAL(8), INTENT( IN ) :: EWGHTS1( 2*NBNDYC,NEDGES ) !! (NBNDY2,NEDGES): weights used to reconstruct tangential velocities.
+        REAL(8), INTENT( IN ) :: DVEDGE1( NEDGES )          !! (NEDGES):  edge lengths(M)
+        REAL(8), INTENT( IN ) :: DCEDGE1( NEDGES )          !! (NEDGES):  distance between the cell-centers that saddle a given edge(M)
+        REAL(8), INTENT( IN ) :: EANGLE1( NEDGES )          !! (NEDGES):  angle from edge-normal vector to Easting
+        REAL(8), INTENT( IN ) :: CAREAS1( NCELLS )          !! (NCELLS):  cell areas (M^2)
+        REAL(8), INTENT( IN ) :: VAREAS1( NVRTXS )          !! (NVRTXS):  dual-mesh triangle areas (M^2)
+        REAL(8), INTENT( IN ) :: KAREAS1( NVORDR, NVRTXS )  !! (NBNDYC,NCELLS):  kite-area:  intersection of cell with dual-cell centered at vertex
+        REAL(8), INTENT( IN ) :: MSHDEN1( NCELLS )          !! (NCELLS):  mesh density (none)
+
+        CHARACTER*24, PARAMETER :: PNAME = 'MODMPASFIO/INITMPGRID():'
+
+        CHARACTER*64, OPTIONAL, INTENT( IN ) :: ONSPHERE1
+        CHARACTER*64, OPTIONAL, INTENT( IN ) :: MESH_ID1
+        CHARACTER*64, OPTIONAL, INTENT( IN ) :: MESH_SPEC1
+        REAL(8),      OPTIONAL, INTENT( IN ) :: REARTH1    !!  Earth-radius (M)
+
+        !!........   Local Variables:
+
+        INTEGER         MXDIM, ISTAT, LOG
+        LOGICAL         EFLAG
+        CHARACTER*512   MESG
+        
+
+        !!......................   begin body of function  ....................................
+
+        IF ( INITFLAG ) THEN
+            CALL M3MESG( PNAME // '  already initialized)' )
+            INITMPGRIDA = .TRUE.
+            RETURN
+        END IF
+
+        LOG = INIT3()
+        WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
+        'Version $Id: modmpasfio.f90 34 2017-10-22 20:19:43Z coats $',&
+        'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
+        'UNC Institute for the Environment.',                               &
+        'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
+        ''
+
+        EFLAG = .FALSE.                  ! if dscgrid() failed for output grid
+
+        VERBOSE = ENVYN( 'MPAS_VERBOSE', 'Verbose log output?', .FALSE., ISTAT )
+        IF ( ISTAT .GT. 0 ) THEN
+            EFLAG = .TRUE.
+            MESG  = PNAME // 'Bad environment variable "MPAS_VERBOSE"'
+            CALL M3MESG( MESG )
+        END IF
+
+        CHK_FILL = ENVYN( 'MPAS_CHKFILL', 'Check input against NCF fill-values?', .TRUE., ISTAT )
+        IF ( ISTAT .GT. 0 ) THEN
+            EFLAG = .TRUE.
+            MESG  = PNAME // 'Bad environment variable "MPAS_CHKFILL"'
+            CALL M3MESG( MESG )
+        END IF
+
+        IF ( NBNDY2 .NE. 2*NBNDYc ) THEN
+            EFLAG = .TRUE.
+            MESG  = PNAME // 'Bad arguments:  NBNDY2 vs NBNDYC'
+            CALL M3MESG( MESG )
+        END IF
+
+        IF ( EFLAG ) THEN
+            INITMPGRIDA = .FALSE.
+            RETURN
+        END IF
+
+        !!........   Allocate the variables
+
+        MPSTEPS = 0
+        MXDIM   = MAX( NCELLS, NEDGES, NVORDR*NVRTXS )
+        ALLOCATE( MPDATES( MPSTEPS ),              &
+                  MPTIMES( MPSTEPS ),              &
+                   CELLID( NCELLS ),               &
+                   EDGEID( NEDGES ),               &
+                   VRTXID( NVRTXS ),               &
+                   NBNDYE( NCELLS ),               &
+                   NEDGEE( NEDGES ),               &
+                 BNDYCELL( NBNDYC, NCELLS ),       &
+                 BNDYEDGE( NBNDYC, NCELLS ),       &
+                 BNDYVRTX( NBNDYC, NCELLS ),       &
+                   ECELLS(      2, NEDGES ),       &
+                   EVRTXS(      2, NEDGES ),       &
+                   VCELLS( NVORDR, NVRTXS ),       &
+                   VEDGES( NVORDR, NVRTXS ),       &
+                   EEDGES( NBNDY2, NEDGES ),       &
+                   EWGHTS( NBNDY2, NEDGES ),       &
+                    ALATC( NCELLS ),               &
+                    ALONC( NCELLS ),               &
+                    ALATE( NEDGES ),               &
+                    ALONE( NEDGES ),               &
+                    ALATV( NVRTXS ),               &
+                    ALONV( NVRTXS ),               &
+                    XCELL( NCELLS ),               &
+                    YCELL( NCELLS ),               &
+                    ZCELL( NCELLS ),               &
+                    XEDGE( NCELLS ),               &
+                    YEDGE( NCELLS ),               &
+                    ZEDGE( NCELLS ),               &
+                    XVRTX( NVRTXS ),               &
+                    YVRTX( NVRTXS ),               &
+                    ZVRTX( NVRTXS ),               &
+                   DVEDGE( NEDGES ),               &
+                   DCEDGE( NEDGES ),               &
+                   EANGLE( NEDGES ),               &
+                   CAREAS( NCELLS ),               &
+                   MSHDEN( NCELLS ),               &
+                   VAREAS( NVRTXS ),               &
+                   KAREAS( NVORDR, NVRTXS ),      STAT = ISTAT )
+
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' ) 'Buffer allocation failed:  STAT=', ISTAT
+            CALL M3EXIT( 'MODMPASFIO/INITMPGRID', 0, 0, MESG, 2 )
+        END IF
+
+        MPCELLS  = NCELLS
+        MPEDGES  = NEDGES
+        MPVRTXS  = NVRTXS
+        MPVLVLS  = NVLVLS
+        MPVORDR  = NVORDR
+        MPBNDYC  = NBNDYC
+        MPBNDY2  = NBNDY2
+
+        CELLID   = CELLID1
+        EDGEID   = EDGEID1
+        VRTXID   = VRTXID1
+        NBNDYE   = NBNDYE1
+        NEDGEE   = NEDGEE1
+        BNDYCELL = BYCELL1
+        BNDYEDGE = BYEDGE1
+        BNDYVRTX = BYVRTX1
+        ECELLS   = ECELLS1
+        EVRTXS   = EVRTXS1
+        VCELLS   = VCELLS1
+        VEDGES   = VEDGES1
+        EEDGES   = EEDGES1
+        ALATC    = ALATC1
+        ALONC    = ALONC1
+        ALATE    = ALATE1
+        ALONE    = ALONE1
+        ALATV    = ALATV1
+        ALONV    = ALONV1
+        XCELL    = XCELL1
+        YCELL    = YCELL1
+        ZCELL    = ZCELL1
+        XEDGE    = XEDGE1
+        YEDGE    = YEDGE1
+        ZEDGE    = ZEDGE1
+        XVRTX    = XVRTX1
+        YVRTX    = YVRTX1
+        ZVRTX    = ZVRTX1
+        EWGHTS   = EWGHTS1
+        DVEDGE   = DVEDGE1
+        DCEDGE   = DCEDGE1
+        EANGLE   = EANGLE1
+        CAREAS   = CAREAS1
+        VAREAS   = VAREAS1
+        KAREAS   = KAREAS1
+        MSHDEN   = MSHDEN1
+
+        IF ( PRESENT( MESH_ID1   ) ) MESH_ID   = MESH_ID1
+        IF ( PRESENT( MESH_SPEC1 ) ) MESH_SPEC = MESH_SPEC1
+        IF ( PRESENT( ONSPHERE1  ) ) ONSPHERE  = ONSPHERE1
+        IF ( PRESENT( REARTH1    ) ) REARTH    = REARTH1
+
+        INITMPGRIDA = .TRUE.
+
         RETURN
 
     END  FUNCTION INITMPGRIDA
 
 
+
     !!.......................................................................
 
 
-    LOGICAL FUNCTION INITMPGRIDF( FNAME )           !!  initialize from MPAS-file
+    LOGICAL FUNCTION INITMPGRIDF( FNAME )           !!  initialize MODMPASFIO from MPAS-file
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME       !!  logical file name
 
@@ -353,8 +602,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 30 2017-10-21 01:07:49Z coats $',     &
+        'Version $Id: modmpasfio.f90 34 2017-10-22 20:19:43Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
+        'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
         BLANK
 
