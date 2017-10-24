@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 34 2017-10-22 20:19:43Z coats $"
+    !!  Version "$Id: mpastom3.f90 36 2017-10-24 17:32:20Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -26,18 +26,21 @@ PROGRAM MPASTOM3
 
     !!...........   PARAMETERS and their descriptions:
 
+    REAL*8, PARAMETER :: PI     = 3.141592653589793238462643383279d0
+    REAL*8, PARAMETER :: PI180  = PI / 180.0d0
+
     CHARACTER*1,  PARAMETER :: BLANK = ' '
     CHARACTER*80, PARAMETER :: BAR   = '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
     CHARACTER*16, PARAMETER :: PNAME = 'MPASTOM3'
 
     !!...........   LOCAL VARIABLES and their descriptions:
 
-    LOGICAL         EFLAG, TFLAG, LFLAG, IFLAG
+    LOGICAL         EFLAG, TFLAG, LFLAG, IFLAG, LATLON
     INTEGER         ISTAT, LDEV
 
     CHARACTER*256   MESG
 
-    INTEGER         I, K, L, M, N, P, Q, V, T
+    INTEGER         C, R, I, K, L, M, N, P, Q, V, T
 
     INTEGER         REC0, REC1, NRECS, TSTEP
     INTEGER         SDATE, STIME
@@ -47,6 +50,7 @@ PROGRAM MPASTOM3
     INTEGER         NCOLS       ! number of output-grid columns
     INTEGER         NROWS       ! number of output-grid rows
     REAL            CAREA       ! output-grid cell-area (M^2)
+    REAL            ASQ         ! scratch-variables
 
     INTEGER         MPVARS      ! MPAS input-file dimensions and tables
     INTEGER         MPLAYS
@@ -62,8 +66,9 @@ PROGRAM MPASTOM3
     INTEGER, ALLOCATABLE :: FDATES( : )         !! (MPRECS)
     INTEGER, ALLOCATABLE :: FTIMES( : )
 
-    REAL, ALLOCATABLE ::  LAT( :,: )            !!  (NCOLS,NROWS)
-    REAL, ALLOCATABLE ::  LON( :,: )
+    REAL, ALLOCATABLE ::     LAT( :,: )            !!  (NCOLS,NROWS)
+    REAL, ALLOCATABLE ::     LON( :,: )
+    REAL, ALLOCATABLE ::  LLAREA( :,: )
 
     REAL   , ALLOCATABLE :: INGRID2D( : )       !!  (NCELLS)
     REAL   , ALLOCATABLE :: INGRID3D( :,: )     !!  (MPLAYS,NCELLS)
@@ -96,8 +101,6 @@ PROGRAM MPASTOM3
 '                      e.g., a GRID_CRO_2D file from MCIP',                 &
 '    setenv  MPFILE    <path name for  input MPAS-gridded file>',           &
 '    setenv  OUTFILE   <path name for output M3IO gridded file>',           &
-'',                                                                         &
-'    Lat-Lon coordinate output grids are not yet supported.',               &
 '',                                                                         &
 '    The requested MPAS variables must be of type REAL, and subscripted',   &
 '    by MPAS cell N and optionally by TIME (T) and/or LAYER (L), in ',      &
@@ -134,7 +137,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 34 2017-10-22 20:19:43Z coats $',&
+'$Id: mpastom3.f90 36 2017-10-24 17:32:20Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -150,13 +153,11 @@ BLANK, BAR, BLANK
     ELSE IF ( .NOT.DESC3( 'LLFILE' ) ) THEN
         MESG = 'Could not get file description for "LLFILE"'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-    ELSE IF ( GDTYP3D .EQ. LATGRD3 ) THEN
-        MESG = 'Output-grid type Lat-Lon not supported'
-        CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
     ELSE
-        NCOLS = NCOLS3D
-        NROWS = NROWS3D
-        CAREA = XCELL3D * YCELL3D    !  used for emissions-data area-based renormalization
+        NCOLS  = NCOLS3D
+        NROWS  = NROWS3D
+        CAREA  = XCELL3D * YCELL3D    !  used for emissions-data area-based renormalization
+        LATLON = ( GDTYP3D .EQ. LATGRD3 )
     END IF
 
     IF ( .NOT.INITMPGRID( 'MPFILE' ) ) THEN
@@ -191,6 +192,21 @@ BLANK, BAR, BLANK
 
     IF ( .NOT.READ3( 'LLFILE', 'LON', 1, 0, 0, LON ) )  THEN
         CALL M3EXIT( PNAME, 0, 0, 'Error reading variable "LON" from LLFILE', 2 )
+    END IF
+
+    IF ( LATLON ) THEN
+        ALLOCATE( LLAREA( NCOLS,NROWS ),  STAT = ISTAT )
+        IF ( ISTAT .NE. 0 ) THEN
+            WRITE( MESG, '( A, I10 )' ) 'LAT/LON/DATE buffer allocation failed:  STAT=', ISTAT
+            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+        END IF
+        CAREA = CAREA * REARTH**2 * PI180**2        !!  cell-area at equator
+        DO R = 1, NROWS
+            ASQ = CAREA * COS( PI180*LAT( 1,R ) ) * REARTH**2
+            DO C = 1, NCOLS
+                LLAREA( C,R ) = ASQ
+            END DO
+        END DO
     END IF
 
 
@@ -362,14 +378,19 @@ BLANK, BAR, BLANK
 
             DO V = 1, NVARS
 
-                IF ( LFLAG ) THEN
+                IF ( LFLAG ) THEN      !!  if multi-layer
 
                     IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), MPLAYS, NCELLS, INGRID3D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
                     END IF
-
-                    IF ( EMFLAG( V ) ) THEN
+                    
+                    IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    ELSE IF ( EMFLAG( V ) ) THEN
                         IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
                             EFLAG = .TRUE.
                             CYCLE
@@ -387,14 +408,19 @@ BLANK, BAR, BLANK
                         EFLAG = .TRUE.
                     END IF
 
-                ELSE
+                ELSE        !!  single-layer
 
                     IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), NCELLS, INGRID2D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
                     END IF
 
-                    IF ( EMFLAG( V ) ) THEN
+                    IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    ELSE IF ( EMFLAG( V ) ) THEN
                         IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
                             EFLAG = .TRUE.
                             CYCLE
@@ -410,7 +436,7 @@ BLANK, BAR, BLANK
                         EFLAG = .TRUE.
                     END IF
 
-                END IF
+                END IF      !!  if multi-layer; else single-layer
 
             END DO      !!  end loop on output-variables
 
@@ -420,14 +446,19 @@ BLANK, BAR, BLANK
 
         DO V = 1, NVARS
 
-            IF ( LFLAG ) THEN
+            IF ( LFLAG ) THEN      !!  if multi-layer
 
                 IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), MPLAYS, NCELLS, INGRID3D ) ) THEN
                     EFLAG = .TRUE.
                     CYCLE
                 END IF
 
-                IF ( EMFLAG( V ) ) THEN
+                IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
+                        EFLAG = .TRUE.
+                        CYCLE
+                    END IF
+                ELSE IF ( EMFLAG( V ) ) THEN
                     IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
@@ -445,14 +476,19 @@ BLANK, BAR, BLANK
                     EFLAG = .TRUE.
                 END IF
 
-            ELSE
+            ELSE        !!  single-layer data
 
                 IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), NCELLS, INGRID2D ) ) THEN
                     EFLAG = .TRUE.
                     CYCLE
                 END IF
 
-                IF ( EMFLAG( V ) ) THEN
+                IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
+                        EFLAG = .TRUE.
+                        CYCLE
+                    END IF
+                ELSE IF ( EMFLAG( V ) ) THEN
                     IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
@@ -468,11 +504,11 @@ BLANK, BAR, BLANK
                     EFLAG = .TRUE.
                 END IF
 
-            END IF
+            END IF      !!  if multi-layer; else single-layer
 
         END DO      !!  end loop on output-variables
 
-    END IF       !! time stepped; else time independent
+    END IF       !! if time stepped; else time independent
 
 
     !!.......   Clean up and exit
