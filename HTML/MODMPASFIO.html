@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 34 2017-10-22 20:19:43Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 37 2017-10-25 18:09:52Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -30,16 +30,25 @@
     <STRONG>See also</STRONG>
     <BLOCKQUOTE><DL>
         <DT> <A HREF = "MODNCFIO.html"><CODE>MODULE MODNCFIO</CODE></A>,
+        <DD> for &quot;raw netCDF&quot; files and netCDF declarations
         <DT> <A HREF = "MODWRFIO.html"><CODE>MODULE MODWRFIO</CODE></A>
+        <DD> for WRF-related files
         <P>
         <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
             <A HREF = "MPASDIFF.html"><STRONG><VAR>mpasdiff</VAR></STRONG></A>
+        <DD> for MPAS-format-netCDF variable and layer-range-of-variable
+             statistical comparisons
         <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
             <A HREF = "MPASSTAT.html"><STRONG><VAR>mpasstat</VAR></STRONG></A>
+        <DD> for MPAS-format-netCDF variable and layer-range-of-variable
+             statistics
         <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
             <A HREF = "MPASTOM3.html"><STRONG><VAR>mpastom3</VAR></STRONG></A>
+        <DD> for interpolating variables from MPAS-format-netCDF files to
+             GRIDDED I/O&nbsp; files.
         <DT> <VAR><STRONG>m3tools</STRONG></VAR>sample program
              <A HREF = "MPASWTEST.html"><STRONG><VAR>mpaswtest</VAR></STRONG></A>.
+        <DD> Usage-example program for<A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
     </DL></BLOCKQUOTE>
     <P>
 
@@ -1652,11 +1661,18 @@ INITREARTH()</CODE></A></H2>
     REAL(8) FUNCTION SPHEREDIST( DRADIUS, DLAT1, DLON1, DLAT2, DLON2 )
     REAL    FUNCTION SPHEREDIST( RLAT1, RLON1, RLAT2, RLON2 )
     REAL(8) FUNCTION SPHEREDIST( DLAT1, DLON1, DLAT2, DLON2 )
+    REAL    FUNCTION SPHEREDIST( RLAT1, RLON1, RLAT2, RLON2 )
+    REAL(8) FUNCTION SPHEREDIST( DLAT1, DLON1, DLAT2, DLON2 )
+    REAL    FUNCTION SPHEREDIST( RRADIUS, RX1, RY1, RZ1, RX2, RY2, RZ2 )
+    REAL(8) FUNCTION SPHEREDIST( DRADIUS, DX1, DY1, DZ1, DX2, DY2, DZ2 )
+    REAL    FUNCTION SPHEREDIST( RX1, RY1, RZ1, RX2, RY2, RZ2 )
+    REAL(8) FUNCTION SPHEREDIST( DX1, DY1, DZ1, DX2, DY2, DZ2 )
 
         REAL   , INTENT( IN ) :: RRADIUS                    !! Earth-radius (Meters)
         REAL   , INTENT( IN ) :: RLAT1, RLON1, RLAT2, RLON2
         REAL(8), INTENT( IN ) :: DRADIUS                    !! Earth-radius (Meters)
-        REAL(8), INTENT( IN ) :: DLAT1, DLON1, DLAT2, DLON2
+        REAL(8), INTENT( IN ) :: RX1, RY1, RZ1, RX2, RY2, RZ2
+        REAL   , INTENT( IN ) :: DX1, DY1, DZ1, DX2, DY2, DZ2
     </PRE>
 
     <BLOCKQUOTE>
@@ -1664,11 +1680,17 @@ INITREARTH()</CODE></A></H2>
     <EM><U>Precondition:</U></EM> <CODE> USE MODMPASFIO</CODE>
     <P>
 
-    The first two forms use a caller specified value for the radius of
-    the Earth; the last two use the value from
-    <CODE>MODULE</CODE>-variable <CODE>REARTH</CODE>, which either was
-    set by <CODE><A HREF="#init">INITMPGRID()</A></CODE> or was the
-    module-default value (6370.0d3 meters).
+    The forms with a <CODE>*RADIUS</CODE> arguments use a caller
+    specified value for the radius of the Earth; the last two use the
+    value from <CODE>MODULE</CODE>&mdash;variable <CODE>REARTH</CODE>,
+    which either was set by 
+    <CODE><A HREF="#init">INITMPGRID()</A></CODE> or was the
+    module&mdash;default value (6370.0d3 meters).  The forms with
+    <CODE>*LAT&mdash;*LON</CODE> arguments expect the point to be
+    specified by Lat&mdash;Lon coordinates; the forms with 
+    <CODE>*X*&mdash;*Y*&mdash;*Z*</CODE> arguments expect the point to
+    be specified in the MPAS <CODE>X&mdash;Y&mdash;Z</CODE> 3&mdash;D
+    Cartesian coordinate system.
     <P>
 
     Internally, the routines use the (numerically stable) Haversine

@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 34 2017-10-22 20:19:43Z coats $"
+    !!  Version "$Id: modmpasfio.f90 37 2017-10-25 18:09:52Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -28,6 +28,8 @@ MODULE MODMPASFIO
     !!      Version       09/18/2017 by CJC:  add standard variables "edgesOnEdge"
     !!                   "weightsOnEdge", and "meshDensity"
     !!      Version       09/29/2017 by CJC:  bug-fix in CREATEMPAS()
+    !!      Version       10/25/2017 by CJC:  Fix for SPHEREDIST() fInternational-Date-Line
+    !                     issues.  X-Y-Z based SPHEREDIST().  Generic MPINTERP()
     !!...................................................................................
 
     USE MODNCFIO
@@ -83,13 +85,20 @@ MODULE MODMPASFIO
             WRITEMPAS0DBT, WRITEMPAS1DBT, WRITEMPAS2DBT, WRITEMPAS3DBT, WRITEMPAS4DBT
     END INTERFACE WRITEMPAS
 
-    INTERFACE SPHEREDIST
-        MODULE PROCEDURE  DISTD, DISTR, DISTM, DISTDM
-    END INTERFACE SPHEREDIST
-
     INTERFACE ARC2MPAS
         MODULE PROCEDURE  ARC2MPAS2D, ARC2MPAS3D, ARC2MPAS3D1
     END INTERFACE ARC2MPAS
+
+    INTERFACE MPINTERP
+        MODULE PROCEDURE  MPINTERP0DD,  MPINTERP1DD,  MPINTERP2DD,  MPINTERPE2DD,  MPINTERPG2DD,    &
+                          MPINTERP0DF,  MPINTERP1DF,  MPINTERP2DF,  MPINTERPE2DF,  MPINTERPG2DF,    &
+                          MPINTERPL0DD, MPINTERPL1DD, MPINTERPL2DD, MPINTERPEL2DD, MPINTERPGL2DD,   &
+                          MPINTERPL0DF, MPINTERPL1DF, MPINTERPL2DF, MPINTERPEL2DF, MPINTERPGL2DF
+    END INTERFACE MPINTERP
+
+    INTERFACE SPHEREDIST
+        MODULE PROCEDURE  DISTD, DISTR, DISTDM, DISTRM, DXYZD, DXYZR, DXYZDM, DXYZRM
+    END INTERFACE SPHEREDIST
 
     INTERFACE FINDCELL
         MODULE PROCEDURE  FINDCELLD, FINDCELLF
@@ -107,13 +116,6 @@ MODULE MODMPASFIO
             CHKFILL_0DS,  CHKFILL_1DS,  CHKFILL_2DS,  CHKFILL_3DS,  CHKFILL_4DS,   &
             CHKFILL_0DB,  CHKFILL_1DB,  CHKFILL_2DB,  CHKFILL_3DB,  CHKFILL_4DB
     END INTERFACE CHKFILL
-
-    INTERFACE MPINTERP
-        MODULE PROCEDURE  MPINTERP0DD,  MPINTERP1DD,  MPINTERP2DD,  MPINTERPE2DD,                   &
-                          MPINTERP0DF,  MPINTERP1DF,  MPINTERP2DF,  MPINTERPE2DF,                   &
-                          MPINTERPL0DD, MPINTERPL1DD, MPINTERPL2DD, MPINTERPEL2DD, MPINTERPGL2DD,   &
-                          MPINTERPL0DF, MPINTERPL1DF, MPINTERPL2DF, MPINTERPEL2DF, MPINTERPGL2DF
-    END INTERFACE MPINTERP
 
 
     !!........   Parameters:  required MPAS-file "header" structure:
@@ -248,11 +250,11 @@ MODULE MODMPASFIO
 
     LOGICAL, SAVE :: INITFLAG = .FALSE.
 
-    REAL*8, PARAMETER :: PI      = 3.14159265358979324d0
-    REAL*8, PARAMETER :: PI180   = PI / 180.0d0
-    REAL*8, PARAMETER :: RPI180  = 180.0d0 / PI
-    REAL  , PARAMETER :: PI180F  = PI180            !!  as single-precision
-    REAL  , PARAMETER :: RPI180F = RPI180
+    REAL(8), PARAMETER :: PI      = 3.14159265358979324d0
+    REAL(8), PARAMETER :: PI180   = PI / 180.0d0
+    REAL(8), PARAMETER :: RPI180  = 180.0d0 / PI
+    REAL   , PARAMETER :: PI180F  = PI180            !!  as single-precision
+    REAL   , PARAMETER :: RPI180F = RPI180
 
     CHARACTER*8, PARAMETER :: NCTYPES( 10 ) =                              &
          (/ 'INT1    ', 'CHAR    ', 'INT2    ', 'INT     ', 'REAL    ',    &
@@ -306,7 +308,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     LOGICAL FUNCTION INITREARTH( RADEARTH )     !!  initialize REARTH from argument
 
-        REAL*8, INTENT( IN ) :: RADEARTH        !!  Earth-radius (Meters)
+        REAL(8), INTENT( IN ) :: RADEARTH        !!  Earth-radius (Meters)
 
         REARTH      = RADEARTH
         INITREARTH = .TRUE.
@@ -437,7 +439,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 34 2017-10-22 20:19:43Z coats $',&
+        'Version $Id: modmpasfio.f90 37 2017-10-25 18:09:52Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -602,7 +604,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 34 2017-10-22 20:19:43Z coats $',&
+        'Version $Id: modmpasfio.f90 37 2017-10-25 18:09:52Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -946,6 +948,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     !!.......................................................................
     !!  Generic interfaces:
+    !!      Distance between two points
+    !!.......................................................................
+    !!  Forms using Lat-Lon coordinates for the point
     !!      Spherical distance-squared from <XLAT, XLON> to <YLAT, YLON>
     !!      using Haversine formula
     !!
@@ -957,14 +962,19 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL, INTENT( IN ) :: RADE                    !! Earth-radius (Meters)
         REAL, INTENT( IN ) :: XLAT, XLON, YLAT, YLON  !! Lat-Lon (degrees)
 
-        REAL    C1, C2, SS1, SS2
+        REAL    YY, C1, C2, SS1, SS2
 
         !!......................   begin body of function
 
         C1   = COS( PI180F * XLAT )
         C2   = COS( PI180F * YLAT )
+        IF ( XLON .LT. 0.0 .AND. YLON .GE. 180.0 ) THEN
+            YY = YLON - 360.0
+        ELSE
+            YY = YLON
+        END IF
         SS1  = SIN( 0.5 * PI180F * ( XLAT - YLAT ) ) **2
-        SS2  = SIN( 0.5 * PI180F * ( XLON - YLON ) ) **2
+        SS2  = SIN( 0.5 * PI180F * ( XLON -   YY ) ) **2
 
         DISTR = 2.0 * RADE * ASIN( SQRT( SS1 + C1 * C2 * SS2 ) )
         RETURN
@@ -975,19 +985,24 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!.......................................................................
 
 
-    REAL*8 FUNCTION  DISTD( RADE, XLAT, XLON, YLAT, YLON )
+    REAL(8) FUNCTION  DISTD( RADE, XLAT, XLON, YLAT, YLON )
 
-        REAL*8, INTENT( IN ) :: RADE                    !! Earth-radius (Meters)
-        REAL*8, INTENT( IN ) :: XLAT, XLON, YLAT, YLON  !! Lat-Lon (degrees)
+        REAL(8), INTENT( IN ) :: RADE                    !! Earth-radius (Meters)
+        REAL(8), INTENT( IN ) :: XLAT, XLON, YLAT, YLON  !! Lat-Lon (degrees)
 
-        REAL*8  C1, C2, SS1, SS2
+        REAL(8)  YY, C1, C2, SS1, SS2
 
         !!......................   begin body of function
 
         C1   = COS( PI180 * XLAT )
         C2   = COS( PI180 * YLAT )
+        IF ( XLON .LT. 0.0D0 .AND. YLON .GE. 180.0D0 ) THEN
+            YY = YLON - 360.0D0
+        ELSE
+            YY = YLON
+        END IF
         SS1  = SIN( 0.5d0 * PI180 * ( XLAT - YLAT ) ) **2
-        SS2  = SIN( 0.5d0 * PI180 * ( XLON - YLON ) ) **2
+        SS2  = SIN( 0.5d0 * PI180 * ( XLON -   YY ) ) **2
 
         DISTD = 2.0D0 * RADE * ASIN( SQRT( SS1 + C1 * C2 * SS2 ) )
         RETURN
@@ -998,30 +1013,107 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!.......................................................................
 
 
-    REAL   FUNCTION  DISTM( XLAT, XLON, YLAT, YLON )
+    REAL   FUNCTION  DISTRM( XLAT, XLON, YLAT, YLON )
 
         REAL, INTENT( IN ) :: XLAT, XLON, YLAT, YLON
 
         REAL    RADE
 
         RADE  = REARTH
-        DISTM = DISTR( RADE, XLAT, XLON, YLAT, YLON )     !!  use module-vble for Earth-radius
+        DISTRM = DISTR( RADE, XLAT, XLON, YLAT, YLON )     !!  use module-vble for Earth-radius
         RETURN
 
-    END FUNCTION  DISTM
+    END FUNCTION  DISTRM
 
 
     !!.......................................................................
 
 
-    REAL*8 FUNCTION  DISTDM( XLAT, XLON, YLAT, YLON )
+    REAL(8) FUNCTION  DISTDM( XLAT, XLON, YLAT, YLON )
 
-        REAL*8, INTENT( IN ) :: XLAT, XLON, YLAT, YLON
+        REAL(8), INTENT( IN ) :: XLAT, XLON, YLAT, YLON
 
         DISTDM = DISTD( REARTH, XLAT, XLON, YLAT, YLON )     !!  use module-vble for Earth-radius
         RETURN
 
     END FUNCTION  DISTDM
+
+
+    !!.......................................................................
+    !!  Foirms using MPAS Cartesian X-Y-Z coordinates
+    !!.......................................................................
+
+    REAL   FUNCTION  DXYZR( RADE, X1, Y1, Z1, X2, Y2, Z2 )
+
+        REAL, INTENT( IN ) :: RADE                    !! Earth-radius  (Meters)
+        REAL, INTENT( IN ) :: X1, Y1, Z1, X2, Y2, Z2  !! Cartesian XYZ (Meters)
+
+        REAL    DSQ
+
+        !!......................   begin body of function
+
+        DSQ = ( X2 - X1 )**2 + ( Y2 - Y2 )**2 + ( Z2 - Z1 )**2
+
+        DXYZR = 2.0 * RADE * ASIN( 0.5 * SQRT( DSQ )/RADE )
+        RETURN
+
+    END FUNCTION  DXYZR
+
+
+    !!.......................................................................
+
+    REAL(8)  FUNCTION  DXYZD( RADE, X1, Y1, Z1, X2, Y2, Z2 )
+
+        REAL(8), INTENT( IN ) :: RADE                    !! Earth-radius  (Meters)
+        REAL(8), INTENT( IN ) :: X1, Y1, Z1, X2, Y2, Z2  !! Cartesian XYZ (Meters)
+
+        REAL(8)   DSQ
+
+        !!......................   begin body of function
+
+        DSQ = ( X2 - X1 )**2 + ( Y2 - Y2 )**2 + ( Z2 - Z1 )**2
+
+        DXYZD = 2.0D0* RADE * ASIN( 0.5D0 * SQRT( DSQ )/RADE )
+        RETURN
+
+    END FUNCTION  DXYZD
+
+
+    !!.......................................................................
+
+    REAL   FUNCTION  DXYZRM( X1, Y1, Z1, X2, Y2, Z2 )
+
+        REAL, INTENT( IN ) :: X1, Y1, Z1, X2, Y2, Z2  !! Cartesian XYZ (Meters)
+
+        REAL    DSQ, RADE
+
+        !!......................   begin body of function
+
+        DSQ  = ( X2 - X1 )**2 + ( Y2 - Y2 )**2 + ( Z2 - Z1 )**2
+        RADE = REARTH
+
+        DXYZRM = 2.0 * RADE * ASIN( 0.5 * SQRT( DSQ )/RADE )
+        RETURN
+
+    END FUNCTION  DXYZRM
+
+
+    !!.......................................................................
+
+    REAL(8)   FUNCTION  DXYZDM( X1, Y1, Z1, X2, Y2, Z2 )
+
+        REAL(8), INTENT( IN ) :: X1, Y1, Z1, X2, Y2, Z2  !! Cartesian XYZ (Meters)
+
+        REAL(8)    DSQ
+
+        !!......................   begin body of function
+
+        DSQ = ( X2 - X1 )**2 + ( Y2 - Y2 )**2 + ( Z2 - Z1 )**2
+
+        DXYZDM = 2.0D0 * REARTH * ASIN( 0.5D0 * SQRT( DSQ )/REARTH )
+        RETURN
+
+    END FUNCTION  DXYZDM
 
 
     !!.......................................................................
@@ -1033,7 +1125,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         REAL, INTENT( IN ) :: ALAT, ALON
 
-        REAL*8      ALATD, ALOND
+        REAL(8)      ALATD, ALOND
 
         ALATD = DBLE( ALAT )
         ALOND = DBLE( ALON )
@@ -1104,7 +1196,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         REAL, INTENT( IN ) :: ALAT, ALON
 
-        REAL*8      ALATD, ALOND
+        REAL(8)     ALATD, ALOND
 
         ALATD = DBLE( ALAT )
         ALOND = DBLE( ALON )
@@ -1237,7 +1329,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 IF ( N .EQ. IZ ) THEN
                     NSEGS       = NN
                     CELLS( NN ) = N
-                    WGHTS( NN ) = DISTM( YY, XX, ZLAT, ZLON ) / DARC
+                    WGHTS( NN ) = DISTRM( YY, XX, ZLAT, ZLON ) / DARC
                     ARC2MPAS2D = .TRUE.
                     RETURN
                 END IF
@@ -1276,7 +1368,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                     XXX = X1 + U * A
                     YYY = Y1 + U * C
                     CELLS( NN ) = N
-                    WGHTS( NN ) = DISTM( YY, XX, YYY, XXX ) / DARC
+                    WGHTS( NN ) = DISTRM( YY, XX, YYY, XXX ) / DARC
                     II          = N     !!  this cell
                     KK          = K     !!  this edge
                     XX          = XXX
@@ -4202,7 +4294,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
-        REAL*8       , INTENT(  OUT) :: SCALAR
+        REAL(8)      , INTENT(  OUT) :: SCALAR
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -4497,7 +4589,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!.......................................................................
-    !!  Generic interfaces:  REAL*8 1-D array case:
+    !!  Generic interfaces:  REAL(8) 1-D array case:
     !!  Write variable VNAME to previously-opened MPAS file FNAME
     !!.......................................................................
 
@@ -4506,7 +4598,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -4847,7 +4939,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!.......................................................................
-    !!  Generic interfaces:  REAL*8 2-D array case:
+    !!  Generic interfaces:  REAL(8) 2-D array case:
     !!  Write variable VNAME to previously-opened MPAS file FNAME
     !!.......................................................................
 
@@ -4856,7 +4948,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -5240,7 +5332,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!.......................................................................
-    !!  Generic interfaces:  REAL*8 3-D array case:
+    !!  Generic interfaces:  REAL(8) 3-D array case:
     !!  Write variable VNAME to previously-opened MPAS file FNAME
     !!.......................................................................
 
@@ -5249,7 +5341,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -5679,7 +5771,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3, NDIM4
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -6151,7 +6243,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP
-        REAL*8       , INTENT(  OUT) :: SCALAR
+        REAL(8)      , INTENT(  OUT) :: SCALAR
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -6551,7 +6643,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -6992,7 +7084,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1, NDIM2
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -7474,7 +7566,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1, NDIM2, NDIM3
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -7996,7 +8088,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1, NDIM2, NDIM3, NDIM4
-        REAL*8       , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
+        REAL(8)      , INTENT(  OUT) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -8558,7 +8650,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
-        REAL*8       , INTENT(IN   ) :: SCALAR
+        REAL(8)      , INTENT(IN   ) :: SCALAR
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -8862,7 +8954,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -9212,7 +9304,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -9605,7 +9697,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -10035,7 +10127,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3, NDIM4
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -10507,7 +10599,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP
-        REAL*8       , INTENT(IN   ) :: SCALAR
+        REAL(8)      , INTENT(IN   ) :: SCALAR
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -10912,7 +11004,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -11357,7 +11449,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1, NDIM2
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -11841,7 +11933,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1, NDIM2, NDIM3
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
@@ -12366,7 +12458,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
         CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  logical file name
         INTEGER      , INTENT(IN   ) :: ISTEP, NDIM1, NDIM2, NDIM3, NDIM4
-        REAL*8       , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
+        REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
 
         INTEGER         FID, VID
         INTEGER         IERR, ID, N, F, V
