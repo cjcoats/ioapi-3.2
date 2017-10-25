@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MPASDIFF.html 31 2017-10-21 01:45:58Z coats $" -->
+<!-- "$Id: MPASDIFF.html 38 2017-10-25 19:49:48Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program MPASDIFF </TITLE>
 </HEAD>
@@ -50,10 +50,11 @@ mpasdiff  &lt;and respond to the prompts&gt;
     a specified ASCII <VAR>REPORT</VAR> file.
     <BR>
     <EM>
-    Note that the program refers to the variables by number rather than
-    by name.  It will at least give you a numbered menu, in any case;
-    however, you may also want to look at output for the following
-    commands to see in advance what the variables are:
+    Note that the program displays the variables by name-and-number,
+    then requests them by number rather than by name.  It will at least
+    give you a numbered menu, in any case; however, you may also want to
+    look at output for the following commands to see in advance what the
+    variables are:
     <BLOCKQUOTE><CODE>
     ncdump -h ${INFILA}<BR>
     ncdump -h ${INFILB}
@@ -63,7 +64,8 @@ mpasdiff  &lt;and respond to the prompts&gt;
 
     The spatial dimensions of the (layer-ranges of) variables must be 
     the same &mdash; one may not compare a vertex-subscripted variable with a
-    cell-subscripted variable.  Likewise, the time-step ranges for the
+    cell-subscripted variable nor a single-layer variable with a
+    50-layer variable.  Likewise, the time-step ranges for the
     two variables must have the same number of records. However,
     <UL>
         <LI>  one may compare a time independent variable with a time
@@ -77,10 +79,11 @@ mpasdiff  &lt;and respond to the prompts&gt;
         <LI>  one may compare a specified layer (e.g., layer-1) of a
               layered (3-D) variable with a non-layered (2D) variable of
               the same dimensionality; the result will be a non-layered
-              comparison; 
+              comparison;
         <LI>  one may even compare two specified layers (e.g., layer-1
-              and layer-2) of a layered (3-D) variable, or two different
-              time steps of the same variaable...
+              and layer-2) or layer ranges (e.g., layers 1-3 and 5-7)
+              the same or a different 3-D variable, or two different
+              time steps of the same variable...
         <LI>  one may compare vertex- or edge-subscripted variables,
               or variables whose vertical dimension is different from
               <CODE>nVertLevels</CODE> or <CODE>nVertLevelsP1</CODE>
@@ -91,27 +94,29 @@ mpasdiff  &lt;and respond to the prompts&gt;
 
     <STRONG>The program will prompt you</STRONG> for the variable-names,
     and (as appropriate) for the starting and ending date&time for the
-    report period, and for the  layer ranges for the variables.<BR>
+    report period, and for the  layer ranges for the variables.
+    <P>
+
     Note that the set of analyses which can be performed by one
     execution is quite complex and context-dependent (being determined
-    by the files being compared).  If you want to run this program in
-    <STRONG>batch mode</STRONG>  (from a script), the recommended way to
-    develop the script is to  run the program once interactively noting
-    the pattern of responses  to prompts which generate the particular
-    analysis you want.  The  pattern of responses then becomes either a
-    command-input file which  is redirected into the program in the
-    script, or becomes a  &quot;here-document&quot; fed into the
-    execution.  The following  is an excerpt of a script which does
-    an analysis on  two variables (the first one time stepped 2-D from
-    <VAR>INFILEA</VAR>, the second time independent 3-D from
-    <VAR>INFILEB</VAR>, examining layer 4), from
+    by the files and variaaables being compared).  If you want to run
+    this program in <STRONG>batch mode</STRONG>  (from a script), the
+    recommended way to develop the script is to  run the program once
+    interactively noting the pattern of responses  to prompts which
+    generate the particular analysis you want.  The  pattern of
+    responses then becomes either a command-input file which  is
+    redirected into the program in the script, or becomes a 
+    &quot;here-document&quot; fed into the execution.  The following  is
+    an excerpt of a script which does an analysis on  two variables (the
+    first one time stepped 2-D from <VAR>INFILEA</VAR>, the second time
+    independent 3-D from <VAR>INFILEB</VAR>, examining layer 4), from
     <VAR>/tmp/myfile.A</VAR> and <VAR>/tmp/myfile.B</VAR>, using the
     here-document approach:
     <PRE>
 ...
-setenv INFILEA  /tmp/myfile.A
-setenv INFILEB  /tmp/myfile.B
-setenv REPORT   /tmp/myfile.A-B
+setenv INFILEA  /tmp/myfile.A.nc
+setenv INFILEB  /tmp/myfile.B.nc
+setenv REPORT   /tmp/myfile.A-B.txt
 mpasdiff &lt;&lt;  !DONE
 43              # use variable-43 from INFILEA
                 # use default starting date for this variable
@@ -121,6 +126,7 @@ mpasdiff &lt;&lt;  !DONE
 47              # use variable-47 from INFILEB
 4               # use layer-4 as the starting layer for this variable
 4               # use layer-4 as the   ending layer for this variable
+1               # use difference (A - B) as the comparison-operation
 !DONE
 ...
     </PRE>
@@ -144,7 +150,8 @@ mpasdiff &lt;&lt;  !DONE
               on those grids, and routines for input and output of data
               in MPAS-format-netCDF files.
              <P>
-        <LI>  <VAR>m3tools</VAR> program <A HREF = "MPASSTAT.html"><VAR>mpasstat</VAR></A>
+        <LI>  <VAR><STRONG>m3tools</STRONG></VAR> program
+              <A HREF = "MPASSTAT.html"><VAR><STRONG>mpasstat</STRONG></VAR></A>
               for statistics of [layer-range of] variables for MPAS-format-netCDF
               files.
         <LI>  <VAR><STRONG>m3tools</STRONG></VAR> program
@@ -158,6 +165,15 @@ mpasdiff &lt;&lt;  !DONE
     <P>
 
 <HR>
+
+Copyright &copy; 2017 Carlie J. Coats, Jr., Ph.D.
+    <BLOCKQUOTE>
+    Permission is granted to copy, distribute and/or modify this document
+    under the terms of the <A HREF="https://www.gnu.org/licenses/fdl.html">GNU
+    Free Documentation License, Version 1.3</A> or any later version
+    published by the Free Software Foundation; with no Invariant
+    Sections, no Front-Cover Texts, and no Back-Cover Texts.
+    </BLOCKQUOTE>
 
 <A HREF = "TIMESHIFT.html" >
 Previous:  <STRONG>TIMESHIFT</STRONG>

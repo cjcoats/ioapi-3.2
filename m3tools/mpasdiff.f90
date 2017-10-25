@@ -177,7 +177,7 @@ PROGRAM MPASDIFF
 'layer ranges.',                                                                &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id:: mpasdiff.f90 28 2017-10-17 15:08:21Z coats                       $',     &
+'$Id:: mpasdiff.f90 38 2017-10-25 19:49:48Z coats                       $',     &
 '',                                                                             &
 'Program copyright (C) 2017 Carlie J. Coats, Jr.',                              &
 'Released under Version 2 of the GNU General Public License.',                  &
@@ -263,18 +263,18 @@ PROGRAM MPASDIFF
               INDEX1( 'nVertices', VNDIMSA( V ), DNAMEA( :,V ) ) )
     IF ( K1 .LE. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Variable 1 not subscripted by CELL, EDGE, or VERTEX', 2 )
-    ELSE IF ( K1 .EQ. 1 ) THEN
+    ELSE IF ( K1 .EQ. 1 .AND. ( N .EQ. 0 .OR. N .EQ. 2 ) ) THEN
         NCELLS = VDIMSA( K,V )
         NLAYSA= 1
         LAY0A = 1
         LAY1A = 1
-    ELSE IF ( K1 .EQ. 2 ) THEN
+    ELSE IF ( K1 .EQ. 2 .AND. ( N .EQ. 0 .OR. N .EQ. 3 ) ) THEN
         NCELLS = VDIMSA( 2,V )
         NLAYSA = VDIMSA( 1,V )
         LAY0A  = GETNUM(     1, NLAYSA,      1, 'Enter start of layer range for first-variable analysis' )
         LAY1A  = GETNUM( LAY0A, NLAYSA, NLAYSA, 'Enter  end  of layer range for first-variable analysis' )
     ELSE
-        CALL M3EXIT( PNAME, 0, 0, 'Bad subscripting for variable 1:  not ([LVL,]CELL,...)', 2 )
+        CALL M3EXIT( PNAME, 0, 0, 'Bad subscripting for variable 1:  not ([LVL,]CELL[,TIME])', 2 )
     END IF
 
 
@@ -335,24 +335,28 @@ PROGRAM MPASDIFF
         CALL M3EXIT( PNAME, 0, 0, 'Variable not of type REAL', 2 )
     END IF
 
+    N = INDEX1( 'Time', VNDIMSB( V ), DNAMEB( :,V ) )
+    T = MAX( INDEX1( 'xtime', FVARSB, VNAMESB ) ,  &
+             INDEX1( 'xTime', FVARSB, VNAMESB ) )
     K2 = MAX( INDEX1( 'nCells',    VNDIMSB( V ), DNAMEB( :,V ) ),  &
               INDEX1( 'nEdges',    VNDIMSB( V ), DNAMEB( :,V ) ),  &
               INDEX1( 'nVertices', VNDIMSB( V ), DNAMEB( :,V ) ) )
+
     IF ( K2 .LE. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Variable 2 not subscripted by CELL, EDGE, or VERTEX', 2 )
     ELSE IF ( NCELLS .NE. VDIMSB( K2,V ) ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Inconsistent cell-dimensioning for second variable', 2 )
-    ELSE IF ( K2 .EQ. 1 ) THEN
+    ELSE IF ( K2 .EQ. 1 .AND. ( N .EQ. 0 .OR. N .EQ. 2 ) ) THEN
         NLAYSB = 1
         LAY0B  = 1
         LAY1B  = 1
-    ELSE IF ( K1 .EQ. 2 ) THEN
+    ELSE IF ( K2 .EQ. 2 .AND. ( N .EQ. 0 .OR. N .EQ. 3 ) ) THEN
         NCELLS = VDIMSB( 2,V )
         NLAYSB = VDIMSB( 1,V )
         LAY0B  = GETNUM(     1, NLAYSB,      1, 'Enter start of layer range for second-variable analysis' )
         LAY1B  = GETNUM( LAY0B, NLAYSB, NLAYSB, 'Enter  end  of layer range for second-variable analysis' )
     ELSE
-        CALL M3EXIT( PNAME, 0, 0, 'Bad subscripting for variable:  not ([LVL,]CELL,...)', 2 )
+        CALL M3EXIT( PNAME, 0, 0, 'Bad subscripting for variable:  not ([LVL,]CELL[,TIME])', 2 )
     END IF
 
     IF ( LAY1A - LAY0A .NE. LAY1B - LAY0B ) THEN
@@ -360,10 +364,6 @@ PROGRAM MPASDIFF
     ELSE
         NLAYSD = LAY1A - LAY0A + 1
     END IF
-
-    N = INDEX1( 'Time', VNDIMSB( V ), DNAMEB( :,V ) )
-    T = MAX( INDEX1( 'xtime', FVARSB, VNAMESB ) ,  &
-             INDEX1( 'xTime', FVARSB, VNAMESB ) )
 
     IF ( N .LE. 0 .AND. NRECS .GT. 1 ) THEN
 

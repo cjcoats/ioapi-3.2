@@ -176,18 +176,18 @@ PROGRAM MPASSTAT
              INDEX1( 'nVertices', VNDIMS( V ), DNAME( :,V ) ) )
     IF ( K .LE. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Variable not subscripted by CELL, EDGE, or VERTEX', 2 )
-    ELSE IF ( K .EQ. 1 ) THEN
+    ELSE IF ( K .EQ. 1 .AND. ( N .EQ. 0 .OR. N .EQ. 2 ) ) THEN
         NCELLS = VDIMS( K,V )
         NLAYS = 1
         LAY0  = 1
         LAY1  = 1
-    ELSE IF ( K .EQ. 2 ) THEN
+    ELSE IF ( K .EQ. 2 .AND. ( N .EQ. 0 .OR. N .EQ. 3 ) ) THEN
         NCELLS = VDIMS( 2,V )
         NLAYS  = VDIMS( 1,V )
         LAY0   = GETNUM(    1, NLAYS,     1, 'Enter start of layer range for analysis' )
         LAY1   = GETNUM( LAY0, NLAYS, NLAYS, 'Enter  end  of layer range for analysis' )
     ELSE
-        CALL M3EXIT( PNAME, 0, 0, 'Bad subscripting for variable:  not ([LVL,]CELL,...)', 2 )
+        CALL M3EXIT( PNAME, 0, 0, 'Bad subscripting for variable:  not ([LVL,]CELL[,TIME])', 2 )
     END IF
 
 

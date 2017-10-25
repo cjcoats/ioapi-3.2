@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 37 2017-10-25 18:09:52Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 38 2017-10-25 19:49:48Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -672,19 +672,21 @@ INITREARTH()</CODE></A></H2>
     <P>
 
     The second <CODE>INITMPGRID()</CODE> form is a for use with
-    <STRONG>Fortran-90 keywoard arguments</STRONG>, where a complete
+    <STRONG>Fortran-90 keyword arguments</STRONG>, where a complete
     MPAS-grid specification is provided by arguments instead of from an
-    MPAS-file header.<BR> Note that you must correctly specify
-    <EM>all</EM> of these arguments, and should do so by name, e.g.
-    <BLOCKQUOTE><CODE>
+    MPAS-file header.<BR> 
+    This is not recommended (after all, the MPAS-initialization
+    program's authors have done this extremely tedious operation
+    once&mdash;why re-invent that wheel?  Note that you must correctly
+    specify <EM>all</EM> of these arguments, and should do so by name,
+    e.g.
+    <PRE>
     FLAG = INITMPGRID( &amp;
-        <BLOCKQUOTE>
-        NCELLS = &lt;value&gt; &amp;<BR>
-        ...
-        REARTH1 = &lt;value&gt; &amp;<BR>
-        )
-        </BLOCKQUOTE>
-    </CODE></BLOCKQUOTE>
+                     NCELLS  = &lt;value&gt; &amp;
+                     ...
+                     REARTH1 = &lt;value&gt; &amp;
+                     )
+    </PRE>
     <P>
 
     </BLOCKQUOTE>
@@ -994,7 +996,7 @@ INITREARTH()</CODE></A></H2>
             <P>
         <LI>Call <CODE>INITMPGRID()</CODE> and either
             <CODE>OPENMPAS(FNAME...)</CODE> or <CODE>CREATEMPAS(FNAME...)</CODE>
-            before calling <CODE>DESCMPAS()</CODE>
+            before calling <CODE>DESCMPAS(FNAME...)</CODE>
         <P>
     </UL></BLOCKQUOTE>
     <P>
@@ -1227,6 +1229,7 @@ INITREARTH()</CODE></A></H2>
     LOGICAL FUNCTION READMPAS( FNAME, VNAME, NDIM1, NDIM2, NDIM3, NDIM4, IARRAY4 )
     LOGICAL FUNCTION READMPAS( FNAME, VNAME, NDIM1, NDIM2, NDIM3, NDIM4, SARRAY4 )
     LOGICAL FUNCTION READMPAS( FNAME, VNAME, NDIM1, NDIM2, NDIM3, NDIM4, BARRAY4 )
+    
     !!  <EM>time stepped forms:</EM>
     LOGICAL FUNCTION READMPAS( FNAME, ISTEP, VNAME, DSCALAR )
     LOGICAL FUNCTION READMPAS( FNAME, ISTEP, VNAME, RSCALAR )
@@ -1289,7 +1292,7 @@ INITREARTH()</CODE></A></H2>
 
     <EM><U>Preconditions:</U></EM>
     <BLOCKQUOTE><UL>
-        <LI> <CODE>setenv FNAME <VAR>path for data file</VAR></CODE>
+        <LI> <CODE>setenv FNAME <VAR>&lt;path for data file&gt;</VAR></CODE>
         <P>
         <LI> <CODE>USE MODMPASFIO</CODE>
             <P>
@@ -1406,6 +1409,7 @@ INITREARTH()</CODE></A></H2>
     LOGICAL FUNCTION WRITEMPAS( FNAME, VNAME, NDIM1, NDIM2, NDIM3, NDIM4, IARRAY4 )
     LOGICAL FUNCTION WRITEMPAS( FNAME, VNAME, NDIM1, NDIM2, NDIM3, NDIM4, SARRAY4 )
     LOGICAL FUNCTION WRITEMPAS( FNAME, VNAME, NDIM1, NDIM2, NDIM3, NDIM4, BARRAY4 )
+    
     !!  <EM>time stepped forms:</EM>
     LOGICAL FUNCTION WRITEMPAS( FNAME, ISTEP, VNAME, DSCALAR )
     LOGICAL FUNCTION WRITEMPAS( FNAME, ISTEP, VNAME, RSCALAR )
@@ -1468,7 +1472,7 @@ INITREARTH()</CODE></A></H2>
 
     <EM><U>Preconditions:</U></EM>
     <BLOCKQUOTE><UL>
-        <LI><CODE> setenv FNAME <VAR>path for data file</VAR></CODE>
+        <LI><CODE> setenv FNAME <VAR>&lt;path for data file&gt;</VAR></CODE>
         <P>
         <LI><CODE> USE MODMPASFIO</CODE>
             <P>
@@ -1575,14 +1579,14 @@ INITREARTH()</CODE></A></H2>
     <PRE>
     LOGICAL FUNCTION MPINTERP( LATR0, LONR0, Z, V0 )
     LOGICAL FUNCTION MPINTERP( LATD0, LOND0, Z, V0 )
-    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, Z, V1 )
-    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, Z, V1 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, Z, V2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, Z, V2 )
     LOGICAL FUNCTION MPINTERP( LATR0, LONR0, NLAY, ZL, VL0 )
     LOGICAL FUNCTION MPINTERP( LATD0, LOND0, NLAY, ZL, VL0 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, Z, V1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, Z, V1 )
     LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, NLAY, ZL, VL1 )
     LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, NLAY, ZL, VL1 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, Z, V2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, Z, V2 )
     LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, NLAY, ZL, VL2 )
     LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, NLAY, ZL, VL2 )
     LOGICAL FUNCTION MPINTERP( NCOL, NROW, AR, LATR2, LONR2, Z, V2 )
@@ -1631,12 +1635,15 @@ INITREARTH()</CODE></A></H2>
     retained.
     <P>
 
-    See <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
+    The interpolation uses barycentric-coordinate linear interpolation
+    on the dual-cell (triangle whose corners are MPAS-cell centers) that
+    contains the requested point(s).  See
+    <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
     for a reference on the interpolation formulas.
     <P>
 
     <EM>See also</EM> <STRONG><VAR>m3tools</VAR></STRONG> program
-    <A HREF="MPASTOM3.html"></A>.
+    <A HREF="MPASTOM3.html"><STRONG><VAR>mpastom3</VAR></STRONG></A>.
     <P>
     </BLOCKQUOTE>
 
@@ -1651,7 +1658,8 @@ INITREARTH()</CODE></A></H2>
     <BLOCKQUOTE>
 
     This is a (potentially-stand-alone) generic <CODE>FUNCTION</CODE>
-    for distance between two Lat-Lon specified points on the Earth, with
+    for distance between two Lat-Lon specified or MPAS-Cartesian
+    specified points on the Earth, with
     four forms:
 
     </BLOCKQUOTE>
@@ -1729,12 +1737,16 @@ INITREARTH()</CODE></A></H2>
     <EM><U>Precondition:</U></EM> <CODE> USE MODMPASFIO</CODE>
     <P>
 
-    Dates and times on MPAS formatted files are stored in <CODE>CHARACTER(LEN=64)</CODE>
-    strings, in the format <CODE>YYYY-MM-DD_HH:MM</CODE> or <CODE>YYYY-MM-DD_HH:MM:SS</CODE>
-    using the (4-digit) year, and the 2-digit month, the 2-digit day-of-month, the 2-digit
-    hour-of-day, the 2-digit minute-of-hour, and optionally the 2-digit seconds.  These
-    subroutines convert back and forth between this MPAS format and the I/O&nbsp;API
-    <CODE>INTEGER</CODE> coded Julian-date&amp;time <CODE>YYYYDDD:HHMMSS</CODE>.
+    Dates and times on MPAS formatted files are stored in
+    <CODE>CHARACTER(LEN=64)</CODE> strings, in the format
+    <CODE>YYYY-MM-DD_HH:MM</CODE>, <CODE>YYYY-MM-DD_HH:MM:SS</CODE> or
+    <CODE>YYYY-MM-DD_HH:MM:SS.SSS</CODE> using the (4-digit) year, and
+    the 2-digit month, the 2-digit day-of-month, the 2-digit
+    hour-of-day, the 2-digit minute-of-hour, and optionally the 2-digit
+    seconds or 6-digit seconds.milliseconds.  These subroutines convert
+    back and forth between this MPAS format and the I/O&nbsp;API
+    <CODE>INTEGER</CODE> coded Julian-date&amp;time
+    <CODE>YYYYDDD:HHMMSS</CODE>.
     <P>
 
     <EM>See also</EM> <A HREF="#step"><CODE>READMPSTEPS()</CODE></A> and
@@ -1748,10 +1760,6 @@ INITREARTH()</CODE></A></H2>
 
 <HR> <!- ------------------------------------------------------------- ->
 
-<A HREF = "AA.html">
-To: <STRONG>Models-3/EDSS I/O&nbsp;API:  The Help Pages</STRONG>
-</A><P>
-
 Copyright &copy; 2017 Carlie J. Coats, Jr., Ph.D.
     <BLOCKQUOTE>
     Permission is granted to copy, distribute and/or modify this document
@@ -1760,6 +1768,10 @@ Copyright &copy; 2017 Carlie J. Coats, Jr., Ph.D.
     published by the Free Software Foundation; with no Invariant
     Sections, no Front-Cover Texts, and no Back-Cover Texts.
     </BLOCKQUOTE>
+
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O&nbsp;API:  The Help Pages</STRONG>
+</A><P>
 <P>
 
 

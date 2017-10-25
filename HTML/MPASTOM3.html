@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MPASTOM3.html 36 2017-10-24 17:32:20Z coats $" -->
+<!-- "$Id: MPASTOM3.html 38 2017-10-25 19:49:48Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program MPASSTAT </TITLE>
 </HEAD>
@@ -23,10 +23,11 @@ setenv  OUTFILE   &lt;path name for output gridded I/O API file&gt;
 mpastom3  &lt;and respond to the prompts&gt;
 </PRE>
 
-    where <VAR>LLFILE</VAR> is the <A HREF = "LOGICALS.html">logical
-    name of a gridded I/O API Lat-Lon file (e.g., <CODE>GRID_CRO_2D</CODE>),
-    <VAR>MPFILE</VAR> is the logical name of an MPAS-format-netCDF input
-    file with the variables to be interpolated, and <VAR>OUTFILE</VAR>
+    where <CODE>LLFILE</CODE> is the <A HREF = "LOGICALS.html">logical
+    name</A> of a gridded I/O API Lat-Lon file (e.g.,
+    <VAR>GRID_CRO_2D</VAR>),
+    <CODE>MPFILE</CODE> is the logical name of an MPAS-format-netCDF input
+    file with the variables to be interpolated, and <CODE>OUTFILE</CODE>
     is the logical name of the output gridded I/O API file.
     <P>
     </BLOCKQUOTE>
@@ -35,14 +36,25 @@ mpastom3  &lt;and respond to the prompts&gt;
 <H2> Summary </H2>
 
     <BLOCKQUOTE>
-    The <CODE>MPASSTAT</CODE> program interpolates sets of
-    <CODE>REAL</CODE> variables from an MPAS-gridded input file to a
+    The <CODE>MPASTOM3</CODE> program interpolates sets of
+    <CODE>REAL</CODE> variables from an MPAS-format-netCDF input file to a
     regular I/O&nbsp;API grid using  barycentric-linear interpolation,
-    and writes the results to a gridded I/O API file.  All the variables
+    and writes the results to a gridded I/O&nbsp;API file.  All the variables
     for a particular run must have the same dimensionality (either
     layered or non-layered, either time-stepped or time independent, and
-    with horizontal dimension <CODE>MODMPASFIO/MPCELLS</CODE>).
+    with horizontal dimension <CODE>MODMPASFIO/MPCELLS</CODE>). See
+    routine <A HREF="MODMPASFIO.html"interp"><CODE>MPINTERP()</CODE></A>
+    in module <CODE>MODMPASFIO</CODE>.
     <P> 
+
+    Note that use of this program to convert data to a Lat-Lon based
+    output grid is an <STRONG>important intermediate step in the use of
+    KML to display MPAS data</STRONG> on the web, etc.  Also its
+    interpolation of MPAS files to &quot;regular&quot; I/O&nbsp;API
+    GRIDDED files makes it useful with various &quot;brittle&quot;
+    hard-coded-to-meteorology analysis-and-visualization programs that
+    do not accept, e.g., MPAS based emissions or ocean files.
+    <P>
 
     <STRONG>The program will prompt you</STRONG> for the list of
     variable-names, their units, and descriptions,  and (as appropriate)
@@ -51,19 +63,14 @@ mpastom3  &lt;and respond to the prompts&gt;
     
     Note that the set of analyses which can be performed by one
     execution is quite complex and context-dependent (being determined
-    by the file being processed).  If you want to run this program in
-    <STRONG>batch mode</STRONG>  (from a script), the recommended way to
-    develop the script is to  run the program once interactively noting
-    the pattern of responses  to prompts which generate the particular
-    analysis you want.  The  pattern of responses then becomes either a
-    command-input file which  is redirected into the program in the
-    script, or becomes a  &quot;here-document&quot; fed into the
-    execution.
-    <P>
-
-    Note also that use of this program with a Lat-Lon based output grid
-    is an <STRONG>important intermediate step in the use of KML to
-    display MPAS data</STRONG> on the web, etc.
+    by the file being processed and variables selected).  If you want to
+    run this program in <STRONG>batch mode</STRONG>  (from a script),
+    the recommended way to develop the script is to  run the program
+    once interactively, noting the pattern of responses  to prompts which
+    generate the particular analysis you want.  The  pattern of
+    responses then becomes either a command-input file which  is
+    redirected into the program in the script, or becomes a 
+    &quot;here-document&quot; fed into the execution.
     <P>
 
     Source code for program <CODE>mpastom3</CODE> is available
@@ -89,17 +96,28 @@ mpastom3  &lt;and respond to the prompts&gt;
              <A HREF = "MPASDIFF.html"><STRONG><VAR>mpasdiff</VAR></STRONG></A>
              for comparing variables or layer-ranges of variables in 
              MPAS-format-netCDF files.
-        <LI>  <VAR>m3tools</VAR> program <A HREF = "MPASDIFF.html"><VAR>mpasdiff</VAR></A>
-              for statistics of [layer-range of] variable-to-variable
-              comparisons for MPAS-format-netCDF files.
+        <LI> <VAR><STRONG>m3tools</STRONG></VAR> program
+             <A HREF = "MPASSTAT.html"><VAR><STRONG>mpasstat</STRONG></VAR></A>
+              for statistics of [layer-range of] variables in MPAS-format-netCDF
+              files.
         <LI> <VAR><STRONG>m3tools</STRONG></VAR> sample program              
              <A HREF = "MPASWTEST.html"><STRONG><VAR>mpaswtest</VAR></STRONG></A>
-             demonstrating MPAS operations and I/O.
+             demonstrating MPAS operations and I/O, as provided by
+             <CODE>MODULE MODMPASFIO</CODE>.
     </UL>
     <P> 
 
 
 <HR>
+
+Copyright &copy; 2017 Carlie J. Coats, Jr., Ph.D.
+    <BLOCKQUOTE>
+    Permission is granted to copy, distribute and/or modify this document
+    under the terms of the <A HREF="https://www.gnu.org/licenses/fdl.html">GNU
+    Free Documentation License, Version 1.3</A> or any later version
+    published by the Free Software Foundation; with no Invariant
+    Sections, no Front-Cover Texts, and no Back-Cover Texts.
+    </BLOCKQUOTE>
 
 <A HREF = "MPASSTAT.html" >
 Previous:  <STRONG>MPASSTAT</STRONG>
