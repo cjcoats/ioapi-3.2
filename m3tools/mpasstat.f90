@@ -36,7 +36,7 @@ PROGRAM MPASSTAT
 
     INTEGER         ISTAT, LDEV, RDEV
 
-    INTEGER         K, L, M, N, P, Q, V, T
+    INTEGER         K, L, M, N, NN, P, Q, V, T
 
     INTEGER         SDATE, STIME
     INTEGER         EDATE, ETIME
@@ -125,15 +125,15 @@ PROGRAM MPASSTAT
     V     = GETNUM( 1, FVARS, 1, 'Enter number for the variable to analyze' )
     VNAME = VNAMES( V )
 
-    N = INDEX1( 'Time', VNDIMS( V ), DNAME( :,V ) )
-    T = MAX( INDEX1( 'xtime', FVARS, VNAMES ) ,  &
+    T = INDEX1( 'Time', VNDIMS( V ), DNAME( :,V ) )
+    N = MAX( INDEX1( 'xtime', FVARS, VNAMES ) ,  &
              INDEX1( 'xTime', FVARS, VNAMES ) )
 
     IF ( VTYPES( V ) .NE. M3REAL  ) THEN
 
         CALL M3EXIT( PNAME, 0, 0, 'Variable not of type REEAL', 2 )
 
-    ELSE IF ( N .LE. 0 ) THEN
+    ELSE IF ( T .LE. 0 ) THEN
 
         Call M3MESG( 'Variable "' // TRIM( VNAME ) // '" is time independent' )
         SDATE = IMISS3
@@ -141,11 +141,11 @@ PROGRAM MPASSTAT
         EDATE = IMISS3
         ETIME = IMISS3
 
-    ELSE IF ( T .LE. 0 ) THEN
+    ELSE IF ( N .LE. 0 ) THEN
 
         CALL M3EXIT( PNAME, 0, 0, 'Time-variable not found', 2 )
 
-    ELSE IF ( .NOT.READMPSTEPS( 'INFILE', VNAMES( T ), N, FSTEPS, FDATES, FTIMES ) )  THEN
+    ELSE IF ( .NOT.READMPSTEPS( 'INFILE', VNAMES( N ), NRECS, FSTEPS, FDATES, FTIMES ) )  THEN
 
         CALL M3EXIT( PNAME, 0, 0, 'Error readng time-variable "'//VNAMES( T )//'"', 2 )
 
@@ -176,12 +176,12 @@ PROGRAM MPASSTAT
              INDEX1( 'nVertices', VNDIMS( V ), DNAME( :,V ) ) )
     IF ( K .LE. 0 ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Variable not subscripted by CELL, EDGE, or VERTEX', 2 )
-    ELSE IF ( K .EQ. 1 .AND. ( N .EQ. 0 .OR. N .EQ. 2 ) ) THEN
+    ELSE IF ( K .EQ. 1 .AND. ( T .EQ. 0 .OR. T .EQ. 2 ) ) THEN
         NCELLS = VDIMS( K,V )
         NLAYS = 1
         LAY0  = 1
         LAY1  = 1
-    ELSE IF ( K .EQ. 2 .AND. ( N .EQ. 0 .OR. N .EQ. 3 ) ) THEN
+    ELSE IF ( K .EQ. 2 .AND. ( T .EQ. 0 .OR. T .EQ. 3 ) ) THEN
         NCELLS = VDIMS( 2,V )
         NLAYS  = VDIMS( 1,V )
         LAY0   = GETNUM(    1, NLAYS,     1, 'Enter start of layer range for analysis' )
