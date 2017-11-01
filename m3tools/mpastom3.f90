@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 36 2017-10-24 17:32:20Z coats $"
+    !!  Version "$Id: mpastom3.f90 40 2017-11-01 20:44:14Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -137,7 +137,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 36 2017-10-24 17:32:20Z coats $',&
+'$Id: mpastom3.f90 40 2017-11-01 20:44:14Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -202,7 +202,7 @@ BLANK, BAR, BLANK
         END IF
         CAREA = CAREA * REARTH**2 * PI180**2        !!  cell-area at equator
         DO R = 1, NROWS
-            ASQ = CAREA * COS( PI180*LAT( 1,R ) ) * REARTH**2
+            ASQ = CAREA * COS( PI180*LAT( 1,R ) )
             DO C = 1, NCOLS
                 LLAREA( C,R ) = ASQ
             END DO
@@ -213,9 +213,11 @@ BLANK, BAR, BLANK
     !!.......   Get list of variables to process:
 
     CALL M3MESG( BLANK )
-    CALL M3MESG( 'The list of variables in this file is:' )
+    CALL M3MESG( 'The list of REAL variables in this file is:' )
     DO  L = 1, MPVARS
-        WRITE( *, '( I3, ": ", A )' ) L, MPNAMES( L )
+        IF ( MPTYPES( L ) .EQ. M3REAL ) THEN
+            WRITE( *, '( I3, ": ", A )' ) L, MPNAMES( L )
+        END IF
     END DO
 
     IFLAG = .FALSE.     !!  are LFLAG, TFLAG initialized?
@@ -224,6 +226,7 @@ BLANK, BAR, BLANK
     DO I = 1, MXVARS3
 
         L = MOD( L, MPVARS ) + 1
+        CALL M3MESG( BLANK )
         V = GETNUM( 0, MPVARS, L, 'Enter number for the variable to interpolate, or 0 to quit.' )
         IF ( V .EQ. 0 )  EXIT
         
@@ -300,6 +303,7 @@ BLANK, BAR, BLANK
         NVARS = I
 
     END DO      !  end loop getting variables to process
+    CALL M3MESG( BLANK )
 
     IF ( EFLAG ) THEN
         CALL M3EXIT( PNAME, 0,0, 'Fatal error(s) in setup for variables', 0 )
@@ -369,12 +373,15 @@ BLANK, BAR, BLANK
 
     !!....... Process interpolation:
 
+    CALL M3MESG( BLANK )
     IF ( TFLAG ) THEN       !! time stepped
 
         DO N = REC0, REC1
 
             JDATE = FDATES( N )
             JTIME = FTIMES( N )
+            WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing ', JDATE, ':', JTIME
+            CALL M3MESG( MESG )
 
             DO V = 1, NVARS
 
@@ -444,6 +451,8 @@ BLANK, BAR, BLANK
 
     ELSE       !! time independent
 
+        CALL M3MESG( 'Processing...' )
+
         DO V = 1, NVARS
 
             IF ( LFLAG ) THEN      !!  if multi-layer
@@ -476,7 +485,7 @@ BLANK, BAR, BLANK
                     EFLAG = .TRUE.
                 END IF
 
-            ELSE        !!  single-layer data
+            ELSE        !!  else single-layer data
 
                 IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), NCELLS, INGRID2D ) ) THEN
                     EFLAG = .TRUE.
@@ -520,27 +529,27 @@ BLANK, BAR, BLANK
         MESG  = 'Successful completion of program'
         ISTAT = 0
     END IF
-    CALL M3EXIT( PNAME, 0, 0, MESG, 0 )
+    CALL M3EXIT( PNAME, 0, 0, MESG, ISTAT )
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-    SUBROUTINE XPOSE( NC, NR, NL, XP, YG )
+    SUBROUTINE XPOSE( NC, NR, NL, ZXY, XYZ )
         INTEGER, INTENT(IN   ) :: NC, NR, NL
-        REAL,    INTENT(IN   ) :: XP( NL,NC,NR )
-        REAL,    INTENT(  OUT) :: YG( NC,NR,NL )
+        REAL,    INTENT(IN   ) :: ZXY( NL,NC,NR )
+        REAL,    INTENT(  OUT) :: XYZ( NC,NR,NL )
 
         INTEGER     C, R, L
 
-!$OMP    PARALLEL DO DEFAULT( NONE ),               &
-!$OMP&                SHARED( NC, NR, NL, YG, XP ), &
+!$OMP    PARALLEL DO DEFAULT( NONE ),                   &
+!$OMP&                SHARED( NC, NR, NL, XYZ, ZXY ),   &
 !$OMP&               PRIVATE( C, R, L )
 
         DO R = 1, NR
             DO L = 1, NL
             DO C = 1, NC
-                YG( C,R,L ) = XP( L,C,R )
+                XYZ( C,R,L ) = ZXY( L,C,R )
             END DO
             END DO
         END DO

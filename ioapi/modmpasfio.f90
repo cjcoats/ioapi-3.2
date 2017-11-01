@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 37 2017-10-25 18:09:52Z coats $"
+    !!  Version "$Id: modmpasfio.f90 40 2017-11-01 20:44:14Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -30,6 +30,7 @@ MODULE MODMPASFIO
     !!      Version       09/29/2017 by CJC:  bug-fix in CREATEMPAS()
     !!      Version       10/25/2017 by CJC:  Fix for SPHEREDIST() fInternational-Date-Line
     !                     issues.  X-Y-Z based SPHEREDIST().  Generic MPINTERP()
+    !!      Version       11/01/2017 by CJC:  fix MPINTERP() generic
     !!...................................................................................
 
     USE MODNCFIO
@@ -219,11 +220,11 @@ MODULE MODMPASFIO
     INTEGER, PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: EEDGES(:,:) !! (MPBNDY2,MPEDGES): Edge indices used to reconstruct tangential velocities.
 
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALATC(:)      !! (MPCELLS):  latitude-degrees for cell-centers
-    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALONC(:)      !! (MPCELLS): longitude-degrees for cell-centers
+    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALONC(:)      !! (MPCELLS): longitude-degrees for cell-centers:  0 <= alon < 360.0d0
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALATE(:)      !! (MPEDGES):  latitude-degrees for edge-centers
-    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALONE(:)      !! (MPEDGES): longitude-degrees for edge-centers
+    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALONE(:)      !! (MPEDGES): longitude-degrees for edge-centers:  0 <= alon < 360.0d0
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALATV(:)      !! (MPVRTXS):  latitude-degrees for vertices
-    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALONV(:)      !! (MPVRTXS): longitude-degrees for vertices
+    REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: ALONV(:)      !! (MPVRTXS): longitude-degrees for vertices:  0 <= alon < 360.0d0
 
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: XCELL(:)      !! (MPCELLS): X-coordinate for cell-centers
     REAL(8), PUBLIC, PROTECTED, SAVE, ALLOCATABLE  :: YCELL(:)      !! (MPCELLS): Y-coordinate for cell-centers
@@ -439,7 +440,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 37 2017-10-25 18:09:52Z coats $',&
+        'Version $Id: modmpasfio.f90 40 2017-11-01 20:44:14Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -604,7 +605,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 37 2017-10-25 18:09:52Z coats $',&
+        'Version $Id: modmpasfio.f90 40 2017-11-01 20:44:14Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -816,19 +817,19 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!........   Convert lat-lon coordinates to degrees:
 
         DO N = 1, MPCELLS
-            ALATC( N ) = RPI180 * ALATC( N )
-            ALONC( N ) = RPI180 * ALONC( N )
+            ALATC( N ) =      RPI180 * ALATC( N )
+            ALONC( N ) = MOD( RPI180 * ALONC( N ) + 360.0D0, 360.0D0 )
         END DO
 
         DO N = 1, MPEDGES
-            ALATE( N )  = RPI180 * ALATE( N )
-            ALONE( N )  = RPI180 * ALONE( N )
-            EANGLE( N ) = RPI180 * EANGLE( N )
+            ALATE( N )  =      RPI180 * ALATE( N )
+            ALONE( N )  = MOD( RPI180 * ALONE( N ) + 360.0D0, 360.0D0 )
+            EANGLE( N ) =      RPI180 * EANGLE( N )
         END DO
 
         DO N = 1, MPVRTXS
-            ALATV( N ) = RPI180 * ALATV( N )
-            ALONV( N ) = RPI180 * ALONV( N )
+            ALATV( N ) =      RPI180 * ALATV( N )
+            ALONV( N ) = MOD( RPI180 * ALONV( N ) + 360.0D0, 360.0D0 )
         END DO
 
 
@@ -1214,9 +1215,10 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         REAL(8), INTENT( IN ) :: ALAT, ALON
 
-        INTEGER, SAVE :: INDX = 1       !!  cell from last run.
+        INTEGER     I, J, K, V1, V2, M, N, V
+        REAL(8)     X, Y, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
 
-        INTEGER     I, J, K, V1, V2, N
 
         REAL(8)     DMIN, DBDY, LATV, LONV
 
@@ -1228,45 +1230,35 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
-        I    = INDX
-        DMIN = SPHEREDIST( ALAT, ALON, ALATV( I ), ALONV( I ) )
+        M = FINDCELLD( ALAT, ALON )
+        IF ( M .LT. 0 ) THEN
+            FINDVRTXD = IMISS3
+            RETURN
+        ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+            FINDVRTXD = IMISS3
+            RETURN
+        END IF
 
-        DO  !!........  Search-loop:  traverse all neighbors, finding min distance
+        X = MOD( 360.0D0 + ALON, 360.0D0 )
+        Y = ALAT
+        DO J = 1,  NBNDYE( M )
 
-            N = I
+            V  = BNDYVRTX( J,M )
+            X1 = ALONC( VCELLS( 1,V ) )
+            X2 = ALONC( VCELLS( 2,V ) )
+            X3 = ALONC( VCELLS( 3,V ) )
+            Y1 = ALATC( VCELLS( 1,V ) )
+            Y2 = ALATC( VCELLS( 2,V ) )
+            Y3 = ALATC( VCELLS( 3,V ) )
 
-            DO J = 1, MPVORDR
+            IF ( BARYFAC( Y, X, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+                FINDVRTXD = V
+                RETURN
+            END IF
 
-                K = VEDGES( J,I )
+        END DO
 
-                IF ( K .EQ. 0 )  CYCLE
-
-                V1 = EVRTXS( 1,K )      !!  note:  one of these vertices is vertex I
-                V2 = EVRTXS( 2,K )
-                IF ( V1 .NE. I ) THEN
-                    DBDY = SPHEREDIST( ALAT, ALON, ALATV( V1 ), ALONV( V1 ) )
-                    IF ( DBDY .LT. DMIN ) THEN
-                        DMIN = DBDY
-                        N    = V1
-                    END IF
-                ELSE
-                    DBDY = SPHEREDIST( ALAT, ALON, ALATV( V2 ), ALONV( V2 ) )
-                    IF ( DBDY .LT. DMIN ) THEN
-                        DMIN = DBDY
-                        N    = V2
-                    END IF
-                END IF
-
-            END DO
-
-            IF ( N .EQ. I )  EXIT
-
-            I = N
-
-        END DO  !!........  End search-loop
-
-        INDX      = N
-        FINDVRTXD = N
+        FINDVRTXD = IMISS3
         RETURN
 
     END FUNCTION FINDVRTXD
@@ -4138,7 +4130,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                            TRIM( VNAMES(V) ) // '" in file "' // TRIM( FNAME ) // '"'
                     CALL M3MESG( NF_STRERROR( IERR ) ) 
                     CALL M3MESG( MESG )
-                    EFLAG = .TRUE.
+                    VUNITS( V ) = CMISS3
                 END IF
 
             END DO
@@ -13025,7 +13017,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_DOUBLE
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
 
-        INTEGER     I, J, K, L
+        INTEGER     I, J, K, L, M
         REAL(8)     VAL
         
         IF ( .NOT.CHK_FILL ) THEN
@@ -13065,7 +13057,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL, PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_FLOAT
         REAL, PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_FLOAT
 
-        INTEGER     I, J, K, L
+        INTEGER     I, J, K, L, M
         REAL        VAL
         
         IF ( .NOT.CHK_FILL ) THEN
@@ -13102,7 +13094,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER, INTENT(IN   ) :: NDIM1, NDIM2, NDIM3, NDIM4
         INTEGER, INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
 
-        INTEGER     I, J, K, L
+        INTEGER     I, J, K, L, M
         INTEGER     VAL
         
         IF ( .NOT.CHK_FILL ) THEN
@@ -13137,7 +13129,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER  , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3, NDIM4
         INTEGER*2, INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
 
-        INTEGER     I, J, K, L
+        INTEGER     I, J, K, L, M
         INTEGER*2   VAL
         
         IF ( .NOT.CHK_FILL ) THEN
@@ -13172,7 +13164,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3, NDIM4
         INTEGER*1    , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
 
-        INTEGER     I, J, K, L
+        INTEGER     I, J, K, L, M
         INTEGER*1   VAL
         
         IF ( .NOT.CHK_FILL ) THEN
@@ -13804,13 +13796,41 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!.............................................................................
-    !!  MPINTERP:  Interpolate MPAS-cell-variable Z to lat-lon location(s) <Y=ALAT,X=ALON>:
+    !!  MPINTERP:  Interpolate MPAS-cell-variable Z to lat-lon location(s) <Y=ALAT,X=ALON>
+    !!  using barycentric-linear interpolation.
     !!      See  https://codeplea.com/triangular-interpolation
-    !!  For 2-D grids, if AFLAG, normalize the result by the ratio of input-cell areas
+    !!  For 2-D grids with argument A, normalize the result by the ratio of input-cell areas
     !!  to output-cell areas (as is necessary for mass-per-cell emissions)
     !!  Forms for points, sets of points, and 2-D grids of points and for
     !!  non-layered and layered variables to be interpolated.
     !!  Note that layered results follow MPAS layer-subscript-first conventions.
+    !!.............................................................................
+    !!  BARYFAC computes weights for barycentric-linear interpolation to (X,Y).
+    !!  and returns TRUE iff the requested (X,Y) is in the triangle defined by
+    !!  the input points (X1,Y1), X2,Y2), X3,Y3).
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION  BARYFAC( X, Y, X1, Y1, X2, Y2, X3, Y3, W1, W2, W3 )
+        REAL(8), INTENT(IN   ) :: X,  Y                     !!  interpolation point
+        REAL(8), INTENT(IN   ) :: X1, Y1, X2, Y2, X3, Y3    !!  triangle-vedrtices
+        REAL(8), INTENT(  OUT) :: W1, W2, W3                !!  coefficients
+
+        REAL(8)     DD
+
+        DD = 1.0d0 / ( ( Y2 - Y3 )*( X1 - X3 ) + ( X3 - X2 )*( Y1 - Y3 ) )
+        W1 = ( ( Y2 - Y3 )*( X  - X3 ) + ( X3 - X2 )*( Y  - Y3 ) ) * DD
+        W2 = ( ( Y3 - Y1 )*( X  - X3 ) + ( X1 - X3 )*( Y  - Y3 ) ) * DD
+        W3 = 1.0d0 - W1 - W2
+
+        BARYFAC = ( W1 .GE. 0.0d0 .AND. W1 .LE. 1.0d0 .AND.    &
+                    W2 .GE. 0.0d0 .AND. W2 .LE. 1.0d0 .AND.    &
+                    W3 .GE. 0.0d0 .AND. W3 .LE. 1.0d0 )
+
+        RETURN
+
+    END  FUNCTION BARYFAC
+
     !!.............................................................................
 
 
@@ -13830,62 +13850,44 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
         REAL,    INTENT(IN   ) :: Z( MPCELLS )
         REAL,    INTENT(  OUT) :: V
-        INTEGER     K, KK, K0, K1, K2, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
 
-        K0 = FINDCELL( Y, X )
-        IF ( K0 .LT. 0 ) THEN
+        INTEGER     J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
             MPINTERP0DD = .FALSE.
             RETURN
-        ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+        ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
             MPINTERP0DD = .FALSE.
             RETURN
         END IF
         
         !!........  Find closest cells K1, K2 (in that order)
 
-        K1 = BNDYCELL(1,K0)
-        K2 = BNDYCELL(2,K0)
-        D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-        D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-        IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-            DD = D1
-            KK = K1
-            D1 = D2
-            K1 = K2
-            D2 = DD
-            K2 = KK
-        END IF
+        XX = MOD( X+360.0D0, 360.0D0 )
+        YY = Y
+        X1 = ALONC( M )
+        Y1 = ALATC( M )
 
-        DO N = 3, NBNDYE(K0)
-            K = BNDYCELL(N,K0)
-            D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-            IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                D2 = D1
-                K2 = K1
-                D1 = D
-                K1 = K
-            ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                D2 = D
-                K2 = K
+        DO J = 1,  NBNDYE( M )
+            K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+            X2 = ALONC( BNDYCELL( J,M ) )
+            Y2 = ALATC( BNDYCELL( J,M ) )
+            X3 = ALONC( BNDYCELL( K,M ) )
+            Y3 = ALATC( BNDYCELL( K,M ) )
+            IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                    V = W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K )
+                    MPINTERP0DD = .TRUE.
+                    RETURN
+
             END IF
-        END DO
 
-        X0 = ALONC( K0 )
-        Y0 = ALATC( K0 )
-        X1 = ALONC( K1 )
-        Y1 = ALATC( K1 )
-        X2 = ALONC( K2 )
-        Y2 = ALATC( K2 )
-        DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-        W0 = ( ( Y1 - Y2 )*( X  - X2 ) + ( X2 - X1 )*( Y  - Y2 ) ) * DD
-        W1 = ( ( Y2 - Y0 )*( X  - X2 ) + ( X0 - X2 )*( Y  - Y2 ) ) * DD
-        W2 = 0.0 - W0 - W1
+        END DO      !! end loop on boundary-cells for this cell
 
-        V = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
-
-        MPINTERP0DD = .TRUE.
+        MPINTERP0DD = .FALSE.
         RETURN
 
     END FUNCTION MPINTERP0DD
@@ -13912,67 +13914,57 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( MPCELLS )
         REAL,    INTENT(  OUT) :: V( NPTS )
-        INTEGER     I, K, KK, K0, K1, K2, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     I, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO I = 1, NPTS
+!$OMP    PARALLEL DO DEFAULT( NONE ),                                               &
+!$OMP&                SHARED( NPTS, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ),   &
+!$OMP&               PRIVATE( I, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,           &
+!$OMP&                        W1, W2, W3 )                                          &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I ), X( I ) )
-            IF ( K0 .LT. 0 ) THEN
+ILOOP:  DO I = 1, NPTS
+
+            M = FINDCELL( Y( I ), X( I ) )
+            IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
+            YY = Y( I )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V( I ) = W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K )
+                        CYCLE ILOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I) - X2 ) + ( X2 - X1 )*( Y(I) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I) - X2 ) + ( X0 - X2 )*( Y(I) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            V( I ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+            EFLAG = .TRUE.
         
-        END DO
+        END DO ILOOP
 
         MPINTERP1DD = ( .NOT.EFLAG )
         RETURN
@@ -14001,68 +13993,58 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( MPCELLS )
         REAL,    INTENT(  OUT) :: V( NC, NR )
-        INTEGER     I, J, K, KK, K0, K1, K2, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO J = 1, NR
-        DO I = 1, NC
+!$OMP    PARALLEL DO DEFAULT( NONE ),                                               &
+!$OMP&                SHARED( NC, NR, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ), &
+!$OMP&               PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,        &
+!$OMP&                        W1, W2, W3 )                                          &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I,J ), X( I,J ) )
-            IF ( K0 .LT. 0 ) THEN
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
-                CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
                 EFLAG = .TRUE.
-                CYCLE
+                CYCLE CLOOP
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V( C,R ) = W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K )
+                        CYCLE CLOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            V( I,J ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+            EFLAG = .TRUE.
         
-        END DO
+        END DO CLOOP
         END DO
 
         MPINTERP2DD = ( .NOT.EFLAG )
@@ -14094,68 +14076,59 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NC, NR )           !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( MPCELLS )
         REAL,    INTENT(  OUT) :: V( NC, NR )
-        INTEGER     I, J, K, KK, K0, K1, K2, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO J = 1, NR
-        DO I = 1, NC
+!$OMP    PARALLEL DO                                                                    &
+!$OMP&       DEFAULT( NONE ),                                                           &
+!$OMP&        SHARED( NC, NR, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                    &
+!$OMP&                W1, W2, W3 )                                                      &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I,J ), X( I,J ) )
-            IF ( K0 .LT. 0 ) THEN
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
-                CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
                 EFLAG = .TRUE.
-                CYCLE
+                CYCLE CLOOP
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V(C,R) = ( W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K ) ) * A / CAREAS( M )
+                        CYCLE CLOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = CAREAS( K0 ) / ( A * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            V( I,J ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+            EFLAG = .TRUE.
         
-        END DO
+        END DO CLOOP
         END DO
 
         MPINTERPE2DD = ( .NOT.EFLAG )
@@ -14187,68 +14160,59 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NC, NR )           !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( MPCELLS )
         REAL,    INTENT(  OUT) :: V( NC, NR )
-        INTEGER     I, J, K, KK, K0, K1, K2, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO J = 1, NR
-        DO I = 1, NC
+!$OMP    PARALLEL DO                                                                    &
+!$OMP&       DEFAULT( NONE ),                                                           &
+!$OMP&        SHARED( NC, NR, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                    &
+!$OMP&                W1, W2, W3 )                                                      &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I,J ), X( I,J ) )
-            IF ( K0 .LT. 0 ) THEN
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
-                CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
                 EFLAG = .TRUE.
-                CYCLE
+                CYCLE CLOOP
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V(C,R) = ( W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K ) ) * A( C,R ) / CAREAS( M  )
+                        CYCLE CLOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = CAREAS( K0 ) / ( A(I,J) * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            V( I,J ) = W0 * Z( K0 ) + W1 * Z( K1 ) + W2 * Z( K2 )
+            EFLAG = .TRUE.
         
-        END DO
+        END DO CLOOP
         END DO
 
         MPINTERPG2DD = ( .NOT.EFLAG )
@@ -14278,64 +14242,46 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
         REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )
         REAL,    INTENT(  OUT) :: V( NL )
-        INTEGER     K, KK, K0, K1, K2, L, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
 
-        K0 = FINDCELL( Y, X )
-        IF ( K0 .LT. 0 ) THEN
+        INTEGER     J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
             MPINTERPL0DD = .FALSE.
             RETURN
-        ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+        ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
             MPINTERPL0DD = .FALSE.
             RETURN
         END IF
         
         !!........  Find closest cells K1, K2 (in that order)
 
-        K1 = BNDYCELL(1,K0)
-        K2 = BNDYCELL(2,K0)
-        D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-        D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-        IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-            DD = D1
-            KK = K1
-            D1 = D2
-            K1 = K2
-            D2 = DD
-            K2 = KK
-        END IF
+        XX = MOD( X + 360.0D0, 360.0D0 )
+        YY = Y
+        X1 = ALONC( M )
+        Y1 = ALATC( M )
 
-        DO N = 3, NBNDYE(K0)
-            K = BNDYCELL(N,K0)
-            D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-            IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                D2 = D1
-                K2 = K1
-                D1 = D
-                K1 = K
-            ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                D2 = D
-                K2 = K
+        DO J = 1,  NBNDYE( M )
+            K = 1 + MOD( K, NBNDYE( M ) )
+            X2 = ALONC( BNDYCELL( J,M ) )
+            Y2 = ALATC( BNDYCELL( J,M ) )
+            X3 = ALONC( BNDYCELL( K,M ) )
+            Y3 = ALATC( BNDYCELL( K,M ) )
+            IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                    DO L = 1, NL
+                        V(L) = W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K )
+                    END DO
+                    MPINTERPL0DD = .TRUE.
+                    RETURN
+
             END IF
-        END DO
 
-        X0 = ALONC( K0 )
-        Y0 = ALATC( K0 )
-        X1 = ALONC( K1 )
-        Y1 = ALATC( K1 )
-        X2 = ALONC( K2 )
-        Y2 = ALATC( K2 )
-        DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-        W0 = ( ( Y1 - Y2 )*( X  - X2 ) + ( X2 - X1 )*( Y  - Y2 ) ) * DD
-        W1 = ( ( Y2 - Y0 )*( X  - X2 ) + ( X0 - X2 )*( Y  - Y2 ) ) * DD
-        W2 = 0.0 - W0 - W1
+        END DO      !! end loop on boundary-cells for this cell
 
-        DO L = 1, NL
-            V( NL ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
-        END DO
-
-        MPINTERPL0DD = .TRUE.
+        MPINTERPL0DD = .FALSE.
         RETURN
 
     END FUNCTION MPINTERPL0DD
@@ -14362,69 +14308,60 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )
         REAL,    INTENT(  OUT) :: V( NL,NPTS )
-        INTEGER     I, K, KK, K0, K1, K2, L, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     I, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO I = 1, NPTS
+!$OMP    PARALLEL DO                                                            &
+!$OMP&       DEFAULT( NONE ),                                                   &
+!$OMP&        SHARED( NPTS, NL, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ),   &
+!$OMP&       PRIVATE( I, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,            &
+!$OMP&                W1, W2, W3 )                                              &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I ), X( I ) )
-            IF ( K0 .LT. 0 ) THEN
+ILOOP:  DO I = 1, NPTS
+
+            M = FINDCELL( Y( I ), X( I ) )
+            IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
+            YY = Y( I )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        DO L = 1, NL
+                            V( L,I ) = W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K )
+                        END DO
+                        CYCLE ILOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I) - X2 ) + ( X2 - X1 )*( Y(I) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I) - X2 ) + ( X0 - X2 )*( Y(I) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            DO L = 1, NL
-                V( L,I ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
-            END DO
+            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
         
-        END DO
+        END DO ILOOP
 
         MPINTERPL1DD = ( .NOT.EFLAG )
         RETURN
@@ -14453,70 +14390,61 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( NL, MPCELLS )
         REAL,    INTENT(  OUT) :: V( NL, NC, NR )
-        INTEGER     I, J, K, KK, K0, K1, K2, L, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO J = 1, NR
-        DO I = 1, NC
+!$OMP    PARALLEL DO                                                            &
+!$OMP&       DEFAULT( NONE ),                                                   &
+!$OMP&        SHARED( NC, NR, NL, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ), &
+!$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,         &
+!$OMP&                W1, W2, W3 )                                              &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I,J ), X( I,J ) )
-            IF ( K0 .LT. 0 ) THEN
-                EFLAG = .TRUE.
-                CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
-                EFLAG = .TRUE.
-                CYCLE
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                CYCLE CLOOP
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        DO L = 1, NL
+                            V( L,C,R ) = W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K )
+                        END DO
+                        CYCLE CLOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = 1.0 / ( ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            DO L = 1, NL
-                V( L,I,J ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
-            END DO
+            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
         
-        END DO
+        END DO CLOOP
         END DO
 
         MPINTERPL2DD = ( .NOT.EFLAG )
@@ -14548,70 +14476,63 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( NL, MPCELLS )
         REAL,    INTENT(  OUT) :: V( NL, NC, NR )
-        INTEGER     I, J, K, KK, K0, K1, K2, L, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        REAL        ARAT            !!  area-ratio
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO J = 1, NR
-        DO I = 1, NC
+!$OMP    PARALLEL DO                                                                        &
+!$OMP&       DEFAULT( NONE ),                                                               &
+!$OMP&        SHARED( NC, NR, NL, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                     &
+!$OMP&                W1, W2, W3, ARAT )                                                    &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I,J ), X( I,J ) )
-            IF ( K0 .LT. 0 ) THEN
-                EFLAG = .TRUE.
-                CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
-                EFLAG = .TRUE.
-                CYCLE
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                CYCLE CLOOP
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A / CAREAS( M )
+                        DO L = 1, NL
+                            V( L,C,R ) = ARAT * ( W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K ) )
+                        END DO
+                        CYCLE CLOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = CAREAS( K0 ) / ( A * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            DO L = 1, NL
-                V( L,I,J ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
-            END DO
+            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
         
-        END DO
+        END DO CLOOP
         END DO
 
         MPINTERPEL2DD = ( .NOT.EFLAG )
@@ -14643,70 +14564,63 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8), INTENT(IN   ) :: X( NC, NR )             !!  longitude, degrees
         REAL,    INTENT(IN   ) :: Z( NL, MPCELLS )
         REAL,    INTENT(  OUT) :: V( NL, NC, NR )
-        INTEGER     I, J, K, KK, K0, K1, K2, L, N
-        REAL(8)     D, DD, D1, D2, X0, Y0, X1, X2, Y1, Y2
-        REAL        W0, W1, W2
+
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        REAL        ARAT            !!  area-ratio
         LOGICAL     EFLAG
         
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
 
-        DO J = 1, NR
-        DO I = 1, NC
+!$OMP    PARALLEL DO                                                                        &
+!$OMP&       DEFAULT( NONE ),                                                               &
+!$OMP&        SHARED( NC, NR, NL, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                     &
+!$OMP&                W1, W2, W3, ARAT )                                                    &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
 
-            K0 = FINDCELL( Y( I,J ), X( I,J ) )
-            IF ( K0 .LT. 0 ) THEN
-                EFLAG = .TRUE.
-                CYCLE
-            ELSE IF ( NBNDYE(K0) .LT. 2 ) THEN
-                EFLAG = .TRUE.
-                CYCLE
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                CYCLE CLOOP
             END IF
 
-            K1 = BNDYCELL(1,K0)
-            K2 = BNDYCELL(2,K0)
-            D1 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K1), ALONC(K1) )
-            D2 = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K2), ALONC(K2) )
-            IF ( D2 .LT. D1 ) THEN      !!  swap, if necessary, so that D1 < D2
-                DD = D1
-                KK = K1
-                D1 = D2
-                K1 = K2
-                D2 = DD
-                K2 = KK
-            END IF
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
 
-            DO N = 3, NBNDYE(K0)
-                K = BNDYCELL(N,K0)
-                D = SPHEREDIST( ALATC(K0), ALONC(K0), ALATC(K), ALONC(K) )
-                IF ( D .LT. D1 ) THEN       !!  two smallest D's are D, D1
-                    D2 = D1
-                    K2 = K1
-                    D1 = D
-                    K1 = K
-                ELSE IF ( D .LT. D2 ) THEN  !!  two smallest D's are D1, D
-                    D2 = D
-                    K2 = K
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A( C,R ) / CAREAS( M )
+                        DO L = 1, NL
+                            V( L,C,R ) = ARAT * ( W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K ) )
+                        END DO
+                        CYCLE CLOOP
+
                 END IF
-            END DO
 
-            X0 = ALONC( K0 )
-            Y0 = ALATC( K0 )
-            X1 = ALONC( K1 )
-            Y1 = ALATC( K1 )
-            X2 = ALONC( K2 )
-            Y2 = ALATC( K2 )
-            DD = CAREAS( K0 ) / ( A(I,J) * ( Y1 - Y2 )*( X0 - X2 ) + ( X2 - X1 )*( Y0 - Y2 ) )
-            W0 = ( ( Y1 - Y2 )*( X(I,J) - X2 ) + ( X2 - X1 )*( Y(I,J) - Y2 ) ) * DD
-            W1 = ( ( Y2 - Y0 )*( X(I,J) - X2 ) + ( X0 - X2 )*( Y(I,J) - Y2 ) ) * DD
-            W2 = 0.0 - W0 - W1
+            END DO      !! end loop on boundary-cells for this cell
 
-            DO L = 1, NL
-                V( L,I,J ) = W0 * Z( L,K0 ) + W1 * Z( L,K1 ) + W2 * Z( L,K2 )
-            END DO
+            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
         
-        END DO
+        END DO CLOOP
         END DO
 
         MPINTERPGL2DD = ( .NOT.EFLAG )

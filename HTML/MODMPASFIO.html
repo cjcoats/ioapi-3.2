@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 38 2017-10-25 19:49:48Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 40 2017-11-01 20:44:14Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -29,10 +29,14 @@
 
     <STRONG>See also</STRONG>
     <BLOCKQUOTE><DL>
+        <DT> <A HREF = "https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf">
+             <VAR>https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf</VAR></A>,
+        <DD> for MPAS grid and netCDF-file specifications
+        <P>
         <DT> <A HREF = "MODNCFIO.html"><CODE>MODULE MODNCFIO</CODE></A>,
-        <DD> for &quot;raw netCDF&quot; files and netCDF declarations
+        <DD> for netCDF declarations and &quot;raw netCDF&quot; file routines
         <DT> <A HREF = "MODWRFIO.html"><CODE>MODULE MODWRFIO</CODE></A>
-        <DD> for WRF-related files
+        <DD> for WRF-related file routines
         <P>
         <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
             <A HREF = "MPASDIFF.html"><STRONG><VAR>mpasdiff</VAR></STRONG></A>
@@ -176,12 +180,22 @@
              with this type-assignment.</STRONG>
              <P>
         <LI> MPAS uses units of radians for latitudes and longitudes
-             internally. Everyone else uses either degrees, minutes, and
+             internally, with 
+             <CODE><BLOCKQUOTE>
+             -&pi;/2 &leq; lat &lt; &pi;/2 <BR>
+             0 &leq; lon &leq; &pi;
+             </BLOCKQUOTE></CODE>
+             Everyone else uses either degrees, minutes, and
              seconds or real-number degrees, and (except for the WMO) in
              a fashion compliant with ISO Standard 6709. This
-             <CODE>MODULE</CODE> uses real-number degrees compliant with
-             ISO 6709, and converts back and forth between that and the
-             on-file MPAS radians usage.
+             <CODE>MODULE</CODE> uses real-number degrees in the range
+             <CODE><BLOCKQUOTE>
+             -90 &leq; lat &lt; 90 <BR>
+             0 &leq; lon &leq; 360
+             </BLOCKQUOTE></CODE>
+             and converts back and forth between that and the
+             on-file MPAS radians usage.  Arguments to the routines
+             are converted to this convention, as necessary.
              <P>
         <LI> The MPAS <CODE>(X,Y,Z)</CODE> coordinate system is relative
              to 3-D Cartesian axes with origin <CODE>X=Y=Z=0</CODE> at
@@ -422,7 +436,7 @@
              boundary of a given cell
         <P>
        <DT><CODE>INTEGER  BNDYEDGE(MPBNDYC, MPCELLS)</CODE>
-        <DD> (<VAR>dgesOnCell</VAR>):  indices of edges that are on the
+        <DD> (<VAR>edgesOnCell</VAR>):  indices of edges that are on the
              boundary of a given cell
         <P>
         <DT><CODE>INTEGER BNDYVRTX(MPBNDYC, MPCELLS)</CODE>
@@ -450,19 +464,25 @@
         <DD> (<VAR>latCell</VAR>): latitudes of cell-centers
         <P>
         <DT><CODE>REAL*8  ALONC(MPCELLS)</CODE>
-        <DD> (<VAR>lonCell</VAR>): longitudes of cell-centers
+        <DD> (<VAR>lonCell</VAR>): longitudes of cell-centers,
+             normalized so that
+             <CODE>0&nbsp;&leq&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
         <P>
         <DT><CODE>REAL*8  ALATE(MPEDGES)</CODE>
         <DD> (<VAR>latEdge</VAR>): latitudes of edge-centers
         <P>
         <DT><CODE>REAL*8  ALONE(MPEDGES)</CODE>
-        <DD> (<VAR>lonEdge</VAR>): longitudes of edge-centers
+        <DD> (<VAR>lonEdge</VAR>): longitudes of edge-centers,
+             normalized so that
+             <CODE>0&nbsp;&leq&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
         <P>
        <DT><CODE>REAL*8  ALATV(MPVRTXS)</CODE>
         <DD> (<VAR>latVertex</VAR>): latitudes of vertices
         <P>
         <DT><CODE>REAL*8  ALONV(MPVRTXS)</CODE>
-        <DD> (<VAR>lonVertex</VAR>): longitudes of vertices
+        <DD> (<VAR>lonVertex</VAR>): longitudes of vertices,
+             normalized so that
+             <CODE>0&nbsp;&leq&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
         <P>
         <DT><CODE>REAL*8  XCELL(MPCELLS) </CODE>
         <DD> (<VAR>xCell</VAR>):  <CODE>X</CODE>-coordinates of cell-centers
@@ -1640,6 +1660,10 @@ INITREARTH()</CODE></A></H2>
     contains the requested point(s).  See
     <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
     for a reference on the interpolation formulas.
+    <P>
+
+    For all but the single-point case, <CODE>MPINTERP()</CODE> is
+    OpenMP-parallel.
     <P>
 
     <EM>See also</EM> <STRONG><VAR>m3tools</VAR></STRONG> program
