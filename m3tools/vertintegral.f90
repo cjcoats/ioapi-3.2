@@ -2,7 +2,7 @@
 PROGRAM  VERTINTEGRAL
 
     !!***********************************************************************
-    !! Version "$Id: vertintegral.f90 18 2017-09-02 19:07:43Z coats $"
+    !! Version "$Id: vertintegral.f90 42 2017-11-02 16:19:59Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2009 UNC Institute for the Environment and
     !! Baron Advanced Meteorological Systems, LLC,(C) 2015-2016 UNC IE.,
@@ -202,7 +202,7 @@ PROGRAM  VERTINTEGRAL
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertintegral.f90 18 2017-09-02 19:07:43Z coats $',&
+'$Id: vertintegral.f90 42 2017-11-02 16:19:59Z coats $',&
 ''
 
     WRITE ( LUNIT,'( 5X , A )' )
@@ -410,8 +410,14 @@ PROGRAM  VERTINTEGRAL
 
     !!...............  Process the output time step sequence
 
+    JDATE  = SDATE
+    JTIME  = STIME
+    CALL NEXTIME( JDATE, JTIME, -TSTEP )
+
     CALL M3MESG( BAR )
     DO  N = 1, NSTEPS
+
+        CALL NEXTIME( JDATE, JTIME, TSTEP )
 
         WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing', JDATE, ':', JTIME
         CALL M3MESG( BLANK )
@@ -510,8 +516,6 @@ PROGRAM  VERTINTEGRAL
             END IF
 
         END DO ! loop on species (NVARS)
-
-        CALL NEXTIME( JDATE, JTIME, TSTEP )
 
     END DO         !  end loop on time steps
 
