@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GRIDS.html 410 2016-08-03 15:39:39Z coats $" -->
+<!-- "$Id: GRIDS.html 44 2017-11-07 16:26:07Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> On The Definition of Grids and Coordinates for Models-3  </TITLE>
 </HEAD>
@@ -25,7 +25,7 @@ indexing system will specify the grid on which the data exists
 as part of the query.  Computational processes may need to know
 both the geometry and the geographic descriptive parameters  of 
 these grids and the underlying coordinate systems for their own
-purposes.  
+purposes.
 <P> 
 
 Because of the ill-conditioned nature of arithmetic relating to
@@ -436,7 +436,16 @@ geometry information into its own data file (what you might term a
 &quot;grid geometry file&quot;.  Note that the grid descriptions 
 supported directly by the I/O&nbsp;API deal only with regular grids at 
 this time (although it allows for the later provision of irregular- or
-unstructured-grid file types).
+unstructured-grid file types).  <BR>
+<STRONG>Note&nbsp;1</STRONG> The MPAS Earth-System model uses unstructured
+Voronoi-complex grids for meteorology, land-surface, ocean, and
+atmospheric chemistry modeling.  The I/O&nbsp;API provides some high level
+I/O and grid utility data structures and routines in
+<CODE><A HREF="MODMPASFIO.html">MODULE&nbsp;MODMPASFIO</A></CODE>.
+The required data structures are quite complicated :-)<BR>
+<STRONG>Note&nbsp;2</STRONG> The I/O API also provides some high level
+I/O routines for &quot;raw&quot; netCDF gridded data in
+<CODE><A HREF="MODNCFIO.html">MODULE&nbsp;MODNCFIO</A></CODE>.
 <P> 
 
 Data files (or their generalizations) carry a complete set of

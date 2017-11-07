@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODNCFIO.html 4 2017-06-20 17:43:15Z coats $" -->
+<!-- "$Id: MODNCFIO.html 43 2017-11-07 16:25:35Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -53,12 +53,24 @@
     and <CODE>pnetcdf.inc</CODE> (which declare [p]netCDF  routines and
     related constants). Also includes new routines for creating,
     inquiring about, reading, and writing variables to/from
-    &quot;raw&quot; netCDF files.
+    &quot;raw&quot; netCDF files.  These routines all follow the
+    pattern of 
+    <OL>
+        <LI> Open the file with the indicated logical name;
+        <LI> Perform appropriate error-checking
+        <LI> Perform the indicated task
+        <LI> Close the indicated file.
+    </OL>
+    (in contrast with the MPAS-format-netCDF I/O routines in <A HREF =
+    "MODMPASFIO.html"><CODE>MODULE&nbsp;MODMPASFIO</CODE></A> which
+    maintain files in an opened state until closed (partly necessitated
+    by the extreme complexity of the repeated setup and error checking
+    that would be needed there).
     <P>
 
     Note that if you wish to create &quot;raw netCDF&quot; files
     following the  <A HREF="http://cfconventions.org/"><STRONG>CF
-    Metadata Conventions<STRONG></A>, you will have quite a bit
+    Metadata Conventions</STRONG></A>, you will have quite a bit
     of additional work to do manually, setting up all the CF
     data structures in routine <CODE>CREATENC()</CODE>, and then
     writing the metadata using <CODE>WRITENCVAR.()</CODE>.</STRONG>
