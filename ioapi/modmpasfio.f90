@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 40 2017-11-01 20:44:14Z coats $"
+    !!  Version "$Id: modmpasfio.f90 45 2017-11-08 17:43:09Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -41,7 +41,7 @@ MODULE MODMPASFIO
     PUBLIC :: INITMPGRID, INITREARTH, SHUTMPGRID, OPENMPAS, CREATEMPAS,     &
               DESCMPAS, READMPSTEPS, WRITEMPSTEP, READMPAS, WRITEMPAS,      &
               ARC2MPAS, FINDCELL, FINDVRTX, SPHEREDIST, MPSTR2DT, MPDT2STR, &
-              MPINTERP
+              BARYFAC, MPTOCRMATX, MPTOCRMULT, MPINTERP
 
 
     !!........   Generic interfaces:
@@ -96,6 +96,16 @@ MODULE MODMPASFIO
                           MPINTERPL0DD, MPINTERPL1DD, MPINTERPL2DD, MPINTERPEL2DD, MPINTERPGL2DD,   &
                           MPINTERPL0DF, MPINTERPL1DF, MPINTERPL2DF, MPINTERPEL2DF, MPINTERPGL2DF
     END INTERFACE MPINTERP
+
+    INTERFACE MPTOCRMATX
+        MODULE PROCEDURE MPTOCRMATX1F, MPTOCRMATX1D, MPTOCRMATX1DF,     &
+                         MPTOCRMATX2F, MPTOCRMATX2D, MPTOCRMATX2DF
+    END INTERFACE MPTOCRMATX
+
+    INTERFACE MPTOCRMULT
+        MODULE PROCEDURE MPTOCRMULT1F1, MPTOCRMULT1FL, MPTOCRMULT1D1, MPTOCRMULT1DL,    &
+                         MPTOCRMULT2F1, MPTOCRMULT2FL, MPTOCRMULT2D1, MPTOCRMULT2DL
+    END INTERFACE MPTOCRMULT
 
     INTERFACE SPHEREDIST
         MODULE PROCEDURE  DISTD, DISTR, DISTDM, DISTRM, DXYZD, DXYZR, DXYZDM, DXYZRM
@@ -428,7 +438,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER         MXDIM, ISTAT, LOG
         LOGICAL         EFLAG
         CHARACTER*512   MESG
-        
+
 
         !!......................   begin body of function  ....................................
 
@@ -440,7 +450,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 40 2017-11-01 20:44:14Z coats $',&
+        'Version $Id: modmpasfio.f90 45 2017-11-08 17:43:09Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -605,7 +615,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 40 2017-11-01 20:44:14Z coats $',&
+        'Version $Id: modmpasfio.f90 45 2017-11-08 17:43:09Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -1930,7 +1940,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         START(2) = 1
         COUNT(1) = MPVDIMS( 1,V,F )
         COUNT(2) = NSTEPS
- 
+
         ISTAT = NF_GET_VARA_TEXT( FID, VID, START, COUNT, CBUF )
         IF ( ISTAT .NE. 0 ) THEN
             CALL M3MESG( NF_STRERROR( ISTAT ) )
@@ -2657,7 +2667,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2665,7 +2675,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2690,7 +2700,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2698,7 +2708,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2723,7 +2733,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2731,7 +2741,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2756,7 +2766,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2764,7 +2774,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2789,7 +2799,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2797,7 +2807,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2825,7 +2835,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2833,7 +2843,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2861,7 +2871,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2869,7 +2879,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2897,7 +2907,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2905,7 +2915,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2933,7 +2943,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2941,7 +2951,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2969,7 +2979,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -2977,7 +2987,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3005,7 +3015,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3013,7 +3023,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3041,7 +3051,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3049,7 +3059,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3076,7 +3086,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3084,7 +3094,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3109,7 +3119,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3117,7 +3127,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'radians'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3141,7 +3151,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3149,7 +3159,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'radians'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3174,7 +3184,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3182,7 +3192,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'radians'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3207,7 +3217,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3215,7 +3225,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'radians'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3240,7 +3250,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3248,7 +3258,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'radians'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3273,7 +3283,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3281,7 +3291,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'radians'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3306,7 +3316,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3314,7 +3324,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3339,7 +3349,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3347,7 +3357,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3372,7 +3382,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3380,7 +3390,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3405,7 +3415,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3413,7 +3423,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3438,7 +3448,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3446,7 +3456,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3471,7 +3481,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3479,7 +3489,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3504,7 +3514,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3512,7 +3522,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3537,7 +3547,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3545,7 +3555,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3570,7 +3580,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3578,7 +3588,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3606,7 +3616,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3614,7 +3624,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3639,7 +3649,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3647,7 +3657,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3672,7 +3682,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3680,7 +3690,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3705,7 +3715,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3713,7 +3723,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'radians'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3738,7 +3748,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3746,7 +3756,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M^2'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3771,7 +3781,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3779,7 +3789,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M^2'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3807,7 +3817,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3815,7 +3825,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'M^2'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3839,7 +3849,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3847,7 +3857,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'none'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3858,7 +3868,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         MPVNAME( VV,F )   = 'xtime'
         MPVTYPE( VV,F )   = M3CHAR
         MPVDCNT( VV,F )   = 2
-        MPVDNAM( 1,VV,F ) = DNAME( 3 )      !!  StrLen 
+        MPVDNAM( 1,VV,F ) = DNAME( 3 )      !!  StrLen
         MPVDNAM( 2,VV,F ) = DNAME( 1 )      !!  Time
         MPVDIMS( 1,VV,F ) = DSIZE( 3 )
         MPVDIMS( 2,VV,F ) = DSIZE( 1 )
@@ -3875,7 +3885,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = MPVNAME( VV,F )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ) , 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( MPVNAME( VV,F ) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3883,7 +3893,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = 'YYYY-MM-DD_HH:MM:SS'
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "units" for "' // MPVNAME( VV,F ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3942,7 +3952,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DSCBUF = VNAMES( V )
             IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'long_name', MPSTRLEN, DSCBUF )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) ) 
+                CALL M3MESG( NF_STRERROR( IERR ) )
                 CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( VNAMES(V) ) // '" in ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -3951,7 +3961,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 DSCBUF = VUNITS( V )
                 IERR = NF_PUT_ATT_TEXT( FID, MPVARID( VV,F ), 'units', MPSTRLEN, DSCBUF )
                 IF ( IERR .NE. 0 ) THEN
-                    CALL M3MESG( NF_STRERROR( IERR ) ) 
+                    CALL M3MESG( NF_STRERROR( IERR ) )
                     CALL M3MESG( PNAME // ' Error creating att "units" for "' // TRIM( VNAMES(V) ) // '" in ' // FNAME )
                     EFLAG = .TRUE.
                 END IF              !  ierr nonzero:  operation failed
@@ -4114,7 +4124,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         EFLAG = .FALSE.
-        
+
         IF ( DESCMPAS2( FNAME, NRECS, NVARS, VNAMES, VTYPES, VNDIMS, VDIMS, VDNAME ) ) THEN
 
             NRECS = MPNRECS( F )
@@ -4128,7 +4138,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 ELSE IF ( IERR .NE. 0 ) THEN
                     MESG = 'MODMPASFIO/DESCMPAS(): Error reading att "units" for  variable "' // &
                            TRIM( VNAMES(V) ) // '" in file "' // TRIM( FNAME ) // '"'
-                    CALL M3MESG( NF_STRERROR( IERR ) ) 
+                    CALL M3MESG( NF_STRERROR( IERR ) )
                     CALL M3MESG( MESG )
                     VUNITS( V ) = CMISS3
                 END IF
@@ -13013,18 +13023,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_4DD( NDIM1, NDIM2, NDIM3, NDIM4, ARRAY )
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3, NDIM4
         REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
-        
+
         REAL(8), PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_DOUBLE
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
 
         INTEGER     I, J, K, L, M
         REAL(8)     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_4DD = .TRUE.
             RETURN
         END IF
-        
+
         DO L = 1, NDIM4
         DO K = 1, NDIM3
         DO J = 1, NDIM2
@@ -13053,18 +13063,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_4DR( NDIM1, NDIM2, NDIM3, NDIM4, ARRAY )
         INTEGER, INTENT(IN   ) :: NDIM1, NDIM2, NDIM3, NDIM4
         REAL   , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3, NDIM4 )
-        
+
         REAL, PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_FLOAT
         REAL, PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_FLOAT
 
         INTEGER     I, J, K, L, M
         REAL        VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_4DR = .TRUE.
             RETURN
         END IF
-        
+
         DO L = 1, NDIM4
         DO K = 1, NDIM3
         DO J = 1, NDIM2
@@ -13096,12 +13106,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J, K, L, M
         INTEGER     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_4DI = .TRUE.
             RETURN
         END IF
-        
+
         DO L = 1, NDIM4
         DO K = 1, NDIM3
         DO J = 1, NDIM2
@@ -13131,12 +13141,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J, K, L, M
         INTEGER*2   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_4DS = .TRUE.
             RETURN
         END IF
-        
+
         DO L = 1, NDIM4
         DO K = 1, NDIM3
         DO J = 1, NDIM2
@@ -13166,12 +13176,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J, K, L, M
         INTEGER*1   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_4DB = .TRUE.
             RETURN
         END IF
-        
+
         DO L = 1, NDIM4
         DO K = 1, NDIM3
         DO J = 1, NDIM2
@@ -13198,18 +13208,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_3DD( NDIM1, NDIM2, NDIM3, ARRAY )
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3
         REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3 )
-        
+
         REAL(8), PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_DOUBLE
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
 
         INTEGER     I, J, K
         REAL(8)     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_3DD = .TRUE.
             RETURN
         END IF
-        
+
         DO K = 1, NDIM3
         DO J = 1, NDIM2
         DO I = 1, NDIM1
@@ -13236,18 +13246,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_3DR( NDIM1, NDIM2, NDIM3, ARRAY )
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2, NDIM3
         REAL         , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2, NDIM3 )
-        
+
         REAL   , PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_FLOAT
         REAL   , PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_FLOAT
 
         INTEGER     I, J, K
         REAL        VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_3DR = .TRUE.
             RETURN
         END IF
-        
+
         DO K = 1, NDIM3
         DO J = 1, NDIM2
         DO I = 1, NDIM1
@@ -13277,12 +13287,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J, K
         INTEGER     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_3DI = .TRUE.
             RETURN
         END IF
-        
+
         DO K = 1, NDIM3
         DO J = 1, NDIM2
         DO I = 1, NDIM1
@@ -13310,12 +13320,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J, K
         INTEGER*2   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_3DS = .TRUE.
             RETURN
         END IF
-        
+
         DO K = 1, NDIM3
         DO J = 1, NDIM2
         DO I = 1, NDIM1
@@ -13343,12 +13353,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J, K
         INTEGER*1   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_3DB = .TRUE.
             RETURN
         END IF
-        
+
         DO K = 1, NDIM3
         DO J = 1, NDIM2
         DO I = 1, NDIM1
@@ -13373,18 +13383,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_2DD( NDIM1, NDIM2, ARRAY )
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2
         REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2 )
-        
+
         REAL(8), PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_DOUBLE
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
 
         INTEGER     I, J
         REAL(8)     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_2DD = .TRUE.
             RETURN
         END IF
-        
+
         DO J = 1, NDIM2
         DO I = 1, NDIM1
             VAL = ARRAY( I,J )
@@ -13409,18 +13419,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_2DR( NDIM1, NDIM2, ARRAY )
         INTEGER      , INTENT(IN   ) :: NDIM1, NDIM2
         REAL         , INTENT(IN   ) :: ARRAY( NDIM1, NDIM2 )
-        
+
         REAL   , PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_FLOAT
         REAL   , PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_FLOAT
 
         INTEGER     I, J
         REAL        VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_2DR = .TRUE.
             RETURN
         END IF
-        
+
         DO J = 1, NDIM2
         DO I = 1, NDIM1
             VAL = ARRAY( I,J )
@@ -13448,12 +13458,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J
         INTEGER     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_2DI = .TRUE.
             RETURN
         END IF
-        
+
         DO J = 1, NDIM2
         DO I = 1, NDIM1
             VAL = ARRAY( I,J )
@@ -13479,12 +13489,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J
         INTEGER*2   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_2DS = .TRUE.
             RETURN
         END IF
-        
+
         DO J = 1, NDIM2
         DO I = 1, NDIM1
             VAL = ARRAY( I,J )
@@ -13510,12 +13520,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I, J
         INTEGER*1   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_2DB = .TRUE.
             RETURN
         END IF
-        
+
         DO J = 1, NDIM2
         DO I = 1, NDIM1
             VAL = ARRAY( I,J )
@@ -13538,18 +13548,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_1DD( NDIM1, ARRAY )
         INTEGER      , INTENT(IN   ) :: NDIM1
         REAL(8)      , INTENT(IN   ) :: ARRAY( NDIM1 )
-        
+
         REAL(8), PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_DOUBLE
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
 
         INTEGER     I
         REAL(8)     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_1DD = .TRUE.
             RETURN
         END IF
-        
+
         DO I = 1, NDIM1
             VAL = ARRAY( I )
             IF ( VAL .GT. FILL_LO ) THEN
@@ -13572,18 +13582,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_1DR( NDIM1, ARRAY )
         INTEGER      , INTENT(IN   ) :: NDIM1
         REAL         , INTENT(IN   ) :: ARRAY( NDIM1 )
-        
+
         REAL   , PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_FLOAT
         REAL   , PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_FLOAT
 
         INTEGER     I
         REAL        VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_1DR = .TRUE.
             RETURN
         END IF
-        
+
         DO I = 1, NDIM1
             VAL = ARRAY( I )
             IF ( VAL .GT. FILL_LO ) THEN
@@ -13609,12 +13619,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I
         INTEGER     VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_1DI = .TRUE.
             RETURN
         END IF
-        
+
         DO I = 1, NDIM1
             VAL = ARRAY( I )
             IF ( VAL .EQ. NF_FILL_INT ) THEN
@@ -13638,12 +13648,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I
         INTEGER*2   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_1DS = .TRUE.
             RETURN
         END IF
-        
+
         DO I = 1, NDIM1
             VAL = ARRAY( I )
             IF ( VAL .EQ. NF_FILL_INT2 ) THEN
@@ -13667,12 +13677,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INTEGER     I
         INTEGER*1   VAL
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_1DB = .TRUE.
             RETURN
         END IF
-        
+
         DO I = 1, NDIM1
             VAL = ARRAY( I )
             IF ( VAL .EQ. NF_FILL_INT1 ) THEN
@@ -13692,10 +13702,10 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     LOGICAL FUNCTION CHKFILL_0DD( SCALAR )
         REAL(8)      , INTENT(IN   ) :: SCALAR
-        
+
         REAL(8), PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_DOUBLE
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_0DD = .TRUE.
             RETURN
@@ -13719,10 +13729,10 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     LOGICAL FUNCTION CHKFILL_0DR( SCALAR )
         REAL, INTENT(IN   ) :: SCALAR
-        
+
         REAL, PARAMETER :: FILL_LO  = 0.999999 * NF_FILL_FLOAT
         REAL, PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_FLOAT
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_0DR = .TRUE.
             RETURN
@@ -13747,7 +13757,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_0DI( SCALAR )
         INTEGER, INTENT(IN   ) :: SCALAR
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_0DI = .TRUE.
             RETURN
@@ -13765,7 +13775,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_0DS( SCALAR )
         INTEGER*2, INTENT(IN   ) :: SCALAR
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_0DS = .TRUE.
             RETURN
@@ -13783,7 +13793,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION CHKFILL_0DB( SCALAR )
         INTEGER*1    , INTENT(IN   ) :: SCALAR
         REAL(8), PARAMETER :: FILL_HI  = 1.000001 * NF_FILL_DOUBLE
-        
+
         IF ( .NOT.CHK_FILL ) THEN
             CHKFILL_0DB = .TRUE.
             RETURN
@@ -13809,11 +13819,15 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!  and returns TRUE iff the requested (X,Y) is in the triangle defined by
     !!  the input points (X1,Y1), X2,Y2), X3,Y3).
     !!.............................................................................
+    !!  MPTOCRMATX() computes 3-band barycentric interpolation matrix
+    !!.............................................................................
+    !!  MPTOCRMULT() multiplies 3-band barycentric interpolation matrix by an MPAS-variable
+    !!.............................................................................
 
 
     LOGICAL FUNCTION  BARYFAC( X, Y, X1, Y1, X2, Y2, X3, Y3, W1, W2, W3 )
         REAL(8), INTENT(IN   ) :: X,  Y                     !!  interpolation point
-        REAL(8), INTENT(IN   ) :: X1, Y1, X2, Y2, X3, Y3    !!  triangle-vedrtices
+        REAL(8), INTENT(IN   ) :: X1, Y1, X2, Y2, X3, Y3    !!  triangle-vertices
         REAL(8), INTENT(  OUT) :: W1, W2, W3                !!  coefficients
 
         REAL(8)     DD
@@ -13830,6 +13844,713 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         RETURN
 
     END  FUNCTION BARYFAC
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPTOCRMATX1F( NP, LAT, LON, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NP
+        REAL,    INTENT(IN   ) :: LAT( NP )
+        REAL,    INTENT(IN   ) :: LON( NP )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NP )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NP )
+
+        INTEGER     C, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                             &
+!$OMP&              SHARED( NP, LAT, LON, NBNDYE, BNDYCELL,     &
+!$OMP&                      ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, J, K, M, XX, YY, X1, Y1,         &
+!$OMP&                      X2, Y2, X3, Y3, W1, W2, W3 ),       &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+CLOOP:  DO C = 1, NP
+
+            XX = MOD( LON( C)+360.0D0, 360.0D0 )
+            YY = LAT( C )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        KCELL( 1,C ) = M
+                        KCELL( 2,C ) = BNDYCELL( J,M )
+                        KCELL( 3,C ) = BNDYCELL( K,M )
+                        WCELL( 1,C ) = W1
+                        WCELL( 2,C ) = W2
+                        WCELL( 3,C ) = W3
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+
+        MPTOCRMATX1F = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPTOCRMATX1F
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPTOCRMATX1D( NP, LAT, LON, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NP
+        REAL(8), INTENT(IN   ) :: LAT( NP )
+        REAL(8), INTENT(IN   ) :: LON( NP )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NP )
+        REAL(8), INTENT(  OUT) :: WCELL( 3,NP )
+
+        INTEGER     C, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                             &
+!$OMP&              SHARED( NP, LAT, LON, NBNDYE, BNDYCELL,     &
+!$OMP&                      ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, J, K, M, XX, YY, X1, Y1,         &
+!$OMP&                      X2, Y2, X3, Y3, W1, W2, W3 ),       &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+CLOOP:  DO C = 1, NP
+
+            XX = MOD( LON( C)+360.0D0, 360.0D0 )
+            YY = LAT( C )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        KCELL( 1,C ) = M
+                        KCELL( 2,C ) = BNDYCELL( J,M )
+                        KCELL( 3,C ) = BNDYCELL( K,M )
+                        WCELL( 1,C ) = W1
+                        WCELL( 2,C ) = W2
+                        WCELL( 3,C ) = W3
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+
+        MPTOCRMATX1D = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPTOCRMATX1D
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPTOCRMATX1DF( NP, LAT, LON, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NP
+        REAL(8), INTENT(IN   ) :: LAT( NP )
+        REAL(8), INTENT(IN   ) :: LON( NP )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NP )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NP )
+
+        INTEGER     C, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                             &
+!$OMP&              SHARED( NP, LAT, LON, NBNDYE, BNDYCELL,     &
+!$OMP&                      ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, J, K, M, XX, YY, X1, Y1,         &
+!$OMP&                      X2, Y2, X3, Y3, W1, W2, W3 ),       &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+CLOOP:  DO C = 1, NP
+
+            XX = MOD( LON( C)+360.0D0, 360.0D0 )
+            YY = LAT( C )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        KCELL( 1,C ) = M
+                        KCELL( 2,C ) = BNDYCELL( J,M )
+                        KCELL( 3,C ) = BNDYCELL( K,M )
+                        WCELL( 1,C ) = W1
+                        WCELL( 2,C ) = W2
+                        WCELL( 3,C ) = W3
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+
+        MPTOCRMATX1DF = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPTOCRMATX1DF
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPTOCRMATX2F( NC, NR, LAT, LON, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL,    INTENT(IN   ) :: LAT( NC,NR )
+        REAL,    INTENT(IN   ) :: LON( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                             &
+!$OMP&              SHARED( NC, NR, LAT, LON, NBNDYE, BNDYCELL, &
+!$OMP&                      ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,      &
+!$OMP&                      X2, Y2, X3, Y3, W1, W2, W3 ),       &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1
+                        WCELL( 2,C,R ) = W2
+                        WCELL( 3,C,R ) = W3
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPTOCRMATX2F = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPTOCRMATX2F
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPTOCRMATX2D( NC, NR, LAT, LON, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: LAT( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL(8), INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                             &
+!$OMP&              SHARED( NC, NR, LAT, LON, NBNDYE, BNDYCELL, &
+!$OMP&                      ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,      &
+!$OMP&                      X2, Y2, X3, Y3, W1, W2, W3 ),       &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1
+                        WCELL( 2,C,R ) = W2
+                        WCELL( 3,C,R ) = W3
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPTOCRMATX2D = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPTOCRMATX2D
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPTOCRMATX2DF( NC, NR, LAT, LON, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: LAT( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                             &
+!$OMP&              SHARED( NC, NR, LAT, LON, NBNDYE, BNDYCELL, &
+!$OMP&                      ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,      &
+!$OMP&                      X2, Y2, X3, Y3, W1, W2, W3 ),       &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1
+                        WCELL( 2,C,R ) = W2
+                        WCELL( 3,C,R ) = W3
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPTOCRMATX2DF = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPTOCRMATX2DF
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT1F1( NP, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NP
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
+        REAL,    INTENT(IN   ) :: WCELL( 3,NP )
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )      !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NP )        !!  result
+
+        INTEGER C, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                        &
+!$OMP&               SHARED( NP, KCELL, WCELL, V, Z ),      &
+!$OMP&              PRIVATE( C, K1, K2, K3, W1, W2, W3 )
+
+        DO C = 1, NP
+            K1 = KCELL( 1,C )
+            K2 = KCELL( 2,C )
+            K3 = KCELL( 3,C )
+            W1 = WCELL( 1,C )
+            W2 = WCELL( 2,C )
+            W3 = WCELL( 3,C )
+            V( C ) = W1 * Z( K1 ) + W2 * Z( K2 ) + W3 * Z( K3 )
+        END DO
+
+    END SUBROUTINE MPTOCRMULT1F1
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT1FL( NP, NL, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NP, NL
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
+        REAL,    INTENT(IN   ) :: WCELL( 3,NP )
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )      !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NP,NL )        !!  result
+
+        INTEGER C, L, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                        &
+!$OMP&               SHARED( NP, NL, KCELL, WCELL, V, Z ),  &
+!$OMP&              PRIVATE( C, L, K1, K2, K3, W1, W2, W3 )
+
+        DO C = 1, NP
+            K1 = KCELL( 1,C )
+            K2 = KCELL( 2,C )
+            K3 = KCELL( 3,C )
+            W1 = WCELL( 1,C )
+            W2 = WCELL( 2,C )
+            W3 = WCELL( 3,C )
+            DO L = 1, NL
+                V( L,C ) = W1 * Z( L,K1 ) + W2 * Z( L,K2 ) + W3 * Z( L,K3 )
+            END DO
+        END DO
+
+    END SUBROUTINE MPTOCRMULT1FL
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT1D1( NP, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NP
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
+        REAL(8), INTENT(IN   ) :: WCELL( 3,NP )
+        REAL(8), INTENT(IN   ) :: Z( MPCELLS )      !!  variable to be interpolated
+        REAL(8), INTENT(  OUT) :: V( NP )           !!  result
+
+        INTEGER C, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                        &
+!$OMP&               SHARED( NP, KCELL, WCELL, V, Z ),      &
+!$OMP&              PRIVATE( C, K1, K2, K3, W1, W2, W3 )
+
+        DO C = 1, NP
+            K1 = KCELL( 1,C )
+            K2 = KCELL( 2,C )
+            K3 = KCELL( 3,C )
+            W1 = WCELL( 1,C )
+            W2 = WCELL( 2,C )
+            W3 = WCELL( 3,C )
+            V( C ) = W1 * Z( K1 ) + W2 * Z( K2 ) + W3 * Z( K3 )
+        END DO
+
+    END SUBROUTINE MPTOCRMULT1D1
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT1DL( NP, NL, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NP, NL
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
+        REAL(8), INTENT(IN   ) :: WCELL( 3,NP )
+        REAL(8), INTENT(IN   ) :: Z( NL,MPCELLS )       !!  variable to be interpolated
+        REAL(8), INTENT(  OUT) :: V( NP,NL )            !!  result
+
+        INTEGER C, L, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                            &
+!$OMP&               SHARED( NP, NL, KCELL, WCELL, V, Z ),      &
+!$OMP&              PRIVATE( C, L, K1, K2, K3, W1, W2, W3 )
+
+        DO C = 1, NP
+            K1 = KCELL( 1,C )
+            K2 = KCELL( 2,C )
+            K3 = KCELL( 3,C )
+            W1 = WCELL( 1,C )
+            W2 = WCELL( 2,C )
+            W3 = WCELL( 3,C )
+            DO L = 1, NL
+                V( L,C ) = W1 * Z( L,K1 ) + W2 * Z( L,K2 ) + W3 * Z( L,K3 )
+            END DO
+        END DO
+
+    END SUBROUTINE MPTOCRMULT1DL
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT2F1( NC, NR, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
+        REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
+        REAL,    INTENT(IN   ) :: Z( MPCELLS )      !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NC,NR )        !!  result
+
+        INTEGER C, R, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                            &
+!$OMP&               SHARED( NC, NR, KCELL, WCELL, V, Z ),      &
+!$OMP&              PRIVATE( C, R, K1, K2, K3, W1, W2, W3 )
+
+        DO R = 1, NR
+        DO C = 1, NC
+            K1 = KCELL( 1,C,R )
+            K2 = KCELL( 2,C,R )
+            K3 = KCELL( 3,C,R )
+            W1 = WCELL( 1,C,R )
+            W2 = WCELL( 2,C,R )
+            W3 = WCELL( 3,C,R )
+            V( C,R ) = W1 * Z( K1 ) + W2 * Z( K2 ) + W3 * Z( K3 )
+        END DO
+        END DO
+
+    END SUBROUTINE MPTOCRMULT2F1
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT2FL( NC, NR, NL, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
+        REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
+        REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )      !!  variable to be interpolated
+        REAL,    INTENT(  OUT) :: V( NC,NR,NL )        !!  result
+
+        INTEGER C, R, L, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                            &
+!$OMP&               SHARED( NC, NR, NL, KCELL, WCELL, V, Z ),  &
+!$OMP&              PRIVATE( C, R, L, K1, K2, K3, W1, W2, W3 )
+
+        DO R = 1, NR
+        DO C = 1, NC
+            K1 = KCELL( 1,C,R )
+            K2 = KCELL( 2,C,R )
+            K3 = KCELL( 3,C,R )
+            W1 = WCELL( 1,C,R )
+            W2 = WCELL( 2,C,R )
+            W3 = WCELL( 3,C,R )
+            DO L = 1, NL
+                V( L,C,R ) = W1 * Z( L,K1 ) + W2 * Z( L,K2 ) + W3 * Z( L,K3 )
+            END DO
+        END DO
+        END DO
+
+    END SUBROUTINE MPTOCRMULT2FL
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT2D1( NC, NR, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
+        REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
+        REAL(8), INTENT(IN   ) :: Z( MPCELLS )      !!  variable to be interpolated
+        REAL(8), INTENT(  OUT) :: V( NC,NR )        !!  result
+
+        INTEGER C, R, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                            &
+!$OMP&               SHARED( NC, NR, KCELL, WCELL, V, Z ),      &
+!$OMP&              PRIVATE( C, R, K1, K2, K3, W1, W2, W3 )
+
+        DO R = 1, NR
+        DO C = 1, NC
+            K1 = KCELL( 1,C,R )
+            K2 = KCELL( 2,C,R )
+            K3 = KCELL( 3,C,R )
+            W1 = WCELL( 1,C,R )
+            W2 = WCELL( 2,C,R )
+            W3 = WCELL( 3,C,R )
+            V( C,R ) = W1 * Z( K1 ) + W2 * Z( K2 ) + W3 * Z( K3 )
+        END DO
+        END DO
+
+    END SUBROUTINE MPTOCRMULT2D1
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPTOCRMULT2DL( NC, NR, NL, KCELL, WCELL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
+        REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
+        REAL(8), INTENT(IN   ) :: Z( NL,MPCELLS )      !!  variable to be interpolated
+        REAL(8), INTENT(  OUT) :: V( NC,NR,NL )        !!  result
+
+        INTEGER C, R, L, K1, K2, K3
+        REAL    W1, W2, W3
+
+!$OMP   PARALLEL DO DEFAULT( NONE ),                            &
+!$OMP&               SHARED( NC, NR, NL, KCELL, WCELL, V, Z ),  &
+!$OMP&              PRIVATE( C, R, L, K1, K2, K3, W1, W2, W3 )
+
+        DO R = 1, NR
+        DO C = 1, NC
+            K1 = KCELL( 1,C,R )
+            K2 = KCELL( 2,C,R )
+            K3 = KCELL( 3,C,R )
+            W1 = WCELL( 1,C,R )
+            W2 = WCELL( 2,C,R )
+            W3 = WCELL( 3,C,R )
+            DO L = 1, NL
+                V( L,C,R ) = W1 * Z( L,K1 ) + W2 * Z( L,K2 ) + W3 * Z( L,K3 )
+            END DO
+        END DO
+        END DO
+
+    END SUBROUTINE MPTOCRMULT2DL
+
 
     !!.............................................................................
 
@@ -13863,7 +14584,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             MPINTERP0DD = .FALSE.
             RETURN
         END IF
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         XX = MOD( X+360.0D0, 360.0D0 )
@@ -13919,7 +14640,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
         REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -13927,7 +14648,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !$OMP    PARALLEL DO DEFAULT( NONE ),                                               &
 !$OMP&                SHARED( NPTS, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ),   &
 !$OMP&               PRIVATE( I, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,           &
-!$OMP&                        W1, W2, W3 )                                          &
+!$OMP&                        W1, W2, W3 ),                                         &
 !$OMP&             REDUCTION( .OR.:  EFLAG )
 
 ILOOP:  DO I = 1, NPTS
@@ -13963,7 +14684,7 @@ ILOOP:  DO I = 1, NPTS
             END DO      !! end loop on boundary-cells for this cell
 
             EFLAG = .TRUE.
-        
+
         END DO ILOOP
 
         MPINTERP1DD = ( .NOT.EFLAG )
@@ -13998,7 +14719,7 @@ ILOOP:  DO I = 1, NPTS
         REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
         REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -14006,7 +14727,7 @@ ILOOP:  DO I = 1, NPTS
 !$OMP    PARALLEL DO DEFAULT( NONE ),                                               &
 !$OMP&                SHARED( NC, NR, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ), &
 !$OMP&               PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,        &
-!$OMP&                        W1, W2, W3 )                                          &
+!$OMP&                        W1, W2, W3 ),                                         &
 !$OMP&             REDUCTION( .OR.:  EFLAG )
 
         DO R = 1, NR
@@ -14043,7 +14764,7 @@ CLOOP:  DO C = 1, NC
             END DO      !! end loop on boundary-cells for this cell
 
             EFLAG = .TRUE.
-        
+
         END DO CLOOP
         END DO
 
@@ -14081,7 +14802,7 @@ CLOOP:  DO C = 1, NC
         REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
         REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -14090,7 +14811,7 @@ CLOOP:  DO C = 1, NC
 !$OMP&       DEFAULT( NONE ),                                                           &
 !$OMP&        SHARED( NC, NR, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
 !$OMP&       PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                    &
-!$OMP&                W1, W2, W3 )                                                      &
+!$OMP&                W1, W2, W3 ),                                                     &
 !$OMP&     REDUCTION( .OR.:  EFLAG )
 
         DO R = 1, NR
@@ -14127,7 +14848,7 @@ CLOOP:  DO C = 1, NC
             END DO      !! end loop on boundary-cells for this cell
 
             EFLAG = .TRUE.
-        
+
         END DO CLOOP
         END DO
 
@@ -14165,7 +14886,7 @@ CLOOP:  DO C = 1, NC
         REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
         REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -14174,7 +14895,7 @@ CLOOP:  DO C = 1, NC
 !$OMP&       DEFAULT( NONE ),                                                           &
 !$OMP&        SHARED( NC, NR, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
 !$OMP&       PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                    &
-!$OMP&                W1, W2, W3 )                                                      &
+!$OMP&                W1, W2, W3 ),                                                     &
 !$OMP&     REDUCTION( .OR.:  EFLAG )
 
         DO R = 1, NR
@@ -14211,7 +14932,7 @@ CLOOP:  DO C = 1, NC
             END DO      !! end loop on boundary-cells for this cell
 
             EFLAG = .TRUE.
-        
+
         END DO CLOOP
         END DO
 
@@ -14255,7 +14976,7 @@ CLOOP:  DO C = 1, NC
             MPINTERPL0DD = .FALSE.
             RETURN
         END IF
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         XX = MOD( X + 360.0D0, 360.0D0 )
@@ -14313,7 +15034,7 @@ CLOOP:  DO C = 1, NC
         REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
         REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -14322,7 +15043,7 @@ CLOOP:  DO C = 1, NC
 !$OMP&       DEFAULT( NONE ),                                                   &
 !$OMP&        SHARED( NPTS, NL, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ),   &
 !$OMP&       PRIVATE( I, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,            &
-!$OMP&                W1, W2, W3 )                                              &
+!$OMP&                W1, W2, W3 ),                                             &
 !$OMP&     REDUCTION( .OR.:  EFLAG )
 
 ILOOP:  DO I = 1, NPTS
@@ -14359,8 +15080,8 @@ ILOOP:  DO I = 1, NPTS
 
             END DO      !! end loop on boundary-cells for this cell
 
-            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
-        
+            EFLAG = .TRUE.
+
         END DO ILOOP
 
         MPINTERPL1DD = ( .NOT.EFLAG )
@@ -14395,7 +15116,7 @@ ILOOP:  DO I = 1, NPTS
         REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
         REAL(8)     W1, W2, W3
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -14404,7 +15125,7 @@ ILOOP:  DO I = 1, NPTS
 !$OMP&       DEFAULT( NONE ),                                                   &
 !$OMP&        SHARED( NC, NR, NL, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ), &
 !$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,         &
-!$OMP&                W1, W2, W3 )                                              &
+!$OMP&                W1, W2, W3 ),                                             &
 !$OMP&     REDUCTION( .OR.:  EFLAG )
 
         DO R = 1, NR
@@ -14412,10 +15133,10 @@ CLOOP:  DO C = 1, NC
 
             M = FINDCELL( Y( C,R ), X( C,R ) )
             IF ( M .LT. 0 ) THEN
-                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                EFLAG = .TRUE.
                 CYCLE CLOOP
             ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
-                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
 
@@ -14442,8 +15163,8 @@ CLOOP:  DO C = 1, NC
 
             END DO      !! end loop on boundary-cells for this cell
 
-            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
-        
+            EFLAG = .TRUE.
+
         END DO CLOOP
         END DO
 
@@ -14482,7 +15203,7 @@ CLOOP:  DO C = 1, NC
         REAL(8)     W1, W2, W3
         REAL        ARAT            !!  area-ratio
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -14491,7 +15212,7 @@ CLOOP:  DO C = 1, NC
 !$OMP&       DEFAULT( NONE ),                                                               &
 !$OMP&        SHARED( NC, NR, NL, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
 !$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                     &
-!$OMP&                W1, W2, W3, ARAT )                                                    &
+!$OMP&                W1, W2, W3, ARAT ),                                                   &
 !$OMP&     REDUCTION( .OR.:  EFLAG )
 
         DO R = 1, NR
@@ -14499,10 +15220,10 @@ CLOOP:  DO C = 1, NC
 
             M = FINDCELL( Y( C,R ), X( C,R ) )
             IF ( M .LT. 0 ) THEN
-                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                EFLAG = .TRUE.
                 CYCLE CLOOP
             ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
-                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
 
@@ -14530,8 +15251,8 @@ CLOOP:  DO C = 1, NC
 
             END DO      !! end loop on boundary-cells for this cell
 
-            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
-        
+            EFLAG = .TRUE.
+
         END DO CLOOP
         END DO
 
@@ -14570,7 +15291,7 @@ CLOOP:  DO C = 1, NC
         REAL(8)     W1, W2, W3
         REAL        ARAT            !!  area-ratio
         LOGICAL     EFLAG
-        
+
         !!........  Find closest cells K1, K2 (in that order)
 
         EFLAG = .FALSE.     !!  no errors yet
@@ -14579,7 +15300,7 @@ CLOOP:  DO C = 1, NC
 !$OMP&       DEFAULT( NONE ),                                                               &
 !$OMP&        SHARED( NC, NR, NL, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
 !$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                     &
-!$OMP&                W1, W2, W3, ARAT )                                                    &
+!$OMP&                W1, W2, W3, ARAT ),                                                   &
 !$OMP&     REDUCTION( .OR.:  EFLAG )
 
         DO R = 1, NR
@@ -14587,10 +15308,10 @@ CLOOP:  DO C = 1, NC
 
             M = FINDCELL( Y( C,R ), X( C,R ) )
             IF ( M .LT. 0 ) THEN
-                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                EFLAG = .TRUE.
                 CYCLE CLOOP
             ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
-                EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
+                EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
 
@@ -14618,8 +15339,8 @@ CLOOP:  DO C = 1, NC
 
             END DO      !! end loop on boundary-cells for this cell
 
-            EFLAG = (EFLAG .OR..TRUE. )    !!  hack for some compilers...
-        
+            EFLAG = .TRUE.
+
         END DO CLOOP
         END DO
 

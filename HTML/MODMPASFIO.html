@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 40 2017-11-01 20:44:14Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 45 2017-11-08 17:43:09Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODNCFIO</TITLE>
 </HEAD>
@@ -49,10 +49,11 @@
         <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
             <A HREF = "MPASTOM3.html"><STRONG><VAR>mpastom3</VAR></STRONG></A>
         <DD> for interpolating variables from MPAS-format-netCDF files to
-             GRIDDED I/O&nbsp; files.
+             GRIDDED I/O&nbsp;API files.
         <DT> <VAR><STRONG>m3tools</STRONG></VAR>sample program
              <A HREF = "MPASWTEST.html"><STRONG><VAR>mpaswtest</VAR></STRONG></A>.
-        <DD> Usage-example program for<A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
+        <DD> Example program for<A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
+             MPAS-grid allocation of emissions line-sources.
     </DL></BLOCKQUOTE>
     <P>
 
@@ -97,9 +98,16 @@
         <DT>  <A HREF = "#write"><CODE>WRITEMPAS()</CODE></A>
         <DD> write variable or time step of variable to MPAS-format
              output file
+        <DT>  <A HREF = "#bmatx"><CODE>BARYFAC</CODE> and <CODE>MPTOCRMATX()</CODE></A>
+        <DD> Create a 3-band sparse matrix for barycentric-linear
+             interpolation.
+        <DT>  <A HREF = "#bmult"><CODE>MPTOCRMATX()</CODE></A>
+        <DD> Multiplyu a 3-band barycentric-linear sparse matrix 
+             by an MPAS variable.
         <DT>  <A HREF = "#interp"><CODE>MPINTERP()</CODE></A>
         <DD> Interpolate an MPAS-grid variable to a point, set of
-             points, or 2-D grid of points.
+             points, or 2-D grid of points, using barycentric-linear
+             interpolation.
         <DT>  <A HREF = "#dist" ><CODE>SPHEREDIST()</CODE></A>
         <DD> compute spherical-Earth distance from  <CODE>(LAT1,LON1)</CODE>
              to <CODE>(LAT2,LON2)</CODE>
@@ -1585,6 +1593,132 @@ INITREARTH()</CODE></A></H2>
 <HR> <!- ------------------------------------------------------------- ->
 
 
+<H2><A NAME = "bmatx"><CODE>MPTOCRMATX()</CODE></A></H2>
+
+    <BLOCKQUOTE>
+
+    <CODE>MPTOCRMATX()</CODE> is a generic routine for computing 3-band
+    sparse matrices for  barycentric-linear interpolation.
+    <P>
+    </BLOCKQUOTE>
+
+    <PRE>
+    LOGICAL FUNCTION MPTOCRMATX( NP, LAT1F, LON1F, KCELL1, WCELL1F )
+    LOGICAL FUNCTION MPTOCRMATX( NP, LAT1D, LON1D, KCELL1, WCELL1D )
+    LOGICAL FUNCTION MPTOCRMATX( NP, LAT1D, LON1D, KCELL1, WCELL1F )
+    LOGICAL FUNCTION MPTOCRMATX( NC, NR, LAT2F, LON2F, KCELL2, WCELL2F )
+    LOGICAL FUNCTION MPTOCRMATX( NC, NR, LAT2D, LON2D, KCELL2, WCELL2D )
+    LOGICAL FUNCTION MPTOCRMATX( NC, NR, LAT2D, LON2D, KCELL2, WCELL2F )
+        INTEGER, INTENT(IN   ) :: NP, NC, NR
+        REAL,    INTENT(IN   ) :: LAT1F( NP )
+        REAL,    INTENT(IN   ) :: LON1F( NP )
+        REAL(8), INTENT(IN   ) :: LAT1D( NP )
+        REAL(8), INTENT(IN   ) :: LON1D( NP )
+        REAL,    INTENT(IN   ) :: LAT2F( NC,NR )
+        REAL,    INTENT(IN   ) :: LON2F( NC,NR )
+        REAL(8), INTENT(IN   ) :: LAT2D( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON2D( NC,NR )
+        INTEGER, INTENT(  OUT) ::  KCELL1( 3,NP )
+        REAL,    INTENT(  OUT) :: WCELL1F( 3,NP )
+        REAL(8), INTENT(  OUT) :: WCELL1D( 3,NP )
+        INTEGER, INTENT(  OUT) ::  KCELL2( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL2F( 3,NC,NR )
+        REAL(8), INTENT(  OUT) :: WCELL2D( 3,NC,NR )
+    </PRE>
+
+    <BLOCKQUOTE>
+    Returns <CODE>TRUE</CODE> iff the interpolation can be done properly
+    (i.e., if each point is surrounded by MPAS-grid cell-centers).  Note
+    that <CODE>Z</CODE> variables are subscripted by the number
+    <CODE>MPCELLS</CODE> of MPAS grid cells,
+    <P>
+
+    The interpolation uses barycentric-coordinate linear interpolation
+    on the dual-cell (triangle whose corners are MPAS-cell centers) that
+    contains the requested point(s).  See
+    <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
+    for a reference on the interpolation formulas.
+    <P>
+
+    OpenMP parallel.  Code for the matrix:variable multiplication
+    interpolation algorithm has the following pattern (shown for the
+    1-D non-layered REAL case):
+    </BLOCKQUOTE>
+
+    <PRE>
+    REAL    :: Z( MPCELLS )   !!  MPAS variable to be interpolated
+    REAL    :: V( NP )        !!  result
+    INTEGER :: P
+    ...
+    DO P = 1, NP
+        K1 = KCELL1(  1,P )
+        K2 = KCELL1(  2,P )
+        K3 = KCELL1(  3,P )
+        W1 = WCELL1F( 1,P )
+        W2 = WCELL1F( 2,P )
+        W3 = WCELL1F( 3,P )
+        V( P ) = W1 * Z( K1 ) + W2 * Z( K2 ) + W3 * Z( K3 )
+    END DO
+    </PRE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H2><A NAME = "bmult"><CODE>MPTOCRMULT()</CODE></A></H2>
+
+    <BLOCKQUOTE>
+    This is a generic routine for multiplying 3-band barycentric-linear 
+    interpolation matrices from <CODE>MPTOCRMATX()</CODE> (above) with
+    possibly-layered MPAS-grid variables.
+    <P>
+
+    Note that layered results keep the MPAS-convention
+    layer-subscript-first subscript ordering.
+    <P{>
+
+    OpenMP parallel.
+    </BLOCKQUOTE>
+
+    <PRE>
+    SUBROUTINE MPTOCRMULT( NP,         KCELL1, WCELL1F, Z1F, V1F )
+    SUBROUTINE MPTOCRMULT( NP,         KCELL1, WCELL1D, Z1D, V1D )
+    SUBROUTINE MPTOCRMULT( NP, NL,     KCELL1, WCELL1F, ZLF, V1LF )
+    SUBROUTINE MPTOCRMULT( NP, NL,     KCELL1, WCELL1D, ZLD, V1LD )
+    SUBROUTINE MPTOCRMULT( NC, NR,     KCELL2, WCELL2F, Z1F, V2F )
+    SUBROUTINE MPTOCRMULT( NC, NR,     KCELL2, WCELL2D, Z1D, V2D )
+    SUBROUTINE MPTOCRMULT( NC, NR, NL, KCELL2, WCELL2F, ZLF, V2LF )
+    SUBROUTINE MPTOCRMULT( NC, NR, NL, KCELL2, WCELL2D, ZLD, V2LD )
+        INTEGER, INTENT(IN   ) :: NP, NC, NR, NL
+        INTEGER, INTENT(IN   ) ::  KCELL1( 3,NP )
+        REAL,    INTENT(IN   ) :: WCELL1F( 3,NP )
+        REAL(8), INTENT(IN   ) :: WCELL1D( 3,NP )
+        INTEGER, INTENT(IN   ) ::  KCELL2( 3,NC,NR )
+        REAL,    INTENT(IN   ) :: WCELL2F( 3,NC,NR )
+        REAL(8), INTENT(IN   ) :: WCELL2D( 3,NC,NR )
+        REAL,    INTENT(IN   ) :: Z1F( MPCELLS )        !!  MPAS variable to be interpolated
+        REAL(8), INTENT(IN   ) :: Z1D( MPCELLS )
+        REAL,    INTENT(IN   ) :: ZLF( NL,MPCELLS )
+        REAL(8), INTENT(IN   ) :: ZLD( NL,MPCELLS )
+        REAL,    INTENT(  OUT) ::  V1F( NP )             !!  result
+        REAL(8), INTENT(  OUT) ::  V1D( NP )
+        REAL,    INTENT(  OUT) :: V1LF( NL,NP )
+        REAL(8), INTENT(  OUT) :: V1LD( NL,NP )
+        REAL,    INTENT(  OUT) ::  V2F( NC,NR )
+        REAL(8), INTENT(  OUT) ::  V2D( NC,NR )
+        REAL,    INTENT(  OUT) :: V2LF( NC,NR,NL )
+        REAL(8), INTENT(  OUT) :: V2LD( NC,NR,NL )
+    </PRE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
 <H2><A NAME = "interp"><CODE>MPINTERP()</CODE></A></H2>
 
     <BLOCKQUOTE>
@@ -1592,7 +1726,8 @@ INITREARTH()</CODE></A></H2>
     This is a generic routine for interpolating possibly-layered
     MPAS-grid variables to Lat-Lon specified points, sets of points,
     or (2-D) grids of points, with optional area-re-weighting for
-    emissions data with &quot;per-cell&quot; units.  
+    emissions data with &quot;per-cell&quot; units, using
+    barycentric-linear interpolation.
     <P>
     </BLOCKQUOTE>
 
@@ -1641,11 +1776,19 @@ INITREARTH()</CODE></A></H2>
     </PRE>
 
     <BLOCKQUOTE>
+
     Returns <CODE>TRUE</CODE> iff the interpolation can be done properly
     (i.e., if each point is surrounded by MPAS-grid cell-centers).  Note
     that <CODE>Z</CODE> variables are subscripted by the number
     <CODE>MPCELLS</CODE> of MPAS grid cells, and that layered results
     keep the MPAS-convention layer-subscript-first subscript ordering.
+    <P>
+
+    The interpolation uses barycentric-coordinate linear interpolation
+    on the dual-cell (triangle whose corners are MPAS-cell centers) that
+    contains the requested point(s).  See
+    <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
+    for a reference on the interpolation formulas.
     <P>
 
     Calls using output-grid cell-area arguments
@@ -1655,11 +1798,11 @@ INITREARTH()</CODE></A></H2>
     retained.
     <P>
 
-    The interpolation uses barycentric-coordinate linear interpolation
-    on the dual-cell (triangle whose corners are MPAS-cell centers) that
-    contains the requested point(s).  See
-    <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
-    for a reference on the interpolation formulas.
+    Note that calls <U>without</U> output-grid cell-area arguments
+    combine the functionality of <CODE>MPTOCRMATX()</CODE> and
+    <CODE>MPTOCRMULT()</CODE> (above) but always computes the
+    interpolation weights and indices in-line. As a result it simpler
+    to use, but less efficient for repeated uses than those routines.
     <P>
 
     For all but the single-point case, <CODE>MPINTERP()</CODE> is
