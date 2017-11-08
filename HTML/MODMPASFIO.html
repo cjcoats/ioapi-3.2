@@ -2,9 +2,9 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 45 2017-11-08 17:43:09Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 46 2017-11-08 19:33:33Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
-<TITLE>MODULE MODNCFIO</TITLE>
+<TITLE>MODULE MODMPASFIO</TITLE>
 </HEAD>
 
 <BODY BGCOLOR="#FFFFFF"
@@ -98,10 +98,10 @@
         <DT>  <A HREF = "#write"><CODE>WRITEMPAS()</CODE></A>
         <DD> write variable or time step of variable to MPAS-format
              output file
-        <DT>  <A HREF = "#bmatx"><CODE>BARYFAC</CODE> and <CODE>MPTOCRMATX()</CODE></A>
+        <DT>  <A HREF = "#bmatx"><CODE>MPBARYMATX()</CODE></A>
         <DD> Create a 3-band sparse matrix for barycentric-linear
              interpolation.
-        <DT>  <A HREF = "#bmult"><CODE>MPTOCRMATX()</CODE></A>
+        <DT>  <A HREF = "#bmult"><CODE>MPBARYMATX()</CODE></A>
         <DD> Multiplyu a 3-band barycentric-linear sparse matrix 
              by an MPAS variable.
         <DT>  <A HREF = "#interp"><CODE>MPINTERP()</CODE></A>
@@ -110,7 +110,8 @@
              interpolation.
         <DT>  <A HREF = "#dist" ><CODE>SPHEREDIST()</CODE></A>
         <DD> compute spherical-Earth distance from  <CODE>(LAT1,LON1)</CODE>
-             to <CODE>(LAT2,LON2)</CODE>
+             to <CODE>(LAT2,LON2)</CODE> or from <CODE>(X1,Y1,Z1)</CODE>
+             to <CODE>(X2,Y2,Z2)
         <DT>  <A HREF = "#date" ><CODE>MPSTR2DT()</CODE> and <CODE>MPDT2STR()</CODE></A>
         <DD> convert MPAS-format ASCII date&amp;time to/from I/O&nbsp;API
              convention <CODE>JDATE:JTIME</CODE>
@@ -1593,22 +1594,28 @@ INITREARTH()</CODE></A></H2>
 <HR> <!- ------------------------------------------------------------- ->
 
 
-<H2><A NAME = "bmatx"><CODE>MPTOCRMATX()</CODE></A></H2>
+<H2><A NAME = "bmatx"><CODE>MPBARYMATX()</CODE></A></H2>
 
     <BLOCKQUOTE>
 
-    <CODE>MPTOCRMATX()</CODE> is a generic routine for computing 3-band
+    <CODE>MPBARYMATX()</CODE> is a generic routine for computing 3-band
     sparse matrices for  barycentric-linear interpolation.
     <P>
     </BLOCKQUOTE>
 
     <PRE>
-    LOGICAL FUNCTION MPTOCRMATX( NP, LAT1F, LON1F, KCELL1, WCELL1F )
-    LOGICAL FUNCTION MPTOCRMATX( NP, LAT1D, LON1D, KCELL1, WCELL1D )
-    LOGICAL FUNCTION MPTOCRMATX( NP, LAT1D, LON1D, KCELL1, WCELL1F )
-    LOGICAL FUNCTION MPTOCRMATX( NC, NR, LAT2F, LON2F, KCELL2, WCELL2F )
-    LOGICAL FUNCTION MPTOCRMATX( NC, NR, LAT2D, LON2D, KCELL2, WCELL2D )
-    LOGICAL FUNCTION MPTOCRMATX( NC, NR, LAT2D, LON2D, KCELL2, WCELL2F )
+    LOGICAL FUNCTION MPBARYMATX( NP, LAT1F, LON1F, KCELL1, WCELL1F )
+    LOGICAL FUNCTION MPBARYMATX( NP, LAT1D, LON1D, KCELL1, WCELL1D )
+    LOGICAL FUNCTION MPBARYMATX( NP, LAT1D, LON1D, KCELL1, WCELL1F )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2F, LON2F, KCELL2, WCELL2F )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2D, LON2D, KCELL2, WCELL2D )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2D, LON2D, KCELL2, WCELL2F )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2F, LON2F, AF, KCELL2, WCELL2F )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2D, LON2D, AD, KCELL2, WCELL2D )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2D, LON2D, AD, KCELL2, WCELL2F )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2F, LON2F, AGRDF, KCELL2, WCELL2F )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2D, LON2D, AGRDD, KCELL2, WCELL2D )
+    LOGICAL FUNCTION MPBARYMATX( NC, NR, LAT2D, LON2D, AGRDD, KCELL2, WCELL2F )
         INTEGER, INTENT(IN   ) :: NP, NC, NR
         REAL,    INTENT(IN   ) :: LAT1F( NP )
         REAL,    INTENT(IN   ) :: LON1F( NP )
@@ -1618,6 +1625,10 @@ INITREARTH()</CODE></A></H2>
         REAL,    INTENT(IN   ) :: LON2F( NC,NR )
         REAL(8), INTENT(IN   ) :: LAT2D( NC,NR )
         REAL(8), INTENT(IN   ) :: LON2D( NC,NR )
+        REAL,    INTENT(IN   ) :: AF
+        REAL(8), INTENT(IN   ) :: AD
+        REAL,    INTENT(IN   ) :: AGRDF( NC,NR )
+        REAL(8), INTENT(IN   ) :: AGRDD( NC,NR )
         INTEGER, INTENT(  OUT) ::  KCELL1( 3,NP )
         REAL,    INTENT(  OUT) :: WCELL1F( 3,NP )
         REAL(8), INTENT(  OUT) :: WCELL1D( 3,NP )
@@ -1627,10 +1638,21 @@ INITREARTH()</CODE></A></H2>
     </PRE>
 
     <BLOCKQUOTE>
+    See also <A HREF="#interp"><CODE>MPINTERP()</CODE></A> below.
+    <P>
+
     Returns <CODE>TRUE</CODE> iff the interpolation can be done properly
     (i.e., if each point is surrounded by MPAS-grid cell-centers).  Note
-    that <CODE>Z</CODE> variables are subscripted by the number
-    <CODE>MPCELLS</CODE> of MPAS grid cells,
+    that <CODE>Z</CODE> variables used with these matrices are
+    subscripted by the number <CODE>MPCELLS</CODE> of MPAS grid cells
+    (and possibly by a vertical dimension).
+    <P>
+
+    Calls using output-grid cell-area arguments
+    <CODE>A&nbsp;=&nbsp;AF,AD,AGRDF,AGRDD</CODE> re-normalize the output
+    result by the ratio of the relevant cell-areas <CODE>A*/CAREA</CODE>
+    so that the emissions-per-grid-cell-per... units for emissions are
+    retained.
     <P>
 
     The interpolation uses barycentric-coordinate linear interpolation
@@ -1667,11 +1689,11 @@ INITREARTH()</CODE></A></H2>
 <HR> <!- ------------------------------------------------------------- ->
 
 
-<H2><A NAME = "bmult"><CODE>MPTOCRMULT()</CODE></A></H2>
+<H2><A NAME = "bmult"><CODE>MPBARYMULT()</CODE></A></H2>
 
     <BLOCKQUOTE>
     This is a generic routine for multiplying 3-band barycentric-linear 
-    interpolation matrices from <CODE>MPTOCRMATX()</CODE> (above) with
+    interpolation matrices from <CODE>MPBARYMATX()</CODE> (above) with
     possibly-layered MPAS-grid variables.
     <P>
 
@@ -1683,14 +1705,14 @@ INITREARTH()</CODE></A></H2>
     </BLOCKQUOTE>
 
     <PRE>
-    SUBROUTINE MPTOCRMULT( NP,         KCELL1, WCELL1F, Z1F, V1F )
-    SUBROUTINE MPTOCRMULT( NP,         KCELL1, WCELL1D, Z1D, V1D )
-    SUBROUTINE MPTOCRMULT( NP, NL,     KCELL1, WCELL1F, ZLF, V1LF )
-    SUBROUTINE MPTOCRMULT( NP, NL,     KCELL1, WCELL1D, ZLD, V1LD )
-    SUBROUTINE MPTOCRMULT( NC, NR,     KCELL2, WCELL2F, Z1F, V2F )
-    SUBROUTINE MPTOCRMULT( NC, NR,     KCELL2, WCELL2D, Z1D, V2D )
-    SUBROUTINE MPTOCRMULT( NC, NR, NL, KCELL2, WCELL2F, ZLF, V2LF )
-    SUBROUTINE MPTOCRMULT( NC, NR, NL, KCELL2, WCELL2D, ZLD, V2LD )
+    SUBROUTINE MPBARYMULT( NP,         KCELL1, WCELL1F, Z1F, V1F )
+    SUBROUTINE MPBARYMULT( NP,         KCELL1, WCELL1D, Z1D, V1D )
+    SUBROUTINE MPBARYMULT( NP, NL,     KCELL1, WCELL1F, ZLF, V1LF )
+    SUBROUTINE MPBARYMULT( NP, NL,     KCELL1, WCELL1D, ZLD, V1LD )
+    SUBROUTINE MPBARYMULT( NC, NR,     KCELL2, WCELL2F, Z1F, V2F )
+    SUBROUTINE MPBARYMULT( NC, NR,     KCELL2, WCELL2D, Z1D, V2D )
+    SUBROUTINE MPBARYMULT( NC, NR, NL, KCELL2, WCELL2F, ZLF, V2LF )
+    SUBROUTINE MPBARYMULT( NC, NR, NL, KCELL2, WCELL2D, ZLD, V2LD )
         INTEGER, INTENT(IN   ) :: NP, NC, NR, NL
         INTEGER, INTENT(IN   ) ::  KCELL1( 3,NP )
         REAL,    INTENT(IN   ) :: WCELL1F( 3,NP )
@@ -1793,16 +1815,17 @@ INITREARTH()</CODE></A></H2>
 
     Calls using output-grid cell-area arguments
     <CODE>A&nbsp;=&nbsp;AR,AD,AGR,AGD</CODE> re-normalize the output
-    result by the ratio of the relevant cell-areas <CODE>CAREA/A*</CODE>
+    result by the ratio of the relevant cell-areas <CODE>A*/CAREA</CODE>
     so that the emissions-per-grid-cell-per... units for emissions are
     retained.
     <P>
 
-    Note that calls <U>without</U> output-grid cell-area arguments
-    combine the functionality of <CODE>MPTOCRMATX()</CODE> and
-    <CODE>MPTOCRMULT()</CODE> (above) but always computes the
-    interpolation weights and indices in-line. As a result it simpler
-    to use, but less efficient for repeated uses than those routines.
+    Note that this routine combines the functionality of
+    <A HREF=#bmatx"><CODE>MPBARYMATX()</CODE></A> and <A
+    HREF=#bmult"><CODE>MPBARYMULT()</CODE></A> (above) but
+    always computes the interpolation weights and indices in-line. As a
+    result it simpler to use, but less efficient for repeated uses than
+    those routines.
     <P>
 
     For all but the single-point case, <CODE>MPINTERP()</CODE> is

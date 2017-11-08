@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 45 2017-11-08 17:43:09Z coats $"
+    !!  Version "$Id: modmpasfio.f90 46 2017-11-08 19:33:33Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -41,7 +41,7 @@ MODULE MODMPASFIO
     PUBLIC :: INITMPGRID, INITREARTH, SHUTMPGRID, OPENMPAS, CREATEMPAS,     &
               DESCMPAS, READMPSTEPS, WRITEMPSTEP, READMPAS, WRITEMPAS,      &
               ARC2MPAS, FINDCELL, FINDVRTX, SPHEREDIST, MPSTR2DT, MPDT2STR, &
-              BARYFAC, MPTOCRMATX, MPTOCRMULT, MPINTERP
+              BARYFAC, MPBARYMATX, MPBARYMULT, MPINTERP
 
 
     !!........   Generic interfaces:
@@ -97,15 +97,17 @@ MODULE MODMPASFIO
                           MPINTERPL0DF, MPINTERPL1DF, MPINTERPL2DF, MPINTERPEL2DF, MPINTERPGL2DF
     END INTERFACE MPINTERP
 
-    INTERFACE MPTOCRMATX
-        MODULE PROCEDURE MPTOCRMATX1F, MPTOCRMATX1D, MPTOCRMATX1DF,     &
-                         MPTOCRMATX2F, MPTOCRMATX2D, MPTOCRMATX2DF
-    END INTERFACE MPTOCRMATX
+    INTERFACE MPBARYMATX
+        MODULE PROCEDURE MPBARYMATX1F, MPBARYMATX1D, MPBARYMATX1DF,     &
+                         MPBARYMATX2F, MPBARYMATX2D, MPBARYMATX2DF,     &
+                         MPBARYEMTX2F, MPBARYEMTX2D, MPBARYEMTX2DF,     &
+                         MPBARYGMTX2F, MPBARYGMTX2D, MPBARYGMTX2DF
+    END INTERFACE MPBARYMATX
 
-    INTERFACE MPTOCRMULT
-        MODULE PROCEDURE MPTOCRMULT1F1, MPTOCRMULT1FL, MPTOCRMULT1D1, MPTOCRMULT1DL,    &
-                         MPTOCRMULT2F1, MPTOCRMULT2FL, MPTOCRMULT2D1, MPTOCRMULT2DL
-    END INTERFACE MPTOCRMULT
+    INTERFACE MPBARYMULT
+        MODULE PROCEDURE MPBARYMULT1F1, MPBARYMULT1FL, MPBARYMULT1D1, MPBARYMULT1DL,    &
+                         MPBARYMULT2F1, MPBARYMULT2FL, MPBARYMULT2D1, MPBARYMULT2DL
+    END INTERFACE MPBARYMULT
 
     INTERFACE SPHEREDIST
         MODULE PROCEDURE  DISTD, DISTR, DISTDM, DISTRM, DXYZD, DXYZR, DXYZDM, DXYZRM
@@ -450,7 +452,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 45 2017-11-08 17:43:09Z coats $',&
+        'Version $Id: modmpasfio.f90 46 2017-11-08 19:33:33Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -615,7 +617,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 45 2017-11-08 17:43:09Z coats $',&
+        'Version $Id: modmpasfio.f90 46 2017-11-08 19:33:33Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -13819,9 +13821,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!  and returns TRUE iff the requested (X,Y) is in the triangle defined by
     !!  the input points (X1,Y1), X2,Y2), X3,Y3).
     !!.............................................................................
-    !!  MPTOCRMATX() computes 3-band barycentric interpolation matrix
+    !!  MPBARYMATX() computes 3-band barycentric interpolation matrix
     !!.............................................................................
-    !!  MPTOCRMULT() multiplies 3-band barycentric interpolation matrix by an MPAS-variable
+    !!  MPBARYMULT() multiplies 3-band barycentric interpolation matrix by an MPAS-variable
     !!.............................................................................
 
 
@@ -13849,7 +13851,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!.............................................................................
 
 
-    LOGICAL FUNCTION MPTOCRMATX1F( NP, LAT, LON, KCELL, WCELL )
+    LOGICAL FUNCTION MPBARYMATX1F( NP, LAT, LON, KCELL, WCELL )
         INTEGER, INTENT(IN   ) :: NP
         REAL,    INTENT(IN   ) :: LAT( NP )
         REAL,    INTENT(IN   ) :: LON( NP )
@@ -13914,16 +13916,16 @@ CLOOP:  DO C = 1, NP
 
         END DO CLOOP
 
-        MPTOCRMATX1F = ( .NOT.EFLAG )
+        MPBARYMATX1F = ( .NOT.EFLAG )
         RETURN
 
-    END FUNCTION MPTOCRMATX1F
+    END FUNCTION MPBARYMATX1F
 
 
     !!.............................................................................
 
 
-    LOGICAL FUNCTION MPTOCRMATX1D( NP, LAT, LON, KCELL, WCELL )
+    LOGICAL FUNCTION MPBARYMATX1D( NP, LAT, LON, KCELL, WCELL )
         INTEGER, INTENT(IN   ) :: NP
         REAL(8), INTENT(IN   ) :: LAT( NP )
         REAL(8), INTENT(IN   ) :: LON( NP )
@@ -13988,16 +13990,16 @@ CLOOP:  DO C = 1, NP
 
         END DO CLOOP
 
-        MPTOCRMATX1D = ( .NOT.EFLAG )
+        MPBARYMATX1D = ( .NOT.EFLAG )
         RETURN
 
-    END FUNCTION MPTOCRMATX1D
+    END FUNCTION MPBARYMATX1D
 
 
     !!.............................................................................
 
 
-    LOGICAL FUNCTION MPTOCRMATX1DF( NP, LAT, LON, KCELL, WCELL )
+    LOGICAL FUNCTION MPBARYMATX1DF( NP, LAT, LON, KCELL, WCELL )
         INTEGER, INTENT(IN   ) :: NP
         REAL(8), INTENT(IN   ) :: LAT( NP )
         REAL(8), INTENT(IN   ) :: LON( NP )
@@ -14062,16 +14064,16 @@ CLOOP:  DO C = 1, NP
 
         END DO CLOOP
 
-        MPTOCRMATX1DF = ( .NOT.EFLAG )
+        MPBARYMATX1DF = ( .NOT.EFLAG )
         RETURN
 
-    END FUNCTION MPTOCRMATX1DF
+    END FUNCTION MPBARYMATX1DF
 
 
     !!.............................................................................
 
 
-    LOGICAL FUNCTION MPTOCRMATX2F( NC, NR, LAT, LON, KCELL, WCELL )
+    LOGICAL FUNCTION MPBARYMATX2F( NC, NR, LAT, LON, KCELL, WCELL )
         INTEGER, INTENT(IN   ) :: NC, NR
         REAL,    INTENT(IN   ) :: LAT( NC,NR )
         REAL,    INTENT(IN   ) :: LON( NC,NR )
@@ -14138,16 +14140,16 @@ CLOOP:  DO C = 1, NC
         END DO CLOOP
         END DO
 
-        MPTOCRMATX2F = ( .NOT.EFLAG )
+        MPBARYMATX2F = ( .NOT.EFLAG )
         RETURN
 
-    END FUNCTION MPTOCRMATX2F
+    END FUNCTION MPBARYMATX2F
 
 
     !!.............................................................................
 
 
-    LOGICAL FUNCTION MPTOCRMATX2D( NC, NR, LAT, LON, KCELL, WCELL )
+    LOGICAL FUNCTION MPBARYMATX2D( NC, NR, LAT, LON, KCELL, WCELL )
         INTEGER, INTENT(IN   ) :: NC, NR
         REAL(8), INTENT(IN   ) :: LAT( NC,NR )
         REAL(8), INTENT(IN   ) :: LON( NC,NR )
@@ -14214,16 +14216,16 @@ CLOOP:  DO C = 1, NC
         END DO CLOOP
         END DO
 
-        MPTOCRMATX2D = ( .NOT.EFLAG )
+        MPBARYMATX2D = ( .NOT.EFLAG )
         RETURN
 
-    END FUNCTION MPTOCRMATX2D
+    END FUNCTION MPBARYMATX2D
 
 
     !!.............................................................................
 
 
-    LOGICAL FUNCTION MPTOCRMATX2DF( NC, NR, LAT, LON, KCELL, WCELL )
+    LOGICAL FUNCTION MPBARYMATX2DF( NC, NR, LAT, LON, KCELL, WCELL )
         INTEGER, INTENT(IN   ) :: NC, NR
         REAL(8), INTENT(IN   ) :: LAT( NC,NR )
         REAL(8), INTENT(IN   ) :: LON( NC,NR )
@@ -14290,16 +14292,484 @@ CLOOP:  DO C = 1, NC
         END DO CLOOP
         END DO
 
-        MPTOCRMATX2DF = ( .NOT.EFLAG )
+        MPBARYMATX2DF = ( .NOT.EFLAG )
         RETURN
 
-    END FUNCTION MPTOCRMATX2DF
+    END FUNCTION MPBARYMATX2DF
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT1F1( NP, KCELL, WCELL, Z, V )
+    LOGICAL FUNCTION MPBARYEMTX2F( NC, NR, LAT, LON, A, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL,    INTENT(IN   ) :: LAT( NC,NR )
+        REAL,    INTENT(IN   ) :: LON( NC,NR )
+        REAL,    INTENT(IN   ) :: A
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3, ARAT
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                                     &
+!$OMP&              SHARED( NC, NR, LAT, LON, A, NBNDYE, BNDYCELL,      &
+!$OMP&                      CAREAS, ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,              &
+!$OMP&                      X2, Y2, X3, Y3, ARAT, W1, W2, W3 ),         &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A / CAREAS( M )
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1 * ARAT
+                        WCELL( 2,C,R ) = W2 * ARAT
+                        WCELL( 3,C,R ) = W3 * ARAT
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPBARYEMTX2F = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPBARYEMTX2F
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPBARYEMTX2D( NC, NR, LAT, LON, A, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: LAT( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON( NC,NR )
+        REAL(8), INTENT(IN   ) :: A
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL(8), INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     ARAT, W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                                     &
+!$OMP&              SHARED( NC, NR, LAT, LON, A, NBNDYE, BNDYCELL,      &
+!$OMP&                      CAREAS, ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,              &
+!$OMP&                      X2, Y2, X3, Y3, ARAT, W1, W2, W3 ),         &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A / CAREAS( M )
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1 * ARAT
+                        WCELL( 2,C,R ) = W2 * ARAT
+                        WCELL( 3,C,R ) = W3 * ARAT
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPBARYEMTX2D = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPBARYEMTX2D
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPBARYEMTX2DF( NC, NR, LAT, LON, A, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: LAT( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON( NC,NR )
+        REAL(8), INTENT(IN   ) :: A
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     ARAT, W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                                 &
+!$OMP&              SHARED( NC, NR, LAT, LON, A, NBNDYE, BNDYCELL,  &
+!$OMP&                      CAREAS, ALONC, ALATC, KCELL, WCELL ),   &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,          &
+!$OMP&                      X2, Y2, X3, Y3, ARAT, W1, W2, W3 ),     &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A / CAREAS( M )
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1 * ARAT
+                        WCELL( 2,C,R ) = W2 * ARAT
+                        WCELL( 3,C,R ) = W3 * ARAT
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPBARYEMTX2DF = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPBARYEMTX2DF
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPBARYGMTX2F( NC, NR, LAT, LON, A, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL,    INTENT(IN   ) :: LAT( NC,NR )
+        REAL,    INTENT(IN   ) :: LON( NC,NR )
+        REAL,    INTENT(IN   ) ::   A( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     ARAT, W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                                     &
+!$OMP&              SHARED( NC, NR, LAT, LON, A, NBNDYE, BNDYCELL,      &
+!$OMP&                      CAREAS, ALONC, ALATC, KCELL, WCELL ),       &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,              &
+!$OMP&                      X2, Y2, X3, Y3, ARAT, W1, W2, W3 ),         &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A( C,R ) / CAREAS( M )
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1 * ARAT
+                        WCELL( 2,C,R ) = W2 * ARAT
+                        WCELL( 3,C,R ) = W3 * ARAT
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPBARYGMTX2F = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPBARYGMTX2F
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPBARYGMTX2D( NC, NR, LAT, LON, A, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: LAT( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON( NC,NR )
+        REAL(8), INTENT(IN   ) ::   A( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL(8), INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     ARAT, W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                                 &
+!$OMP&              SHARED( NC, NR, LAT, LON, A, NBNDYE, BNDYCELL,  &
+!$OMP&                      CAREAS, ALONC, ALATC, KCELL, WCELL ),   &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,          &
+!$OMP&                      X2, Y2, X3, Y3, ARAT, W1, W2, W3 ),     &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A( C,R ) / CAREAS( M )
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1 * ARAT
+                        WCELL( 2,C,R ) = W2 * ARAT
+                        WCELL( 3,C,R ) = W3 * ARAT
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPBARYGMTX2D = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPBARYGMTX2D
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPBARYGMTX2DF( NC, NR, LAT, LON, A, KCELL, WCELL )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: LAT( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON( NC,NR )
+        REAL(8), INTENT(IN   ) ::   A( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL( 3,NC,NR )
+
+        INTEGER     C, R, J, K, L, M
+        LOGICAL     EFLAG
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     ARAT, W1, W2, W3
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                                 &
+!$OMP&              SHARED( NC, NR, LAT, LON, A, NBNDYE, BNDYCELL,  &
+!$OMP&                      CAREAS, ALONC, ALATC, KCELL, WCELL ),   &
+!$OMP&             PRIVATE( C, R, J, K, M, XX, YY, X1, Y1,          &
+!$OMP&                      X2, Y2, X3, Y3, ARAT, W1, W2, W3 ),     &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
+            YY = LAT( C,R )
+
+!$OMP       CRITICAL( MP_FIND )
+            M = FINDCELL( YY, XX )
+!$OMP       END CRITICAL( MP_FIND )
+
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A( C,R ) / CAREAS( M )
+                        KCELL( 1,C,R ) = M
+                        KCELL( 2,C,R ) = BNDYCELL( J,M )
+                        KCELL( 3,C,R ) = BNDYCELL( K,M )
+                        WCELL( 1,C,R ) = W1 * ARAT
+                        WCELL( 2,C,R ) = W2 * ARAT
+                        WCELL( 3,C,R ) = W3 * ARAT
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPBARYGMTX2DF = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPBARYGMTX2DF
+
+
+    !!.............................................................................
+
+
+    SUBROUTINE MPBARYMULT1F1( NP, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NP
         INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
         REAL,    INTENT(IN   ) :: WCELL( 3,NP )
@@ -14323,13 +14793,13 @@ CLOOP:  DO C = 1, NC
             V( C ) = W1 * Z( K1 ) + W2 * Z( K2 ) + W3 * Z( K3 )
         END DO
 
-    END SUBROUTINE MPTOCRMULT1F1
+    END SUBROUTINE MPBARYMULT1F1
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT1FL( NP, NL, KCELL, WCELL, Z, V )
+    SUBROUTINE MPBARYMULT1FL( NP, NL, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NP, NL
         INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
         REAL,    INTENT(IN   ) :: WCELL( 3,NP )
@@ -14355,13 +14825,13 @@ CLOOP:  DO C = 1, NC
             END DO
         END DO
 
-    END SUBROUTINE MPTOCRMULT1FL
+    END SUBROUTINE MPBARYMULT1FL
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT1D1( NP, KCELL, WCELL, Z, V )
+    SUBROUTINE MPBARYMULT1D1( NP, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NP
         INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
         REAL(8), INTENT(IN   ) :: WCELL( 3,NP )
@@ -14385,13 +14855,13 @@ CLOOP:  DO C = 1, NC
             V( C ) = W1 * Z( K1 ) + W2 * Z( K2 ) + W3 * Z( K3 )
         END DO
 
-    END SUBROUTINE MPTOCRMULT1D1
+    END SUBROUTINE MPBARYMULT1D1
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT1DL( NP, NL, KCELL, WCELL, Z, V )
+    SUBROUTINE MPBARYMULT1DL( NP, NL, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NP, NL
         INTEGER, INTENT(IN   ) :: KCELL( 3,NP )
         REAL(8), INTENT(IN   ) :: WCELL( 3,NP )
@@ -14417,13 +14887,13 @@ CLOOP:  DO C = 1, NC
             END DO
         END DO
 
-    END SUBROUTINE MPTOCRMULT1DL
+    END SUBROUTINE MPBARYMULT1DL
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT2F1( NC, NR, KCELL, WCELL, Z, V )
+    SUBROUTINE MPBARYMULT2F1( NC, NR, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NC, NR
         INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
         REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
@@ -14449,13 +14919,13 @@ CLOOP:  DO C = 1, NC
         END DO
         END DO
 
-    END SUBROUTINE MPTOCRMULT2F1
+    END SUBROUTINE MPBARYMULT2F1
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT2FL( NC, NR, NL, KCELL, WCELL, Z, V )
+    SUBROUTINE MPBARYMULT2FL( NC, NR, NL, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NC, NR, NL
         INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
         REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
@@ -14483,13 +14953,13 @@ CLOOP:  DO C = 1, NC
         END DO
         END DO
 
-    END SUBROUTINE MPTOCRMULT2FL
+    END SUBROUTINE MPBARYMULT2FL
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT2D1( NC, NR, KCELL, WCELL, Z, V )
+    SUBROUTINE MPBARYMULT2D1( NC, NR, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NC, NR
         INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
         REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
@@ -14515,13 +14985,13 @@ CLOOP:  DO C = 1, NC
         END DO
         END DO
 
-    END SUBROUTINE MPTOCRMULT2D1
+    END SUBROUTINE MPBARYMULT2D1
 
 
     !!.............................................................................
 
 
-    SUBROUTINE MPTOCRMULT2DL( NC, NR, NL, KCELL, WCELL, Z, V )
+    SUBROUTINE MPBARYMULT2DL( NC, NR, NL, KCELL, WCELL, Z, V )
         INTEGER, INTENT(IN   ) :: NC, NR, NL
         INTEGER, INTENT(IN   ) :: KCELL( 3,NC,NR )
         REAL(8), INTENT(IN   ) :: WCELL( 3,NC,NR )
@@ -14549,7 +15019,7 @@ CLOOP:  DO C = 1, NC
         END DO
         END DO
 
-    END SUBROUTINE MPTOCRMULT2DL
+    END SUBROUTINE MPBARYMULT2DL
 
 
     !!.............................................................................
