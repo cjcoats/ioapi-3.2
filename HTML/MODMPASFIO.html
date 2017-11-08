@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 47 2017-11-08 19:43:31Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 48 2017-11-08 20:46:34Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODMPASFIO</TITLE>
 </HEAD>
@@ -68,18 +68,13 @@
         <DT>  <A HREF = "#decl" >Declarations</A>
         <DD> <CODE>PARAMETER</CODE>s and public <CODE>MODULE</CODE>-variables
              describing the current MPAS grid.
+             <P>
         <DT>  <A HREF = "#init" ><CODE>INITMPGRID()</CODE> and
                                  <CODE>INITREARTH()</CODE></A>
         <DD> module initialization; <CODE>SPHEREDIST()</CODE>
              reset.
         <DT>  <A HREF = "#shut" ><CODE>SHUTMPGRID()</CODE></A>
         <DD> module shutdown, flushing and closing all files.
-        <DT>  <A HREF = "#find" ><CODE>FINDCELL()</CODE>
-              and <CODE>FINDVRTX()</CODE></A>
-        <DD> find subscript for MPAS-cell or MPAS-dual-cell containing
-              the point <CODE>(ALAT,ALON)</CODE>
-        <DT>  <A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
-        <DD> compute 2-D and 3-D weights for arc-segment (e.g., for SMOKE)
         <DT>  <A HREF = "#open" ><CODE>OPENMPAS()</CODE></A>
         <DD> open existing MPAS-format input or output file
         <DT>  <A HREF = "#creat"><CODE>CREATEMPAS()</CODE></A>
@@ -98,12 +93,19 @@
         <DT>  <A HREF = "#write"><CODE>WRITEMPAS()</CODE></A>
         <DD> write variable or time step of variable to MPAS-format
              output file
+             <P>
+        <DT>  <A HREF = "#find" ><CODE>FINDCELL()</CODE>
+              and <CODE>FINDVRTX()</CODE></A>
+        <DD> find subscript for MPAS-cell or MPAS-dual-cell containing
+              the point <CODE>(ALAT,ALON)</CODE>
+        <DT>  <A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
+        <DD> compute 2-D and 3-D weights for arc-segment (e.g., for SMOKE)
         <DT>  <A HREF = "#bmatx"><CODE>MPBARYMATX()</CODE></A>
         <DD> Create a 3-band sparse matrix for barycentric-linear
-             interpolation.
-        <DT>  <A HREF = "#bmult"><CODE>MPBARYMATX()</CODE></A>
-        <DD> Multiplyu a 3-band barycentric-linear sparse matrix 
-             by an MPAS variable.
+             interpolation to a set of points or a rectangular grid.
+        <DT>  <A HREF = "#bmult"><CODE>MPBARYMULT()</CODE></A>
+        <DD> Multiply a 3-band barycentric-linear sparse matrix 
+             by an MPAS variable, to perform interpolation.
         <DT>  <A HREF = "#interp"><CODE>MPINTERP()</CODE></A>
         <DD> Interpolate an MPAS-grid variable to a point, set of
              points, or 2-D grid of points, using barycentric-linear
@@ -192,7 +194,7 @@
              internally, with 
              <CODE><BLOCKQUOTE>
              -&pi;/2 &leq; lat &lt; &pi;/2 <BR>
-             0 &leq; lon &leq; &pi;
+             0 &leq; lon &leq; 2 &pi;
              </BLOCKQUOTE></CODE>
              Everyone else uses either degrees, minutes, and
              seconds or real-number degrees, and (except for the WMO) in
@@ -295,7 +297,7 @@
              (Having a potentially open-ended set of dimensions and
              their names adds substantial complexity&nbsp;;-(&nbsp;).
         <P>
-        <DT><CODE>INTEGER, PUBLIC, PARAMETER :: NMPASVARS = 33</CODE>
+        <DT><CODE>INTEGER, PUBLIC, PARAMETER :: NMPASVARS = 36</CODE>
         <DD> Number of &quot;standard&quot; MPAS-file variables for
              this module.
         <P>
@@ -747,124 +749,6 @@ INITREARTH()</CODE></A></H2>
     </UL></BLOCKQUOTE>
 
     Should be called prior to program termination.
-    <P>
-
-    </BLOCKQUOTE>
-
-    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
-    <P>
-
-<HR> <!- ------------------------------------------------------------- ->
-
-
-<H2><A NAME = "find"><CODE>FINDCELL()</CODE> and <CODE>FINDVRTX()</CODE></A></H2>
-
-    <BLOCKQUOTE>
-
-    These are generic <CODE>LOGICAL FUNCTION</CODE> with two forms:
-
-    </BLOCKQUOTE>
-
-    <PRE>
-    INTEGER FUNCTION FINDCELL( ALATF, ALONF )
-    INTEGER FUNCTION FINDCELL( ALATD, ALOND )
-
-    INTEGER FUNCTION FINDVRTX( ALATF, ALONF )
-    INTEGER FUNCTION FINDVRTX( ALATD, ALOND )
-
-        REAL   , INTENT( IN ) :: ALATF, ALONF
-        REAL(8), INTENT( IN ) :: ALATD, ALOND
-    </PRE>
-
-    <BLOCKQUOTE>
-
-    <EM><U>Preconditions:</U></EM>
-    <BLOCKQUOTE><UL>
-        <LI><CODE> USE MODMPASFIO</CODE>
-            <P>
-        <LI>Call <CODE>INITMPGRID()</CODE> before calling
-             <CODE>FINDCELL()</CODE> or <CODE>FINDVRTX()</CODE>
-            <P>
-    </UL></BLOCKQUOTE>
-    <P>
-    <DL>
-        <DT> <CODE>FINDCELL()</CODE>:
-        <DD> Find the subscript for the (unstructured) MPAS-grid cell that
-             contains the point <CODE>(ALAT,ALON)</CODE>.
-        <P>
-        <DT> <CODE>FINDVRTX()</CODE>:
-        <DD> Find the subscript for the vertex at the center of the
-             dual-mesh cell that contains the point <CODE>(ALAT,ALON)</CODE>
-             or equivalently find the subscript for the vertex closest
-             to the point <CODE>(ALAT,ALON)</CODE>
-        <P>
-    </DL>
-
-    </BLOCKQUOTE>
-
-    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
-    <P>
-
-<HR> <!- ------------------------------------------------------------- ->
-
-
-<H2><A NAME = "wght"><CODE>ARC2MPAS()</CODE></A></H2>
-
-    <BLOCKQUOTE>
-
-    This is a generic <CODE>LOGICAL FUNCTION</CODE> with three forms:
-
-    </BLOCKQUOTE>
-
-    <PRE>
-    LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, LAT2, LON2, NMAX, NSEGS, CELLS, WGT2D )
-    LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, HGT1, LAT2, LON2, HGT2,    &amp;
-                               NLAYS, NMAX, ZGRID,                    &amp;
-                               NSEGS, CELLS, WGT3D )
-    LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, HGT1, LAT2, LON2, HGT2,    &amp;
-                               NLAYS, NMAX, ZGRID,                    &amp;
-                               NSEGS, CELLS, WGT2D, ZBOTS, ZTOPS, WGT3D )
-
-        REAL   , INTENT(IN   ) :: LAT1, LON1, HGT1, LAT2, LON2, HGT2
-        INTEGER, INTENT(IN   ) :: NLAYS, NMAX
-        REAL   , INTENT(IN   ) :: ZGRID( NLAYS+1, MPCELLS )
-        INTEGER, INTENT(  OUT) :: NSEGS
-        INTEGER, INTENT(  OUT) :: CELLS( NMAX )
-        REAL   , INTENT(  OUT) :: ZBOTS( NMAX )
-        REAL   , INTENT(  OUT) :: ZTOPS( NMAX )
-        REAL   , INTENT(  OUT) :: WGT2D( NMAX )
-        REAL   , INTENT(  OUT) :: WGT3D( NLAYS, NMAX )
-    </PRE>
-
-    <BLOCKQUOTE>
-
-    <EM><U>Preconditions:</U></EM>
-    <BLOCKQUOTE><UL>
-        <LI> <CODE>USE MODMPASFIO</CODE>
-            <P>
-        <LI> Call <CODE>INITMPGRID()</CODE> before calling <CODE>ARC2MPAS()</CODE>
-        <P>
-        <LI> The last two forms, involving 3-D <CODE>WGT3D</CODE>,
-             require that the must supply the MPAS-grid 3-D variable
-             <CODE>ZGRID</CODE> containing the level-surfaces for the
-             3-D model.
-    </UL></BLOCKQUOTE>
-    <P>
-
-    Computes weights for line-segment trajectories, e.g., for mobile
-    source or aircraft emissions.
-    <P>
-
-    This routine intersects a segment from
-    <CODE>(LAT1,LON1[,HGT1])</CODE> to <CODE>(LAT2,LON2[,HGT2])</CODE>
-    with either the horizontal (2-D) MPAS grid structure or 3-D
-    (horizontal+vertical) grid structure, and returns the  corresponding
-    weights for allocating the segment to the cells it intersects (e.g.,
-    for use in SMOKE).
-    <P>
-
-    The last form is the &quot;instrumented 3-D&quot; variant, which provides
-    additional diagnostic data.
     <P>
 
     </BLOCKQUOTE>
@@ -1594,6 +1478,124 @@ INITREARTH()</CODE></A></H2>
 <HR> <!- ------------------------------------------------------------- ->
 
 
+<H2><A NAME = "find"><CODE>FINDCELL()</CODE> and <CODE>FINDVRTX()</CODE></A></H2>
+
+    <BLOCKQUOTE>
+
+    These are generic <CODE>LOGICAL FUNCTION</CODE> with two forms:
+
+    </BLOCKQUOTE>
+
+    <PRE>
+    INTEGER FUNCTION FINDCELL( ALATF, ALONF )
+    INTEGER FUNCTION FINDCELL( ALATD, ALOND )
+
+    INTEGER FUNCTION FINDVRTX( ALATF, ALONF )
+    INTEGER FUNCTION FINDVRTX( ALATD, ALOND )
+
+        REAL   , INTENT( IN ) :: ALATF, ALONF
+        REAL(8), INTENT( IN ) :: ALATD, ALOND
+    </PRE>
+
+    <BLOCKQUOTE>
+
+    <EM><U>Preconditions:</U></EM>
+    <BLOCKQUOTE><UL>
+        <LI><CODE> USE MODMPASFIO</CODE>
+            <P>
+        <LI>Call <CODE>INITMPGRID()</CODE> before calling
+             <CODE>FINDCELL()</CODE> or <CODE>FINDVRTX()</CODE>
+            <P>
+    </UL></BLOCKQUOTE>
+    <P>
+    <DL>
+        <DT> <CODE>FINDCELL()</CODE>:
+        <DD> Find the subscript for the (unstructured) MPAS-grid cell that
+             contains the point <CODE>(ALAT,ALON)</CODE>.
+        <P>
+        <DT> <CODE>FINDVRTX()</CODE>:
+        <DD> Find the subscript for the vertex at the center of the
+             dual-mesh cell that contains the point <CODE>(ALAT,ALON)</CODE>
+             or equivalently find the subscript for the vertex closest
+             to the point <CODE>(ALAT,ALON)</CODE>
+        <P>
+    </DL>
+
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
+<H2><A NAME = "wght"><CODE>ARC2MPAS()</CODE></A></H2>
+
+    <BLOCKQUOTE>
+
+    This is a generic <CODE>LOGICAL FUNCTION</CODE> with three forms:
+
+    </BLOCKQUOTE>
+
+    <PRE>
+    LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, LAT2, LON2, NMAX, NSEGS, CELLS, WGT2D )
+    LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, HGT1, LAT2, LON2, HGT2,    &amp;
+                               NLAYS, NMAX, ZGRID,                    &amp;
+                               NSEGS, CELLS, WGT3D )
+    LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, HGT1, LAT2, LON2, HGT2,    &amp;
+                               NLAYS, NMAX, ZGRID,                    &amp;
+                               NSEGS, CELLS, WGT2D, ZBOTS, ZTOPS, WGT3D )
+
+        REAL   , INTENT(IN   ) :: LAT1, LON1, HGT1, LAT2, LON2, HGT2
+        INTEGER, INTENT(IN   ) :: NLAYS, NMAX
+        REAL   , INTENT(IN   ) :: ZGRID( NLAYS+1, MPCELLS )
+        INTEGER, INTENT(  OUT) :: NSEGS
+        INTEGER, INTENT(  OUT) :: CELLS( NMAX )
+        REAL   , INTENT(  OUT) :: ZBOTS( NMAX )
+        REAL   , INTENT(  OUT) :: ZTOPS( NMAX )
+        REAL   , INTENT(  OUT) :: WGT2D( NMAX )
+        REAL   , INTENT(  OUT) :: WGT3D( NLAYS, NMAX )
+    </PRE>
+
+    <BLOCKQUOTE>
+
+    <EM><U>Preconditions:</U></EM>
+    <BLOCKQUOTE><UL>
+        <LI> <CODE>USE MODMPASFIO</CODE>
+            <P>
+        <LI> Call <CODE>INITMPGRID()</CODE> before calling <CODE>ARC2MPAS()</CODE>
+        <P>
+        <LI> The last two forms, involving 3-D <CODE>WGT3D</CODE>,
+             require that the must supply the MPAS-grid 3-D variable
+             <CODE>ZGRID</CODE> containing the level-surfaces for the
+             3-D model.
+    </UL></BLOCKQUOTE>
+    <P>
+
+    Computes weights for line-segment trajectories, e.g., for mobile
+    source or aircraft emissions.
+    <P>
+
+    This routine intersects a segment from
+    <CODE>(LAT1,LON1[,HGT1])</CODE> to <CODE>(LAT2,LON2[,HGT2])</CODE>
+    with either the horizontal (2-D) MPAS grid structure or 3-D
+    (horizontal+vertical) grid structure, and returns the  corresponding
+    weights for allocating the segment to the cells it intersects (e.g.,
+    for use in SMOKE).
+    <P>
+
+    The last form is the &quot;instrumented 3-D&quot; variant, which provides
+    additional diagnostic data.
+    <P>
+
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
 <H2><A NAME = "bmatx"><CODE>MPBARYMATX()</CODE></A></H2>
 
     <BLOCKQUOTE>
@@ -1849,8 +1851,7 @@ INITREARTH()</CODE></A></H2>
 
     This is a (potentially-stand-alone) generic <CODE>FUNCTION</CODE>
     for distance between two Lat-Lon specified or MPAS-Cartesian
-    specified points on the Earth, with
-    four forms:
+    specified points on the Earth, with eight forms:
 
     </BLOCKQUOTE>
 
