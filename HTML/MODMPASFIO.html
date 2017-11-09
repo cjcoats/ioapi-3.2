@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 48 2017-11-08 20:46:34Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 49 2017-11-09 20:09:41Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODMPASFIO</TITLE>
 </HEAD>
@@ -21,40 +21,10 @@
 
     <BLOCKQUOTE>
 
-    <EM>New May 2017 for I/O&nbsp;API-3.2!!</EM>
+    <EM>New May-Nov 2017 for I/O&nbsp;API-3.2!!</EM>
     <P>
     Unstructured MPAS-grid descriptions; grid related utility routines; and
     I/O for MPAS-format netCDF.
-    <P>
-
-    <STRONG>See also</STRONG>
-    <BLOCKQUOTE><DL>
-        <DT> <A HREF = "https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf">
-             <VAR>https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf</VAR></A>,
-        <DD> for MPAS grid and netCDF-file specifications
-        <P>
-        <DT> <A HREF = "MODNCFIO.html"><CODE>MODULE MODNCFIO</CODE></A>,
-        <DD> for netCDF declarations and &quot;raw netCDF&quot; file routines
-        <DT> <A HREF = "MODWRFIO.html"><CODE>MODULE MODWRFIO</CODE></A>
-        <DD> for WRF-related file routines
-        <P>
-        <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
-            <A HREF = "MPASDIFF.html"><STRONG><VAR>mpasdiff</VAR></STRONG></A>
-        <DD> for MPAS-format-netCDF variable and layer-range-of-variable
-             statistical comparisons
-        <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
-            <A HREF = "MPASSTAT.html"><STRONG><VAR>mpasstat</VAR></STRONG></A>
-        <DD> for MPAS-format-netCDF variable and layer-range-of-variable
-             statistics
-        <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
-            <A HREF = "MPASTOM3.html"><STRONG><VAR>mpastom3</VAR></STRONG></A>
-        <DD> for interpolating variables from MPAS-format-netCDF files to
-             GRIDDED I/O&nbsp;API files.
-        <DT> <VAR><STRONG>m3tools</STRONG></VAR>sample program
-             <A HREF = "MPASWTEST.html"><STRONG><VAR>mpaswtest</VAR></STRONG></A>.
-        <DD> Example program for<A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
-             MPAS-grid allocation of emissions line-sources.
-    </DL></BLOCKQUOTE>
     <P>
 
     </BLOCKQUOTE>
@@ -72,7 +42,7 @@
         <DT>  <A HREF = "#init" ><CODE>INITMPGRID()</CODE> and
                                  <CODE>INITREARTH()</CODE></A>
         <DD> module initialization; <CODE>SPHEREDIST()</CODE>
-             reset.
+             earth-radius reset.
         <DT>  <A HREF = "#shut" ><CODE>SHUTMPGRID()</CODE></A>
         <DD> module shutdown, flushing and closing all files.
         <DT>  <A HREF = "#open" ><CODE>OPENMPAS()</CODE></A>
@@ -125,12 +95,6 @@
 <H2><A NAME = "notes">Notes and Limitations</A></H2>
 
     <OL>
-        <LI> <EM>LIMITATION:</EM>  There may be problems with
-             <CODE>FINDCELL()</CODE>, <CODE>FINDVRTX()</CODE>,
-             and <CODE>MPINTERP()</CODE> when the domain is not
-             whole-Earth (therefore having b oundary-cells) and the
-             requested operation is for a boundary cell.
-             <P>
         <LI> MPAS is a potentially-global unstructured-grid weather
              model that currently is being adapted for atmospheric
              chemistry, land-surface modeling, and other tasks.<BR>
@@ -193,19 +157,19 @@
         <LI> MPAS uses units of radians for latitudes and longitudes
              internally, with 
              <CODE><BLOCKQUOTE>
-             -&pi;/2 &leq; lat &lt; &pi;/2 <BR>
-             0 &leq; lon &leq; 2 &pi;
+             -&pi;/2 &le; lat &le; &pi;/2 <BR>
+             0 &le; lon &le; 2 &pi;
              </BLOCKQUOTE></CODE>
              Everyone else uses either degrees, minutes, and
              seconds or real-number degrees, and (except for the WMO) in
              a fashion compliant with ISO Standard 6709. This
              <CODE>MODULE</CODE> uses real-number degrees in the range
              <CODE><BLOCKQUOTE>
-             -90 &leq; lat &lt; 90 <BR>
-             0 &leq; lon &leq; 360
+             -90 &le; lat &le; 90 <BR>
+             0 &le; lon &le; 360
              </BLOCKQUOTE></CODE>
-             and converts back and forth between that and the
-             on-file MPAS radians usage.  Arguments to the routines
+             internally, and converts back and forth between that and
+             the on-file MPAS radians usage.  Arguments to the routines
              are converted to this convention, as necessary.
              <P>
         <LI> The MPAS <CODE>(X,Y,Z)</CODE> coordinate system is relative
@@ -226,6 +190,15 @@
              <EM>Kite areas</EM> are the intersections of the original
              cells with the cells of the dual mesh.
              <P>
+        <LI> <EM>LIMITATION:</EM>  There may be problems with
+             <CODE>FINDCELL()</CODE>, <CODE>FINDVRTX()</CODE>,
+             <CODE>MPBARYMATX()</CODE>, <CODE>MPBARYMULT()</CODE>,
+             and <CODE>MPINTERP()</CODE> when the domain is not
+             whole-Earth (therefore having boundary-cells) and the
+             requested operation is for a boundary cell or intersects
+             a boundary cell or if the MPAS domain is not convex (e.g.,
+             &quot;C-shaped&quot;)..
+             <P>
         <LI> I/O&nbsp;API <CODE><A HREF="MODNCFIO.html">MODULE
              MODNCFIO</A></CODE> also provides facilities for describing
              and reading &quot;raw&quot; netCDF.  However, the paradigm
@@ -238,6 +211,36 @@
              strange-looking (e.g., &quot;double-free&quot;) failures.
              <P>
     </OL>
+
+    <STRONG>See also</STRONG>
+    <BLOCKQUOTE><DL>
+        <DT> <A HREF = "https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf">
+             <VAR>https://mpas-dev.github.io/files/documents/MPAS-MeshSpec.pdf</VAR></A>,
+        <DD> for MPAS grid and netCDF-file specifications
+        <P>
+        <DT> <A HREF = "MODNCFIO.html"><CODE>MODULE MODNCFIO</CODE></A>,
+        <DD> for netCDF declarations and &quot;raw netCDF&quot; file routines
+        <DT> <A HREF = "MODWRFIO.html"><CODE>MODULE MODWRFIO</CODE></A>
+        <DD> for WRF-related file routines
+        <P>
+        <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
+            <A HREF = "MPASDIFF.html"><STRONG><VAR>mpasdiff</VAR></STRONG></A>
+        <DD> for MPAS-format-netCDF variable and layer-range-of-variable
+             statistical comparisons
+        <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
+            <A HREF = "MPASSTAT.html"><STRONG><VAR>mpasstat</VAR></STRONG></A>
+        <DD> for MPAS-format-netCDF variable and layer-range-of-variable
+             statistics
+        <DT> <VAR><STRONG>m3tools</STRONG></VAR> program
+            <A HREF = "MPASTOM3.html"><STRONG><VAR>mpastom3</VAR></STRONG></A>
+        <DD> for interpolating variables from MPAS-format-netCDF files to
+             GRIDDED I/O&nbsp;API files.
+        <DT> <VAR><STRONG>m3tools</STRONG></VAR>sample program
+             <A HREF = "MPASWTEST.html"><STRONG><VAR>mpaswtest</VAR></STRONG></A>.
+        <DD> Example program for<A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
+             MPAS-grid allocation of emissions line-sources.
+    </DL></BLOCKQUOTE>
+    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
     <P>
@@ -477,7 +480,7 @@
         <DT><CODE>REAL*8  ALONC(MPCELLS)</CODE>
         <DD> (<VAR>lonCell</VAR>): longitudes of cell-centers,
              normalized so that
-             <CODE>0&nbsp;&leq&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
+             <CODE>0&nbsp;&le;&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
         <P>
         <DT><CODE>REAL*8  ALATE(MPEDGES)</CODE>
         <DD> (<VAR>latEdge</VAR>): latitudes of edge-centers
@@ -485,7 +488,7 @@
         <DT><CODE>REAL*8  ALONE(MPEDGES)</CODE>
         <DD> (<VAR>lonEdge</VAR>): longitudes of edge-centers,
              normalized so that
-             <CODE>0&nbsp;&leq&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
+             <CODE>0&nbsp;&le;&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
         <P>
        <DT><CODE>REAL*8  ALATV(MPVRTXS)</CODE>
         <DD> (<VAR>latVertex</VAR>): latitudes of vertices
@@ -493,7 +496,7 @@
         <DT><CODE>REAL*8  ALONV(MPVRTXS)</CODE>
         <DD> (<VAR>lonVertex</VAR>): longitudes of vertices,
              normalized so that
-             <CODE>0&nbsp;&leq&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
+             <CODE>0&nbsp;&le;&nbsp;lon&nbsp;&lt;&nbsp;360</CODE>
         <P>
         <DT><CODE>REAL*8  XCELL(MPCELLS) </CODE>
         <DD> (<VAR>xCell</VAR>):  <CODE>X</CODE>-coordinates of cell-centers
@@ -575,52 +578,52 @@ INITREARTH()</CODE></A></H2>
     LOGICAL FUNCTION INITMPGRID( FNAME )
         CHARACTER*(*), INTENT( IN ) :: FNAME    !!  logical file name
 
-    LOGICAL FUNCTION INITMPGRID( NCELLS,           &
-                                 NEDGES,           &
-                                 NVRTXS,           &
-                                 NVLVLS,           &
-                                 NVORDR,           &
-                                 NBNDYC,           &
-                                 NBNDY2,           &
-                                 CELLID1,          &
-                                 EDGEID1,          &
-                                 VRTXID1,          &
-                                 NBNDYE1,          &
-                                 NEDGEE1,          &
-                                 BYCELL1,          &
-                                 BYEDGE1,          &
-                                 BYVRTX1,          &
-                                 ECELLS1,          &
-                                 EVRTXS1,          &
-                                 VCELLS1,          &
-                                 VEDGES1,          &
-                                 EEDGES1,          &
-                                 ALATC1,           &
-                                 ALONC1,           &
-                                 ALATE1,           &
-                                 ALONE1,           &
-                                 ALATV1,           &
-                                 ALONV1,           &
-                                 XCELL1,           &
-                                 YCELL1,           &
-                                 ZCELL1,           &
-                                 XEDGE1,           &
-                                 YEDGE1,           &
-                                 ZEDGE1,           &
-                                 XVRTX1,           &
-                                 YVRTX1,           &
-                                 ZVRTX1,           &
-                                 EWGHTS1,          &
-                                 DVEDGE1,          &
-                                 DCEDGE1,          &
-                                 EANGLE1,          &
-                                 CAREAS1,          &
-                                 VAREAS1,          &
-                                 KAREAS1,          &
-                                 MSHDEN1,          &
-                                 ONSPHERE1,        &
-                                 MESH_ID1,         &
-                                 MESH_SPEC1,       &
+    LOGICAL FUNCTION INITMPGRID( NCELLS,           &amp;
+                                 NEDGES,           &amp;
+                                 NVRTXS,           &amp;
+                                 NVLVLS,           &amp;
+                                 NVORDR,           &amp;
+                                 NBNDYC,           &amp;
+                                 NBNDY2,           &amp;
+                                 CELLID1,          &amp;
+                                 EDGEID1,          &amp;
+                                 VRTXID1,          &amp;
+                                 NBNDYE1,          &amp;
+                                 NEDGEE1,          &amp;
+                                 BYCELL1,          &amp;
+                                 BYEDGE1,          &amp;
+                                 BYVRTX1,          &amp;
+                                 ECELLS1,          &amp;
+                                 EVRTXS1,          &amp;
+                                 VCELLS1,          &amp;
+                                 VEDGES1,          &amp;
+                                 EEDGES1,          &amp;
+                                 ALATC1,           &amp;
+                                 ALONC1,           &amp;
+                                 ALATE1,           &amp;
+                                 ALONE1,           &amp;
+                                 ALATV1,           &amp;
+                                 ALONV1,           &amp;
+                                 XCELL1,           &amp;
+                                 YCELL1,           &amp;
+                                 ZCELL1,           &amp;
+                                 XEDGE1,           &amp;
+                                 YEDGE1,           &amp;
+                                 ZEDGE1,           &amp;
+                                 XVRTX1,           &amp;
+                                 YVRTX1,           &amp;
+                                 ZVRTX1,           &amp;
+                                 EWGHTS1,          &amp;
+                                 DVEDGE1,          &amp;
+                                 DCEDGE1,          &amp;
+                                 EANGLE1,          &amp;
+                                 CAREAS1,          &amp;
+                                 VAREAS1,          &amp;
+                                 KAREAS1,          &amp;
+                                 MSHDEN1,          &amp;
+                                 ONSPHERE1,        &amp;
+                                 MESH_ID1,         &amp;
+                                 MESH_SPEC1,       &amp;
                                  REARTH1 )
 
         INTEGER, INTENT( IN ) :: NCELLS                     !!  # of primary cells in the mesh
@@ -678,7 +681,7 @@ INITREARTH()</CODE></A></H2>
     for the case that function is used in stand-alone form.
     <P>
 
-    <EM><U>Preconditions for <CODE>INITMPGRID()</CODE>:</U></EM>
+    <EM><U>Preconditions for <CODE>INITMPGRID()</CODE>, first form:</U></EM>
     <BLOCKQUOTE><DL>
         <DT><CODE> USE MODMPASFIO</CODE>
         <P>
@@ -706,11 +709,11 @@ INITREARTH()</CODE></A></H2>
     <STRONG>Fortran-90 keyword arguments</STRONG>, where a complete
     MPAS-grid specification is provided by arguments instead of from an
     MPAS-file header.<BR> 
-    This is not recommended (after all, the MPAS-initialization
+    <U>This is not recommended</U> (after all, the MPAS-initialization
     program's authors have done this extremely tedious operation
-    once&mdash;why re-invent that wheel?  Note that you must correctly
-    specify <EM>all</EM> of these arguments, and should do so by name,
-    e.g.
+    once&mdash;why re-invent that wheel?)  Note that for this form, you
+    must correctly specify <EM>all</EM> of these arguments, and should
+    do so by name, e.g.
     <PRE>
     FLAG = INITMPGRID( &amp;
                      NCELLS  = &lt;value&gt; &amp;
@@ -844,7 +847,7 @@ INITREARTH()</CODE></A></H2>
     MPAS variables to that file.  If (recommended!) <CODE>OPTIONAL</CODE>
     argument <CODE>VUNITS</CODE> is present, its values will be written
     to the file-header as additional  metadata, thereby following
-    &quot;NetCDF Best Practices&quot'.
+    &quot;NetCDF Best Practices&quot;.
     <P>
 
     The first form (without the dimension specifications) assumes that
@@ -915,8 +918,8 @@ INITREARTH()</CODE></A></H2>
     <P>
 
     This routine returns a variables-description for the file with logical name
-    <CODE>FNAME</CODE>.  If <CODE>OPTIONAL</CODE> argument  <CODE>VUNITS</CODE>
-    is present, but the units-attribute is not available in the file, the
+    <CODE>FNAME</CODE>.  If the version with argument  <CODE>VUNITS</CODE>
+    is used, but the units-attribute is not available in the file, the
     value <CODE>CMISS3=&quot;????????????????&quot;</CODE> is returned in
     that argument.
     <P>
@@ -973,6 +976,7 @@ INITREARTH()</CODE></A></H2>
 
     This routine reads the number of steps and the array of
     date-&amp;-time strings for the time-variable <CODE>VNAME</CODE>
+    (often  <CODE>xTime</CODE> or <CODE>xtime</CODE>)
     from the file <CODE>FNAME</CODE>, converts them from MPAS
     ASCII-string convention to I/O&nbsp;API convention <CODE>INTEGER
     JDATE=YYYYDDD,JTIME=HHMMSS</CODE>, and returns the number of steps
@@ -1057,7 +1061,7 @@ INITREARTH()</CODE></A></H2>
     This routine writes the  date-&amp;-time string for indicated
     <CODE>JDATE:JTIME</CODE> to the time-variable <CODE>VNAME</CODE> in
     the file <CODE>FNAME</CODE>, converting  from I/O&nbsp;API
-    convention <CODE>INTEGER JDATE=YYYYDDD,JTIME=HHMMSS</CODE>     to
+    convention <CODE>INTEGER JDATE=YYYYDDD,JTIME=HHMMSS</CODE> to
     MPAS <CODE>YYYY-MM-DD_HH:MM:SS</CODE> ASCII-string convention.
     <P>
 
@@ -1065,8 +1069,7 @@ INITREARTH()</CODE></A></H2>
     is your responsibility</STRONG> to calculate the timestep-number
     <CODE>ISTEP</CODE>.  For &quot;regular&quot; time stepping (with
     a fixed time step), you may find it useful to use I/O&nbsp;API
-    timestep-number routine <A
-    HREF="JSTEP3.html"><CODE>JSTEP3()</CODE></A>
+    timestep-number routine <A HREF="JSTEP3.html"><CODE>JSTEP3()</CODE></A>
     as follows:
     <PRE>
     <EM>!!  SDATE = starting date (YYYYDDD) for the file
@@ -1398,7 +1401,7 @@ INITREARTH()</CODE></A></H2>
     <STRONG><U>NOTES</U></STRONG>
     <UL>
         <LI> The MPAS data structures being as they are, <STRONG>it
-             is your responsibility</STRONG> to calculate (or keepo
+             is your responsibility</STRONG> to calculate (or keep
              track of) the timestep-number <CODE>ISTEP</CODE>.  If you
              are using &quot;regular&quot; time stepping (i.e., with a
              constant time step), you may find it useful to use
@@ -1421,7 +1424,7 @@ INITREARTH()</CODE></A></H2>
     </PRE>
         <P>
 
-        <LI> For per-time-step f<CODE>WRITEMPAS()</CODE> calls, when
+        <LI> For per-time-step <CODE>WRITEMPAS()</CODE> calls, when
              all the calls for a particular time step are complete, you
              should use <CODE>WRITEMPSTEP()</CODE> to record the related
              MPAS-formatted-ASCII date and time to the time-variable in
@@ -1431,7 +1434,8 @@ INITREARTH()</CODE></A></H2>
         <LI> For time dependent variables, it is most efficient if you
              will write all the variables for a given time step in
              consecutive order, before going on to the next time
-             step.<BR> <STRONG>It is  your responsibility to ensure that
+             step.<BR>
+             <STRONG>It is  your responsibility to ensure that
              there are no &quot;gaps&quot; in the timesteps for the
              variables you write:</STRONG> MPAS-format internal data
              structures are inadequate to deal with that situation, if
@@ -1482,7 +1486,7 @@ INITREARTH()</CODE></A></H2>
 
     <BLOCKQUOTE>
 
-    These are generic <CODE>LOGICAL FUNCTION</CODE> with two forms:
+    These are generic <CODE>LOGICAL FUNCTION</CODE>s with two forms each:
 
     </BLOCKQUOTE>
 
@@ -1553,8 +1557,8 @@ INITREARTH()</CODE></A></H2>
         INTEGER, INTENT(  OUT) :: CELLS( NMAX )
         REAL   , INTENT(  OUT) :: ZBOTS( NMAX )
         REAL   , INTENT(  OUT) :: ZTOPS( NMAX )
-        REAL   , INTENT(  OUT) :: WGT2D( NMAX )
-        REAL   , INTENT(  OUT) :: WGT3D( NLAYS, NMAX )
+        REAL   , INTENT(  OUT) :: WGT2D( NMAX )         !! horizontal-grid segment-fractions
+        REAL   , INTENT(  OUT) :: WGT3D( NLAYS, NMAX )  !! 3-D-grid segment-fractions
     </PRE>
 
     <BLOCKQUOTE>
@@ -1601,7 +1605,9 @@ INITREARTH()</CODE></A></H2>
     <BLOCKQUOTE>
 
     <CODE>MPBARYMATX()</CODE> is a generic routine for computing 3-band
-    sparse matrices for  barycentric-linear interpolation.
+    sparse matrices for  barycentric-linear interpolation to either a 1-D
+    or a 2-D array of points, with optional weighting by the ratio of cell
+    areas.
     <P>
     </BLOCKQUOTE>
 
@@ -1627,14 +1633,14 @@ INITREARTH()</CODE></A></H2>
         REAL,    INTENT(IN   ) :: LON2F( NC,NR )
         REAL(8), INTENT(IN   ) :: LAT2D( NC,NR )
         REAL(8), INTENT(IN   ) :: LON2D( NC,NR )
-        REAL,    INTENT(IN   ) :: AF
+        REAL,    INTENT(IN   ) :: AF                !! output-grid cell areas (M^2)
         REAL(8), INTENT(IN   ) :: AD
         REAL,    INTENT(IN   ) :: AGRDF( NC,NR )
         REAL(8), INTENT(IN   ) :: AGRDD( NC,NR )
-        INTEGER, INTENT(  OUT) ::  KCELL1( 3,NP )
-        REAL,    INTENT(  OUT) :: WCELL1F( 3,NP )
-        REAL(8), INTENT(  OUT) :: WCELL1D( 3,NP )
+        INTEGER, INTENT(  OUT) ::  KCELL1( 3,NP )   !! indices
         INTEGER, INTENT(  OUT) ::  KCELL2( 3,NC,NR )
+        REAL,    INTENT(  OUT) :: WCELL1F( 3,NP )   !! coefficients
+        REAL(8), INTENT(  OUT) :: WCELL1D( 3,NP )
         REAL,    INTENT(  OUT) :: WCELL2F( 3,NC,NR )
         REAL(8), INTENT(  OUT) :: WCELL2D( 3,NC,NR )
     </PRE>
@@ -1701,7 +1707,7 @@ INITREARTH()</CODE></A></H2>
 
     Note that layered results keep the MPAS-convention
     layer-subscript-first subscript ordering.
-    <P{>
+    <P>
 
     OpenMP parallel.
     </BLOCKQUOTE>
@@ -1778,7 +1784,7 @@ INITREARTH()</CODE></A></H2>
     LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGD, LATD2, LOND2, NLAY, ZL, VL2 )
         INTEGER, INTENT(IN   ) :: NPTS
         INTEGER, INTENT(IN   ) :: NCOL, NROW
-        INTEGER, INTENT(IN   ) :: NLAY
+        INTEGER, INTENT(IN   ) :: NLAY                !!  number of (MPAS-variable) layers
         REAL,    INTENT(IN   ) :: AR                  !!  area of output-grid cell
         REAL*8,  INTENT(IN   ) :: AD
         REAL,    INTENT(IN   ) :: AGR( NCOL,NROW )    !!  ...for Lat-Lon or non-regular grids
