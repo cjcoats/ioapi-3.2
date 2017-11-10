@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 31 2017-10-21 01:45:58Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 50 2017-11-10 15:06:35Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 31 2017-10-21 01:45:58Z coats $
+    $Id: NEWSTUFF.html 50 2017-11-10 15:06:35Z coats $
     </EM>
     <HR>
 
@@ -33,10 +33,12 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
-         <LI>  <A HREF = "#oct202017">
+         <LI>  <A HREF = "#nov082017">
                <VAR>m3tools</VAR> programs <VAR>mpasdiff, mpasstat,
                mpastom3</VAR><BR>
-               <CODE>MODMPASFIO</CODE> generic routine <CODE>MPINTERP()</CODE> 
+               <CODE>MODMPASFIO</CODE> generic routines
+               <CODE>MPINTERP()</CODE>, <CODE>MPBARYMATX()</CODE>,
+               <CODE>MPBARYMAULT()</CODE>
                </A>
          <LI>  <A HREF = "#sep092017">
                Add extra attributes to new MPAS-files, for
@@ -652,10 +654,11 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> <A NAME = "oct202017">
+<H2> <A NAME = "nov082017">
        <VAR>m3tools</VAR> programs <VAR>mpasdiff, mpasstat,
        mpastom3</VAR><BR>
-       <CODE>MODMPASFIO</CODE> generic routine <CODE>MPINTERP()</CODE>
+       <CODE>MODMPASFIO</CODE> generic routine <CODE>MPINTERP()</CODE>,
+       <CODE>MPBARYMATX()</CODE>, <CODE>MPBARYMAULT()</CODE>
 </A></H2>
 
     <BLOCKQUOTE>
@@ -677,11 +680,21 @@
             result to a gridded I/O&nbsp;API file.
     </DL>
     <P>
-    New <CODE>MODMPASFIO</CODE> generic routine 
-    <A HREF="MODMPASFIO.html#interp.html"<CODE>MPINTERP()</CODE></A>
-    for interpolating MPAS-grid data to a Lat-Lon specified point, set
-    of points, or 2-D grid of points, using barycentric-linear
-    interpolation.
+    New <CODE>MODMPASFIO</CODE> generic routines
+    <DL>
+        <DT> <A HREF="MODMPASFIO.html#interp.html"><CODE>MPINTERP()</CODE></A>
+        <DD> Interpolate MPAS-grid data to a Lat-Lon specified point, set
+             of points, or 2-D grid of points, using barycentric-linear
+             interpolation.
+        <DT> <A HREF="MODMPASFIO.html#bmatx.html"><CODE>MPBARYMATX()</CODE></A>
+        <DD> Return a 3-band matrix for doing barycentric-linear
+             interpolation from MPAS-grid data to a set of points or 2-D
+             grid of points
+        <DT> <A HREF="MODMPASFIO.html#bmutl.html"><CODE>MPBARYMULT()</CODE></A>
+        <DD> Multiply a 3-band matrix from <CODE>MPBARYMATX()</CODE> by
+             a (layered or non-layered) MPAS-grid variable.
+    </DL>
+    <P>
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -974,7 +987,7 @@
 
     <BLOCKQUOTE>
     <A HREF = "MODNCFIO.html"><CODE>MODULE&nbsp;MODNCFIO</CODE></A> had
-    generic <CODE>INTERFACE&nbsp;REAQDNCVAR()</CODE> augmented to
+    generic <CODE>INTERFACE&nbsp;READNCVAR()</CODE> augmented to
     support <CODE>NF_BYTE==INTEGER*1</CODE> and <CODE>NF_SHORT==INTEGER*2</CODE>
     variables.
     <P>
@@ -6573,7 +6586,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 31 2017-10-21 01:45:58Z coats $
+    $Id: NEWSTUFF.html 50 2017-11-10 15:06:35Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
