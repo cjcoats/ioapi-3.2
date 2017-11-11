@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 51 2017-11-11 19:52:07Z coats $"
+    !!  Version "$Id: mpastom3.f90 52 2017-11-11 20:04:13Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -143,7 +143,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 51 2017-11-11 19:52:07Z coats $',&
+'$Id: mpastom3.f90 52 2017-11-11 20:04:13Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -364,7 +364,7 @@ BLANK, BAR, BLANK
     VNAME3D( 1:NVARS ) = VNAMES( 1:NVARS )
     UNITS3D( 1:NVARS ) = VUNITS( 1:NVARS )
     VDESC3D( 1:NVARS ) = VDESCS( 1:NVARS )
-    VTYPE3D( 1:NVARS ) = M3REAL
+    VTYPE3D( 1:NVARS ) = MPTYPES( V )
     NLAYS3D = MPLAYS
     NVARS3D = NVARS
     VGTYP3D = IMISS3
