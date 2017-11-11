@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 53 2017-11-11 20:29:30Z coats $"
+    !!  Version "$Id: mpastom3.f90 54 2017-11-11 20:50:47Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -143,7 +143,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 53 2017-11-11 20:29:30Z coats $',&
+'$Id: mpastom3.f90 54 2017-11-11 20:50:47Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -234,7 +234,17 @@ BLANK, BAR, BLANK
         L = MOD( L, MPVARS ) + 1
         CALL M3MESG( BLANK )
         V = GETNUM( 0, MPVARS, L, 'Enter number for the variable to interpolate, or 0 to quit.' )
-        IF ( V .EQ. 0 )  EXIT
+        IF ( V .EQ. 0 )  THEN
+            EXIT
+        ELSE IF ( MPTYPES( V ) .NE. M3REAL .OR. MPTYPES( V ) .NE. M3INT ) THEN
+            EFLAG = .TRUE.
+            CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" not of type REAL nor INTEGER' )
+            CYCLE
+        ELSE IF ( MPNDIMS( V ) .GT. 3 ) THEN
+            EFLAG = .TRUE.
+            CALL M3MESG( 'Incorrect number of dimensions for variable "' //TRIM( INAMES( I ) ) // '"' )
+            CYCLE
+        END IF
 
         INAMES( I ) = MPNAMES( V )
 
@@ -244,6 +254,7 @@ BLANK, BAR, BLANK
         IF ( .NOT.IFLAG ) THEN      !!  initialize LFLAG, TFLAG
 
             IFLAG = .TRUE.
+            TFLAG = ( N .EQ. 1 )
             LFLAG = ( K .EQ. 2 )
             IF ( LFLAG ) THEN
                 CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" is layered' )
@@ -265,11 +276,6 @@ BLANK, BAR, BLANK
 
         END IF      !!  if initializing LFLAG, TFLAG
 
-        IF ( MPNDIMS( V ) .GT. 3 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Incorrect number of dimensions for variable "' //TRIM( INAMES( I ) ) // '"' )
-        END IF
-
         IF ( K .LE. 0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Variables must have MPAS cell-dimension "nCells".' )
@@ -284,15 +290,7 @@ BLANK, BAR, BLANK
             END IF
         END IF
 
-        IF ( MPTYPES( V ) .NE. M3REAL .OR. MPTYPES( V ) .NE. M3INT ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" not of type REAL nor INTEGER' )
-        END IF
-
-        IF ( N .LE. 1 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Bad time-dimensioning for variable "' //TRIM( INAMES( I ) ) // '"' )
-        ELSE IF ( N .LE. 0  .AND. TFLAG  ) THEN
+        IF ( N .LE. 0  .AND. TFLAG  ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'INCONSISTENCY: Variable is time independent' )
         ELSE IF ( N .GT. 0 .AND. .NOT.TFLAG ) THEN
@@ -304,7 +302,11 @@ BLANK, BAR, BLANK
         CALL GETSTR( 'Enter output name for variable', MPNAMES( V ), VNAMES( I ) )
         CALL GETSTR( 'Enter units       for variable', MPUNITS( V ), VUNITS( I ) )
         CALL GETSTR( 'Enter description for variable', MESG        , VDESCS( I ) )
-        EMFLAG( I ) = GETYN( 'Rescale by cell-areas as an emissions-variable?', .TRUE. )
+        IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+            EMFLAG( I ) = .FALSE.
+        ELSE
+            EMFLAG( I ) = GETYN( 'Rescale by cell-areas as an emissions-variable?', .TRUE. )
+        END IF
 
         NVARS = I
 
