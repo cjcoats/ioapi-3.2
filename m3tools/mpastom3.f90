@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 55 2017-11-11 21:01:24Z coats $"
+    !!  Version "$Id: mpastom3.f90 56 2017-11-11 21:06:42Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -143,7 +143,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 55 2017-11-11 21:01:24Z coats $',&
+'$Id: mpastom3.f90 56 2017-11-11 21:06:42Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -222,7 +222,7 @@ BLANK, BAR, BLANK
     CALL M3MESG( 'The list of REAL and INTEGER variables in this file is:' )
     DO  V = 1, MPVARS
         IF ( MPTYPES( V ) .EQ. M3REAL .OR. MPTYPES( V ) .EQ. M3INT ) THEN
-            WRITE( *, '( I3, ": ", A )' ) L, MPNAMES( V )
+            WRITE( *, '( I3, ": ", A )' ) V, MPNAMES( V )
         END IF
     END DO
 
