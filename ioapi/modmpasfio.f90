@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 46 2017-11-08 19:33:33Z coats $"
+    !!  Version "$Id: modmpasfio.f90 51 2017-11-11 19:52:07Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -15,7 +15,7 @@ MODULE MODMPASFIO
     !!      NOTE 1:  Single-precision version
     !!
     !!      NOTE 2:  Latitudes and Longitudes are converted from MPAS "radians"
-    !!      usage to the usual (ISO 6709 compliant) degrees.
+    !!      usage to 0 <= LON < 360 (_not_ ISO 6709 compliant) degrees.
     !!
     !!      NOTE 3:  Non-sphere case, and periodic and weighted meshes are not supported.
     !!
@@ -31,6 +31,8 @@ MODULE MODMPASFIO
     !!      Version       10/25/2017 by CJC:  Fix for SPHEREDIST() fInternational-Date-Line
     !                     issues.  X-Y-Z based SPHEREDIST().  Generic MPINTERP()
     !!      Version       11/01/2017 by CJC:  fix MPINTERP() generic
+    !!      Version       11/11/2017 by CJC:  Add MPCELLMATX() generic, integer-array
+    !!          versions of MPINTERP(); OMP-threadsafe FINDCELL()
     !!...................................................................................
 
     USE MODNCFIO
@@ -91,11 +93,19 @@ MODULE MODMPASFIO
     END INTERFACE ARC2MPAS
 
     INTERFACE MPINTERP
-        MODULE PROCEDURE  MPINTERP0DD,  MPINTERP1DD,  MPINTERP2DD,  MPINTERPE2DD,  MPINTERPG2DD,    &
+        MODULE PROCEDURE  MPINTERP0DI,  MPINTERP1DI,  MPINTERP2DI,                                  &
+                          MPINTERP0RI,  MPINTERP1RI,  MPINTERP2RI,                                  &
+                          MPINTERPL0DI, MPINTERPL1DI, MPINTERPL2DI,                                 &
+                          MPINTERPL0RI, MPINTERPL1RI, MPINTERPL2RI,                                 &
+                          MPINTERP0DD,  MPINTERP1DD,  MPINTERP2DD,  MPINTERPE2DD,  MPINTERPG2DD,    &
                           MPINTERP0DF,  MPINTERP1DF,  MPINTERP2DF,  MPINTERPE2DF,  MPINTERPG2DF,    &
                           MPINTERPL0DD, MPINTERPL1DD, MPINTERPL2DD, MPINTERPEL2DD, MPINTERPGL2DD,   &
                           MPINTERPL0DF, MPINTERPL1DF, MPINTERPL2DF, MPINTERPEL2DF, MPINTERPGL2DF
     END INTERFACE MPINTERP
+
+    INTERFACE MPCELLMATX
+        MODULE PROCEDURE MPCELLMATX1F, MPCELLMATX1D, MPCELLMATX2F, MPCELLMATX2D
+    END INTERFACE MPCELLMATX
 
     INTERFACE MPBARYMATX
         MODULE PROCEDURE MPBARYMATX1F, MPBARYMATX1D, MPBARYMATX1DF,     &
@@ -452,7 +462,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 46 2017-11-08 19:33:33Z coats $',&
+        'Version $Id: modmpasfio.f90 51 2017-11-11 19:52:07Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -617,7 +627,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 46 2017-11-08 19:33:33Z coats $',&
+        'Version $Id: modmpasfio.f90 51 2017-11-11 19:52:07Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -1170,6 +1180,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
+!$OMP   CRITICAL( MP_FIND )
+
         I    = INDX
         DMIN = SPHEREDIST( ALAT, ALON, ALATC( I ), ALONC( I ) )
 
@@ -1194,6 +1206,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END DO  !!........  End search-loop
 
         INDX      = N
+
+!$OMP   END CRITICAL( MP_FIND )
+
         FINDCELLD = N
         RETURN
 
@@ -13809,7 +13824,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     !!.............................................................................
     !!  MPINTERP:  Interpolate MPAS-cell-variable Z to lat-lon location(s) <Y=ALAT,X=ALON>
-    !!  using barycentric-linear interpolation.
+    !!  using barycentric-linear interpolation for REAL variables, and cell-incidence for
+    !!  INTEGER variables
     !!      See  https://codeplea.com/triangular-interpolation
     !!  For 2-D grids with argument A, normalize the result by the ratio of input-cell areas
     !!  to output-cell areas (as is necessary for mass-per-cell emissions)
@@ -13851,6 +13867,158 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !!.............................................................................
 
 
+    LOGICAL FUNCTION MPCELLMATX1F( NP, LAT, LON, KCELL )
+        INTEGER, INTENT(IN   ) ::   NP
+        REAL,    INTENT(IN   ) ::   LAT( NP )
+        REAL,    INTENT(IN   ) ::   LON( NP )
+        INTEGER, INTENT(  OUT) :: KCELL( NP )
+
+        INTEGER     C, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                     &
+!$OMP&              SHARED( NP, LAT, LON, KCELL ),      &
+!$OMP&             PRIVATE( C, M ),                     &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+CLOOP:  DO C = 1, NP
+
+            M = FINDCELL( LAT( C ), LON( C ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE
+                KCELL( C ) = M
+            END IF
+
+        END DO CLOOP
+
+        MPCELLMATX1F = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPCELLMATX1F
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPCELLMATX1D( NP, LAT, LON, KCELL )
+        INTEGER, INTENT(IN   ) ::   NP
+        REAL(8), INTENT(IN   ) ::   LAT( NP )
+        REAL(8), INTENT(IN   ) ::   LON( NP )
+        INTEGER, INTENT(  OUT) :: KCELL( NP )
+
+        INTEGER     C, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                     &
+!$OMP&              SHARED( NP, LAT, LON, KCELL ),      &
+!$OMP&             PRIVATE( C, M ),                     &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+CLOOP:  DO C = 1, NP
+
+            M = FINDCELL( LAT( C ), LON( C ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE
+                KCELL( C ) = M
+            END IF
+
+        END DO CLOOP
+
+        MPCELLMATX1D = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPCELLMATX1D
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPCELLMATX2F( NC, NR, LAT, LON, KCELL )
+        INTEGER, INTENT(IN   ) ::   NC, NR
+        REAL,    INTENT(IN   ) ::   LAT( NC,NR )
+        REAL,    INTENT(IN   ) ::   LON( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( NC,NR )
+
+        INTEGER     C, R, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                     &
+!$OMP&              SHARED( NC, NR, LAT, LON, KCELL ),  &
+!$OMP&             PRIVATE( C, R, M ),                  &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( LAT( C,R ), LON( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE
+                KCELL( C,R ) = M
+            END IF
+
+        END DO CLOOP
+        END DO
+
+        MPCELLMATX2F = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPCELLMATX2F
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPCELLMATX2D( NC, NR, LAT, LON, KCELL )
+        INTEGER, INTENT(IN   ) ::   NC, NR
+        REAL(8), INTENT(IN   ) ::   LAT( NC,NR )
+        REAL(8), INTENT(IN   ) ::   LON( NC,NR )
+        INTEGER, INTENT(  OUT) :: KCELL( NC,NR )
+
+        INTEGER     C, R, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.
+
+!$OMP  PARALLEL DO DEFAULT( NONE ),                     &
+!$OMP&              SHARED( NC, NR, LAT, LON, KCELL ),  &
+!$OMP&             PRIVATE( C, R, M ),                  &
+!$OMP&           REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            M = FINDCELL( LAT( C,R ), LON( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE
+                KCELL( C,R ) = M
+            END IF
+
+        END DO CLOOP
+        END DO
+
+        MPCELLMATX2D = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPCELLMATX2D
+
+
+    !!.............................................................................
+
+
     LOGICAL FUNCTION MPBARYMATX1F( NP, LAT, LON, KCELL, WCELL )
         INTEGER, INTENT(IN   ) :: NP
         REAL,    INTENT(IN   ) :: LAT( NP )
@@ -13877,10 +14045,7 @@ CLOOP:  DO C = 1, NP
             XX = MOD( LON( C)+360.0D0, 360.0D0 )
             YY = LAT( C )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -13951,10 +14116,7 @@ CLOOP:  DO C = 1, NP
             XX = MOD( LON( C)+360.0D0, 360.0D0 )
             YY = LAT( C )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14025,10 +14187,7 @@ CLOOP:  DO C = 1, NP
             XX = MOD( LON( C)+360.0D0, 360.0D0 )
             YY = LAT( C )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14100,10 +14259,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14176,10 +14332,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14252,10 +14405,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14329,10 +14479,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14407,10 +14554,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14485,10 +14629,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14563,10 +14704,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14641,10 +14779,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -14719,10 +14854,7 @@ CLOOP:  DO C = 1, NC
             XX = MOD( LON( C,R)+360.0D0, 360.0D0 )
             YY = LAT( C,R )
 
-!$OMP       CRITICAL( MP_FIND )
             M = FINDCELL( YY, XX )
-!$OMP       END CRITICAL( MP_FIND )
-
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -15020,6 +15152,311 @@ CLOOP:  DO C = 1, NC
         END DO
 
     END SUBROUTINE MPBARYMULT2DL
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERP0DI( Y, X, Z, V )
+        REAL(8), INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
+        INTEGER, INTENT(IN   ) :: Z( MPCELLS )
+        INTEGER, INTENT(  OUT) :: V
+
+        INTEGER     J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
+            MPINTERP0DI = .FALSE.
+        ELSE
+            V = Z( M )
+            MPINTERP0DI = .TRUE.
+        END IF
+
+        RETURN
+
+    END FUNCTION MPINTERP0DI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERP1DI( NPTS, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS
+        REAL(8), INTENT(IN   ) :: Y( NPTS )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
+        INTEGER, INTENT(IN   ) :: Z( MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NPTS )
+
+        INTEGER     I, M
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),               &
+!$OMP&                SHARED( NPTS, Y, X, Z, V ),   &
+!$OMP&               PRIVATE( I, M  ),              &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO I = 1, NPTS
+
+            M = FINDCELL( Y( I ), X( I ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                V( I ) = Z( M )
+            END IF
+
+        END DO
+
+        MPINTERP1DI = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERP1DI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERP2DI( NC, NR, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL(8), INTENT(IN   ) :: Y( NC,NR )             !!  latitude,  degrees
+        REAL(8), INTENT(IN   ) :: X( NC,NR )             !!  longitude, degrees
+        INTEGER, INTENT(IN   ) :: Z( MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NC,NR )
+
+        INTEGER     C, R, M
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),               &
+!$OMP&                SHARED( NC, NR, Y, X, Z, V ), &
+!$OMP&               PRIVATE( C, R, M  ),           &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+        DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                V( C,R ) = Z( M )
+            END IF
+
+        END DO
+        END DO
+
+        MPINTERP2DI = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERP2DI
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERP0RI( Y, X, Z, V )
+        REAL   , INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
+        INTEGER, INTENT(IN   ) :: Z( MPCELLS )
+        INTEGER, INTENT(  OUT) :: V
+
+        MPINTERP0RI = MPINTERP0DI( DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERP0RI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERP1RI( NPTS, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS
+        REAL   , INTENT(IN   ) :: Y( NPTS )             !!  latitude,  degrees
+        REAL   , INTENT(IN   ) :: X( NPTS )             !!  longitude, degrees
+        INTEGER, INTENT(IN   ) :: Z( MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NPTS )
+
+        MPINTERP1RI = MPINTERP1DI( NPTS, DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERP1RI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERP2RI( NC, NR, Y, X, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR
+        REAL   , INTENT(IN   ) :: Y( NC,NR )             !!  latitude,  degrees
+        REAL   , INTENT(IN   ) :: X( NC,NR )             !!  longitude, degrees
+        INTEGER, INTENT(IN   ) :: Z( MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NC,NR )
+
+        MPINTERP2RI = MPINTERP2DI( NC,NR, DBLE( Y ), DBLE( X ), Z, V )
+        RETURN
+
+    END FUNCTION MPINTERP2RI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERPL0DI( Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NL
+        REAL(8), INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
+        INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NL )
+
+        INTEGER     L, M
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
+            MPINTERPL0DI = .FALSE.
+        ELSE
+            DO L = 1, NL
+                V(L) = Z( L,M )
+            END DO
+            MPINTERPL0DI = .TRUE.
+        END IF
+
+        RETURN
+
+    END FUNCTION MPINTERPL0DI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERPL1DI( NPTS, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS, NL
+        REAL(8), INTENT(IN   ) :: Y( NPTS )         !!  latitude, longitude (degrees)
+        REAL(8), INTENT(IN   ) :: X( NPTS )
+        INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NL,NPTS )
+
+        INTEGER     I, L, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.     !!  no errors yet
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),                   &
+!$OMP&                SHARED( NPTS, NL, Y, X, Z, V ),   &
+!$OMP&               PRIVATE( I, M ),                   &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO I = 1, NPTS
+
+            M = FINDCELL( Y( I ), X( I ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                DO L = 1, NL
+                    V(L,I) = Z( L,M )
+                END DO
+            END IF
+
+        END DO
+
+        MPINTERPL1DI = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPL1DI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERPL2DI( NC, NR, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL(8), INTENT(IN   ) :: Y( NC,NR )         !!  latitude, longitude (degrees)
+        REAL(8), INTENT(IN   ) :: X( NC,NR )
+        INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NL,NC,NR )
+
+        INTEGER     C, R, L, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.     !!  no errors yet
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),                       &
+!$OMP&                SHARED( NC, NR, NL, Y, X, Z, V ),     &
+!$OMP&               PRIVATE( C, R, M ),                    &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+        DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                DO L = 1, NL
+                    V(L,C,R) = Z( L,M )
+                END DO
+            END IF
+
+        END DO
+        END DO
+
+        MPINTERPL2DI = ( .NOT.EFLAG )
+        RETURN
+
+    END FUNCTION MPINTERPL2DI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERPL0RI( Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NL
+        REAL   , INTENT(IN   ) :: Y, X          !!  latitude, longitude (degrees)
+        INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NL )
+
+        MPINTERPL0RI = MPINTERPL0DI( DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPL0RI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERPL1RI( NPTS, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NPTS, NL
+        REAL,    INTENT(IN   ) :: Y( NPTS )         !!  latitude, longitude (degrees)
+        REAL,    INTENT(IN   ) :: X( NPTS )
+        INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NL,NPTS )
+
+        MPINTERPL1RI = MPINTERPL1DI( NPTS, DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPL1RI
+
+
+    !!.............................................................................
+
+
+    LOGICAL FUNCTION MPINTERPL2RI( NC, NR, Y, X, NL, Z, V )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        REAL,    INTENT(IN   ) :: Y( NC,NR )         !!  latitude, longitude (degrees)
+        REAL,    INTENT(IN   ) :: X( NC,NR )
+        INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
+        INTEGER, INTENT(  OUT) :: V( NL,NC,NR )
+
+        MPINTERPL2RI = MPINTERPL2DI( NC, NR, DBLE( Y ), DBLE( X ), NL, Z, V )
+        RETURN
+
+    END FUNCTION MPINTERPL2RI
 
 
     !!.............................................................................

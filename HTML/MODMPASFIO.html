@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 49 2017-11-09 20:09:41Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 51 2017-11-11 19:52:07Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODMPASFIO</TITLE>
 </HEAD>
@@ -70,6 +70,9 @@
               the point <CODE>(ALAT,ALON)</CODE>
         <DT>  <A HREF = "#wght" ><CODE>ARC2MPAS()</CODE></A>
         <DD> compute 2-D and 3-D weights for arc-segment (e.g., for SMOKE)
+        <DT>  <A HREF = "#cmatx"><CODE>MPCELLMATX()</CODE></A>
+        <DD>  Create a sparse incidence matrix (or index-array) for
+              MPAS-cell subscripts for set of points or a rectangular grid.
         <DT>  <A HREF = "#bmatx"><CODE>MPBARYMATX()</CODE></A>
         <DD> Create a 3-band sparse matrix for barycentric-linear
              interpolation to a set of points or a rectangular grid.
@@ -1502,16 +1505,6 @@ INITREARTH()</CODE></A></H2>
     </PRE>
 
     <BLOCKQUOTE>
-
-    <EM><U>Preconditions:</U></EM>
-    <BLOCKQUOTE><UL>
-        <LI><CODE> USE MODMPASFIO</CODE>
-            <P>
-        <LI>Call <CODE>INITMPGRID()</CODE> before calling
-             <CODE>FINDCELL()</CODE> or <CODE>FINDVRTX()</CODE>
-            <P>
-    </UL></BLOCKQUOTE>
-    <P>
     <DL>
         <DT> <CODE>FINDCELL()</CODE>:
         <DD> Find the subscript for the (unstructured) MPAS-grid cell that
@@ -1524,6 +1517,18 @@ INITREARTH()</CODE></A></H2>
              to the point <CODE>(ALAT,ALON)</CODE>
         <P>
     </DL>
+    These routines are OpenMP thread-safe.
+    <P>
+
+    <EM><U>Preconditions:</U></EM>
+    <BLOCKQUOTE><UL>
+        <LI><CODE> USE MODMPASFIO</CODE>
+            <P>
+        <LI>Call <CODE>INITMPGRID()</CODE> before calling
+             <CODE>FINDCELL()</CODE> or <CODE>FINDVRTX()</CODE>
+            <P>
+    </UL></BLOCKQUOTE>
+    <P>
 
     </BLOCKQUOTE>
 
@@ -1600,6 +1605,52 @@ INITREARTH()</CODE></A></H2>
 <HR> <!- ------------------------------------------------------------- ->
 
 
+<H2><A NAME = "cmatx"><CODE>MPCELLMATX()</CODE></A></H2>
+
+    <BLOCKQUOTE>
+
+    <CODE>MPCELLMATX()</CODE> is a generic routine for computing
+    sparse &quot;incidence&quot; matrices for either a 1-D
+    or a 2-D array of points.
+    <P>
+    </BLOCKQUOTE>
+
+    <PRE>
+    LOGICAL FUNCTION MPCELLMATX( NP, LAT1F, LON1F, KCELL1 )
+    LOGICAL FUNCTION MPCELLMATX( NP, LAT1D, LON1D, KCELL1 )
+    LOGICAL FUNCTION MPCELLMATX( NC, NR, LAT2F, LON2F, KCELL2 )
+    LOGICAL FUNCTION MPCELLMATX( NC, NR, LAT2D, LON2D, KCELL2 )
+        INTEGER, INTENT(IN   ) :: NP, NC, NR
+        REAL,    INTENT(IN   ) :: LAT1F( NP )
+        REAL,    INTENT(IN   ) :: LON1F( NP )
+        REAL(8), INTENT(IN   ) :: LAT1D( NP )
+        REAL(8), INTENT(IN   ) :: LON1D( NP )
+        REAL,    INTENT(IN   ) :: LAT2F( NC,NR )
+        REAL,    INTENT(IN   ) :: LON2F( NC,NR )
+        REAL(8), INTENT(IN   ) :: LAT2D( NC,NR )
+        REAL(8), INTENT(IN   ) :: LON2D( NC,NR )
+        INTEGER, INTENT(  OUT) ::  KCELL1( NP )   !! indices
+        INTEGER, INTENT(  OUT) ::  KCELL2( NC,NR )
+    </PRE>
+
+    <BLOCKQUOTE>
+    See also <A HREF="#bmatx"><CODE>MPBARYMATX()</CODE></A>
+    aand <A HREF="#interp"><CODE>MPINTERP()</CODE></A> below.
+    <P>
+
+    Returns <CODE>TRUE</CODE> iff the interpolation can be done properly
+    (i.e., if each point is contained in some MPAS-grid cell):  the
+    basic property is that the points <CODE>(LAT*,LON*)</CODE> are
+    contained in the MPAS-grid cell with subscript <CODE>KCELL*</CODE>.
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+<HR> <!- ------------------------------------------------------------- ->
+
+
 <H2><A NAME = "bmatx"><CODE>MPBARYMATX()</CODE></A></H2>
 
     <BLOCKQUOTE>
@@ -1646,14 +1697,12 @@ INITREARTH()</CODE></A></H2>
     </PRE>
 
     <BLOCKQUOTE>
-    See also <A HREF="#interp"><CODE>MPINTERP()</CODE></A> below.
+    See also <A HREF="#cmatx"><CODE>MPCELLMATX()</CODE></A> above
+    aand <A HREF="#interp"><CODE>MPINTERP()</CODE></A> below.
     <P>
 
     Returns <CODE>TRUE</CODE> iff the interpolation can be done properly
-    (i.e., if each point is surrounded by MPAS-grid cell-centers).  Note
-    that <CODE>Z</CODE> variables used with these matrices are
-    subscripted by the number <CODE>MPCELLS</CODE> of MPAS grid cells
-    (and possibly by a vertical dimension).
+    (i.e., if each point is surrounded by MPAS-grid cell-centers).
     <P>
 
     Calls using output-grid cell-area arguments
@@ -1762,26 +1811,43 @@ INITREARTH()</CODE></A></H2>
     </BLOCKQUOTE>
 
     <PRE>
-    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, Z, V0 )
-    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, Z, V0 )
-    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, NLAY, ZL, VL0 )
-    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, NLAY, ZL, VL0 )
-    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, Z, V1 )
-    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, Z, V1 )
-    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, NLAY, ZL, VL1 )
-    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, NLAY, ZL, VL1 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, Z, V2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, Z, V2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, NLAY, ZL, VL2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, NLAY, ZL, VL2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AR, LATR2, LONR2, Z, V2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AD, LATD2, LOND2, Z, V2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AR, LATR2, LONR2, NLAY, ZL, VL2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AD, LATD2, LOND2, NLAY, ZL, VL2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGR, LATR2, LONR2, Z, V2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGD, LATD2, LOND2, Z, V2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGR, LATR2, LONR2, NLAY, ZL, VL2 )
-    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGD, LATD2, LOND2, NLAY, ZL, VL2 )
+    <EM>INTEGER forms</EM>
+    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, IZ, IV0 )
+    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, IZ, IV0 )
+    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, NLAY, IZL, IVL0 )
+    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, NLAY, IZL, IVL0 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, IZ, IV2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, IZ, IV2 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, IZ, IV1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, IZ, IV1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, NLAY, IZL, IVL1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, NLAY, IZL, IVL1 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, NLAY, IZL, IVL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, NLAY, IZL, IVL2 )
+
+    <EM>Normal REAL forms</EM>
+    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, RZ, RV0 )
+    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, RZ, RV0 )
+    LOGICAL FUNCTION MPINTERP( LATR0, LONR0, NLAY, RZL, RVL0 )
+    LOGICAL FUNCTION MPINTERP( LATD0, LOND0, NLAY, RZL, RVL0 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, RZ, RV1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, RZ, RV1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATR1, LONR1, NLAY, RZL, RVL1 )
+    LOGICAL FUNCTION MPINTERP( NPTS, LATD1, LOND1, NLAY, RZL, RVL1 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, RZ, RV2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, RZ, RV2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATR2, LONR2, NLAY, RZL, RVL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, LATD2, LOND2, NLAY, RZL, RVL2 )
+
+    <EM>Cell-area re-weighting REAL forms</EM>
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AR, LATR2, LONR2, RZ, RV2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AD, LATD2, LOND2, RZ, RV2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AR, LATR2, LONR2, NLAY, RZL, RVL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AD, LATD2, LOND2, NLAY, RZL, RVL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGR, LATR2, LONR2, RZ, RV2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGD, LATD2, LOND2, RZ, RV2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGR, LATR2, LONR2, NLAY, RZL, RVL2 )
+    LOGICAL FUNCTION MPINTERP( NCOL, NROW, AGD, LATD2, LOND2, NLAY, RZL, RVL2 )
         INTEGER, INTENT(IN   ) :: NPTS
         INTEGER, INTENT(IN   ) :: NCOL, NROW
         INTEGER, INTENT(IN   ) :: NLAY                !!  number of (MPAS-variable) layers
@@ -1795,14 +1861,22 @@ INITREARTH()</CODE></A></H2>
         REAL*8,  INTENT(IN   ) :: LATD1( NPTS ), LOND1( NPTS )
         REAL,    INTENT(IN   ) :: LATR2( NCOL,NROW ), LONR2( NCOL,NROW )
         REAL*8,  INTENT(IN   ) :: LATD2( NCOL,NROW ), LOND2( NCOL,NROW )
-        REAL,    INTENT(IN   ) :: Z( MPCELLS )        !!  MPAS-grid variable to be interpolated
-        REAL,    INTENT(IN   ) :: ZL( NLAY,MPCELLS )  !!  layered...
-        REAL,    INTENT(  OUT) :: V0                  !!  result of interpolation
-        REAL,    INTENT(  OUT) :: V1( NPTS )
-        REAL,    INTENT(  OUT) :: V2( NCOL,NROW )
-        REAL,    INTENT(  OUT) :: VL0( NLAY )
-        REAL,    INTENT(  OUT) :: VL1( NLAY,NPTS )
-        REAL,    INTENT(  OUT) :: VL2( NLAY,NCOL,NROW )
+        INTEGER, INTENT(IN   ) :: IZ( MPCELLS )       !!  MPAS-grid variable to be interpolated
+        REAL,    INTENT(IN   ) :: RZ( MPCELLS )       !!  MPAS-grid variable to be interpolated
+        INTEGER, INTENT(IN   ) :: IZL( NLAY,MPCELLS )  !!  layered...
+        REAL,    INTENT(IN   ) :: RZL( NLAY,MPCELLS )  !!  layered...
+        REAL,    INTENT(  OUT) :: RV0                  !!  result of interpolation
+        INTEGER, INTENT(  OUT) :: IV0
+        REAL,    INTENT(  OUT) :: RV1( NPTS )
+        INTEGER, INTENT(  OUT) :: IV1( NPTS )
+        REAL,    INTENT(  OUT) :: RV2( NCOL,NROW )
+        INTEGER, INTENT(  OUT) :: IV2( NCOL,NROW )
+        REAL,    INTENT(  OUT) :: RVL0( NLAY )
+        INTEGER, INTENT(  OUT) :: IVL0( NLAY )
+        REAL,    INTENT(  OUT) :: RVL1( NLAY,NPTS )
+        INTEGER, INTENT(  OUT) :: IVL1( NLAY,NPTS )
+        REAL,    INTENT(  OUT) :: RVL2( NLAY,NCOL,NROW )
+        INTEGER, INTENT(  OUT) :: IVL2( NLAY,NCOL,NROW )
     </PRE>
 
     <BLOCKQUOTE>
@@ -1829,8 +1903,8 @@ INITREARTH()</CODE></A></H2>
     <P>
 
     Note that this routine combines the functionality of
-    <A HREF=#bmatx"><CODE>MPBARYMATX()</CODE></A> and <A
-    HREF=#bmult"><CODE>MPBARYMULT()</CODE></A> (above) but
+    <A HREF="#bmatx"><CODE>MPBARYMATX()</CODE></A> and <A
+    HREF="#bmult"><CODE>MPBARYMULT()</CODE></A> (above) but
     always computes the interpolation weights and indices in-line. As a
     result it simpler to use, but less efficient for repeated uses than
     those routines.

@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 40 2017-11-01 20:44:14Z coats $"
+    !!  Version "$Id: mpastom3.f90 51 2017-11-11 19:52:07Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -15,7 +15,7 @@ PROGRAM MPASTOM3
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  10/2017 by Carlie J. Coats, Jr., UNC IE
-    !!
+    !!      Version    11/11/2017 by CJC:  support for INTEGER variables
     !!.......................................................................
 
     USE MODMPASFIO
@@ -36,6 +36,7 @@ PROGRAM MPASTOM3
     !!...........   LOCAL VARIABLES and their descriptions:
 
     LOGICAL         EFLAG, TFLAG, LFLAG, IFLAG, LATLON
+    LOGICAL         ILFLAG, RLFLAG, I1FLAG, R1FLAG
     INTEGER         ISTAT, LDEV
 
     CHARACTER*256   MESG
@@ -70,12 +71,17 @@ PROGRAM MPASTOM3
     REAL, ALLOCATABLE ::     LON( :,: )
     REAL, ALLOCATABLE ::  LLAREA( :,: )
 
-    REAL   , ALLOCATABLE :: INGRID2D( : )       !!  (NCELLS)
-    REAL   , ALLOCATABLE :: INGRID3D( :,: )     !!  (MPLAYS,NCELLS)
+    REAL   , ALLOCATABLE ::  RI2D( : )      !!  (NCELLS)
+    REAL   , ALLOCATABLE ::  RI3D( :,: )    !!  (MPLAYS,NCELLS)
+    REAL   , ALLOCATABLE ::  RO2D( :,: )    !!  (NCOLS,NROWS)
+    REAL   , ALLOCATABLE ::  RO3D( :,:,: )  !!  (NCOLS,NROWS,MPLAYS)
+    REAL   , ALLOCATABLE :: RXP3D( :,:,: )  !!  (MPLAYS,NCOLS,NROWS)
 
-    REAL, ALLOCATABLE ::  OUTGRD2D( :,: )       !!  (NCOLS,NROWS)
-    REAL, ALLOCATABLE ::  OUTGRD3D( :,:,: )     !!  (NCOLS,NROWS,MPLAYS)
-    REAL, ALLOCATABLE ::   XPGRD3D( :,:,: )     !!  (MPLAYS,NCOLS,NROWS)
+    INTEGER, ALLOCATABLE ::  II2D( : )      !!  (NCELLS)
+    INTEGER, ALLOCATABLE ::  II3D( :,: )    !!  (MPLAYS,NCELLS)
+    INTEGER, ALLOCATABLE ::  IO2D( :,: )    !!  (NCOLS,NROWS)
+    INTEGER, ALLOCATABLE ::  IO3D( :,:,: )  !!  (NCOLS,NROWS,MPLAYS)
+    INTEGER, ALLOCATABLE :: IXP3D( :,:,: )  !!  (MPLAYS,NCOLS,NROWS)
 
     INTEGER         NVARS                   ! number of output variables
     CHARACTER*32    INAMES( MXVARS3 )       ! input  MPAS-file variable-names
@@ -102,9 +108,9 @@ PROGRAM MPASTOM3
 '    setenv  MPFILE    <path name for  input MPAS-gridded file>',           &
 '    setenv  OUTFILE   <path name for output M3IO gridded file>',           &
 '',                                                                         &
-'    The requested MPAS variables must be of type REAL, and subscripted',   &
-'    by MPAS cell N and optionally by TIME (T) and/or LAYER (L), in ',      &
-'    (Fortran) subscript order',                                            &
+'    The requested MPAS variables must be of type INTEGER or REAL,',        &
+'    and subscripted by MPAS cell N and optionally by TIME (T)',            &
+'    and/or LAYER (L), in  (Fortran) subscript order',                      &
 '',                                                                         &
 '        V( [L,] N [, T] )',                                                &
 '',                                                                         &
@@ -137,7 +143,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 40 2017-11-01 20:44:14Z coats $',&
+'$Id: mpastom3.f90 51 2017-11-11 19:52:07Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -221,7 +227,7 @@ BLANK, BAR, BLANK
     END DO
 
     IFLAG = .FALSE.     !!  are LFLAG, TFLAG initialized?
-    L     = 37          !!  number of MPAS header-variables
+    L     = 37          !!  1 + number of MPAS header-variables
 
     DO I = 1, MXVARS3
 
@@ -229,7 +235,7 @@ BLANK, BAR, BLANK
         CALL M3MESG( BLANK )
         V = GETNUM( 0, MPVARS, L, 'Enter number for the variable to interpolate, or 0 to quit.' )
         IF ( V .EQ. 0 )  EXIT
-        
+
         INAMES( I ) = MPNAMES( V )
 
         K = INDEX1( 'nCells', MPNDIMS( V ), DNAME( :,V ) )
@@ -249,7 +255,7 @@ BLANK, BAR, BLANK
                 EFLAG = .TRUE.
                 CALL M3MESG( 'Bad layer subcript-order for variable' )
             END IF
-            
+
             TFLAG = ( N .GT. 0 )
             IF ( TFLAG ) THEN
                 CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" is time stepped' )
@@ -278,9 +284,9 @@ BLANK, BAR, BLANK
             END IF
         END IF
 
-        IF ( MPTYPES( V ) .NE. M3REAL ) THEN
+        IF ( MPTYPES( V ) .NE. M3REAL .OR. MPTYPES( V ) .NE. M3INT ) THEN
             EFLAG = .TRUE.
-            CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" not of type REAL' )
+            CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" not of type REAL nor INTEGER' )
         END IF
 
         IF ( N .LE. 1 ) THEN
@@ -312,12 +318,17 @@ BLANK, BAR, BLANK
     !!.......   Allocate I/O arrays:
 
     IF ( LFLAG ) THEN
-        ALLOCATE( INGRID3D( MPLAYS, NCELLS      ),      &
-                   XPGRD3D( MPLAYS, NCOLS,NROWS ),      &
-                  OUTGRD3D( NCOLS,NROWS, MPLAYS ), STAT = ISTAT )
+        ALLOCATE( II3D( MPLAYS, NCELLS      ),      &
+                  RI3D( MPLAYS, NCELLS      ),      &
+                 IXP3D( MPLAYS, NCOLS,NROWS ),      &
+                 RXP3D( MPLAYS, NCOLS,NROWS ),      &
+                  IO3D( NCOLS,NROWS, MPLAYS ),      &
+                  RO3D( NCOLS,NROWS, MPLAYS ), STAT = ISTAT )
     ELSE
-        ALLOCATE( INGRID2D( NCELLS ),                  &
-                  OUTGRD2D( NCOLS,NROWS ), STAT = ISTAT )
+        ALLOCATE( II2D( NCELLS ),                  &
+                  RI2D( NCELLS ),                  &
+                  IO2D( NCOLS,NROWS ),             &
+                  RO2D( NCOLS,NROWS ), STAT = ISTAT )
     END IF
     IF ( ISTAT .NE. 0 ) THEN
         WRITE( MESG, '( A, I10 )' ) 'I/O buffer allocation failed:  STAT=', ISTAT
@@ -387,60 +398,102 @@ BLANK, BAR, BLANK
 
                 IF ( LFLAG ) THEN      !!  if multi-layer
 
-                    IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), MPLAYS, NCELLS, INGRID3D ) ) THEN
-                        EFLAG = .TRUE.
-                        CYCLE
-                    END IF
-                    
-                    IF ( LATLON .AND. EMFLAG( V ) ) THEN
-                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
-                            EFLAG = .TRUE.
-                            CYCLE
-                        END IF
-                    ELSE IF ( EMFLAG( V ) ) THEN
-                        IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
-                            EFLAG = .TRUE.
-                            CYCLE
-                        END IF
-                    ELSE
-                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
-                            EFLAG = .TRUE.
-                            CYCLE
-                        END IF
-                    END IF
+                    IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
 
-                    CALL XPOSE( NCOLS, NROWS, MPLAYS, XPGRD3D, OUTGRD3D )
+                        IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), MPLAYS, NCELLS, RI3D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
 
-                    IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), JDATE, JTIME, OUTGRD3D ) ) THEN
-                        EFLAG = .TRUE.
+                        IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                            IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, MPLAYS, RI3D, RXP3D ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                            END IF
+                        ELSE IF ( EMFLAG( V ) ) THEN
+                            IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, MPLAYS, RI3D, RXP3D ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                            END IF
+                        ELSE
+                            IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, MPLAYS, RI3D, RXP3D ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                            END IF
+                        END IF
+
+                        CALL XPOSER( NCOLS, NROWS, MPLAYS, RXP3D, RO3D )
+
+                        IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), JDATE, JTIME, RO3D ) ) THEN
+                            EFLAG = .TRUE.
+                        END IF
+
+                    ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+
+                        IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), MPLAYS, NCELLS, II3D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, MPLAYS, II3D, IXP3D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+
+                        CALL XPOSEI( NCOLS, NROWS, MPLAYS, IXP3D, IO3D )
+
+                        IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), JDATE, JTIME, IO3D ) ) THEN
+                            EFLAG = .TRUE.
+                        END IF
+
                     END IF
 
                 ELSE        !!  single-layer
 
-                    IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), NCELLS, INGRID2D ) ) THEN
-                        EFLAG = .TRUE.
-                        CYCLE
-                    END IF
+                    IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
 
-                    IF ( LATLON .AND. EMFLAG( V ) ) THEN
-                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
+                        IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), NCELLS, RI2D ) ) THEN
                             EFLAG = .TRUE.
                             CYCLE
                         END IF
-                    ELSE IF ( EMFLAG( V ) ) THEN
-                        IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
-                            EFLAG = .TRUE.
-                            CYCLE
-                        END IF
-                    ELSE
-                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
-                            EFLAG = .TRUE.
-                            CYCLE
-                        END IF
-                    END IF
 
-                    IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), JDATE, JTIME, OUTGRD2D ) ) THEN
-                        EFLAG = .TRUE.
+                        IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                            IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, RI2D, RO2D ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                            END IF
+                        ELSE IF ( EMFLAG( V ) ) THEN
+                            IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, RI2D, RO2D ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                            END IF
+                        ELSE
+                            IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, RI2D, RO2D ) ) THEN
+                                EFLAG = .TRUE.
+                                CYCLE
+                            END IF
+                        END IF
+
+                        IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), JDATE, JTIME, RO2D ) ) THEN
+                            EFLAG = .TRUE.
+                        END IF
+
+                    ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+
+                        IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), NCELLS, II2D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, II2D, IO2D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+
+                        IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), JDATE, JTIME, IO2D ) ) THEN
+                            EFLAG = .TRUE.
+                        END IF
+
                     END IF
 
                 END IF      !!  if multi-layer; else single-layer
@@ -457,60 +510,103 @@ BLANK, BAR, BLANK
 
             IF ( LFLAG ) THEN      !!  if multi-layer
 
-                IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), MPLAYS, NCELLS, INGRID3D ) ) THEN
-                    EFLAG = .TRUE.
-                    CYCLE
-                END IF
+                IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
 
-                IF ( LATLON .AND. EMFLAG( V ) ) THEN
-                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
+                    IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), MPLAYS, NCELLS, RI3D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
                     END IF
-                ELSE IF ( EMFLAG( V ) ) THEN
-                    IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
+
+                    IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, MPLAYS, RI3D, RXP3D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    ELSE IF ( EMFLAG( V ) ) THEN
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, MPLAYS, RI3D, RXP3D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    ELSE
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, MPLAYS, RI3D, RXP3D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    END IF
+
+
+                    CALL XPOSER( NCOLS, NROWS, MPLAYS, RXP3D, RO3D )
+
+                    IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), 0,0, RO3D ) ) THEN
+                        EFLAG = .TRUE.
+                    END IF
+
+                ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+
+                    IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), MPLAYS, NCELLS, II3D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
                     END IF
-                ELSE
-                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, MPLAYS, INGRID3D, XPGRD3D ) ) THEN
+
+                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, MPLAYS, II3D, IXP3D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
                     END IF
-                END IF
 
-                CALL XPOSE( NCOLS, NROWS, MPLAYS, XPGRD3D, OUTGRD3D )
+                    CALL XPOSEI( NCOLS, NROWS, MPLAYS, IXP3D, IO3D )
 
-                IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), 0,0, OUTGRD3D ) ) THEN
-                    EFLAG = .TRUE.
+                    IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), 0,0, IO3D ) ) THEN
+                        EFLAG = .TRUE.
+                    END IF
+
                 END IF
 
             ELSE        !!  else single-layer data
 
-                IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), NCELLS, INGRID2D ) ) THEN
-                    EFLAG = .TRUE.
-                    CYCLE
-                END IF
+                IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
 
-                IF ( LATLON .AND. EMFLAG( V ) ) THEN
-                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
+                    IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), NCELLS, RI2D ) ) THEN
                         EFLAG = .TRUE.
                         CYCLE
                     END IF
-                ELSE IF ( EMFLAG( V ) ) THEN
-                    IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
-                        EFLAG = .TRUE.
-                        CYCLE
-                    END IF
-                ELSE
-                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, INGRID2D, OUTGRD2D ) ) THEN
-                        EFLAG = .TRUE.
-                        CYCLE
-                    END IF
-                END IF
 
-                IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), 0,0, OUTGRD2D ) ) THEN
-                    EFLAG = .TRUE.
+                    IF ( LATLON .AND. EMFLAG( V ) ) THEN
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LLAREA, LAT, LON, RI2D, RO2D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    ELSE IF ( EMFLAG( V ) ) THEN
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, CAREA, LAT, LON, RI2D, RO2D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    ELSE
+                        IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, RI2D, RO2D ) ) THEN
+                            EFLAG = .TRUE.
+                            CYCLE
+                        END IF
+                    END IF
+
+                    IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), 0,0, RO2D ) ) THEN
+                        EFLAG = .TRUE.
+                    END IF
+
+                ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+
+                    IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), NCELLS, II2D ) ) THEN
+                        EFLAG = .TRUE.
+                        CYCLE
+                    END IF
+
+                    IF ( .NOT.MPINTERP( NCOLS, NROWS, LAT, LON, II2D, IO2D ) ) THEN
+                        EFLAG = .TRUE.
+                        CYCLE
+                    END IF
+
+                    IF ( .NOT.WRITE3( 'OUTFILE', VNAMES( V ), 0,0, IO2D ) ) THEN
+                        EFLAG = .TRUE.
+                    END IF
+
                 END IF
 
             END IF      !!  if multi-layer; else single-layer
@@ -535,7 +631,7 @@ BLANK, BAR, BLANK
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-    SUBROUTINE XPOSE( NC, NR, NL, ZXY, XYZ )
+    SUBROUTINE XPOSER( NC, NR, NL, ZXY, XYZ )
         INTEGER, INTENT(IN   ) :: NC, NR, NL
         REAL,    INTENT(IN   ) :: ZXY( NL,NC,NR )
         REAL,    INTENT(  OUT) :: XYZ( NC,NR,NL )
@@ -556,7 +652,32 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         RETURN
 
-    END SUBROUTINE XPOSE
+    END SUBROUTINE XPOSER
+
+    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+    SUBROUTINE XPOSEI( NC, NR, NL, ZXY, XYZ )
+        INTEGER, INTENT(IN   ) :: NC, NR, NL
+        INTEGER, INTENT(IN   ) :: ZXY( NL,NC,NR )
+        INTEGER, INTENT(  OUT) :: XYZ( NC,NR,NL )
+
+        INTEGER     C, R, L
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),                   &
+!$OMP&                SHARED( NC, NR, NL, XYZ, ZXY ),   &
+!$OMP&               PRIVATE( C, R, L )
+
+        DO R = 1, NR
+            DO L = 1, NL
+            DO C = 1, NC
+                XYZ( C,R,L ) = ZXY( L,C,R )
+            END DO
+            END DO
+        END DO
+
+        RETURN
+
+    END SUBROUTINE XPOSEI
 
 
 END PROGRAM MPASTOM3

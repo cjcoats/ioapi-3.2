@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 50 2017-11-10 15:06:35Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 51 2017-11-11 19:52:07Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 50 2017-11-10 15:06:35Z coats $
+    $Id: NEWSTUFF.html 51 2017-11-11 19:52:07Z coats $
     </EM>
     <HR>
 
@@ -33,12 +33,20 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#nov102017">
+               <CODE>INTEGER</CODE>-variable support</A> for <VAR>m3tools</VAR>
+               program <VAR>mpastom3</VAR><BR>
+               <CODE>INTEGER</CODE>-variable support for <CODE>MODMPASFIO</CODE>
+               generic routine <CODE>MPINTERP()</CODE>, new
+               &quot;incidence-matrix&quot; generic routine
+               <CODE>MPCELLMATX()</CODE>.
+
          <LI>  <A HREF = "#nov082017">
                <VAR>m3tools</VAR> programs <VAR>mpasdiff, mpasstat,
                mpastom3</VAR><BR>
                <CODE>MODMPASFIO</CODE> generic routines
                <CODE>MPINTERP()</CODE>, <CODE>MPBARYMATX()</CODE>,
-               <CODE>MPBARYMAULT()</CODE>
+               <CODE>MPBARYMULT()</CODE>
                </A>
          <LI>  <A HREF = "#sep092017">
                Add extra attributes to new MPAS-files, for
@@ -646,6 +654,32 @@
         0000000000001440 T ncclos_
     </VAR></BLOCKQUOTE>
     <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "nov102017">
+     MPAS <CODE>INTEGER</CODE>-variable support
+</A></H2>
+
+    <BLOCKQUOTE>
+    <CODE>INTEGER</CODE>-variable support for <VAR>m3tools</VAR>
+     program <A HREF="MPASTOM3.html"><VAR>mpastom3</VAR></A>
+     <P>
+     
+     <CODE>INTEGER</CODE>-variable support for <CODE>MODMPASFIO</CODE>
+     generic routine
+     <A HREF="MODMPASFIO.html#interp.html"><CODE>MPINTERP()</CODE></A>
+     <P>
+     
+     New &quot;incidence-matrix&quot; generic routine
+     <A HREF="MODMPASFIO.html#cmatx.html"><CODE>MPCELLMATX()</CODE></A>
+     returns the MPAS-cell subscripts for a set of points or 2-D grid of
+     points.
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -6586,7 +6620,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 50 2017-11-10 15:06:35Z coats $
+    $Id: NEWSTUFF.html 51 2017-11-11 19:52:07Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

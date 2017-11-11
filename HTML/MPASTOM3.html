@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MPASTOM3.html 38 2017-10-25 19:49:48Z coats $" -->
+<!-- "$Id: MPASTOM3.html 51 2017-11-11 19:52:07Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program MPASSTAT </TITLE>
 </HEAD>
@@ -37,14 +37,28 @@ mpastom3  &lt;and respond to the prompts&gt;
 
     <BLOCKQUOTE>
     The <CODE>MPASTOM3</CODE> program interpolates sets of
-    <CODE>REAL</CODE> variables from an MPAS-format-netCDF input file to a
-    regular I/O&nbsp;API grid using  barycentric-linear interpolation,
-    and writes the results to a gridded I/O&nbsp;API file.  All the variables
-    for a particular run must have the same dimensionality (either
-    layered or non-layered, either time-stepped or time independent, and
-    with horizontal dimension <CODE>MODMPASFIO/MPCELLS</CODE>). See
-    routine <A HREF="MODMPASFIO.html"interp"><CODE>MPINTERP()</CODE></A>
-    in module <CODE>MODMPASFIO</CODE>.
+    <CODE>REAL</CODE> or <CODE>INTEGER</CODE> variables from an
+    MPAS-format-netCDF input file to a regular I/O&nbsp;API grid using 
+    barycentric-linear interpolation, and writes the results to a
+    gridded I/O&nbsp;API file.  All the variables for a particular run
+    must have the same dimensionality (either layered or non-layered,
+    either time-stepped or time independent, and with horizontal
+    dimension <CODE>MODMPASFIO/MPCELLS</CODE>). See routine
+    <A HREF="MODMPASFIO.html#interp"><CODE>MPINTERP()</CODE></A> in module
+    <CODE>MODMPASFIO</CODE>.
+    <P>
+
+    <CODE>REAL</CODE> variables are interpolated using
+    barycentric-linear nterpolation on the dual-cell (triangle whose
+    corners are MPAS-cell centers) that contains the requested
+    point(s).  See 
+    <A HREF="https://codeplea.com/triangular-interpolation">https://codeplea.com/triangular-interpolation</A>
+    for a reference on the interpolation formulas.
+    <BR>
+    <CODE>INTEGER</CODE> variables use the &quot;incidence
+    matrix&quot; approach:  if grid-cells <CODE>(C,R)</CODE> are in
+    MPAS-cells <CODE>K(C,R)</CODE>, then the gridded output for
+    MPAS-variable <CODE>IZ(:)</CODE> is <CODE>IZ(K(C,R))</CODE>.
     <P> 
 
     Note that use of this program to convert data to a Lat-Lon based
