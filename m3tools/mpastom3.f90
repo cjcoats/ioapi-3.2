@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 54 2017-11-11 20:50:47Z coats $"
+    !!  Version "$Id: mpastom3.f90 55 2017-11-11 21:01:24Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -143,7 +143,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 54 2017-11-11 20:50:47Z coats $',&
+'$Id: mpastom3.f90 55 2017-11-11 21:01:24Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -220,25 +220,25 @@ BLANK, BAR, BLANK
 
     CALL M3MESG( BLANK )
     CALL M3MESG( 'The list of REAL and INTEGER variables in this file is:' )
-    DO  L = 1, MPVARS
-        IF ( MPTYPES( L ) .EQ. M3REAL .OR. MPTYPES( L ) .EQ. M3INT ) THEN
-            WRITE( *, '( I3, ": ", A )' ) L, MPNAMES( L )
+    DO  V = 1, MPVARS
+        IF ( MPTYPES( V ) .EQ. M3REAL .OR. MPTYPES( V ) .EQ. M3INT ) THEN
+            WRITE( *, '( I3, ": ", A )' ) L, MPNAMES( V )
         END IF
     END DO
 
     IFLAG = .FALSE.     !!  are LFLAG, TFLAG initialized?
-    L     = 37          !!  1 + number of MPAS header-variables
+    V     = 37          !!  1 + number of MPAS header-variables
 
     DO I = 1, MXVARS3
 
-        L = MOD( L, MPVARS ) + 1
+        L = MOD( V, MPVARS ) + 1
         CALL M3MESG( BLANK )
         V = GETNUM( 0, MPVARS, L, 'Enter number for the variable to interpolate, or 0 to quit.' )
         IF ( V .EQ. 0 )  THEN
             EXIT
         ELSE IF ( MPTYPES( V ) .NE. M3REAL .OR. MPTYPES( V ) .NE. M3INT ) THEN
             EFLAG = .TRUE.
-            CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" not of type REAL nor INTEGER' )
+            CALL M3MESG( 'Variable "' //TRIM( MPNAMES( I ) ) // '" not of type REAL nor INTEGER' )
             CYCLE
         ELSE IF ( MPNDIMS( V ) .GT. 3 ) THEN
             EFLAG = .TRUE.
@@ -254,8 +254,8 @@ BLANK, BAR, BLANK
         IF ( .NOT.IFLAG ) THEN      !!  initialize LFLAG, TFLAG
 
             IFLAG = .TRUE.
-            TFLAG = ( N .EQ. 1 )
             LFLAG = ( K .EQ. 2 )
+            TFLAG = ( N .GT. 0 )
             IF ( LFLAG ) THEN
                 CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" is layered' )
                 MPLAYS = MPDIMS( 1,V )
@@ -267,7 +267,6 @@ BLANK, BAR, BLANK
                 CALL M3MESG( 'Bad layer subcript-order for variable' )
             END IF
 
-            TFLAG = ( N .GT. 0 )
             IF ( TFLAG ) THEN
                 CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" is time stepped' )
             ELSE
