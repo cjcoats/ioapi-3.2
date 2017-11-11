@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 56 2017-11-11 21:06:42Z coats $"
+    !!  Version "$Id: mpastom3.f90 57 2017-11-11 21:28:59Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -88,6 +88,7 @@ PROGRAM MPASTOM3
     CHARACTER*16    VNAMES( MXVARS3 )       ! output M3IO-file variable-names
     CHARACTER*16    VUNITS( MXVARS3 )
     CHARACTER*80    VDESCS( MXVARS3 )
+    INTEGER         VTYPES( MXVARS3 )
     LOGICAL         EMFLAG( MXVARS3 )       ! do emissions-style area-weighted re-scaling?
 
     !!***********************************************************************
@@ -143,7 +144,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 56 2017-11-11 21:06:42Z coats $',&
+'$Id: mpastom3.f90 57 2017-11-11 21:28:59Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -236,13 +237,13 @@ BLANK, BAR, BLANK
         V = GETNUM( 0, MPVARS, L, 'Enter number for the variable to interpolate, or 0 to quit.' )
         IF ( V .EQ. 0 )  THEN
             EXIT
-        ELSE IF ( MPTYPES( V ) .NE. M3REAL .OR. MPTYPES( V ) .NE. M3INT ) THEN
+        ELSE IF ( MPTYPES( V ) .NE. M3REAL .AND. MPTYPES( V ) .NE. M3INT ) THEN
             EFLAG = .TRUE.
-            CALL M3MESG( 'Variable "' //TRIM( MPNAMES( I ) ) // '" not of type REAL nor INTEGER' )
+            CALL M3MESG( 'Variable "' //TRIM( MPNAMES( V ) ) // '" not of type REAL nor INTEGER' )
             CYCLE
         ELSE IF ( MPNDIMS( V ) .GT. 3 ) THEN
             EFLAG = .TRUE.
-            CALL M3MESG( 'Incorrect number of dimensions for variable "' //TRIM( INAMES( I ) ) // '"' )
+            CALL M3MESG( 'Incorrect number of dimensions for variable "' //TRIM( MPNAMES( V ) ) // '"' )
             CYCLE
         END IF
 
@@ -297,7 +298,7 @@ BLANK, BAR, BLANK
             CALL M3MESG( 'INCONSISTENCY: Variable is time stepped' )
         END IF
 
-        MESG = 'Interpolated from MPAS-file variable "' // TRIM( INAMES( I ) ) // '"'
+        MESG = 'Interpolated from MPAS-file variable "' // TRIM( MPNAMES( V ) ) // '"'
         CALL GETSTR( 'Enter output name for variable', MPNAMES( V ), VNAMES( I ) )
         CALL GETSTR( 'Enter units       for variable', MPUNITS( V ), VUNITS( I ) )
         CALL GETSTR( 'Enter description for variable', MESG        , VDESCS( I ) )
@@ -306,6 +307,7 @@ BLANK, BAR, BLANK
         ELSE
             EMFLAG( I ) = GETYN( 'Rescale by cell-areas as an emissions-variable?', .TRUE. )
         END IF
+        VTYPES( I ) = MPTYPES( V )
 
         NVARS = I
 
@@ -365,7 +367,7 @@ BLANK, BAR, BLANK
     VNAME3D( 1:NVARS ) = VNAMES( 1:NVARS )
     UNITS3D( 1:NVARS ) = VUNITS( 1:NVARS )
     VDESC3D( 1:NVARS ) = VDESCS( 1:NVARS )
-    VTYPE3D( 1:NVARS ) = MPTYPES( V )
+    VTYPE3D( 1:NVARS ) = VTYPES( 1:NVARS )
     NLAYS3D = MPLAYS
     NVARS3D = NVARS
     VGTYP3D = IMISS3
