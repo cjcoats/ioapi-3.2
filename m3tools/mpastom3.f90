@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 57 2017-11-11 21:28:59Z coats $"
+    !!  Version "$Id: mpastom3.f90 58 2017-11-12 16:33:22Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -144,7 +144,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 57 2017-11-11 21:28:59Z coats $',&
+'$Id: mpastom3.f90 58 2017-11-12 16:33:22Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -265,7 +265,7 @@ BLANK, BAR, BLANK
                 MPLAYS = 1
             ELSE
                 EFLAG = .TRUE.
-                CALL M3MESG( 'Bad layer subcript-order for variable' )
+                CALL M3MESG( 'Bad subscript-order for variable' )
             END IF
 
             IF ( TFLAG ) THEN
@@ -274,11 +274,16 @@ BLANK, BAR, BLANK
                 CALL M3MESG( 'Variable "' //TRIM( INAMES( I ) ) // '" is time independent' )
             END IF
 
+        ELSE IF ( N .GT. 0 .AND. N .NE. K+1 ) THEN
+            CALL M3MESG( 'Bad "Time"-dimension for "' //TRIM( INAMES( I ) ) // '".' )
         END IF      !!  if initializing LFLAG, TFLAG
 
         IF ( K .LE. 0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Variables must have MPAS cell-dimension "nCells".' )
+        ELSE IF ( K .GT. 2 ) THEN
+            EFLAG = .TRUE.
+            CALL M3MESG( 'Bad "nCells"-dimension for "' //TRIM( INAMES( I ) ) // '".' )
         ELSE IF ( ( K .NE. 2 ) .AND. LFLAG ) THEN
             CALL M3MESG( 'INCONSISTENCY: Variable "' //TRIM( INAMES( I ) ) // '" is not layered' )
         ELSE IF ( ( K .EQ. 2 ) .AND. .NOT.LFLAG ) THEN
@@ -292,21 +297,25 @@ BLANK, BAR, BLANK
 
         IF ( N .LE. 0  .AND. TFLAG  ) THEN
             EFLAG = .TRUE.
-            CALL M3MESG( 'INCONSISTENCY: Variable is time independent' )
+            CALL M3MESG( 'INCONSISTENCY: Variable "' //TRIM( INAMES( I ) ) // '"is time independent' )
         ELSE IF ( N .GT. 0 .AND. .NOT.TFLAG ) THEN
             EFLAG = .TRUE.
-            CALL M3MESG( 'INCONSISTENCY: Variable is time stepped' )
+            CALL M3MESG( 'INCONSISTENCY: Variable "' //TRIM( INAMES( I ) ) // '"is time stepped' )
         END IF
 
-        MESG = 'Interpolated from MPAS-file variable "' // TRIM( MPNAMES( V ) ) // '"'
-        CALL GETSTR( 'Enter output name for variable', MPNAMES( V ), VNAMES( I ) )
-        CALL GETSTR( 'Enter units       for variable', MPUNITS( V ), VUNITS( I ) )
-        CALL GETSTR( 'Enter description for variable', MESG        , VDESCS( I ) )
         IF ( MPTYPES( V ) .EQ. M3INT ) THEN
             EMFLAG( I ) = .FALSE.
         ELSE
             EMFLAG( I ) = GETYN( 'Rescale by cell-areas as an emissions-variable?', .TRUE. )
         END IF
+        IF ( EMFLAG( I ) ) THEN
+            MESG = 'Interpolated with area re-weighting from MPAS-file variable "' // TRIM( INAMES( I ) ) // '"'
+        ELSE
+            MESG = 'Interpolated from MPAS-file variable "' // TRIM( INAMES( I ) ) // '"'
+        END IF
+        CALL GETSTR( 'Enter output name for variable',  INAMES( I ), VNAMES( I ) )
+        CALL GETSTR( 'Enter units       for variable', MPUNITS( V ), VUNITS( I ) )
+        CALL GETSTR( 'Enter description for variable', MESG        , VDESCS( I ) )
         VTYPES( I ) = MPTYPES( V )
 
         NVARS = I
@@ -371,7 +380,7 @@ BLANK, BAR, BLANK
     NLAYS3D = MPLAYS
     NVARS3D = NVARS
     VGTYP3D = IMISS3
-    VGTOP3D = IMISS3
+    VGTOP3D = 0.0
     DO L = 1, MIN( MPLAYS, MXLAYS3 )+1
         VGLVS3D(L ) = FLOAT( L-1 ) / FLOAT( MPLAYS )
     END DO

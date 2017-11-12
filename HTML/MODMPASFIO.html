@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 51 2017-11-11 19:52:07Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 58 2017-11-12 16:33:22Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODMPASFIO</TITLE>
 </HEAD>
@@ -72,24 +72,27 @@
         <DD> compute 2-D and 3-D weights for arc-segment (e.g., for SMOKE)
         <DT>  <A HREF = "#cmatx"><CODE>MPCELLMATX()</CODE></A>
         <DD>  Create a sparse incidence matrix (or index-array) for
-              MPAS-cell subscripts for set of points or a rectangular grid.
+              MPAS-cell subscripts for set of points or a rectangular
+              grid, for cell-based interpolation.
         <DT>  <A HREF = "#bmatx"><CODE>MPBARYMATX()</CODE></A>
         <DD> Create a 3-band sparse matrix for barycentric-linear
-             interpolation to a set of points or a rectangular grid.
+             interpolation to a set of points or a 2-D rectangular
+             grid of points.
         <DT>  <A HREF = "#bmult"><CODE>MPBARYMULT()</CODE></A>
         <DD> Multiply a 3-band barycentric-linear sparse matrix 
              by an MPAS variable, to perform interpolation.
         <DT>  <A HREF = "#interp"><CODE>MPINTERP()</CODE></A>
         <DD> Interpolate an MPAS-grid variable to a point, set of
              points, or 2-D grid of points, using barycentric-linear
-             interpolation.
+             interpolation for <CODE>REAL</CODE> variables, or
+             cell-based interpolation for <CODE>INTEGER</CODE> variables.
         <DT>  <A HREF = "#dist" ><CODE>SPHEREDIST()</CODE></A>
         <DD> compute spherical-Earth distance from  <CODE>(LAT1,LON1)</CODE>
-             to <CODE>(LAT2,LON2)</CODE> or from <CODE>(X1,Y1,Z1)</CODE>
-             to <CODE>(X2,Y2,Z2)</CODE>
+             to <CODE>(LAT2,LON2)</CODE> or from MPAS Earth-centered
+             Cartesian <CODE>(X1,Y1,Z1)</CODE> to <CODE>(X2,Y2,Z2)</CODE>
         <DT>  <A HREF = "#date" ><CODE>MPSTR2DT()</CODE> and <CODE>MPDT2STR()</CODE></A>
         <DD> convert MPAS-format ASCII date&amp;time to/from I/O&nbsp;API
-             convention <CODE>JDATE:JTIME</CODE>
+             convention date&amp;time <CODE>JDATE:JTIME</CODE>
     </DL>
     </BLOCKQUOTE>
 

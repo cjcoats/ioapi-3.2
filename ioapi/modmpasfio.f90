@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 51 2017-11-11 19:52:07Z coats $"
+    !!  Version "$Id: modmpasfio.f90 58 2017-11-12 16:33:22Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -43,7 +43,7 @@ MODULE MODMPASFIO
     PUBLIC :: INITMPGRID, INITREARTH, SHUTMPGRID, OPENMPAS, CREATEMPAS,     &
               DESCMPAS, READMPSTEPS, WRITEMPSTEP, READMPAS, WRITEMPAS,      &
               ARC2MPAS, FINDCELL, FINDVRTX, SPHEREDIST, MPSTR2DT, MPDT2STR, &
-              BARYFAC, MPBARYMATX, MPBARYMULT, MPINTERP
+              BARYFAC, MPBARYMATX, MPBARYMULT, MPCELLMATX, MPINTERP
 
 
     !!........   Generic interfaces:
@@ -462,7 +462,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 51 2017-11-11 19:52:07Z coats $',&
+        'Version $Id: modmpasfio.f90 58 2017-11-12 16:33:22Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -627,7 +627,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 51 2017-11-11 19:52:07Z coats $',&
+        'Version $Id: modmpasfio.f90 58 2017-11-12 16:33:22Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -15266,7 +15266,15 @@ CLOOP:  DO C = 1, NC
         INTEGER, INTENT(IN   ) :: Z( MPCELLS )
         INTEGER, INTENT(  OUT) :: V
 
-        MPINTERP0RI = MPINTERP0DI( DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     M
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
+            MPINTERP0RI = .FALSE.
+        ELSE
+            V = Z( M )
+            MPINTERP0RI = .TRUE.
+        END IF
         RETURN
 
     END FUNCTION MPINTERP0RI
@@ -15282,7 +15290,30 @@ CLOOP:  DO C = 1, NC
         INTEGER, INTENT(IN   ) :: Z( MPCELLS )
         INTEGER, INTENT(  OUT) :: V( NPTS )
 
-        MPINTERP1RI = MPINTERP1DI( NPTS, DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     I, M
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),               &
+!$OMP&                SHARED( NPTS, Y, X, Z, V ),   &
+!$OMP&               PRIVATE( I, M  ),              &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO I = 1, NPTS
+
+            M = FINDCELL( Y( I ), X( I ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                V( I ) = Z( M )
+            END IF
+
+        END DO
+
+        MPINTERP1RI = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERP1RI
@@ -15298,7 +15329,32 @@ CLOOP:  DO C = 1, NC
         INTEGER, INTENT(IN   ) :: Z( MPCELLS )
         INTEGER, INTENT(  OUT) :: V( NC,NR )
 
-        MPINTERP2RI = MPINTERP2DI( NC,NR, DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     C, R, M
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),               &
+!$OMP&                SHARED( NC, NR, Y, X, Z, V ), &
+!$OMP&               PRIVATE( C, R, M  ),           &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+        DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                V( C,R ) = Z( M )
+            END IF
+
+        END DO
+        END DO
+
+        MPINTERP2RI = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERP2RI
@@ -15344,7 +15400,6 @@ CLOOP:  DO C = 1, NC
         LOGICAL     EFLAG
 
         EFLAG = .FALSE.     !!  no errors yet
-        EFLAG = .FALSE.     !!  no errors yet
 
 !$OMP    PARALLEL DO DEFAULT( NONE ),                   &
 !$OMP&                SHARED( NPTS, NL, Y, X, Z, V ),   &
@@ -15384,7 +15439,6 @@ CLOOP:  DO C = 1, NC
         LOGICAL     EFLAG
 
         EFLAG = .FALSE.     !!  no errors yet
-        EFLAG = .FALSE.     !!  no errors yet
 
 !$OMP    PARALLEL DO DEFAULT( NONE ),                       &
 !$OMP&                SHARED( NC, NR, NL, Y, X, Z, V ),     &
@@ -15421,7 +15475,17 @@ CLOOP:  DO C = 1, NC
         INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
         INTEGER, INTENT(  OUT) :: V( NL )
 
-        MPINTERPL0RI = MPINTERPL0DI( DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     L, M
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
+            MPINTERPL0RI = .FALSE.
+        ELSE
+            DO L = 1, NL
+                V(L) = Z( L,M )
+            END DO
+            MPINTERPL0RI = .TRUE.
+        END IF
         RETURN
 
     END FUNCTION MPINTERPL0RI
@@ -15437,7 +15501,30 @@ CLOOP:  DO C = 1, NC
         INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
         INTEGER, INTENT(  OUT) :: V( NL,NPTS )
 
-        MPINTERPL1RI = MPINTERPL1DI( NPTS, DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     I, L, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),                   &
+!$OMP&                SHARED( NPTS, NL, Y, X, Z, V ),   &
+!$OMP&               PRIVATE( I, M ),                   &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO I = 1, NPTS
+
+            M = FINDCELL( Y( I ), X( I ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                DO L = 1, NL
+                    V(L,I) = Z( L,M )
+                END DO
+            END IF
+
+        END DO
+
+        MPINTERPL1RI = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPL1RI
@@ -15453,7 +15540,32 @@ CLOOP:  DO C = 1, NC
         INTEGER, INTENT(IN   ) :: Z( NL,MPCELLS )
         INTEGER, INTENT(  OUT) :: V( NL,NC,NR )
 
-        MPINTERPL2RI = MPINTERPL2DI( NC, NR, DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     C, R, L, M
+        LOGICAL     EFLAG
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),                       &
+!$OMP&                SHARED( NC, NR, NL, Y, X, Z, V ),     &
+!$OMP&               PRIVATE( C, R, M ),                    &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+        DO C = 1, NC
+
+            M = FINDCELL( Y( C,R ), X( C,R ) )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+            ELSE
+                DO L = 1, NL
+                    V(L,C,R) = Z( L,M )
+                END DO
+            END IF
+
+        END DO
+        END DO
+
+        MPINTERPL2RI = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPL2RI
@@ -15467,7 +15579,43 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( MPCELLS )      !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V                 !!  result
 
-        MPINTERP0DF = MPINTERP0DD( DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
+            MPINTERP0DF = .FALSE.
+            RETURN
+        ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+            MPINTERP0DF = .FALSE.
+            RETURN
+        END IF
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        XX = MOD( X+360.0D0, 360.0D0 )
+        YY = Y
+        X1 = ALONC( M )
+        Y1 = ALATC( M )
+
+        DO J = 1,  NBNDYE( M )
+            K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+            X2 = ALONC( BNDYCELL( J,M ) )
+            Y2 = ALATC( BNDYCELL( J,M ) )
+            X3 = ALONC( BNDYCELL( K,M ) )
+            Y3 = ALATC( BNDYCELL( K,M ) )
+            IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                    V = W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K )
+                    MPINTERP0DF = .TRUE.
+                    RETURN
+
+            END IF
+
+        END DO      !! end loop on boundary-cells for this cell
+
+        MPINTERP0DF = .FALSE.
         RETURN
 
     END FUNCTION MPINTERP0DF
@@ -15529,7 +15677,58 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( MPCELLS )          !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NPTS )
 
-        MPINTERP1DF = MPINTERP1DD( NPTS, DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     I, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),                                               &
+!$OMP&                SHARED( NPTS, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ),   &
+!$OMP&               PRIVATE( I, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,           &
+!$OMP&                        W1, W2, W3 ),                                         &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+ILOOP:  DO I = 1, NPTS
+
+            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
+            YY = Y( I )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V( I ) = W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K )
+                        CYCLE ILOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO ILOOP
+
+        MPINTERP1DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERP1DF
@@ -15560,7 +15759,10 @@ CLOOP:  DO C = 1, NC
 
 ILOOP:  DO I = 1, NPTS
 
-            M = FINDCELL( Y( I ), X( I ) )
+            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
+            YY = Y( I )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -15568,9 +15770,6 @@ ILOOP:  DO I = 1, NPTS
                 EFLAG = .TRUE.
                 CYCLE
             END IF
-
-            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
-            YY = Y( I )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )
@@ -15608,7 +15807,60 @@ ILOOP:  DO I = 1, NPTS
         REAL,    INTENT(IN   ) :: Z( MPCELLS )            !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NC, NR )
 
-        MPINTERP2DF = MPINTERP2DD( NC, NR, DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO DEFAULT( NONE ),                                               &
+!$OMP&                SHARED( NC, NR, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ), &
+!$OMP&               PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,        &
+!$OMP&                        W1, W2, W3 ),                                         &
+!$OMP&             REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V( C,R ) = W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K )
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPINTERP2DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERP2DF
@@ -15640,7 +15892,10 @@ ILOOP:  DO I = 1, NPTS
         DO R = 1, NR
 CLOOP:  DO C = 1, NC
 
-            M = FINDCELL( Y( C,R ), X( C,R ) )
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE CLOOP
@@ -15648,9 +15903,6 @@ CLOOP:  DO C = 1, NC
                 EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
-
-            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
-            YY = Y( C,R )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )
@@ -15690,7 +15942,61 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( MPCELLS )          !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NC, NR )
 
-        MPINTERPE2DF = MPINTERPE2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO                                                                    &
+!$OMP&       DEFAULT( NONE ),                                                           &
+!$OMP&        SHARED( NC, NR, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                    &
+!$OMP&                W1, W2, W3 ),                                                     &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V(C,R) = ( W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K ) ) * A / CAREAS( M )
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPINTERPE2DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPE2DF
@@ -15724,7 +16030,10 @@ CLOOP:  DO C = 1, NC
         DO R = 1, NR
 CLOOP:  DO C = 1, NC
 
-            M = FINDCELL( Y( C,R ), X( C,R ) )
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE CLOOP
@@ -15732,9 +16041,6 @@ CLOOP:  DO C = 1, NC
                 EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
-
-            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
-            YY = Y( C,R )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )
@@ -15774,7 +16080,61 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( MPCELLS )          !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NC, NR )
 
-        MPINTERPG2DF = MPINTERPG2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), Z, V )
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO                                                                    &
+!$OMP&       DEFAULT( NONE ),                                                           &
+!$OMP&        SHARED( NC, NR, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                    &
+!$OMP&                W1, W2, W3 ),                                                     &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        V(C,R) = ( W1 * Z( M ) + W2 * Z( J ) + W3 * Z( K ) ) * A( C,R ) / CAREAS( M  )
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPINTERPG2DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPG2DF
@@ -15808,7 +16168,10 @@ CLOOP:  DO C = 1, NC
         DO R = 1, NR
 CLOOP:  DO C = 1, NC
 
-            M = FINDCELL( Y( C,R ), X( C,R ) )
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE CLOOP
@@ -15816,9 +16179,6 @@ CLOOP:  DO C = 1, NC
                 EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
-
-            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
-            YY = Y( C,R )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )
@@ -15858,7 +16218,45 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )   !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NL )           !!  result
 
-        MPINTERPL0DF = MPINTERPL0DD( DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+
+        M = FINDCELL( Y, X )
+        IF ( M .LT. 0 ) THEN
+            MPINTERPL0DF = .FALSE.
+            RETURN
+        ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+            MPINTERPL0DF = .FALSE.
+            RETURN
+        END IF
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        XX = MOD( X + 360.0D0, 360.0D0 )
+        YY = Y
+        X1 = ALONC( M )
+        Y1 = ALATC( M )
+
+        DO J = 1,  NBNDYE( M )
+            K = 1 + MOD( K, NBNDYE( M ) )
+            X2 = ALONC( BNDYCELL( J,M ) )
+            Y2 = ALATC( BNDYCELL( J,M ) )
+            X3 = ALONC( BNDYCELL( K,M ) )
+            Y3 = ALATC( BNDYCELL( K,M ) )
+            IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                    DO L = 1, NL
+                        V(L) = W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K )
+                    END DO
+                    MPINTERPL0DF = .TRUE.
+                    RETURN
+
+            END IF
+
+        END DO      !! end loop on boundary-cells for this cell
+
+        MPINTERPL0DF = .FALSE.
         RETURN
 
     END FUNCTION MPINTERPL0DF
@@ -15923,7 +16321,61 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )       !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NL,NPTS )
 
-        MPINTERPL1DF = MPINTERPL1DD( NPTS, DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     I, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO                                                            &
+!$OMP&       DEFAULT( NONE ),                                                   &
+!$OMP&        SHARED( NPTS, NL, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ),   &
+!$OMP&       PRIVATE( I, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,            &
+!$OMP&                W1, W2, W3 ),                                             &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
+
+ILOOP:  DO I = 1, NPTS
+
+            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
+            YY = Y( I )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        DO L = 1, NL
+                            V( L,I ) = W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K )
+                        END DO
+                        CYCLE ILOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO ILOOP
+
+        MPINTERPL1DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPL1DF
@@ -15955,7 +16407,10 @@ CLOOP:  DO C = 1, NC
 
 ILOOP:  DO I = 1, NPTS
 
-            M = FINDCELL( Y( I ), X( I ) )
+            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
+            YY = Y( I )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE
@@ -15963,9 +16418,6 @@ ILOOP:  DO I = 1, NPTS
                 EFLAG = .TRUE.
                 CYCLE
             END IF
-
-            XX = MOD( X( I ) + 360.0D0, 360.0D0 )
-            YY = Y( I )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )
@@ -16005,7 +16457,63 @@ ILOOP:  DO I = 1, NPTS
         REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )         !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NL, NC, NR )
 
-        MPINTERPL2DF = MPINTERPL2DD( NC, NR, DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO                                                            &
+!$OMP&       DEFAULT( NONE ),                                                   &
+!$OMP&        SHARED( NC, NR, NL, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL ), &
+!$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,         &
+!$OMP&                W1, W2, W3 ),                                             &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        DO L = 1, NL
+                            V( L,C,R ) = W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K )
+                        END DO
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPINTERPL2DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPL2DF
@@ -16038,7 +16546,10 @@ ILOOP:  DO I = 1, NPTS
         DO R = 1, NR
 CLOOP:  DO C = 1, NC
 
-            M = FINDCELL( Y( C,R ), X( C,R ) )
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE CLOOP
@@ -16046,9 +16557,6 @@ CLOOP:  DO C = 1, NC
                 EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
-
-            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
-            YY = Y( C,R )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )
@@ -16090,7 +16598,65 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )         !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NL, NC, NR )
 
-        MPINTERPEL2DF = MPINTERPEL2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        REAL        ARAT            !!  area-ratio
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO                                                                        &
+!$OMP&       DEFAULT( NONE ),                                                               &
+!$OMP&        SHARED( NC, NR, NL, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                     &
+!$OMP&                W1, W2, W3, ARAT ),                                                   &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A / CAREAS( M )
+                        DO L = 1, NL
+                            V( L,C,R ) = ARAT * ( W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K ) )
+                        END DO
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPINTERPEL2DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPEL2DF
@@ -16125,7 +16691,10 @@ CLOOP:  DO C = 1, NC
         DO R = 1, NR
 CLOOP:  DO C = 1, NC
 
-            M = FINDCELL( Y( C,R ), X( C,R ) )
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE CLOOP
@@ -16133,9 +16702,6 @@ CLOOP:  DO C = 1, NC
                 EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
-
-            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
-            YY = Y( C,R )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )
@@ -16178,7 +16744,65 @@ CLOOP:  DO C = 1, NC
         REAL,    INTENT(IN   ) :: Z( NL,MPCELLS )         !!  variable to be interpolated
         REAL,    INTENT(  OUT) :: V( NL, NC, NR )
 
-        MPINTERPGL2DF = MPINTERPGL2DD( NC, NR, DBLE( A ), DBLE( Y ), DBLE( X ), NL, Z, V )
+        INTEGER     C, R, J, K, L, M
+        REAL(8)     XX, YY, X1, Y1, X2, Y2, X3, Y3
+        REAL(8)     W1, W2, W3
+        REAL        ARAT            !!  area-ratio
+        LOGICAL     EFLAG
+
+        !!........  Find closest cells K1, K2 (in that order)
+
+        EFLAG = .FALSE.     !!  no errors yet
+
+!$OMP    PARALLEL DO                                                                        &
+!$OMP&       DEFAULT( NONE ),                                                               &
+!$OMP&        SHARED( NC, NR, NL, A, Y, X, Z, V, ALONC, ALATC, NBNDYE, BNDYCELL, CAREAS ),  &
+!$OMP&       PRIVATE( C, R, J, K, L, M, XX, YY, X1, Y1, X2, Y2, X3, Y3,                     &
+!$OMP&                W1, W2, W3, ARAT ),                                                   &
+!$OMP&     REDUCTION( .OR.:  EFLAG )
+
+        DO R = 1, NR
+CLOOP:  DO C = 1, NC
+
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
+            IF ( M .LT. 0 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            ELSE IF ( NBNDYE(M) .LT. 2 ) THEN
+                EFLAG = .TRUE.
+                CYCLE CLOOP
+            END IF
+
+            X1 = ALONC( M )
+            Y1 = ALATC( M )
+
+            DO J = 1,  NBNDYE( M )
+                K  = 1 + MOD( J, NBNDYE( M ) )     !!  next adjacent bdycell-subscript
+                X2 = ALONC( BNDYCELL( J,M ) )
+                Y2 = ALATC( BNDYCELL( J,M ) )
+                X3 = ALONC( BNDYCELL( K,M ) )
+                Y3 = ALATC( BNDYCELL( K,M ) )
+                IF ( BARYFAC( YY, XX, Y1, X1, Y2, X2, Y3, X3, W1, W2, W3 ) ) THEN
+
+                        ARAT = A( C,R ) / CAREAS( M )
+                        DO L = 1, NL
+                            V( L,C,R ) = ARAT * ( W1 * Z( L,M ) + W2 * Z( L,J ) + W3 * Z( L,K ) )
+                        END DO
+                        CYCLE CLOOP
+
+                END IF
+
+            END DO      !! end loop on boundary-cells for this cell
+
+            EFLAG = .TRUE.
+
+        END DO CLOOP
+        END DO
+
+        MPINTERPGL2DF = ( .NOT.EFLAG )
         RETURN
 
     END FUNCTION MPINTERPGL2DF
@@ -16213,7 +16837,10 @@ CLOOP:  DO C = 1, NC
         DO R = 1, NR
 CLOOP:  DO C = 1, NC
 
-            M = FINDCELL( Y( C,R ), X( C,R ) )
+            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
+            YY = Y( C,R )
+
+            M = FINDCELL( YY, XX )
             IF ( M .LT. 0 ) THEN
                 EFLAG = .TRUE.
                 CYCLE CLOOP
@@ -16221,9 +16848,6 @@ CLOOP:  DO C = 1, NC
                 EFLAG = .TRUE.
                 CYCLE CLOOP
             END IF
-
-            XX = MOD( X( C,R ) + 360.0D0, 360.0D0 )
-            YY = Y( C,R )
 
             X1 = ALONC( M )
             Y1 = ALATC( M )

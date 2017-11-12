@@ -2,7 +2,7 @@
         PROGRAM  M3EDHDR
 
 C***********************************************************************
-C Version "$Id: m3edhdr.f 19 2017-05-18 15:43:33Z coats $"
+C Version "$Id: m3edhdr.f 58 2017-11-12 16:33:22Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -37,7 +37,6 @@ C       instead of NC*() netCDF-2 calls.
 C***********************************************************************
 
       USE M3UTILIO
-      USE MODNCFIO
 
       IMPLICIT NONE
 
@@ -47,6 +46,7 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
 C...........   INCLUDES:
 
+        INCLUDE 'NETCDF.EXT'  !  netCDF parameter definitions
         INCLUDE 'STATE3.EXT'  !  I/O API internal data structures
 
 C...........   PARAMETERS and their descriptions:
@@ -149,7 +149,7 @@ C   begin body of program  M3EDHDR
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3edhdr.f 19 2017-05-18 15:43:33Z coats                 $',
+     &'$Id:: m3edhdr.f 58 2017-11-12 16:33:22Z coats                 $',
      &' '
 
         ARGCNT = IARGC()
@@ -223,7 +223,7 @@ C.......   Head of loop:  choose next edit operation.
      &                      'leaving DEFINE mode for "' //
      &                      TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
-                    END IF      !  if ncapt() failed
+                    END IF      !  if nf_enddef() failed
                 END IF
                 CALL M3EXIT( PNAME, 0, 0,
      &               'Program  M3EDHDR  completed successfully', 0 )
@@ -236,7 +236,7 @@ C.......   Head of loop:  choose next edit operation.
      &                 'Error', IERR, 'starting DEFINE mode for "' //
      &                 TRIM( INAME ) // '"'
                     CALL M3WARN( PNAME, 0, 0, MESG )
-                END IF      !  if ncapt() failed
+                END IF      !  if nf_redef() failed
                 DFLAG = .TRUE.
 
             END IF      !  if choice=quot; else if not yet in define-mode
@@ -257,7 +257,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( P_ALP .NE. P_ALP3D ) THEN
 
-                        IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'P_ALP', NCDOUBLE, 1, P_ALP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -267,7 +267,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             P_ALP3D = P_ALP
-                        END IF      !  if ncapt() failed
+                        END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                     END IF      !  if p_alp changed
 
@@ -280,7 +280,7 @@ C.......   Head of loop:  choose next edit operation.
 
                         IF ( P_BET .NE. P_BET3D ) THEN
 
-                            IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                            IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'P_BET', NCDOUBLE, 1, P_BET )
 
                             IF ( IERR .NE. 0 ) THEN
@@ -290,7 +290,7 @@ C.......   Head of loop:  choose next edit operation.
                                 CALL M3WARN( PNAME, 0, 0, MESG )
                             ELSE
                                 P_BET3D = P_BET
-                            END IF      !  if ncapt() failed
+                            END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                         END IF  !  if p_BET changed
 
@@ -301,7 +301,7 @@ C.......   Head of loop:  choose next edit operation.
 
                         IF ( P_GAM .NE. P_GAM3D ) THEN
 
-                            IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                            IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'P_GAM', NCDOUBLE, 1, P_GAM )
 
                             IF ( IERR .NE. 0 ) THEN
@@ -311,7 +311,7 @@ C.......   Head of loop:  choose next edit operation.
                                 CALL M3WARN( PNAME, 0, 0, MESG )
                             ELSE
                                 P_GAM3D = P_GAM
-                            END IF      !  if ncapt() failed
+                            END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                         END IF  !  if P_GAM changed
 
@@ -323,7 +323,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( XCENT .NE. XCENT3D ) THEN
 
-                        IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'XCENT', NCDOUBLE, 1, XCENT )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -333,7 +333,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             XCENT3D = XCENT
-                        END IF      !  if ncapt() failed
+                        END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                     END IF      !  if xcent changed
 
@@ -343,7 +343,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( YCENT .NE. YCENT3D ) THEN
 
-                        IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                        IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'YCENT', NCDOUBLE, 1, YCENT )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -353,7 +353,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             YCENT3D = YCENT
-                        END IF      !  if ncapt() failed
+                        END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                     END IF      !  if ycent changed
 
@@ -367,7 +367,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( XORIG .NE. XORIG3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'XORIG', NCDOUBLE, 1, XORIG )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -377,7 +377,7 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         XORIG3D = XORIG
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                 END IF  !  if xorig changed
 
@@ -387,7 +387,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( YORIG .NE. YORIG3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'YORIG', NCDOUBLE, 1, YORIG )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -397,7 +397,7 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         YORIG3D = YORIG
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                 END IF  !  if yorig changed
 
@@ -407,7 +407,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( XCELL .NE. XCELL3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'XCELL', NCDOUBLE, 1, XCELL )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -417,7 +417,7 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         XCELL3D = XCELL
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                 END IF  !  if xcell changed
 
@@ -427,7 +427,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( YCELL .NE. YCELL3D ) THEN
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'YCELL', NCDOUBLE, 1, YCELL )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -437,7 +437,7 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         YCELL3D = YCELL
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                 END IF  !  if ycell changed
 
@@ -457,7 +457,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( VGTYP .NE. VGTYP3D ) THEN
 
-                    IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_INT( FID, NCGLOBAL,
      &                             'VGTYP', NF_INT, 1, VGTYP )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -467,7 +467,7 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         VGTYP3D = VGTYP
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_INT() failed
 
                 END IF  !  if vgtyp changed
 
@@ -480,7 +480,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( VGTOP .NE. VGTOP3D ) THEN
 
-                        IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL,
+                        IERR = NF_PUT_ATT_REAL( FID, NCGLOBAL,
      &                              'VGTOP', NCFLOAT, 1, VGTOP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -490,7 +490,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             VGTOP3D = VGTOP
-                        END IF      !  if ncapt() failed
+                        END IF      !  if NF_PUT_ATT_REAL() failed
 
                     END IF      !  if VGTOP changed
 
@@ -510,7 +510,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( CFLAG ) THEN
 
-                    IERR = NF_PUT_ATT_REAL( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_REAL( FID, NCGLOBAL,
      &                          'VGLVLS', NCFLOAT, NLAYS3D+1, VGLVS )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -522,7 +522,7 @@ C.......   Head of loop:  choose next edit operation.
                         DO  23  L = 1, NLAYS3D + 1
                             VGLVS3D( L ) = VGLVS( L )
 23                      CONTINUE
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_REAL() failed
 
                 END IF  !  if VGLVS changed
 
@@ -542,7 +542,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( SDATE .NE. SDATE3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'SDATE',
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'SDATE',
      &                              NF_INT, 1, SDATE )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -552,7 +552,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             SDATE3D = SDATE
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_INT() failed
 
                     END IF      !  if sdate changed
 
@@ -561,7 +561,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( STIME .NE. STIME3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'STIME',
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'STIME',
      &                              NF_INT, 1, STIME )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -571,7 +571,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             STIME3D = STIME
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_INT() failed
 
                     END IF      !  if stime changed
 
@@ -580,7 +580,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( TSTEP .NE. TSTEP3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'TSTEP',
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'TSTEP',
      &                              NF_INT, 1, TSTEP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -590,7 +590,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             TSTEP3D = TSTEP
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_INT() failed
 
                     END IF      !  if tstep changed
 
@@ -603,7 +603,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( SDATE .NE. SDATE3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'SDATE',
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'SDATE',
      &                              NF_INT, 1, SDATE )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -613,7 +613,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             SDATE3D = SDATE
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_INT() failed
 
                     END IF      !  if sdate changed
 
@@ -622,7 +622,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( STIME .NE. STIME3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'STIME',
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'STIME',
      &                              NF_INT, 1, STIME )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -632,7 +632,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             STIME3D = STIME
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_INT() failed
 
                     END IF      !  if stime changed
 
@@ -641,7 +641,7 @@ C.......   Head of loop:  choose next edit operation.
 
                     IF ( TSTEP .NE. TSTEP3D ) THEN
 
-                        IERR = NF_PUT_ATT_INT( FID, NF_GLOBAL, 'TSTEP',
+                        IERR = NF_PUT_ATT_INT( FID, NCGLOBAL, 'TSTEP',
      &                              NF_INT, 1, TSTEP )
 
                         IF ( IERR .NE. 0 ) THEN
@@ -649,7 +649,7 @@ C.......   Head of loop:  choose next edit operation.
      &                      'Error', IERR, 'redefining TSTEP in "' //
      &                      TRIM( INAME ) // '"'
                             CALL M3WARN( PNAME, 0, 0, MESG )
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_INT() failed
 
                     END IF      !  if tstep changed
 
@@ -682,7 +682,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             VNAME3D( V ) = NAMBUF
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_RENAME_VAR() failed
 
                         IERR = NF_PUT_ATT_TEXT( FID, VINDX3( V,FNUM ),
      &                           'long_name', NAMLEN3, NAMBUF )
@@ -692,7 +692,7 @@ C.......   Head of loop:  choose next edit operation.
      &                               TRIM( INAME ) // '"'
                             WRITE( MESG, 94000 ) 'Error', IERR, SCRBUF
                             CALL M3WARN( PNAME, 0, 0, MESG )
-                        END IF              !  ierr nonzero:  NCAPTC() failed
+                        END IF              !  ierr nonzero:  NF_PUT_ATT_TEXT() failed
                     END IF      !  if vname(v) changed
 
                     CALL GETSTR( 'Enter new units for this variable',
@@ -711,7 +711,7 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             UNITS3D( V ) = NAMBUF
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_TEXT() failed
 
                     END IF      !  if units(v) changed
 
@@ -733,13 +733,13 @@ C.......   Head of loop:  choose next edit operation.
                             CALL M3WARN( PNAME, 0, 0, MESG )
                         ELSE
                             VDESC3D( V ) = SCRBUF
-                        END IF  !  if ncapt() failed
+                        END IF  !  if NF_PUT_ATT_TEXT() failed
 
                     END IF      !  if vdesc(v) changed
 
 33              CONTINUE        !  end loop revising variables
 
-                IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'VAR-LIST',
+                IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'VAR-LIST',
      &                       NAMLEN3 * NVARS3D, VNAME3D )
                 IF ( IERR .NE. 0 ) THEN
 
@@ -748,7 +748,7 @@ C.......   Head of loop:  choose next edit operation.
      &              TRIM( INAME ) // '"'
                     CALL M3WARN( PNAME, 0, 0, MESG )
 
-                END IF              !  ierr nonzero:  NCAPTC() failed
+                END IF              !  ierr nonzero:  NF_PUT_ATT_TEXT() failed
 
             ELSE IF ( CHOICE .EQ. 6 ) THEN      !  KM-based ~~~> M-based
 
@@ -759,7 +759,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 ELSE    !  else not a lat-lon grid
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'XORIG', NCDOUBLE, 1, XORIG3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -769,9 +769,9 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         XORIG3D = 1.0D3 * XORIG3D
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'YORIG', NCDOUBLE, 1, YORIG3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -781,9 +781,9 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         YORIG3D = 1.0D3 * YORIG3D
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                     'XCELL', NCDOUBLE, 1, 1.0D3 * XCELL3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -793,9 +793,9 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         XCELL3D = 1.0D3 * XCELL3D
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
-                    IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                    IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                     'YCELL', NCDOUBLE, 1, 1.0D3 * YCELL3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -805,7 +805,7 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         YCELL3D = 1.0D3 * YCELL3D
-                    END IF      !  if ncapt() failed
+                    END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                 END IF          !  if lat-lon, or not
 
@@ -813,7 +813,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 XORIG = XORIG - 0.5D0 * XCELL3D
 
-                IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'XORIG', NCDOUBLE, 1, XORIG )
 
                 IF ( IERR .NE. 0 ) THEN
@@ -823,11 +823,11 @@ C.......   Head of loop:  choose next edit operation.
                     CALL M3WARN( PNAME, 0, 0, MESG )
                 ELSE
                     XORIG3D = XORIG
-                END IF      !  if ncapt() failed
+                END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
                 YORIG = YORIG - 0.5D0 * YCELL3D
 
-                IERR = NF_PUT_ATT_DOUBLE( FID, NF_GLOBAL,
+                IERR = NF_PUT_ATT_DOUBLE( FID, NCGLOBAL,
      &                             'YORIG', NCDOUBLE, 1, YORIG )
 
                 IF ( IERR .NE. 0 ) THEN
@@ -837,7 +837,7 @@ C.......   Head of loop:  choose next edit operation.
                     CALL M3WARN( PNAME, 0, 0, MESG )
                 ELSE
                     YORIG3D = YORIG
-                END IF      !  if ncapt() failed
+                END IF      !  if NF_PUT_ATT_DOUBLE() failed
 
             ELSE IF ( CHOICE .EQ. 8 ) THEN      !  change grid name
 
@@ -846,7 +846,7 @@ C.......   Head of loop:  choose next edit operation.
 
                 IF ( NAMBUF .NE. GDNAM3D ) THEN
 
-                    IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'GDNAM',
+                    IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'GDNAM',
      &                           NAMLEN3, NAMBUF )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -856,7 +856,7 @@ C.......   Head of loop:  choose next edit operation.
                         CALL M3WARN( PNAME, 0, 0, MESG )
                     ELSE
                         GDNAM3D = NAMBUF
-                    END IF  !  if ncapt() failed
+                    END IF  !  if NF_PUT_ATT_TEXT() failed
 
 
                 END IF  !  if nambuf != gdnam3d
@@ -895,7 +895,7 @@ C.......   Head of loop:  choose next edit operation.
                     FDESC3D( K ) = BLANK
                 END DO
 
-                IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'FILEDESC',
+                IERR = NF_PUT_ATT_TEXT( FID, NCGLOBAL, 'FILEDESC',
      &                       MXDLEN3 * MXDESC3, FDESC3D )
 
                     IF ( IERR .NE. 0 ) THEN
@@ -903,7 +903,7 @@ C.......   Head of loop:  choose next edit operation.
      &                  'Error', IERR, 'changing FDESC3D in "' //
      &                  TRIM( INAME ) // '"'
                         CALL M3WARN( PNAME, 0, 0, MESG )
-                    END IF  !  if ncapt() failed
+                    END IF  !  if NF_PUT_ATT_TEXT() failed
 
             END IF  !  end of choices to be processed
 

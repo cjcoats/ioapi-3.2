@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 51 2017-11-11 19:52:07Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 58 2017-11-12 16:33:22Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 51 2017-11-11 19:52:07Z coats $
+    $Id: NEWSTUFF.html 58 2017-11-12 16:33:22Z coats $
     </EM>
     <HR>
 
@@ -33,7 +33,7 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
-         <LI>  <A HREF = "#nov102017">
+         <LI>  <A HREF = "#nov112017">
                <CODE>INTEGER</CODE>-variable support</A> for <VAR>m3tools</VAR>
                program <VAR>mpastom3</VAR><BR>
                <CODE>INTEGER</CODE>-variable support for <CODE>MODMPASFIO</CODE>
@@ -662,18 +662,22 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> <A NAME = "nov102017">
+<H2> <A NAME = "nov112017">
      MPAS <CODE>INTEGER</CODE>-variable support
 </A></H2>
 
     <BLOCKQUOTE>
     <CODE>INTEGER</CODE>-variable support for <VAR>m3tools</VAR>
-     program <A HREF="MPASTOM3.html"><VAR>mpastom3</VAR></A>
-     <P>
+     program <A HREF="MPASTOM3.html"><VAR>mpastom3</VAR></A>:
+     uses MPAS-cell values (as for <CODE>MPCELLMATX()</CODE>, below)
+    instead of barycentric-linear interpolation.
+    <P>
      
      <CODE>INTEGER</CODE>-variable support for <CODE>MODMPASFIO</CODE>
      generic routine
-     <A HREF="MODMPASFIO.html#interp.html"><CODE>MPINTERP()</CODE></A>
+     <A HREF="MODMPASFIO.html#interp.html"><CODE>MPINTERP()</CODE></A>:
+     uses MPAS-cell values (as for <CODE>MPCELLMATX()</CODE>, below)
+    instead of barycentric-linear interpolation.
      <P>
      
      New &quot;incidence-matrix&quot; generic routine
@@ -6620,7 +6624,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 51 2017-11-11 19:52:07Z coats $
+    $Id: NEWSTUFF.html 58 2017-11-12 16:33:22Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
