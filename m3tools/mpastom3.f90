@@ -2,7 +2,7 @@
 PROGRAM MPASTOM3
 
     !!***********************************************************************
-    !!  Version "$Id: mpastom3.f90 58 2017-11-12 16:33:22Z coats $"
+    !!  Version "$Id: mpastom3.f90 60 2017-11-13 18:09:29Z coats $"
     !!  EDSS/Models-3 M3TOOLS.
     !!  Copyright (c) 2017 UNC Institute for the Environment and Carlie J. Coats, Jr.
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -144,7 +144,7 @@ PROGRAM MPASTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: mpastom3.f90 58 2017-11-12 16:33:22Z coats $',&
+'$Id: mpastom3.f90 60 2017-11-13 18:09:29Z coats $',&
 BLANK, BAR, BLANK
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -396,7 +396,6 @@ BLANK, BAR, BLANK
 
     !!....... Process interpolation:
 
-    CALL M3MESG( BLANK )
     IF ( TFLAG ) THEN       !! time stepped
 
         DO N = REC0, REC1
@@ -404,13 +403,14 @@ BLANK, BAR, BLANK
             JDATE = FDATES( N )
             JTIME = FTIMES( N )
             WRITE( MESG, '( A, I9.7, A, I6.6 )' ) 'Processing ', JDATE, ':', JTIME
+            CALL M3MESG( BLANK )
             CALL M3MESG( MESG )
 
             DO V = 1, NVARS
 
                 IF ( LFLAG ) THEN      !!  if multi-layer
 
-                    IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
+                    IF ( VTYPES( V ) .EQ. M3REAL ) THEN
 
                         IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), MPLAYS, NCELLS, RI3D ) ) THEN
                             EFLAG = .TRUE.
@@ -440,7 +440,7 @@ BLANK, BAR, BLANK
                             EFLAG = .TRUE.
                         END IF
 
-                    ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+                    ELSE IF ( VTYPES( V ) .EQ. M3INT ) THEN
 
                         IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), MPLAYS, NCELLS, II3D ) ) THEN
                             EFLAG = .TRUE.
@@ -462,7 +462,7 @@ BLANK, BAR, BLANK
 
                 ELSE        !!  single-layer
 
-                    IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
+                    IF ( VTYPES( V ) .EQ. M3REAL ) THEN
 
                         IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), NCELLS, RI2D ) ) THEN
                             EFLAG = .TRUE.
@@ -490,7 +490,7 @@ BLANK, BAR, BLANK
                             EFLAG = .TRUE.
                         END IF
 
-                    ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+                    ELSE IF ( VTYPES( V ) .EQ. M3INT ) THEN
 
                         IF ( .NOT.READMPAS( 'MPFILE', N, INAMES(V), NCELLS, II2D ) ) THEN
                             EFLAG = .TRUE.
@@ -516,13 +516,14 @@ BLANK, BAR, BLANK
 
     ELSE       !! time independent
 
+        CALL M3MESG( BLANK )
         CALL M3MESG( 'Processing...' )
 
         DO V = 1, NVARS
 
             IF ( LFLAG ) THEN      !!  if multi-layer
 
-                IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
+                IF ( VTYPES( V ) .EQ. M3REAL ) THEN
 
                     IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), MPLAYS, NCELLS, RI3D ) ) THEN
                         EFLAG = .TRUE.
@@ -553,7 +554,7 @@ BLANK, BAR, BLANK
                         EFLAG = .TRUE.
                     END IF
 
-                ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+                ELSE IF ( VTYPES( V ) .EQ. M3INT ) THEN
 
                     IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), MPLAYS, NCELLS, II3D ) ) THEN
                         EFLAG = .TRUE.
@@ -575,7 +576,7 @@ BLANK, BAR, BLANK
 
             ELSE        !!  else single-layer data
 
-                IF ( MPTYPES( V ) .EQ. M3REAL ) THEN
+                IF ( VTYPES( V ) .EQ. M3REAL ) THEN
 
                     IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), NCELLS, RI2D ) ) THEN
                         EFLAG = .TRUE.
@@ -603,7 +604,7 @@ BLANK, BAR, BLANK
                         EFLAG = .TRUE.
                     END IF
 
-                ELSE IF ( MPTYPES( V ) .EQ. M3INT ) THEN
+                ELSE IF ( VTYPES( V ) .EQ. M3INT ) THEN
 
                     IF ( .NOT.READMPAS( 'MPFILE', INAMES(V), NCELLS, II2D ) ) THEN
                         EFLAG = .TRUE.
