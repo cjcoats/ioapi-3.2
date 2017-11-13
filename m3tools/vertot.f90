@@ -2,7 +2,7 @@
 PROGRAM  VERTOT
 
     !!***********************************************************************
-    !! Version "$Id: vertot.f90 22 2017-09-14 16:31:19Z coats $"
+    !! Version "$Id: vertot.f90 61 2017-11-13 18:15:21Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1992-2002, 2017 Carlie J. Coats, Jr,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems, LLC.,
@@ -10,7 +10,7 @@ PROGRAM  VERTOT
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  103
+    !!  program body starts at line  107
     !!
     !!  FUNCTION:
     !!       For a user-specified GRIDDED Models-3 file and list of variables
@@ -44,6 +44,9 @@ PROGRAM  VERTOT
     !!
     !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNLEN;
     !!      format-cleanup
+    !!
+    !!      Version  09/2017 by CJC for I/O API v3.2:  expand col-row format
+    !!      to I3, to handle larger grids.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -149,7 +152,7 @@ PROGRAM  VERTOT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertot.f90 22 2017-09-14 16:31:19Z coats $',&
+'$Id: vertot.f90 61 2017-11-13 18:15:21Z coats $',&
 ''
 
     IF ( ARGCNT .GT. 1 ) THEN
@@ -528,11 +531,11 @@ CONTAINS    !!==================================================================
 92010   FORMAT ( //5X , 'File:  ', A, 5X, 'Date and time:', I7.7, ':', I6.6, A )
 
 92020   FORMAT ( /5X , 'Variable ', A16,                            &
-                 2( /5X, A, 1PE12.5, A, I2, ',', I2, ',', I2, A ),  &
+                 2( /5X, A, 1PE12.5, A, I3, ',', I3, ',', I3, A ),  &
                  2( /5X, A, 1PE12.5 ) )
 
 92030   FORMAT ( 5X , 'Variable ', A16,                             &
-                 2( /5X, A, 1PE12.5, A, I2, ',', I2, A ),           &
+                 2( /5X, A, 1PE12.5, A, I3, ',', I3, A ),           &
                  2( /5X, A, 1PE12.5 ) )
 
     END SUBROUTINE VERSTEP
