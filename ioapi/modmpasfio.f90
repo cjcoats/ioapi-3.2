@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 59 2017-11-12 16:56:23Z coats $"
+    !!  Version "$Id: modmpasfio.f90 62 2017-11-17 13:25:42Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -33,6 +33,7 @@ MODULE MODMPASFIO
     !!      Version       11/01/2017 by CJC:  fix MPINTERP() generic
     !!      Version       11/11/2017 by CJC:  Add MPCELLMATX() generic, integer-array
     !!          versions of MPINTERP(); OMP-threadsafe FINDCELL()
+    !!      Version       11/11/2017 by CJC:  handle weighting for out-of-grid cases in VERTWT()
     !!...................................................................................
 
     USE MODNCFIO
@@ -462,7 +463,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 59 2017-11-12 16:56:23Z coats $',&
+        'Version $Id: modmpasfio.f90 62 2017-11-17 13:25:42Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -627,7 +628,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 59 2017-11-12 16:56:23Z coats $',&
+        'Version $Id: modmpasfio.f90 62 2017-11-17 13:25:42Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -1690,8 +1691,8 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         LLO = 1
         LHI = 1
         DO L = 1, NLAYS
-            IF ( ZLO .GE. ZGRID( L,II ) )  LLO = L
-            IF ( ZHI .GE. ZGRID( L,II ) )  LHI = L
+            IF ( ZLO .GE. ZGRID( L,II   ) )  LLO = L
+            IF ( ZHI .LE. ZGRID( L,II+1 ) )  LHI = L
             WGHTS( L,NN ) = 0.0
         END DO
 
@@ -1701,6 +1702,9 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DDZ = 1.0 / ( ZHI - ZLO )
+        IF ( ZHI .GT. ZGRID( NLAYS+1,II ) ) THEN
+            ZHI = ZGRID( NLAYS+1,II )
+        END IF
 
         WGHTS( LLO,NN ) = WW * DDZ * ( ZGRID( LLO+1,II ) - ZLO )
         WGHTS( LHI,NN ) = WW * DDZ * ( ZHI  -  ZGRID( LHI-1,II ) )
@@ -1729,26 +1733,18 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL   , INTENT(  OUT) :: WSUMS( NMAX )
 
         INTEGER     LLO, LHI, L
-        REAL        ZLO, ZHI, DDZ
+        REAL        ZLO, ZHI, DDZ, DW
 
         !!......................   begin body of function
 
         ZLO = MIN( Z1, Z2 )
         ZHI = MAX( Z1, Z2 )
 
-        IF ( ZLO .LT. ZGRID(1,II) ) THEN
-            CALL M3EXIT( 'MODMPASFIO/VERTWT', 0, 0, 'Z below bottom of model', 2 )
-        END IF
-
-        IF ( ZHI .GE. ZGRID(NLAYS+1,II) ) THEN
-            CALL M3EXIT( 'MODMPASFIO/VERTWT', 0, 0, 'Z above top of model', 2 )
-        END IF
-
         LLO = 1
         LHI = 1
         DO L = 1, NLAYS
-            IF ( ZLO .GE. ZGRID( L,II ) )  LLO = L
-            IF ( ZHI .GE. ZGRID( L,II ) )  LHI = L
+            IF ( ZLO .GE. ZGRID( L,II   ) )  LLO = L
+            IF ( ZHI .LE. ZGRID( L,II+1 ) )  LHI = L
             WGHTS( L,NN ) = 0.0
         END DO
 
@@ -1761,6 +1757,12 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF
 
         DDZ = 1.0 / ( ZHI - ZLO )
+        IF ( ZHI .GT. ZGRID( NLAYS+1,II ) ) THEN
+            DW  = DDZ * ( ZHI - ZGRID( NLAYS+1,II ) )
+            ZHI = ZGRID( NLAYS+1,II )
+        ELSE
+            DW = 0.0
+        END IF
 
         WGHTS( LLO,NN ) = WW * DDZ * ( ZGRID( LLO+1,II ) - ZLO )
         WGHTS( LHI,NN ) = WW * DDZ * ( ZHI  -  ZGRID( LHI,II ) )
@@ -1771,7 +1773,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ZBOTS( NN ) = ZLO
         ZTOPS( NN ) = ZHI
-        WSUMS( NN ) = WW
+        WSUMS( NN ) = WW - DW
 
         RETURN
 
