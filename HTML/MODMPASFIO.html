@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MODMPASFIO.html 58 2017-11-12 16:33:22Z coats $" -->
+<!-- "$Id: MODMPASFIO.html 63 2017-11-21 14:36:45Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>MODULE MODMPASFIO</TITLE>
 </HEAD>
@@ -1545,7 +1545,7 @@ INITREARTH()</CODE></A></H2>
 
     <BLOCKQUOTE>
 
-    This is a generic <CODE>LOGICAL FUNCTION</CODE> with three forms:
+    This is a generic <CODE>LOGICAL FUNCTION</CODE> with four forms:
 
     </BLOCKQUOTE>
 
@@ -1557,13 +1557,19 @@ INITREARTH()</CODE></A></H2>
     LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, HGT1, LAT2, LON2, HGT2,    &amp;
                                NLAYS, NMAX, ZGRID,                    &amp;
                                NSEGS, CELLS, WGT2D, ZBOTS, ZTOPS, WGT3D )
+    LOGICAL FUNCTION ARC2MPAS( LAT1, LON1, HGT1, LAT2, LON2, HGT2,    &amp;
+                               NLAYS, NMAX, ZGRID,                    &amp;
+                               NSEGS, CELLS, WGT2D,                   &amp;
+                               LAYLO, LAYHI, ZBOTS, ZTOPS, WGT3D )
 
         REAL   , INTENT(IN   ) :: LAT1, LON1, HGT1, LAT2, LON2, HGT2
         INTEGER, INTENT(IN   ) :: NLAYS, NMAX
-        REAL   , INTENT(IN   ) :: ZGRID( NLAYS+1, MPCELLS )
+        REAL   , INTENT(IN   ) :: ZGRID( NLAYS+1,MPCELLS ) !!  layer-surfaces (M a.s.l)
         INTEGER, INTENT(  OUT) :: NSEGS
-        INTEGER, INTENT(  OUT) :: CELLS( NMAX )
-        REAL   , INTENT(  OUT) :: ZBOTS( NMAX )
+        INTEGER, INTENT(  OUT) :: CELLS( NMAX )         !! horizontal-grid cells
+        INTEGER, INTENT(  OUT) :: LAYLO( NMAX )         !! vertical-grid layer-ranges
+        INTEGER, INTENT(  OUT) :: LAYHI( NMAX )
+        REAL   , INTENT(  OUT) :: ZBOTS( NMAX )         !! vertical-grid elevation-ranges (M a.s.l)
         REAL   , INTENT(  OUT) :: ZTOPS( NMAX )
         REAL   , INTENT(  OUT) :: WGT2D( NMAX )         !! horizontal-grid segment-fractions
         REAL   , INTENT(  OUT) :: WGT3D( NLAYS, NMAX )  !! 3-D-grid segment-fractions
@@ -1591,9 +1597,11 @@ INITREARTH()</CODE></A></H2>
     This routine intersects a segment from
     <CODE>(LAT1,LON1[,HGT1])</CODE> to <CODE>(LAT2,LON2[,HGT2])</CODE>
     with either the horizontal (2-D) MPAS grid structure or 3-D
-    (horizontal+vertical) grid structure, and returns the  corresponding
-    weights for allocating the segment to the cells it intersects (e.g.,
-    for use in SMOKE).
+    (horizontal+vertical) grid structure, and returns the corresponding
+    weights and optionally the layer- and elevation-ranges
+    <CODE>[LAYLO:LAYHI]</CODE> and <CODE>[ZBOTS:ZTOPS]</CODE> for
+    allocating the segment to the cells it intersects (e.g., for use in
+    SMOKE).
     <P>
 
     The last form is the &quot;instrumented 3-D&quot; variant, which provides

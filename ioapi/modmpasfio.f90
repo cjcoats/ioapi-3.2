@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 62 2017-11-17 13:25:42Z coats $"
+    !!  Version "$Id: modmpasfio.f90 63 2017-11-21 14:36:45Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -90,7 +90,7 @@ MODULE MODMPASFIO
     END INTERFACE WRITEMPAS
 
     INTERFACE ARC2MPAS
-        MODULE PROCEDURE  ARC2MPAS2D, ARC2MPAS3D, ARC2MPAS3D1
+        MODULE PROCEDURE  ARC2MPAS2D, ARC2MPAS3D, ARC2MPAS3D1, ARC2MPAS3D2
     END INTERFACE ARC2MPAS
 
     INTERFACE MPINTERP
@@ -463,7 +463,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 62 2017-11-17 13:25:42Z coats $',&
+        'Version $Id: modmpasfio.f90 63 2017-11-21 14:36:45Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -628,7 +628,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 62 2017-11-17 13:25:42Z coats $',&
+        'Version $Id: modmpasfio.f90 63 2017-11-21 14:36:45Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -1537,7 +1537,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!.......................................................................
-    !!  for generic:  instrumented 3D version
+    !!  for generic:  instrumented 3D versions
     !!.......................................................................
 
     LOGICAL FUNCTION ARC2MPAS3D1( ALAT, ALON, AHGT, ZLAT, ZLON, ZHGT,    &
@@ -1667,6 +1667,138 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     END FUNCTION ARC2MPAS3D1
 
+    !!.......................................................................
+
+    LOGICAL FUNCTION ARC2MPAS3D2( ALAT, ALON, AHGT, ZLAT, ZLON, ZHGT,   &
+                                  NLAYS, NMAX, ZGRID,                   &
+                                  NSEGS, CELLS, LAYLO, LAYHI,           &
+                                  WGHTS, ZBOTS, ZTOPS, WSUMS )
+
+        REAL   , INTENT(IN   ) :: ALAT, ALON, AHGT, ZLAT, ZLON, ZHGT
+        INTEGER, INTENT(IN   ) :: NLAYS, NMAX
+        REAL   , INTENT(IN   ) :: ZGRID( NLAYS+1, MPCELLS )
+        INTEGER, INTENT(  OUT) :: NSEGS
+        INTEGER, INTENT(  OUT) :: CELLS( NMAX )
+        INTEGER, INTENT(  OUT) :: LAYLO( NMAX )
+        INTEGER, INTENT(  OUT) :: LAYHI( NMAX )
+        REAL   , INTENT(  OUT) :: WGHTS( NLAYS, NMAX )
+        REAL   , INTENT(  OUT) :: ZBOTS( NMAX )
+        REAL   , INTENT(  OUT) :: ZTOPS( NMAX )
+        REAL   , INTENT(  OUT) :: WSUMS( NMAX )
+
+        REAL  , PARAMETER :: EPS = 1.0D-10
+
+        INTEGER     IA, IZ, II
+        INTEGER     I, J, K, KK, L, M, N, NN
+        REAL        DARC
+        REAL        XX, YY, ZZ, XXX, YYY, ZZZ, X1, Y1, Z1, X2, Y2, Z2
+        REAL        A, B, C, D, E, F, DET, U, V, WW
+
+        !!......................   begin body of function  ARC2MPAS3D
+
+        IF ( .NOT.INITFLAG ) THEN
+            CALL M3MESG( 'MODMPASFIO/ARC2MPAS3D():  must call INITMPGRID() before ARC2MPAS3D()' )
+            ARC2MPAS3D2 = .FALSE.
+            RETURN
+        END IF
+
+        IA   = FINDCELL( ALAT, ALON )
+        IZ   = FINDCELL( ZLAT, ZLON )
+        DARC = SPHEREDIST( ALAT, ALON, ZLAT, ZLON )
+
+        IF ( IA .EQ. IZ ) THEN
+            NSEGS      = 1
+            CELLS( 1 ) = IA
+            CALL VERTWT2( AHGT, ZHGT, 1.0, IA, 1, NLAYS, NMAX, ZGRID, WGHTS, LAYLO, LAYHI, ZBOTS, ZTOPS, WSUMS )
+            ARC2MPAS3D2 = .TRUE.
+            RETURN
+        END IF
+
+        YY = ALAT
+        XX = ALON
+        ZZ = AHGT
+        II = IA             !!  current cell-index
+        KK = -9999          !!  last edge-index
+
+        DO NN = 1, 999999999    !!  loop finding intersections of current arc with current-cell edges;
+                                !!  terminates when final end-point is found in a cell.
+            IF ( NN .GT. NMAX ) THEN
+                CALL M3MESG( 'MODMPASFIO/ARC2MPAS3D():  output-array overflow; increase NMAX' )
+                ARC2MPAS3D2 = .FALSE.
+                RETURN
+            END IF
+
+            DO J = 1, NBNDYE( II )
+
+                N  = BNDYCELL( J,II )       !! <ZLAT,ZLON> in this bdy-cell?
+                IF ( N .EQ. 0 )  CYCLE
+                IF ( N .EQ. IZ ) THEN
+                    NSEGS       = NN
+                    CELLS( NN ) = N
+                    WW          = SPHEREDIST( YY, XX, ZLAT, ZLON ) / DARC
+                    CALL VERTWT2( ZZ, ZHGT, WW, II, NN, NLAYS, NMAX, ZGRID, WGHTS, LAYLO, LAYHI, ZBOTS, ZTOPS, WSUMS )
+                    ARC2MPAS3D2 = .TRUE.
+                    RETURN
+                END IF
+
+                K  = BNDYEDGE( J,II )
+                IF ( K .EQ. KK ) CYCLE      !!  skip the edge we're coming from, if any
+
+                L  = EVRTXS( 1,K )
+                M  = EVRTXS( 2,K )
+                X1 = ALONV( L )
+                Y1 = ALONV( L )
+                X2 = ALONV( M )
+                Y2 = ALONV( M )
+
+                !!  Solve line-intersection system below, where we need
+                !!  0 < u < 1, 0 < v < 1 for the intersection=point to be on this edge
+                !!     (x2 - x1) u + (zlon - xx) v = xx - x1    :: Au + Bv = E
+                !!     (y2 - y1) u + (zlat - yy) v = yy - y1    :: Cu + Dv = F
+
+                A = X2 - X1
+                B = XX - ZLON
+                C = Y2 - Y1
+                D = YY - ZLAT
+                E = XX - X1
+                F = YY - Y1
+
+                DET = A*D - B*C
+                IF ( ABS( DET ) .LT. EPS ) CYCLE
+
+                U = ( E*C - F*A ) / DET
+                V = ( E*D - F*B ) / DET
+
+                IF ( U .GE. 0.0 .AND. U .LE. 1.0 .AND.    &
+                     V .GE. 0.0 .AND. V .LE. 1.0 )  THEN
+
+                    XXX = X1 + V * A
+                    YYY = Y1 + V * C
+                    ZZZ = ZZ + V * ( ZHGT - ZZ )
+                    CELLS( NN ) = N
+                    WW          = SPHEREDIST( YY, XX, YYY, XXX ) / DARC
+                    CALL VERTWT2( ZZ, ZZZ, WW, I, NN, NLAYS, NMAX, ZGRID, WGHTS, LAYLO, LAYHI, ZBOTS, ZTOPS, WSUMS )
+                    II          = N     !!  this cell
+                    KK          = K     !!  this edge
+                    XX          = XXX
+                    YY          = YYY
+                    ZZ          = ZZZ
+
+                    EXIT        !!  to next-cell intersection-problem
+
+                END IF
+
+            END DO      !!  end loop on edges for this cell
+
+        END DO      !!  end loop on cells
+
+        !!  if you get to here:  did not find the end <ZLAT,ZLON> of this arc within
+
+        ARC2MPAS3D2 = .FALSE.
+        RETURN
+
+    END FUNCTION ARC2MPAS3D2
+
 
     !!.......................................................................
     !!  Allocate the Z-values Z1:Z2 to the vertical column at cell II
@@ -1719,7 +1851,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     !!.......................................................................
-    !!  "Instrumented" version VERTWT1
+    !!  "Instrumented" versions VERTWT1, VERTWT2
     !!.......................................................................
 
     SUBROUTINE VERTWT1( Z1, Z2, WW, II, NN, NLAYS, NMAX, ZGRID, WGHTS, ZBOTS, ZTOPS, WSUMS )
@@ -1778,6 +1910,69 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         RETURN
 
     END SUBROUTINE VERTWT1
+
+    !!.......................................................................
+
+    SUBROUTINE VERTWT2( Z1, Z2, WW, II, NN, NLAYS, NMAX, ZGRID, WGHTS, LAYLO, LAYHI, ZBOTS, ZTOPS, WSUMS )
+
+        REAL   , INTENT(IN   ) :: Z1, Z2, WW
+        INTEGER, INTENT(IN   ) :: II, NN, NLAYS, NMAX
+        REAL   , INTENT(IN   ) :: ZGRID( NLAYS+1, MPCELLS )
+        REAL   , INTENT(  OUT) :: WGHTS( NLAYS  , NMAX )
+        INTEGER, INTENT(  OUT) :: LAYLO( NMAX )
+        INTEGER, INTENT(  OUT) :: LAYHI( NMAX )
+        REAL   , INTENT(  OUT) :: ZBOTS( NMAX )
+        REAL   , INTENT(  OUT) :: ZTOPS( NMAX )
+        REAL   , INTENT(  OUT) :: WSUMS( NMAX )
+
+        INTEGER     LLO, LHI, L
+        REAL        ZLO, ZHI, DDZ, DW
+
+        !!......................   begin body of function
+
+        ZLO = MIN( Z1, Z2 )
+        ZHI = MAX( Z1, Z2 )
+
+        LLO = 1
+        LHI = 1
+        DO L = 1, NLAYS
+            IF ( ZLO .GE. ZGRID( L,II   ) )  LLO = L
+            IF ( ZHI .LE. ZGRID( L,II+1 ) )  LHI = L
+            WGHTS( L,NN ) = 0.0
+        END DO
+
+        IF ( LLO .EQ. LHI ) THEN
+            WGHTS( LLO,NN ) = WW
+            ZBOTS( NN ) = ZLO
+            ZTOPS( NN ) = ZHI
+            WSUMS( NN ) = WW
+            RETURN
+        END IF
+
+        DDZ = 1.0 / ( ZHI - ZLO )
+        IF ( ZHI .GT. ZGRID( NLAYS+1,II ) ) THEN
+            DW  = DDZ * ( ZHI - ZGRID( NLAYS+1,II ) )
+            ZHI = ZGRID( NLAYS+1,II )
+        ELSE
+            DW = 0.0
+        END IF
+
+        WGHTS( LLO,NN ) = WW * DDZ * ( ZGRID( LLO+1,II ) - ZLO )
+        WGHTS( LHI,NN ) = WW * DDZ * ( ZHI  -  ZGRID( LHI,II ) )
+
+        DO L = LLO+1, LHI-1
+            WGHTS( L,NN ) = WW * DDZ * ( ZGRID( L+1,II ) - ZGRID( L,II ) )
+        END DO
+
+        LAYLO( NN ) = LLO
+        LAYHI( NN ) = LHI
+        ZBOTS( NN ) = ZLO
+        ZTOPS( NN ) = ZHI
+        WSUMS( NN ) = WW - DW
+
+        RETURN
+
+    END SUBROUTINE VERTWT2
 
 
     !!.......................................................................
