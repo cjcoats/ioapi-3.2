@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 65 2017-11-22 17:16:55Z coats $"
+    !!  Version "$Id: modmpasfio.f90 66 2017-11-22 19:05:32Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -463,7 +463,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 65 2017-11-22 17:16:55Z coats $',&
+        'Version $Id: modmpasfio.f90 66 2017-11-22 19:05:32Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -628,7 +628,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 65 2017-11-22 17:16:55Z coats $',&
+        'Version $Id: modmpasfio.f90 66 2017-11-22 19:05:32Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -1720,7 +1720,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         II = IA             !!  current cell-index
         KK = -9999          !!  last edge-index
 
-        DO NN = 1, 999999999    !!  loop finding intersections of current arc with current-cell edges;
+NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc with current-cell edges;
                                 !!  terminates when final end-point is found in a cell.
             IF ( NN .GT. NMAX ) THEN
                 CALL M3MESG( 'MODMPASFIO/ARC2MPAS3D():  output-array overflow; increase NMAX' )
@@ -1784,13 +1784,15 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                     YY          = YYY
                     ZZ          = ZZZ
 
-                    EXIT        !!  to next-cell intersection-problem
+                    CYCLE NNLOOP    !!  to next-cell intersection-problem
 
                 END IF
 
             END DO      !!  end loop on edges for this cell
+            
+            EXIT
 
-        END DO      !!  end loop on cells
+        END DO NNLOOP     !!  end loop on cells
 
         !!  if you get to here:  did not find the end <ZLAT,ZLON> of this arc within
 
