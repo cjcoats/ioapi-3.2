@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 58 2017-11-12 16:33:22Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 68 2017-11-27 16:00:04Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 58 2017-11-12 16:33:22Z coats $
+    $Id: NEWSTUFF.html 68 2017-11-27 16:00:04Z coats $
     </EM>
     <HR>
 
@@ -32,6 +32,10 @@
     <UL>
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
+
+         <LI>  <A HREF = "#nov272017">
+               Bug-fix by Jeff Vukovich</A> in 
+               <A HREF = "UNGRIDB.html"><CODE>UNGRIDB()</CODE></A>.
 
          <LI>  <A HREF = "#nov112017">
                <CODE>INTEGER</CODE>-variable support</A> for <VAR>m3tools</VAR>
@@ -653,6 +657,28 @@
         % nm libnetcdff.a | grep ncclos<BR>
         0000000000001440 T ncclos_
     </VAR></BLOCKQUOTE>
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "nov272017">
+     Bug-fix in <CODE>UNGRIDB()</CODE>.
+</A></H2>
+
+    <BLOCKQUOTE>
+    Jeff Vukovich (US EPA) reports a missing line
+    <BLOCKQUOTE><CODE>
+    CU( 4,S ) =  X * Y
+    </CODE></BLOCKQUOTE>
+    in the I/O&nbsp;API-3.2 version of 
+    <A HREF = "UNGRIDB.html"><CODE>UNGRIDB()</CODE></A>.
+    <P>
+    Now fixed.
     <P>
     </BLOCKQUOTE>
 
@@ -6624,7 +6650,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 58 2017-11-12 16:33:22Z coats $
+    $Id: NEWSTUFF.html 68 2017-11-27 16:00:04Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

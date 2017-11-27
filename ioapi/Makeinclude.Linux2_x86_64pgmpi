@@ -31,7 +31,7 @@
 
 AR   = ar
 CC   = mpicc
-FC   = mpi90
+FC   = mpif90
 M4   = m4
 CPP  = cpp
 LINK = $(CC)

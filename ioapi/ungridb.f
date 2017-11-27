@@ -3,7 +3,7 @@
      &                       NPTS, XLOC, YLOC, NU, CU )
 
       !!***********************************************************************
-      !! Version "$Id: ungridb.f 328 2016-03-08 16:24:31Z coats $"
+      !! Version "$Id: ungridb.f 68 2017-11-27 16:00:04Z coats $"
       !! EDSS/Models-3 I/O API.
       !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
       !! (C) 2003-2010 by Baron Advanced Meteorological Systems, and
@@ -11,11 +11,11 @@
       !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
       !! See file "LGPL.txt" for conditions of use.
       !!.........................................................................
-      !!  subroutine UNGRIDBS1 body starts at line   77:  single-precision 1D inputs
-      !!  subroutine UNGRIDBS2 body starts at line  146:  single-precision 2D inputs
-      !!  subroutine UNGRIDBD1 body starts at line  250:  double-precision 1D inputs
-      !!  subroutine UNGRIDBD2 body starts at line  350:  double-precision 2D inputs
-      !!  subroutine UNGRIDB   body starts at line  456:  fall-back for non-"USE M3UTILIO"
+      !!  subroutine UNGRIDBS1 body starts at line   79:  single-precision 1D inputs
+      !!  subroutine UNGRIDBS2 body starts at line  149:  single-precision 2D inputs
+      !!  subroutine UNGRIDBD1 body starts at line  254:  double-precision 1D inputs
+      !!  subroutine UNGRIDBD2 body starts at line  355:  double-precision 2D inputs
+      !!  subroutine UNGRIDB   body starts at line  461:  fall-back for non-"USE M3UTILIO"
       !!
       !!  FUNCTION:
       !!    computes "ungridding" matrices to be used by BMATVEC() and BILIN(),
@@ -45,6 +45,7 @@
       !!    Version  12/2014 by CJC for I/O API v3.2:  multiple versions
       !!        with M3UTILIO generic interface UNGRIDB()
       !!    Version  03/2016 by CJC:  Add UNGRIDB() for backwards compatibility
+      !!    Bug-fix  11/2017 by JKV:  Bug-fix from Jeff Vukovich
       !!***********************************************************************
 
       IMPLICIT NONE
@@ -134,6 +135,7 @@
              CU( 1,S ) =  P * Q
              CU( 2,S ) =  X * Q
              CU( 3,S ) =  P * Y
+             CU( 4,S ) =  X * Y
 
         END DO          !  end matrix computation loop on point sources
 
@@ -237,6 +239,7 @@
              CU( 1,S ) =  P * Q
              CU( 2,S ) =  X * Q
              CU( 3,S ) =  P * Y
+             CU( 4,S ) =  X * Y
 
         END DO          !  end matrix computation loop on point sources
         END DO          !  end matrix computation loop on point sources
@@ -338,6 +341,7 @@
              CU( 1,S ) =  P * Q
              CU( 2,S ) =  X * Q
              CU( 3,S ) =  P * Y
+             CU( 4,S ) =  X * Y
 
         END DO          !  end matrix computation loop on point sources
 
@@ -441,6 +445,7 @@
              CU( 1,S ) =  P * Q
              CU( 2,S ) =  X * Q
              CU( 3,S ) =  P * Y
+             CU( 4,S ) =  X * Y
 
         END DO          !  end matrix computation loop on point sources
         END DO          !  end matrix computation loop on point sources
