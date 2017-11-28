@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: UNGRIDB.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: UNGRIDB.html 69 2017-11-28 17:13:07Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> UNGRIDB() and UNGRIDI()</TITLE>
 </HEAD>
@@ -153,12 +153,12 @@
 <H2> Summary: </H2>
 
     For I/O&nbsp;API Version&nbsp;3.2 and later, generic versions of
-    these routines are declared in <VAR>MODULE M3UTILIO</VAR>, for which the input arguments 
-    <VAR>XLOC</VAR> and <VAR>YLOC</VAR> are either 1-D or 2D, and are
-    either <VAR>REAL</VAR> or  <VAR>REAL*8</VAR>.  Routines
-    <CODE>UNGRIDBS1()</CODE> and <CODE>UNGRIDIS1()</CODE> (which
-    have 1-D single-precision location-arguments) correspond to the
-    routines from I/O&nbsp;API Version&nbsp;3.1 and earlier.
+    these routines are declared in <VAR>MODULE M3UTILIO</VAR>, for which
+    the input arguments  <VAR>XLOC</VAR> and <VAR>YLOC</VAR> are either
+    1-D or 2D, and are either <VAR>REAL</VAR> or  <VAR>REAL*8</VAR>. 
+    Routines <CODE>UNGRIDBS1()</CODE> and <CODE>UNGRIDIS1()</CODE>
+    (which have 1-D single-precision location-arguments) correspond to
+    the routines from I/O&nbsp;API Version&nbsp;3.1 and earlier.
     <P>
 
     <CODE>UNGRIDB()</CODE> computes &quot;ungridding&quot; matrices used
@@ -170,7 +170,13 @@
     </BLOCKQUOTE>
     More detail on the computation of these coefficients, etc., is
     given in the <A HREF = "BMATVEC.html">section on
-    <CODE>BMATVEC()</CODE></A>.
+    <CODE>BMATVEC()</CODE></A>.<BR>
+    
+    Note that <STRONG>it is the responsibility of the caller to ensure
+    that the points <VAR>&lt;XLOC,YLOC&gt;</VAR> are in the grid; if
+    they are not, the code will make a &quot;best effort&quot; using 
+    extend-by-constant.
+    </STRONG>
     <P> 
 
     <CODE>UNGRIDI()</CODE> computes &quot;<EM>incidence matrix</EM>
