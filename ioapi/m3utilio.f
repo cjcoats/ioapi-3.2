@@ -2,7 +2,7 @@
         MODULE M3UTILIO
 
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !! Version "$Id: m3utilio.f 429 2016-10-06 18:13:54Z coats $"
+        !! Version "$Id: m3utilio.f 70 2017-11-30 15:05:43Z coats $"
         !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
         !! (c) 2007-2013 Carlie J. Coats, Jr., and
         !! (C) 2014 UNC Institute for the Environment.
@@ -61,7 +61,7 @@
             INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
             CHARACTER*72, PRIVATE, SAVE :: ID =
-     &'$Id:: m3utilio.f 429 2016-10-06 18:13:54Z coats                $'
+     &'$Id:: m3utilio.f 70 2017-11-30 15:05:43Z coats                 $'
 
 
             !!........  PUBLIC Routines:
@@ -1378,6 +1378,66 @@
                 REAL   , INTENT(  OUT) :: CU( 4,NCOLS2*NROWS2 ) !  coefficients
                 END SUBROUTINE  UNGRIDBD2
 
+                SUBROUTINE  UNGRIDBES1( NCOLS1, NROWS1, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NPTS, XLOC, YLOC,
+     &                                 NU, CU, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1	!  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG	!  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL	!  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NPTS	        !  number of (point-source) locations
+                REAL   , INTENT(IN   ) :: XLOC( NPTS ) 	!  X point coordinates
+                REAL   , INTENT(IN   ) :: YLOC( NPTS ) 	!  Y point coordinates
+                INTEGER, INTENT(  OUT) :: NU( 4,NPTS )  !  single-indexed subscripts into grid
+                REAL   , INTENT(  OUT) :: CU( 4,NPTS )  !  coefficients
+                INTEGER, INTENT(  OUT) :: IERR          !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDBES1
+
+                SUBROUTINE  UNGRIDBES2( NCOLS1, NROWS1, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NCOLS2, NROWS2, XLOC, YLOC,
+     &                                 NU, CU, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1        !  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG          !  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL          !  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2        !  dims for grid locations
+                REAL   , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
+                REAL   , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
+                INTEGER, INTENT(  OUT) :: NU( 4,NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
+                REAL   , INTENT(  OUT) :: CU( 4,NCOLS2*NROWS2 ) !  coefficients
+                INTEGER, INTENT(  OUT) :: IERR                  !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDBES2
+
+                SUBROUTINE  UNGRIDBED1( NCOLS1, NROWS1, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NPTS, XLOC, YLOC,
+     &                                 NU, CU, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1	!  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG	!  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL	!  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NPTS	        !  number of (point-source) locations
+                REAL*8 , INTENT(IN   ) :: XLOC( NPTS ) 	!  X point coordinates
+                REAL*8 , INTENT(IN   ) :: YLOC( NPTS ) 	!  Y point coordinates
+                INTEGER, INTENT(  OUT) :: NU( 4,NPTS )  !  single-indexed subscripts into grid
+                REAL   , INTENT(  OUT) :: CU( 4,NPTS )  !  coefficients
+                INTEGER, INTENT(  OUT) :: IERR          !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDBED1
+
+                SUBROUTINE  UNGRIDBED2( NCOLS1, NROWS1, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NCOLS2, NROWS2, XLOC, YLOC,
+     &                                 NU, CU, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1        !  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG          !  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL          !  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2        !  dims for grid locations
+                REAL*8 , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
+                REAL*8 , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
+                INTEGER, INTENT(  OUT) :: NU( 4,NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
+                REAL   , INTENT(  OUT) :: CU( 4,NCOLS2*NROWS2 ) !  coefficients
+                INTEGER, INTENT(  OUT) :: IERR                  !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDBED2
+
             END INTERFACE       !!  ungridb
 
             INTERFACE UNGRIDI
@@ -1433,6 +1493,62 @@
                 REAL*8 , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
                 INTEGER, INTENT(  OUT) ::   NX( NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
                 END SUBROUTINE  UNGRIDID2
+
+                SUBROUTINE  UNGRIDIES1( NCOLS, NROWS, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NPTS, XLOC, YLOC,
+     &                                 NX, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS, NROWS	!  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG	!  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL	!  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NPTS	        !  number of (point-source) locations
+                REAL   , INTENT(IN   ) :: XLOC( NPTS ) 	!  X point coordinates
+                REAL   , INTENT(IN   ) :: YLOC( NPTS ) 	!  Y point coordinates
+                INTEGER, INTENT(  OUT) :: NX( NPTS )    !  single-indexed subscripts into grid
+                INTEGER, INTENT(  OUT) :: IERR          !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDIES1
+
+                SUBROUTINE  UNGRIDIES2( NCOLS, NROWS, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NCOLS2, NROWS2, XLOC, YLOC,
+     &                                 NX, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS, NROWS	    !  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG	    !  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL	    !  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2    !  number of (point-source) locations
+                REAL   , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
+                REAL   , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
+                INTEGER, INTENT(  OUT) ::   NX( NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
+                INTEGER, INTENT(  OUT) :: IERR                  !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDIES2
+
+                SUBROUTINE  UNGRIDIED1( NCOLS, NROWS, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NPTS, XLOC, YLOC,
+     &                                 NX, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS, NROWS	!  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG	!  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL	!  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NPTS	        !  number of (point-source) locations
+                REAL*8 , INTENT(IN   ) :: XLOC( NPTS ) 	!  X point coordinates
+                REAL*8 , INTENT(IN   ) :: YLOC( NPTS ) 	!  Y point coordinates
+                INTEGER, INTENT(  OUT) :: NX( NPTS )    !  single-indexed subscripts into grid
+                INTEGER, INTENT(  OUT) :: IERR          !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDIED1
+
+                SUBROUTINE  UNGRIDIED2( NCOLS, NROWS, XORIG, YORIG,
+     &                                 XCELL, YCELL,
+     &                                 NCOLS2, NROWS2, XLOC, YLOC,
+     &                                 NX, IERR )
+                INTEGER, INTENT(IN   ) :: NCOLS, NROWS	    !  number of grid columns, rows
+                REAL*8 , INTENT(IN   ) :: XORIG, YORIG	    !  X,Y coords of LL grid corner
+                REAL*8 , INTENT(IN   ) :: XCELL, YCELL	    !  X,Y direction cell size
+                INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2    !  number of (point-source) locations
+                REAL*8 , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
+                REAL*8 , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
+                INTEGER, INTENT(  OUT) ::   NX( NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
+                INTEGER, INTENT(  OUT) :: IERR                  !  error-count:  0=="no errors"
+                END SUBROUTINE  UNGRIDIED2
 
             END INTERFACE       !!  ungridi
 

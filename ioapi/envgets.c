@@ -1,5 +1,5 @@
 /**********************************************************************
-VERSION "$Id: envgets.c 100 2015-01-16 16:52:16Z coats $"
+VERSION "$Id: envgets.c 1 2017-06-10 18:05:20Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -28,34 +28,34 @@ COPYRIGHT
                   case sensitivity handled correctly
 
   C                     bindings start at line   69:
-        envync()    at line   87
-        envintc()   at line  165
-        envrealc()  at line  221
-        envdblec()  at line  277
-        envstrc()   at line  334
+        envync()    at line   94
+        envintc()   at line  171
+        envrealc()  at line  227
+        envdblec()  at line  283
+        envstrc()   at line  340
   Feldman-style Fortran bindings start at line  401
-        ENVYN()     at line  529
-        ENVINT()    at line  552
-        ENVREAL()   at line  575
-        ENVDBLE()   at line  600
-        ENVSTR()    at line  625
-        SETENVVAR() at line  657
+        ENVYN()     at line  547
+        ENVINT()    at line  570
+        ENVREAL()   at line  629
+        ENVDBLE()   at line  691
+        ENVSTR()    at line  753
+        SETENVVAR() at line  785
         
   WIN32-style   Fortran bindings start at line  689
-        ENVYN()     at line  788
-        ENVINT()    at line  810
-        ENVREAL()   at line  833
-        ENVDBLE()   at line  855
-        ENVSTR()    at line  877
-        SETENVVAR() at line  906
+        ENVYN()     at line  916
+        ENVINT()    at line  938
+        ENVREAL()   at line  995
+        ENVDBLE()   at line 1052
+        ENVSTR()    at line 1110
+        SETENVVAR() at line 1138
 
   Cray-style    Fortran bindings start at line  936
-        ENVYN()     at line 1038
-        ENVINT()    at line 1063
-        ENVREAL()   at line 1084
-        ENVDBLE()   at line 1107
-        ENVSTR()    at line 1130
-        SETENVVAR() at line 1158
+        ENVYN()     at line 1270
+        ENVINT()    at line 1295
+        ENVREAL()   at line 1350
+        ENVDBLE()   at line 1408
+        ENVSTR()    at line 1485
+        SETENVVAR() at line 1493
 
 REVISION HISTORY:
     Prototype 3/1995 by CJC

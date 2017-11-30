@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: UNGRIDB.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: UNGRIDB.html 70 2017-11-30 15:05:43Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> UNGRIDB() and UNGRIDI()</TITLE>
 </HEAD>
@@ -23,128 +23,76 @@
     <VAR>UNGRIDI()</VAR> are Fortran-90 generic routines with optionally
     1-D or 2-D <CODE>REAL</CODE> or <CODE>REAL*8</CODE>
     location-arguments, with <CODE>INTERFACE</CODE>s defined in
-    <CODE>MODULE M3UTILIO</CODE>.
+    <CODE>MODULE M3UTILIO</CODE>.<BR>
+    12/1/2017:  Added forms with <CODE>IERR</CODE> argument for I/O&nbsp;API 3.2:
     <P>
 
-    For previous I/O&nbsp;API versions, <CODE>UNGRIDB()</CODE> has the
-    same argument list as I/O&nbsp;API Version&nbsp;3.2
-    <CODE>UNGRIDBS1()</CODE>, and <CODE>UNGRIDI()</CODE> is the same as
-    I/O&nbsp;API Version&nbsp;3.2 <CODE>UNGRIDIS1()</CODE>, but do not
+    For previous I/O&nbsp;API versions, <CODE>UNGRIDB()</CODE> and
+    <CODE>UNGRIDB()</CODE>  have the same argument list as I/O&nbsp;API
+    Version&nbsp;3.2 single-indexed <CODE>REAL</CODE> forms, but do not
     have <CODE>INTERFACE</CODE>s (hence Fortran-77 style argument
     behavior).
     </BLOCKQUOTE>
 <PRE>
-    SUBROUTINE UNGRIDB( NCOLS, NROWS, XORIG, YORIG, XCELL, YCELL, ..., NU, CU ):
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCR, YLOCR, NU1, CU1 )
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCD, YLOCD, NU1, CU1 )
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDR, YGRDR, NU2, CU2 )
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDD, YGRDD, NU2, CU2 )
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCR, YLOCR, NU1, CU1, IERR )
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCD, YLOCD, NU1, CU1, IERR )
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDR, YGRDR, NU2, CU2, IERR )
+    SUBROUTINE UNGRIDB( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDD, YGRDD, NU2, CU2, IERR )
 
-        SUBROUTINE  UNGRIDBS1( NCOLS1, NROWS1, XORIG, YORIG,    &amp;
-                               XCELL, YCELL,                    &amp;
-                               NPTS, XLOC, YLOC,                &amp;
-                               NU, CU )
-        INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1	!  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	    !  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	    !  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NPTS	            !  number of (point-source) locations
-        REAL   , INTENT(IN   ) :: XLOC( NPTS ) 	    !  X point coordinates
-        REAL   , INTENT(IN   ) :: YLOC( NPTS ) 	    !  Y point coordinates
-        INTEGER, INTENT(  OUT) :: NU( 4,NPTS )      !  single-indexed subscripts into grid
-        REAL   , INTENT(  OUT) :: CU( 4,NPTS )      !  coefficients
-        END SUBROUTINE  UNGRIDBS1
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCR, YLOCR, NX1 )
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCD, YLOCD, NX1 )
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDR, YGRDR, NX2 )
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDD, YGRDD, NX2 )
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCR, YLOCR, NX1, IERR )
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NPTS2, XLOCD, YLOCD, NX1, IERR )
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDR, YGRDR, NX2, IERR )
+    SUBROUTINE UNGRIDI( NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL,   &amp;
+                        NCOL2, NROW2, XGRDD, YGRDD, NX2, IERR )
 
-        SUBROUTINE  UNGRIDBS2( NCOLS1, NROWS1, XORIG, YORIG,    &amp;
-                               XCELL, YCELL,                    &amp;
-                               NCOLS2, NROWS2, XLOC, YLOC,      &amp;
-                               NU, CU )
-        INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1        !  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG          !  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL          !  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2        !  dims for grid locations
-        REAL   , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
-        REAL   , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
-        INTEGER, INTENT(  OUT) :: NU( 4,NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
-        REAL   , INTENT(  OUT) :: CU( 4,NCOLS2*NROWS2 ) !  coefficients
-        END SUBROUTINE  UNGRIDBS2
+        INTEGER, INTENT(IN   ) :: NCOL1, NROW1
+        REAL*8 , INTENT(IN   ) :: XORIG, YORIG, XCELL, YCELL
+        INTEGER, INTENT(IN   ) :: NPTS2, NCOL2, NROW2
+        REAL   , INTENT(IN   ) :: XLOCR( NPTS2 ),       YLOCR( NPTS2 )
+        REAL   , INTENT(IN   ) :: XGRDR( NCOL1,NROW1 ), YGRDR( NCOL1,NROW1 )
+        REAL*8 , INTENT(IN   ) :: XLOCD( NPTS ),        YLOCD( NPTS2 )
+        REAL*8 , INTENT(IN   ) :: XGRDD( NCOL1,NROW1 ), YGRDD( NCOL1,NROW1 )
+        INTEGER, INTENT(  OUT) :: NU1( 4,NPTS2 )
+        INTEGER, INTENT(  OUT) :: NU2( 4,NCOL2,NROW2 )
+        INTEGER, INTENT(  OUT) :: NX1( 4,NPTS2 )
+        INTEGER, INTENT(  OUT) :: NX2( 4,NCOL2,NROW2 )
+        REAL   , INTENT(  OUT) :: CU1( 4,NPTS2 )
+        REAL   , INTENT(  OUT) :: CU2( 4,NCOL2,NROW2 )
+        INTEGER, INTENT(  OUT) :: IERR
 
-        SUBROUTINE  UNGRIDBD1( NCOLS1, NROWS1, XORIG, YORIG,    &amp;
-                               XCELL, YCELL,                    &amp;
-                               NPTS, XLOC, YLOC,                &amp;
-                               NU, CU )
-        INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1	!  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	    !  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	    !  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NPTS	            !  number of (point-source) locations
-        REAL*8 , INTENT(IN   ) :: XLOC( NPTS ) 	    !  X point coordinates
-        REAL*8 , INTENT(IN   ) :: YLOC( NPTS ) 	    !  Y point coordinates
-        INTEGER, INTENT(  OUT) :: NU( 4,NPTS )      !  single-indexed subscripts into grid
-        REAL   , INTENT(  OUT) :: CU( 4,NPTS )      !  coefficients
-        END SUBROUTINE  UNGRIDBD1
-
-        SUBROUTINE  UNGRIDBD2( NCOLS1, NROWS1, XORIG, YORIG,    &amp;
-                               XCELL, YCELL,                    &amp;
-                               NCOLS2, NROWS2, XLOC,            &amp;YLOC,
-                               NU, CU )
-        INTEGER, INTENT(IN   ) :: NCOLS1, NROWS1        !  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG          !  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL          !  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2        !  dims for grid locations
-        REAL*8 , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
-        REAL*8 , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
-        INTEGER, INTENT(  OUT) :: NU( 4,NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
-        REAL   , INTENT(  OUT) :: CU( 4,NCOLS2*NROWS2 ) !  coefficients
-        END SUBROUTINE  UNGRIDBD2
-
-    SUBROUTINE UNGRIDI( NCOLS, NROWS, XORIG, YORIG, XCELL, YCELL, ..., NX ):
-
-        SUBROUTINE  UNGRIDIS1( NCOLS, NROWS, XORIG, YORIG,      &amp;
-                               XCELL, YCELL,                    &amp;
-                               NPTS, XLOC, YLOC,                &amp;
-                               NX )
-        INTEGER, INTENT(IN   ) :: NCOLS, NROWS	!  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	!  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	!  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NPTS	        !  number of (point-source) locations
-        REAL   , INTENT(IN   ) :: XLOC( NPTS ) 	!  X point coordinates
-        REAL   , INTENT(IN   ) :: YLOC( NPTS ) 	!  Y point coordinates
-        INTEGER, INTENT(  OUT) :: NX( NPTS )    !  single-indexed subscripts into grid
-        END SUBROUTINE  UNGRIDIS1
-
-        SUBROUTINE  UNGRIDIS2( NCOLS, NROWS, XORIG, YORIG,      &amp;
-                               XCELL, YCELL,                    &amp;
-                               NCOLS2, NROWS2, XLOC, YLOC,      &amp;
-                               NX )
-        INTEGER, INTENT(IN   ) :: NCOLS, NROWS	        !  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	        !  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	        !  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2        !  number of (point-source) locations
-        REAL   , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
-        REAL   , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
-        INTEGER, INTENT(  OUT) ::   NX( NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
-        END SUBROUTINE  UNGRIDIS2
-
-        SUBROUTINE  UNGRIDID1( NCOLS, NROWS, XORIG, YORIG,      &amp;
-                               XCELL, YCELL,                    &amp;
-                               NPTS, XLOC, YLOC,                &amp;
-                               NX )
-        INTEGER, INTENT(IN   ) :: NCOLS, NROWS	!  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	!  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	!  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NPTS	        !  number of (point-source) locations
-        REAL*8 , INTENT(IN   ) :: XLOC( NPTS ) 	!  X point coordinates
-        REAL*8 , INTENT(IN   ) :: YLOC( NPTS ) 	!  Y point coordinates
-        INTEGER, INTENT(  OUT) :: NX( NPTS )    !  single-indexed subscripts into grid
-        END SUBROUTINE  UNGRIDID1
-
-        SUBROUTINE  UNGRIDID2( NCOLS, NROWS, XORIG, YORIG,      &amp;
-                               XCELL, YCELL,                    &amp;
-                               NCOLS2, NROWS2, XLOC, YLOC,      &amp;
-                               NX )
-        INTEGER, INTENT(IN   ) :: NCOLS, NROWS	        !  number of grid columns, rows
-        REAL*8 , INTENT(IN   ) :: XORIG, YORIG	        !  X,Y coords of LL grid corner
-        REAL*8 , INTENT(IN   ) :: XCELL, YCELL	        !  X,Y direction cell size
-        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2        !  number of (point-source) locations
-        REAL*8 , INTENT(IN   ) :: XLOC( NCOLS2,NROWS2 ) !  X point coordinates
-        REAL*8 , INTENT(IN   ) :: YLOC( NCOLS2,NROWS2 ) !  Y point coordinates
-        INTEGER, INTENT(  OUT) ::   NX( NCOLS2*NROWS2 ) !  single-indexed subscripts into grid
-        END SUBROUTINE  UNGRIDID2
+        !!  NCOL1, NROW1, XORIG, YORIG, XCELL, YCELL are defining
+        !!  parameters for the output-grid for the matrix-transform;
+        !!  NPTS2, NCOL2, NROW2, XLOC*, YLOC*, XGRD* amd YGRD* are
+        !!  the dimensions and locations for the input-data for 
+        !!  the matrix transform.
+        !!  NU*, CU* are the indexes and coefficients for the bilinear
+        !!  interpolation matrix
+        !!  NX* are the indexes for the incidence matrix.
+        !!  IERR counts out-of-grid errors; IERR=0 means no errors.
+        
 
 </PRE><P> 
 
@@ -152,21 +100,33 @@
 
 <H2> Summary: </H2>
 
+    <BLOCKQUOTE>
+
     For I/O&nbsp;API Version&nbsp;3.2 and later, generic versions of
-    these routines are declared in <VAR>MODULE M3UTILIO</VAR>, for which the input arguments 
-    <VAR>XLOC</VAR> and <VAR>YLOC</VAR> are either 1-D or 2D, and are
-    either <VAR>REAL</VAR> or  <VAR>REAL*8</VAR>.  Routines
-    <CODE>UNGRIDBS1()</CODE> and <CODE>UNGRIDIS1()</CODE> (which
-    have 1-D single-precision location-arguments) correspond to the
-    routines from I/O&nbsp;API Version&nbsp;3.1 and earlier.
+    these routines are declared in <VAR>MODULE M3UTILIO</VAR>, for which
+    the input arguments  <VAR>XLOC</VAR> and <VAR>YLOC</VAR> are either
+    1-D or 2D, and are either <VAR>REAL</VAR> or  <VAR>REAL*8</VAR>. 
+    Routines <CODE>UNGRIDBS1()</CODE> and <CODE>UNGRIDIS1()</CODE>
+    (which have 1-D single-precision location-arguments) correspond to
+    the routines from I/O&nbsp;API Version&nbsp;3.1 and earlier.
     <P>
 
     <CODE>UNGRIDB()</CODE> computes &quot;ungridding&quot; matrices used
     by subroutines <A HREF = "BMATVEC.html"><CODE>BMATVEC()</CODE> and 
     <CODE>BILIN()</CODE></A> to perform bilinear interpolation  from a
-    grid to a set of target (e.g., point source) locations 
+    grid to a set of target (e.g., point source) locations or a grid
     <BLOCKQUOTE>
-    <VAR>{ &lt;XLOC(S),YLOC(S)&gt;, S=1, ..., NPTS }</VAR>
+    <VAR>{ &lt;XLOC(S),YLOC(S)&gt;: S=1,NPTS2 }</VAR>
+    <VAR>{ &lt;XGRD(C,R),YGRD(C,R)&gt;: C=1,NCOL2, R=1,NROW2 }</VAR>
+    </BLOCKQUOTE>, 
+    after the form (simplest case:  non-layered set of points as 
+    interpolation-target), so that for a variable
+    <VAR>V1(NCOLS*NROWS)</VAR> single-indexed on the source grid,
+    the value at<VAR>&lt;XLOC(S),YLOC(S)&gt;</VAR> is given by the formula
+    <BLOCKQUOTE>
+    <VAR>VNEW(S)</VAR> = 
+        <STRONG>SUM<SUB>J = 1...4 </SUB></STRONG>
+            [ <VAR>CU(J,S) V1( NU(J,S) )</VAR> ]
     </BLOCKQUOTE>
     More detail on the computation of these coefficients, etc., is
     given in the <A HREF = "BMATVEC.html">section on
@@ -175,18 +135,28 @@
 
     <CODE>UNGRIDI()</CODE> computes &quot;<EM>incidence matrix</EM>
     ungridding&quot; indices for grid-to-grid transformation from a grid
-    to the set of target (e.g., point source) locations as specified
-    above, i.e., so that for a variable <VAR>V(NCOLS*NROWS)</VAR>
-    single-indexed on the source grid,
+    to the set of target (e.g., point source) locations or a new grid,
+    as specified above, i.e., so that for a variable
+    <VAR>V1(NCOLS*NROWS)</VAR> single-indexed on the source grid,
     <BLOCKQUOTE>
-    <VAR>VNEW(S)&nbsp;=&nbsp;V(NX(S))</VAR> is the value at <VAR>{
-    &lt;XLOC(S),YLOC(S)&gt;</VAR>
+    <VAR>VNEW(S)&nbsp;=&nbsp;V1(NX(S))</VAR> is the value at
+    <VAR>&lt;XLOC(S),YLOC(S)&gt;</VAR>
     </BLOCKQUOTE>    
     <P>
+    
+    Note that for the versions without the <CODE>IERR</CODE> argument,
+    <STRONG>it is the responsibility of the caller to ensure that the
+    points <VAR>&lt;XLOC,YLOC&gt;</VAR> or <VAR>&lt;XGRD,YLGRD&gt;</VAR>
+    are inside the grid; otherwise, it is the responsibility of the
+    caller to check <CODE>IERR</CODE> and respond accordingly.</STRONG>
+    <BR>
+    If the points are not inside the grid, the code will make a &quot;best
+    effort&quot; using &quot;extend-by-constant&quot; on the boundaries.       
+    <P>
 
-    See also subroutines
+    <STRONG>See also</STRONG> subroutines
     <BLOCKQUOTE>
-    <A HREF = "GCTP.html"   >GCTP</A> coordinate transformation routine
+    <A HREF = "GCTP.html">GCTP</A> coordinate transformation routine
     from USGS
     <P>
     <A HREF = "GRID2XY.html"><CODE>GRID2XY()</CODE></A>:  
@@ -212,7 +182,11 @@
     </BLOCKQUOTE>
     <P> 
 
+    </BLOCKQUOTE>
+
 <H2> Fortran Usage: </H2>
+
+    <BLOCKQUOTE>
 
     For Fortran-90 declarations and interface checking:    
     <PRE>
@@ -221,6 +195,8 @@
     
     See usage guide under <A HREF = "BMATVEC.html"><VAR>BMATVEC()</VAR></A>
     <P>
+
+    </BLOCKQUOTE>
 
 <HR> <!----------------------------------------------------------------->
     
