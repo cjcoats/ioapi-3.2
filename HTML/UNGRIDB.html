@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
+<<<<<<< HEAD
 <!-- "$Id: UNGRIDB.html 70 2017-11-30 15:05:43Z coats $" -->
+=======
+<!-- "$Id: UNGRIDB.html 69 2017-11-28 17:13:07Z coats $" -->
+>>>>>>> e2faf18538d14e384c97946a9f0144bc5fe5f0c8
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> UNGRIDB() and UNGRIDI()</TITLE>
 </HEAD>
@@ -130,7 +134,13 @@
     </BLOCKQUOTE>
     More detail on the computation of these coefficients, etc., is
     given in the <A HREF = "BMATVEC.html">section on
-    <CODE>BMATVEC()</CODE></A>.
+    <CODE>BMATVEC()</CODE></A>.<BR>
+    
+    Note that <STRONG>it is the responsibility of the caller to ensure
+    that the points <VAR>&lt;XLOC,YLOC&gt;</VAR> are in the grid; if
+    they are not, the code will make a &quot;best effort&quot; using 
+    extend-by-constant.
+    </STRONG>
     <P> 
 
     <CODE>UNGRIDI()</CODE> computes &quot;<EM>incidence matrix</EM>
