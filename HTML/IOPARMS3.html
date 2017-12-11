@@ -2,19 +2,19 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: IOPARMS3.html 103 2015-01-16 16:55:45Z coats $" -->
-<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
+<!-- "$Id: IOPARMS3.html 71 2017-12-11 13:25:39Z coats $" -->
+<META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> IOPARMS3 </TITLE>
 </HEAD>
 
-<BODY BGCOLOR="#FFFFFF" 
-      TOPMARGIN="15" 
-      MARGINHEIGHT="15" 
-      LEFTMARGIN="15" 
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
+      MARGINHEIGHT="15"
+      LEFTMARGIN="15"
       MARGINWIDTH="15">
 <H1>    Subroutine <CODE>IOPARMS3</CODE> </H1>
-        
-    
+
+
 <H2> Fortran version: </H2>
 
     <PRE>
@@ -30,21 +30,22 @@
     </PRE>
     <P>
 
-<H2> C version: </H2>  
+<H2> C version: </H2>
 
     <PRE>
-    void IOPARMS3( int * mxdlen, 
-                   int * namlen, 
-                   int * mxfile, 
-                   int * mxvars, 
-                   int * mxdesc, 
-                   int * mxlays, 
+    void IOPARMS3( int * mxdlen,
+                   int * namlen,
+                   int * mxfile,
+                   int * mxvars,
+                   int * mxdesc,
+                   int * mxlays,
                    int * mxatts ) ;
     </PRE>
     <P>
 
 <H2> Summary: </H2>
 
+    <BLOCKQUOTE>
     These routines return the dimensioning parameters <CODE>MXDLEN,
     NAMLEN, MXFILE, MXVARS, MXDESC, MXLAYS, MXATTS</CODE> from
     INCLUDE-file
@@ -67,17 +68,19 @@
     the integrity of such model-builds is very important.
     </EM>
     <P>
+    </BLOCKQUOTE>
 
 <H2> Preconditions: </H2>
 
-    <PRE><A HREF = "M3UTILIO.html">
-    USE M3UTILIO</A>
-    </PRE> or
-    <A HREF = "INCLUDE.html#parms"> 
-    <CODE>INCLUDE&nbsp;'IODECL3.EXT'</CODE> </A> 
-    for Fortran, or 
+    <BLOCKQUOTE>
+    <CODE>
+    <A HREF = "M3UTILIO.html">USE&nbsp;M3UTILIO</A>
+    </CODE> or
+    <CODE><A HREF = "INCLUDE.html#parms">INCLUDE&nbsp;'IODECL3.EXT'</A></CODE>
+    for Fortran, or
     <CODE>#include&nbsp;&quot;iodecl3.h&quot;</CODE> for C.
-    <P> 
+    <P>
+    </BLOCKQUOTE>
 
 <H2> Fortran Usage: </H2>
 <PRE>
@@ -100,20 +103,20 @@
      &amp;      'Mis-matched "libioapi.a" and "PARMS3.EXT"', 2 )
     END IF
     ...
-</PRE><P> 
+</PRE><P>
 
 <HR> <!----------------------------------------------------------------->
 
 <A HREF = "GRDCHK3.html" >
 Previous:  <STRONG><CODE>GRDCHK3</CODE></STRONG>
-</A><P> 
+</A><P>
 
 <A HREF = "READ4D.html" >
 Next:  <STRONG><CODE>READ4D</CODE></STRONG>
 </A><P>
 
-<A HREF = "AA.html"> 
-To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG> 
+<A HREF = "AA.html">
+To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
 </A><P>
 
 

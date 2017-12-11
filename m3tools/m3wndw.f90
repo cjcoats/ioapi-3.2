@@ -2,7 +2,7 @@
 PROGRAM  M3WNDW
 
     !!***********************************************************************
-    !! Version "$Id: m3wndw.f90 17 2017-09-02 16:47:59Z coats $"
+    !! Version "$Id: m3wndw.f90 71 2017-12-11 13:25:39Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
@@ -106,6 +106,7 @@ PROGRAM  M3WNDW
     !!.........................................................................
     !!   begin body of program  M3WNDW
 
+    EFLAG  = .FALSE.
     LOGDEV = INIT3()
     WRITE ( *,'( 5X, A )' ) '', BAR, '',                                &
 'Program M3WNDW to window variables to a specified subgrid from a ',    &
@@ -143,7 +144,7 @@ PROGRAM  M3WNDW
 '    Chapel Hill, NC 27599-1105',                                       &
 '',                                                                     &
 'Program version: ',                                                    &
-'$Id: m3wndw.f90 17 2017-09-02 16:47:59Z coats $',&
+'$Id: m3wndw.f90 71 2017-12-11 13:25:39Z coats $',&
 ' '
 
     ARGCNT = IARGC()

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: REQUIREMENTS.html 446 2017-01-11 19:15:33Z coats $" -->
+<!-- "$Id: REQUIREMENTS.html 71 2017-12-11 13:25:39Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> I/O&nbsp;API REQUIREMENTS</TITLE>
 </HEAD>
@@ -954,6 +954,20 @@ following dimensions:
     100 rows
     25 layers, for a total data volume of 
     43.2 GB, assuming single precision (4 bytes per number) storage.
+</PRE>
+
+<EM>NOTE</EM>:  For hydrological applications, the I/O&nbsp;API
+has been used for much larger data sets than these (and appropriately
+designed I/O&nbsp;API based analysis and visualization tools were 
+routinely used with):
+<PRE>
+    33 years, at 
+     4 (6-hourly) time steps per day, for 
+     8 variables, on a grid with
+  2760 columns
+  3320 rows
+     1 layer, for a total data volume of 
+     3.53 TB
 </PRE>
 
 Another major limitation has to do with massively parallel 

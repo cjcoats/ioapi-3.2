@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 41 2017-11-01 20:53:30Z coats $" -->
+<!-- "$Id: AA.html 71 2017-12-11 13:25:39Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -56,64 +56,6 @@ Contents
         <LI>  <A HREF = "INCLUDE.html"      ><CODE>MODULE</CODE>s and 
                                              Public <CODE>INCLUDE</CODE>
                                              Files </A>
-              <UL>
-                  <LI> <A HREF = "M3UTILIO.html"><VAR>MODULE M3UTILIO</VAR></A>:
-                                           dimensions, constants, declarations,
-                                           interface blocks.  Includes all the
-                                           public Fortran include-files (below),
-                                           and <STRONG>is the preferred way of
-                                           accessing them from Fortran program
-                                           code.</STRONG>
-                                           <P>
-                 <LI> <A HREF = "MODATTS3.html"><VAR>MODULE MODATTS3</VAR></A>:
-                                           parameters and routines for saving
-                                           metadata for CF compliance, geospatial
-                                           transforms, and CMAQ and SMOKE runs.
-                                           <P>
-                 <LI> <A HREF = "MODGCTP.html"><VAR>MODULE MODGCTP</VAR></A>:
-                                           <CODE>PARAMETER</CODE>s and routines
-                                           for geospatial transforms and
-                                           interpolation.
-                                           <P>
-                 <LI> <A HREF = "MODNCFIO.html"><VAR>MODULE MODNCFIO</VAR></A>:
-                                           <CODE>PARAMETER</CODE>s and function
-                                           declarations for netCDF and for
-                                           PnetCDF, if <A HREF="BUFFERED.html#pncf">
-                                           PnetCDF/MPI distributed-I/O</A> is
-                                           enabled.<BR>
-                                           Can be used to replace
-                                           <CODE>INCLUDE</CODE>-files
-                                           <VAR>NETCDF.EXT</VAR>,
-                                           <VAR>netcdf.inc</VAR>, and/or
-                                           <VAR>pnetcdf.inc</VAR>.
-                                           <BR>
-                                           Also includes &quot;raw netCDF&quot;
-                                           get-description routine
-                                           <CODE>DESCNCVAR()</CODE> and
-                                           read/write-a-variable generic routines
-                                           <CODE>READNCVAR()</CODE> and
-                                           <CODE>WRITENCVAR()</CODE>
-                                           <P>
-                 <LI> <A HREF = "MODWRFIO.html"><VAR>MODULE MODWRFIO</VAR></A>:
-                                           routines for opening or creating,
-                                           reading, and writing WRF netCDF files.
-                                           <P>
-                 <LI> <A HREF = "MODMPASFIO.html"><VAR>MODULE MODMPASFIO</VAR></A>:
-                                           parameters and state variables for
-                                           MPAS unstructured grid specification;
-                                           routines for opening, reading, and
-                                           writing MPAS-format-netCDF files;
-                                           grid-utility routines.
-                                           <P>
-                <LI> <A HREF = "INCLUDE.html#parms">  <VAR>PARMS3.EXT</VAR> and <VAR>parms3.h</VAR>:</A> 
-                                          dimensions and constants
-                <LI> <A HREF = "INCLUDE.html#fdesc">  <VAR>FDESC3.EXT</VAR> and <VAR>fdesc3.h</VAR>:</A> 
-                                          file description data structures
-                <LI> <A HREF = "INCLUDE.html#iodecl"> <VAR>IODECL3.EXT</VAR> and <VAR>iodecl3.h</VAR>:</A> 
-                                          function declarations
-                <LI> <A HREF = "INCLUDE.html#atdsc "> <VAR>ATDSC3.EXT</VAR> and <VAR>atdsc3.h</VAR>:</A> 
-                                          Extra attributes for <CODE>TSERIES3</CODE> files
-             </UL>            
         <LI>  <A HREF = "#ioapi"            >Public I/O Routines </A>
         <LI>  <A HREF = "#coordstuff"       >Coordinate and Grid
                                              Related Routines </A>
@@ -352,7 +294,8 @@ Contents
              <P>
         <DT> <A HREF = "MODATTS3.html">
              <STRONG><VAR>MODULE MODATTS3</VAR></STRONG></A>:
-             parameters and routines for map-transform metadata.
+             parameters and routines for map-transform, CMAQ, and
+             SMOKE metadata.
         <DT> <A HREF = "MODGCTP.html">
              <STRONG><VAR>MODULE MODGCTP</VAR></STRONG></A>:
              parameters and routines for map-transform operations
@@ -366,8 +309,9 @@ Contents
              PnetCDF/MPI distributed-I/O</A> is enabled.<BR>
              Can be used to replace <CODE>INCLUDE</CODE>-file
              <VAR>NETCDF.EXT</VAR> or <VAR>netcdf.inc</VAR>,
-             and also includes new routines for inquiring about,
-             and reading variables from &quot;raw&quot; netCDF files.
+             Also includes new routines for inquiring about,
+             reading, and writing variables from &quot;raw&quot;
+             netCDF files.
              <P>
         <DT> <A HREF = "MODMPASFIO.html">
              <STRONG><VAR>MODULE MODMPASFIO</VAR></STRONG></A>:
@@ -1662,7 +1606,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 41 2017-11-01 20:53:30Z coats $
+    $Id: AA.html 71 2017-12-11 13:25:39Z coats $
     </PRE>
 
 </BODY>
