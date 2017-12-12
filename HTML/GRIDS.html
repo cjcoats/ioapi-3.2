@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GRIDS.html 44 2017-11-07 16:26:07Z coats $" -->
+<!-- "$Id: GRIDS.html 72 2017-12-12 17:54:20Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> On The Definition of Grids and Coordinates for Models-3  </TITLE>
 </HEAD>
@@ -134,13 +134,21 @@ grid-description support software systems.
               PROJ_ALPHA, PROJ_BETA, PROJ_GAMMA unused.
               <BR>
               ISO 6709 compliant:  coordinate units are degrees, 
-              -90.0&nbsp;&lt;&nbsp;X&nbsp;&lt;=&nbsp;90.0 and
-              -180.0&nbsp;&lt;&nbsp;Y&nbsp;&lt;=&nbsp;180.0
+              -90.0&nbsp;&lt;&nbsp;X&nbsp;&leq;&nbsp;90.0 and
+              -180.0&nbsp;&lt;&nbsp;Y&nbsp;&leq;&nbsp;180.0
+              <BR>
+              GCTP projection 0.
               <BR>
               Note that Western hemisphere longitudes and  Southern
               Hemisphere latitudes are taken to be negative.
               <BR>
-              GCTP projection 0.
+              Note further that, in violation of treaty obligations and 
+              duly enacted international standards, and contrary to
+              basically all the GIS software on the plaanet, the WMO
+              insists upon a different,
+              0.0&nbsp;&lt;&nbsp;Y&nbsp;&leq;&nbsp;360.0 interpretation
+              of latitude for, e.g., GRIB files.  This causes
+              substantial difficulty for modelers.
         </TD>
     </TR>
 
@@ -150,7 +158,7 @@ grid-description support software systems.
         <TD ALIGN="CENTER"  VALIGN="TOP" ><CODE>LAMGRD3&nbsp;=&nbsp;2</CODE>
         </TD>
         <TD ALIGN="LEFT" >
-              PROJ_ALPHA &lt;= PROJ_BETA are the two latitudes which
+              PROJ_ALPHA &leq; PROJ_BETA are the two latitudes which
               determine the projection cone; PROJ_GAMMA is the central
               meridian.
               <BR>
@@ -308,7 +316,7 @@ grid-description support software systems.
         <TD ALIGN="CENTER"  VALIGN="TOP" ><CODE>ALBGRD3&nbsp;=&nbsp;9</CODE>
         </TD>
         <TD ALIGN="LEFT" >
-              PROJ_ALPHA &lt;= PROJ_BETA are the two latitudes which
+              PROJ_ALPHA &leq; PROJ_BETA are the two latitudes which
               determine the projection cone; PROJ_GAMMA is the central
               meridian.
               <BR>
@@ -363,7 +371,8 @@ grid-description support software systems.
 
 Note that the <STRONG>standard names for UTM</STRONG> coordinate 
 systems are given in the form <VAR>UTM_&lt;nn&gt;</VAR>, where 
-<VAR>nn</VAR> is the number for the UTM zone.  Most of the 
+<VAR>nn</VAR> is the number for the UTM zone, as counted from
+<CODE>ZONE&nbsp;1:  -180.0&leq;LAT&leq;-174.0</CODE>.  Most of the 
 Eastern US would use coordinate system <VAR>UTM_17</VAR>, for example.
 <P> 
 
@@ -503,7 +512,7 @@ follows:
     <LI>  <STRONG>VGWRFNM</STRONG>:  WRF NMM-core vertical coordinate
     <LI>  <STRONG>IMISS3</STRONG>:  vertical coordinate type not applicable 
                                     (e.g., time-dependent vertical 
-                                    coordinates).
+                                    coordinates), or &quot;other&quot;.
 </UL>
 
 The <A HREF = "INCLUDE.html#fdesc"> <CODE>FDESC3.EXT</CODE> </A>

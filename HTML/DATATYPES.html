@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: DATATYPES.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: DATATYPES.html 72 2017-12-12 17:54:20Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> File and Data Types Supported by the I/O API </TITLE>
 </HEAD>
@@ -45,14 +45,15 @@ list of file types, together with the magic numbers for each, is:
     time series </A>
     <LI>  <A HREF = "#ptrfly"> <STRONG>PTRFLY3</STRONG>:  pointer-flyer</A>
 </UL>
-The file's structural data type value is stored in the FTYPE3D variable
-of the file header and the file description data structures in
+The file's data structure type value is stored in the
+<CODE>FTYPE3D</CODE> variable of the file header and the file
+description data structures in
 <A HREF = "INCLUDE.html#fdesc"> FDESC3.EXT </A>.  Note that
 all the <A HREF = "VBLE.html"> variables </A> in a file have the
 same structural data type, the same dimensionality and
 <A HREF = "GRIDS.html#vert"> layer structure </A>, and
 the same <A HREF = "#timestruct"> time step structure </A>, but possibly
-a different <A HREF = "#basic"> basic type </A>.
+a different <A HREF = "#basic">basic type</A>.
 The vast majority of air quality modeling files are of the gridded or
 boundary structural types of basic type REAL, which need
 only ordinary arrays to write from or read into.  For the other
@@ -76,7 +77,7 @@ for each (defined in INCLUDE-file
     <LI>  <STRONG>M3DBLE:</STRONG>  DOUBLE PRECISION (at least 8-byte)
 </UL>
 The basic-type magic-number values for all variables in a file are stored in
-the VTYPE3D arrays of the file header and the file description data
+the <CODE>VTYPE3D</CODE> arrays of the file header and the file description data
 structures in <A HREF = "INCLUDE.html#fdesc"> FDESC3.EXT </A>.
 Currently, only real variables are supported by routines
 <A HREF = "INTERP3.html"> INTERP3()</A> and
@@ -88,26 +89,33 @@ virtual files </A>.<P>
 
 Independent of data structure-types, there are also three categories of
 <A NAME = "timestruct"> <STRONG>time structure</STRONG> </A>
-for the data records, discriminated on the basis of the TSTEP3D attribute,
-and further specified by the starting date and time SDATE3D and STIME3D
-attributes in the file header and <A HREF = "INCLUDE.html#fdesc"> FDESC </A>
+for the data records, discriminated on the basis of the
+<CODE>TSTEP3D</CODE> attribute, and further specified by the starting
+date and time <CODE>SDATE3D</CODE> and <CODE>STIME3D</CODE>
+attributes in the file header and <A HREF = "INCLUDE.html#fdesc">FDESC</A>
 data structures.  Time step and starting date and time are stored
 according to <A HREF = "DATETIME.html"> Models-3 time conventions </A>.
 Internally, the I/O API maintains the value of MXREC3D, the maximum
 time step record number, which describes &quot;how long&quot; the file
 is.  The categories of time step structure are:
 <UL>
-    <LI> <STRONG>Time-independent.</STRONG>  TSTEP3D = 0, and SDATE3D and
-         STIME3D are ignored.  MXREC3D is either 0 (for an empty file)
+    <LI> <STRONG>Time-independent.</STRONG>  <CODE>TSTEP3D = 0</CODE>,
+         and <CODE>SDATE3D</CODE> and <CODE>STIME3D</CODE> are
+         ignored.<BR>
+         <CODE>MXREC3D</CODE> is either 0 (for an empty file)
          or 1.
-    <LI> <STRONG>Time-stepped.</STRONG> TSTEP3D &gt; 0, and SDATE3D:STIME3D
-         represent the starting date&time for the file's time step sequence.
-         There are at most MXREC3D time steps in that sequence.
-    <LI> <STRONG>Circular-buffer.</STRONG> TSTEP3D &lt; 0 is the negative
-         of the actual time step; the file keeps only two time steps of
-         data, the &quot;even&quot; part and the &quot;odd&quot; part.
-         SDATE3D:STIME3D represent the starting date&time for the file's
-         time step sequence.  There are at most MXREC3D time steps in that
+    <LI> <STRONG>Time-stepped.</STRONG> <CODE>TSTEP3D &gt; 0</CODE>, and
+         <CODE>SDATE3D:STIME3D</CODE>
+         represent the starting date&time for the file's time step
+         sequence.<BR>
+         There are at most <CODE>MXREC3D</CODE> time steps in that sequence.
+    <LI> <STRONG>Circular-buffer.</STRONG> <CODE>TSTEP3D &lt; 0</CODE> is
+         the negative of the actual time step; the file keeps only two
+         time steps of data, the &quot;even&quot; part and the
+         &quot;odd&quot; part. <CODE>SDATE3D:STIME3D</CODE> represent
+         the starting date&time for the file's time step sequence. 
+         <BR>
+         There are at most <CODE>MXREC3D</CODE> time steps in that
          sequence.
 </UL><P>
 
@@ -144,7 +152,7 @@ order to the data, for both read and write operations).
     principle.)  A typical argument declaration for a set of variables
     to be used with a CUSTOM file would look like the following, where
     the dimensioning constant  <CODE>SIZE</CODE> maps into the
-    <PRE>NCOLS3D</PRE> <A HREF = "INCLUDE.html#fdesc"> file description </A>
+    <CODE>NCOLS3D</CODE> <A HREF = "INCLUDE.html#fdesc"> file description </A>
     parameter; <CODE>NROWS3D</CODE> and <CODE>NTHIK3D</CODE> are ignored):
 <PRE>
     ...(SIZE is a fixed, user-defined dimension:)

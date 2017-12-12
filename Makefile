@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.template 348 2016-03-26 14:21:09Z coats $"
+# VERSION "$Id: Makefile 1 2017-06-10 18:05:20Z coats $"
 #      EDSS/Models-3 I/O API Version 3.2.
 #.........................................................................
 # COPYRIGHT
@@ -193,7 +193,7 @@ OBJDIR     = $(BASEDIR)/$(BIN)
 
 
 #      ----------------------   TOP-LEVEL TARGETS:   ------------------
-
+#
 all:  dirs fix configure
 	(cd $(IODIR)   ; make BIN=${BIN} all)
 	(cd $(TOOLDIR) ; make BIN=${BIN} all)
@@ -226,8 +226,11 @@ dirs: $(OBJDIR) $(FIXDIR)
 fix:
 	(cd $(IODIR)   ; make fixed_src)
 
+version:
+	cd $(BASEDIR); date > VERSION.txt
+
 gtar:
-	cd $(BASEDIR); date > VERSION.txt; \
+	cd $(BASEDIR); make version; \
 gtar cvfz ioapi-$(VERSION).tar.gz --dereference -X exclude \
 Makefile*  *.txt exclude ioapi HTML m3tools
 

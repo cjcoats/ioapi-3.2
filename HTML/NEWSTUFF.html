@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 68 2017-11-27 16:00:04Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 72 2017-12-12 17:54:20Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 68 2017-11-27 16:00:04Z coats $
+    $Id: NEWSTUFF.html 72 2017-12-12 17:54:20Z coats $
     </EM>
     <HR>
 
@@ -32,6 +32,11 @@
     <UL>
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
+
+         <LI>  <A HREF = "#dec112017">
+               Fixed bug reported by Ehsan Mosadegh</A> in programs
+               <A HREF = "M3TSHIFT.html"><VAR>M3TSHIFT</VAR></A>.
+               <A HREF = "M3WNDW.html"><VAR>M3WNDW</VAR></A>.
 
          <LI>  <A HREF = "#nov272017">
                Bug-fix by Jeff Vukovich</A> in 
@@ -657,6 +662,28 @@
         % nm libnetcdff.a | grep ncclos<BR>
         0000000000001440 T ncclos_
     </VAR></BLOCKQUOTE>
+    <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "dec112017">
+    Fixed bug reported by Ehsan Mosadegh</A> in programs
+    <A HREF = "M3TSHIFT.html"><VAR><STRONG>m3tshift</STRONG></VAR></A>
+    and <A HREF = "M3WNDW.html"><VAR><STRONG>m3wndw</STRONG></VAR></A>.
+</A></H2>
+
+    <BLOCKQUOTE>
+    Ehsan Mosadegh (dri.edu) reports a problem related to a missing
+    <CODE>EFLAG</CODE> initialization in <VAR><STRONG>m3tools</STRONG></VAR>
+    program <VAR><STRONG>m3tshift</STRONG></VAR>.  This bug is also present
+    in program <VAR><STRONG>m3wndw</STRONG></VAR>.
+    <P>
+    Now fixed.
     <P>
     </BLOCKQUOTE>
 
@@ -6650,7 +6677,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 68 2017-11-27 16:00:04Z coats $
+    $Id: NEWSTUFF.html 72 2017-12-12 17:54:20Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 448 2017-03-22 10:23:06Z coats $"
+    !! Version "$Id: init3.F90 72 2017-12-12 17:54:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -135,13 +135,13 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'ioapi-3.2: $Id: init3.F90 448 2017-03-22 10:23:06Z coats   $'
+'ioapi-3.2: $Id: init3.F90 72 2017-12-12 17:54:20Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 
 
     !!***********************************************************************
-    !!   begin body of subroutine  INIT3
+    !!   begin body of subroutine  INIT3()
 
 #if defined(__sgi)    || defined(__mips__)
 
