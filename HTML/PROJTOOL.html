@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: PROJTOOL.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: PROJTOOL.html 74 2017-12-22 19:40:11Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> Program PROJTOOL </TITLE>
 </HEAD>
@@ -58,7 +58,7 @@ projtool
     <P>
 
     <STRONG>NOTE: </STRONG> according to the standard, UTM coordinates
-    should be specified in <U>metersM</U> instead of the UAM/EPS
+    should be specified in <U>meters</U> instead of the UAM/EPS
     bastardized system which claims to be UTM but in fact uses
     <STRONG>kilo</STRONG>meters; the latter is a distinct
     (partially-supported) system, also.
@@ -110,33 +110,39 @@ projtool
 <H2> See Also </H2>
 
 <BLOCKQUOTE>
-    <A HREF = "GRIDS.html#horiz">
-    EDSS/Models-3 horizontal coordinate and grid conventions</A>
+
+    <A HREF = "LATLON.html"><VAR>M3TOOLS</VAR> program <CODE>LATLON</CODE></A> to construct
+    one-layer GRIDDED and BOUNDARY files with variables <CODE>LAT</CODE>
+    and <CODE>LON</CODE>
     <P>
 
-    <A HREF = "AA.html#coordstuff">
-    EDSS/Models-3 grid and coordinate manipulation routines</A>
+    Earlier (obsolete)  <A HREF = "UTMTOOL.html"><VAR>M3TOOLS</VAR>
+    coordinate-transform program <CODE>UTMTOOL</CODE></A>
     <P>
 
-    <A HREF = "GCTP.html" >
-    US Geological Survey General Coordinate Transformation Package (GCTP)</A>
+    EDSS/Models-3 I/O&nbsp;API <A HREF = "GRIDS.html#horiz">horizontal
+    coordinate and grid conventions</A>
     <P>
 
-    <A HREF = "MODGCTP.html" >
-    <CODE>MODULE MODGCTP</CODE> for <CODE>GCTP</CODE> related routines
-    and <CODE>INTERFACE</CODE>s</A>
+    EDSS/Models-3 I/O&nbsp;API <A HREF = "AA.html#coordstuff">grid and
+    coordinate manipulation routines</A>
     <P>
 
-    <A HREF = "LAMBERT.html">
-    Coordinate manipulation routine <CODE>LAMBERT</CODE></A>
+    US Geological Survey <A HREF = "GCTP.html" >General Coordinate
+    Transformation Package (GCTP)</A>
     <P>
 
-    <A HREF = "SETSPHERE.html">
+    I/O&nbsp;API 3.2 <A HREF = "MODGCTP.html" ><CODE>MODULE MODGCTP</CODE></A>
+    for <CODE>GCTP</CODE> related routines and <CODE>INTERFACE</CODE>s
+    <P>
+
+    I/O&nbsp;API single precision coordinate manipulation routines
+    <A HREF = "LAMBERT.html"><CODE>LAMBERT, POLSTE, TRMERC, EQMERC,
+    ALBERS,</CODE>, etc.</A>
+    <P>
+
+    I/O&nbsp;API <A HREF = "SETSPHERE.html">
     Geodetic spheroid manipulation routine <CODE>SETSPHERE</CODE></A>
-    <P>
-
-    <A HREF = "UTMTOOL.html">
-    Earlier (obsolete) coordinate-transform program <CODE>UTMTOOL</CODE></A>
     <P>
 
 </BLOCKQUOTE>

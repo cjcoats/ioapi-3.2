@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 72 2017-12-12 17:54:20Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 74 2017-12-22 19:40:11Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 72 2017-12-12 17:54:20Z coats $
+    $Id: NEWSTUFF.html 74 2017-12-22 19:40:11Z coats $
     </EM>
     <HR>
 
@@ -33,20 +33,28 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
-         <LI>  <A HREF = "#dec112017">
+         <LI>  <A HREF = "#dec21017">
+               Enhanced <VAR><STRONG>m3tools</STRONG></VAR> program
+               <VAR><STRONG>latlon</STRONG></VAR><BR>
+               Changed default for environment variable
+               <CODE>IOAPI_OFFSET_64</CODE></A>
+
+         <LI>  <A HREF = "#dec12017">
                Fixed bug reported by Ehsan Mosadegh</A> in programs
                <A HREF = "M3TSHIFT.html"><VAR>M3TSHIFT</VAR></A>.
                <A HREF = "M3WNDW.html"><VAR>M3WNDW</VAR></A>.
 
          <LI>  <A HREF = "#nov272017">
-               Bug-fix by Jeff Vukovich</A> in 
-               <A HREF = "UNGRIDB.html"><CODE>UNGRIDB()</CODE></A>.
+               Bug-fix by Jeff Vukovich in routine <CODE>UNGRIDB()</CODE></A>.
 
          <LI>  <A HREF = "#nov112017">
-               <CODE>INTEGER</CODE>-variable support</A> for <VAR>m3tools</VAR>
-               program <VAR>mpastom3</VAR><BR>
-               <CODE>INTEGER</CODE>-variable support for <CODE>MODMPASFIO</CODE>
-               generic routine <CODE>MPINTERP()</CODE>, new
+               <CODE>INTEGER</CODE>-variable support</A> for
+               <VAR><STRONG>m3tools</STRONG></VAR>
+               program <VAR><STRONG>mpastom3</STRONG></VAR><BR>
+               <CODE>INTEGER</CODE>-variable support for
+               <CODE>MODULE&nbsp;MODMPASFIO</CODE>
+               generic routine <CODE>MPINTERP()</CODE><BR>
+               New<CODE>MODULE&nbsp;MODMPASFIO</CODE>
                &quot;incidence-matrix&quot; generic routine
                <CODE>MPCELLMATX()</CODE>.
 
@@ -671,16 +679,63 @@
 
 <HR> <!----------------------------------------------------------------->
 
-<H2> <A NAME = "dec112017">
-    Fixed bug reported by Ehsan Mosadegh</A> in programs
-    <A HREF = "M3TSHIFT.html"><VAR><STRONG>m3tshift</STRONG></VAR></A>
-    and <A HREF = "M3WNDW.html"><VAR><STRONG>m3wndw</STRONG></VAR></A>.
+<H2> <A NAME = "dec21017">
+    Enhanced <VAR><STRONG>m3tools</STRONG></VAR> program
+    <VAR><STRONG>latlon</STRONG></VAR><BR>
+    Changed default for environment variable
+    <CODE>IOAPI_OFFSET_64</CODE>
 </A></H2>
 
     <BLOCKQUOTE>
-    Ehsan Mosadegh (dri.edu) reports a problem related to a missing
+    For I/O&nbsp;API-3.2 post Dec.&nbsp;25,&nbsp;2017, 
+    <VAR><STRONG>m3tools</STRONG></VAR> program
+    <A HREF = "LATLON.html"><VAR><STRONG>latlon</STRONG></VAR></A>
+    now also writes M3DBLE (double-precision) Latitude-Longitude
+    variables <CODE>LATD</CODE> and <CODE>LOND</CODE>, in addition
+    to the original <CODE>LAT</CODE> and <CODE>LON</CODE>.    
+    <P>
+
+    Additionally, it is now possible to do interactive definition of
+    grids with map projections of types 
+    <UL>
+        <LI> <CODE>TRMGRD3</CODE>: Transverse Mercator projection
+        <LI> <CODE>EQMGRD3</CODE>: Equatorial Mercator projection
+        <LI> <CODE>POLGRD3</CODE>: Polar Stereographic projection
+        <LI> <CODE>LEQGRD3</CODE>: Lambert Azimuthal Equal Area projection
+        <LI> <CODE>MERGRD3</CODE>: General Mercator projection
+        <LI> <CODE>STEGRD3</CODE>: General Stereographic projection
+    </UL>
+    (as well as the original Lat-Lon (<CODE>LATGRD3</CODE>), Lambert
+    Conformal Conic (<CODE>LAMGRD3</CODE>), and and UTM
+    (<CODE>UTMGRD3</CODE>; grids may of course also be specified
+    by a <CODE>GRIDDESC</CODE> file).
+    <P>
+
+    The default for environment variable
+    <CODE>IOAPI_OFFSET_64</CODE> is now <CODE>TRUE</CODE>.  For
+    netCDF&nbsp;3.3 or later, this allows the size of file-timesteps to
+    exceed 2&nbsp;GB. (Assuming only (4-byte) <CODE>REAL</CODE> and
+    <CODE>INTEGER</CODE> variables, a timestep in a GRIDDED file has
+    size <CODE>4*NVARS*NCOLS*NROWS*NLAYS&nbsp;+&nbsp;8*NVARS</CODE> bytes.)
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "dec12017">
+    Fixed bug reported by Ehsan Mosadegh in
+    <VAR><STRONG>m3tools</STRONG></VAR>  programs
+    <VAR><STRONG>m3tshift</STRONG></VAR> and
+    <VAR><STRONG>m3wndw</STRONG></VAR>.
+</A></H2>
+
+    <BLOCKQUOTE>
+    Ehsan Mosadegh <EM>(dri.edu)</EM> reports a problem related to a missing
     <CODE>EFLAG</CODE> initialization in <VAR><STRONG>m3tools</STRONG></VAR>
-    program <VAR><STRONG>m3tshift</STRONG></VAR>.  This bug is also present
+    program <VAR><STRONG>m3tshift</STRONG></VAR>.  This bug was also present
     in program <VAR><STRONG>m3wndw</STRONG></VAR>.
     <P>
     Now fixed.
@@ -6677,7 +6732,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 72 2017-12-12 17:54:20Z coats $
+    $Id: NEWSTUFF.html 74 2017-12-22 19:40:11Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

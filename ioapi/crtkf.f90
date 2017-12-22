@@ -2,7 +2,7 @@
 LOGICAL FUNCTION CRTKF( EQNAME, FID, PGNAME, BUFFER )  RESULT( KFFLAG )
 
     !!***********************************************************************
-    !! Version "$Id: crtkf.F 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: crtkf.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2011 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ LOGICAL FUNCTION CRTKF( EQNAME, FID, PGNAME, BUFFER )  RESULT( KFFLAG )
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  subroutine body starts at line 85
+    !!  subroutine body starts at line 86
     !!
     !!  FUNCTION:  Create netCDF KF-Cloud Event file FNAME using info stored
     !!      in the FDESC3 common.  Record history, Leave file open for update.
@@ -33,6 +33,7 @@ LOGICAL FUNCTION CRTKF( EQNAME, FID, PGNAME, BUFFER )  RESULT( KFFLAG )
     !!       full buffered-file file descriptions.
     !!       Modified 02-08/2015 by CJC for I/O API 3.2: USE M3UTILIO, MODNCFIO,
     !!       NF_*() interfaces; F90 "free" source format.
+    !!      Modified 12/2017 by CJC:  default TRUE for IOAPI_OFFSET_64
     !!***********************************************************************
 
     USE M3UTILIO
@@ -96,7 +97,7 @@ LOGICAL FUNCTION CRTKF( EQNAME, FID, PGNAME, BUFFER )  RESULT( KFFLAG )
 !$OMP   CRITICAL( WRITE3_INIT )
     IF ( FIRSTIME ) THEN
 
-        OFFSET64 = ENVYN( 'IOAPI_OFFSET_64', 'Use NF_64BIT_OFFSET or not', .FALSE., IERR )
+        OFFSET64 = ENVYN( 'IOAPI_OFFSET_64', 'Use NF_64BIT_OFFSET or not', .TRUE., IERR )
         IF ( IERR .GT. 0 ) THEN
             EFLAG = .TRUE.
             CALL M3MSG2( 'Bad environment vble "IOAPI_OFFSET_64"' )

@@ -2,7 +2,7 @@
 LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
 
     !!***********************************************************************
-    !! Version "$Id: crtfil3.F 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: crtfil3.F90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2011 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  subroutine body starts at line 135
+    !!  subroutine body starts at line 136
     !!
     !!  FUNCTION:
     !!      Create netCDF file FNAME using info stored in the FDESC3
@@ -60,6 +60,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
     !!      Modified 10/2015 by CJC:  USE MODNCFIO, NF_*() interfaces;
     !!      F90 "free" source format.  interface-structure for CMAQ and SMOKE
     !!      metadata.
+    !!      Modified 12/2017 by CJC:  default TRUE for IOAPI_OFFSET_64
     !!***********************************************************************
 
     USE M3UTILIO
@@ -135,7 +136,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
 !$OMP   CRITICAL( WRITE3_INIT )
     IF ( FIRSTIME ) THEN
 
-        OFFSET64 = ENVYN( 'IOAPI_OFFSET_64', 'Use NF_64BIT_OFFSET or not', .FALSE., IERR )
+        OFFSET64 = ENVYN( 'IOAPI_OFFSET_64', 'Use NF_64BIT_OFFSET or not', .TRUE., IERR )
         IF ( IERR .GT. 0 ) THEN
             EFLAG = .TRUE.
             CALL M3MSG2( 'Bad environment vble "IOAPI_LOG_WRITE"' )
@@ -173,7 +174,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
             EFLAG = INITSMOKE()
         END IF
 
-        CALL ENVSTR( 'IOAPI_TEXTMETA', 'File for unstructured-te4xt metadata or "NONE"?', 'NONE', NAMBUF, IERR )
+        CALL ENVSTR( 'IOAPI_TEXTMETA', 'File for unstructured-text metadata or "NONE"?', 'NONE', NAMBUF, IERR )
         CALL UPCASE( NAMBUF )
         IF ( IERR .GT. 0 ) THEN
             CALL M3MSG2( 'Bad environment vble "IOAPI_TEXTMETA"' )

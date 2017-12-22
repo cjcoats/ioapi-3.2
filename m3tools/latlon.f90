@@ -4,9 +4,9 @@ PROGRAM LATLON
     !!***********************************************************************
     !! Version "$Id: latlon.F 1703 2014-12-17 21:39:36Z coats@bdsl$"
     !! EDSS/Models-3 M3TOOLS.
-    !! Copyright (C) 1992-2002 MCNC, (C) 1997-2013 Carlie J. Coats, Jr.,
+    !! Copyright (C) 1992-2002 MCNC, (C) 1997-2017 Carlie J. Coats, Jr.,
     !! (C) 2002-2012 Baron Advanced Meteorological Systems. LLC., and
-    !! (C) 2014 UNC Institute for the Environment.
+    !! (C) 2014-2015 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
@@ -41,6 +41,8 @@ PROGRAM LATLON
     !!      Version 12/2013 by CJC:  PARAMETER  CMENU(:), CTYPE(:)
     !!      Version 02/2015 by CJC for I/O API-v3.2:  USE MODGCTP;
     !!      Fortran-90 "free" source format; use generics for "GET*()"
+    !!      Version 12/2017 by CJC;  add double-precision vbles LATD, LOND;
+    !!      add/fix EQMGRD3, TRMGRD3, MERGRD3, POLGRD3, STEGRD3, LEQGRD3 support.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -52,16 +54,20 @@ PROGRAM LATLON
 
     CHARACTER*16, PARAMETER :: NONE  = 'NONE'
     CHARACTER*16, PARAMETER :: PNAME = 'LATLON'
-    CHARACTER*20, PARAMETER :: CMENU( 6 ) = &
-        (/  'lat-lon            ',          &   !  coordinate types menu item 1
-            'Lambert Conformal  ',          &   !  coordinate types menu item 2
-            'Mercator           ',          &   !  coordinate types menu item 3
-            'Stereographic      ',          &   !  coordinate types menu item 4
-            'UTM                ',          &   !  coordinate types menu item 5
-            'Albers Equal-Area  '  /)           !  coordinate types menu item 6
+    CHARACTER*20, PARAMETER :: CMENU( 10 ) = &
+        (/  'lat-lon (ISO 6709)   ',        &   !  coordinate types menu item  1
+            'Lambert Conformal    ',        &   !  coordinate types menu item  2
+            'Lambert Equal Area   ',        &   !  coordinate types menu item  3
+            'Equatorial Mercator  ',        &   !  coordinate types menu item  4
+            'Transverse Mercator  ',        &   !  coordinate types menu item  5
+            'General    Mercator  ',        &   !  coordinate types menu item  6
+            'Polar  Stereographic ',        &   !  coordinate types menu item  7
+            'General Stereographic',        &   !  coordinate types menu item  8
+            'UTM                  ',        &   !  coordinate types menu item  9
+            'Albers Equal-Area    '  /)         !  coordinate types menu item 10
 
-    INTEGER, PARAMETER :: CTYPE( 6 ) =  &
-        (/ LATGRD3, LAMGRD3, MERGRD3, STEGRD3, UTMGRD3, ALBGRD3 /)
+    INTEGER, PARAMETER :: CTYPE( 10 ) =  &
+        (/ LATGRD3, LAMGRD3, LEQGRD3, EQMGRD3, TRMGRD3, MERGRD3, POLGRD3, STEGRD3, UTMGRD3, ALBGRD3 /)
 
     !!...........   LOCAL VARIABLES and their descriptions:
 
@@ -80,15 +86,15 @@ PROGRAM LATLON
 'Program LATLON to construct matching TIME-INDEPENDENT 1-LAYER  GRIDDED',   &
 'and BOUNDARY TIME-INDEPENDENT I/O API files containing the latitude and',  &
 'longitude at cell centers, for a user specified coordinate system and',    &
-'grid.',                                                                    &
-'',                                                                         &
-'NOTE:  Currently, only Lat-lon, Lambert, UTM, Mercator, Stereographic',    &
-'and Albers Equal-Area coordinate systems, and boundaries with  NTHIK > 0', &
-'are supported.  You may turn off either file (GRIDDED or BOUNDARY) by',    &
-'responding "NONE" to the prompt for its name.',                            &
+'grid. You may turn off either file (GRIDDED or BOUNDARY) by responding',   &
+'"NONE" to the prompt for its name.',                                       &
 '',                                                                         &
 'Specifications for this grid may either come from a GRIDDESC file',        &
 '(if it has a named grid), or may be entered interactively.',               &
+'',                                                                         &
+'NOTE:  Currently, only Lat-lon, Lambert, UTM, Equatorial or Transverse',   &
+'Mercator, Polar Stereographic and Albers Equal-Area coordinate systems,',  &
+'and boundaries with  NTHIK > 0  are supported interactively.',             &
 '',                                                                         &
 'You will be prompted for the logical name of the output files.',           &
 'You will need to have set up the environment for this program ',           &
@@ -101,7 +107,7 @@ PROGRAM LATLON
 'See URL',                                                                  &
 'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',            &
 '',                                                                         &
-'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013 Carlie J. Coats, Jr.', &
+'Program copyright (C) 1992-2002 MCNC, (C) 1995-2017 Carlie J. Coats, Jr.', &
 '(C) 2002-2010 Baron Advanced Meteorological Systems, LLC., and',           &
 '(C) 2015 UNC Institute for the Environment.',                              &
 'Released under Version 2 of the GNU General Public License. See',          &
@@ -119,7 +125,7 @@ PROGRAM LATLON
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: latlon.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: latlon.f90 74 2017-12-22 19:40:11Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -210,11 +216,11 @@ PROGRAM LATLON
         ELSE IF ( GDTYP3D .EQ. LAMGRD3  .OR.    &
                   GDTYP3D .EQ. ALBGRD3  ) THEN !  Lambert or Albers conic projection
 
-            P_ALP3D = GETVAL( -90.0D0, 90.0D0, 30.0D0, 'Enter secant angle     P_ALP' )
-            P_BET3D = GETVAL( P_ALP3D, 90.0D0, 60.0D0, 'Enter secant angle     P_BET' )
+            P_ALP3D = GETVAL(  -90.0D0, 90.0D0,   30.0D0, 'Enter secant angle     P_ALP' )
+            P_BET3D = GETVAL(  P_ALP3D, 90.0D0,   60.0D0, 'Enter secant angle     P_BET' )
             P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter central meridian P_GAM' )
             XCENT3D = GETVAL( -180.0D0, 180.0D0, P_GAM3D, 'Enter X coord origin   XCENT' )
-            YCENT3D = GETVAL(  -90.0D0,  90.0D0, 40.0D0, 'Enter Y coord origin   YCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0,  40.0D0, 'Enter Y coord origin   YCENT' )
 
         ELSE IF ( GDTYP3D .EQ. UTMGRD3 ) THEN !  UTM projection
 
@@ -224,6 +230,54 @@ PROGRAM LATLON
             XCENT3D = GETVAL( -999999999.0D0, 999999999.0D0, 0.0D0, 'Enter UTM offset XCENT' )
             YCENT3D = GETVAL( -999999999.0D0, 999999999.0D0, 0.0D0, 'Enter UTM offset YCENT' )
 
+        ELSE IF ( GDTYP3D .EQ. TRMGRD3 ) THEN !  Transverse Mercator projection
+
+            P_ALP3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter latitude of origin     P_ALP' )
+            P_BET3D = GETVAL(    0.0D0,   1.0D0,   1.0D0, 'Enter scale factor at center P_BET' )
+            P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter central meridian       P_GAM' )
+            XCENT3D = GETVAL( -180.0D0, 180.0D0, P_GAM3D, 'Enter X coord origin lon     XCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0,  40.0D0, 'Enter Y coord origin lat     YCENT' )
+
+        ELSE IF ( GDTYP3D .EQ. EQMGRD3 ) THEN !  Equatorial Mercator projection
+
+            P_ALP3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter latitude of true scale P_ALP' )
+            P_BET3D = 0.0D0
+            P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter central meridian       P_GAM' )
+            XCENT3D = GETVAL( -180.0D0, 180.0D0, P_GAM3D, 'Enter X coord origin lon     XCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0,  40.0D0, 'Enter Y coord origin lat     YCENT' )
+
+        ELSE IF ( GDTYP3D .EQ. MERGRD3 ) THEN !  General Mercator projection
+
+            P_ALP3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter origin latitude     P_ALP' )
+            P_BET3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter origin longitude    P_BET' )
+            P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter bearing from North  P_GAM' )
+            XCENT3D = GETVAL( -180.0D0, 180.0D0, P_BET3D, 'Enter X coord origin lon  XCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0,  40.0D0, 'Enter Y coord origin lat  YCENT' )
+
+        ELSE IF ( GDTYP3D .EQ. POLGRD3 ) THEN !  Polar Stereographic projection
+
+            P_ALP3D = DBLE( 2*GETVAL( 0, 1, 1, 'Enter 1 for Northern Hemisphere, 0 for Southern' ) - 1 )
+            P_BET3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter latitude of true scale P_BET' )
+            P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter central meridian       P_GAM' )
+            XCENT3D = GETVAL( -180.0D0, 180.0D0, P_BET3D, 'Enter X coord origin lon     XCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0,  40.0D0, 'Enter Y coord origin lat     YCENT' )
+
+        ELSE IF ( GDTYP3D .EQ. STEGRD3 ) THEN !  General Stereographic projection
+
+            P_ALP3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter tangent latitude    P_ALP' )
+            P_BET3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter tangent longitude   P_BET' )
+            P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter bearing from North  P_GAM' )
+            XCENT3D = GETVAL( -180.0D0, 180.0D0, P_BET3D, 'Enter X coord origin lon  XCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0,  40.0D0, 'Enter Y coord origin lat  YCENT' )
+
+        ELSE IF ( GDTYP3D .EQ. LEQGRD3 ) THEN !  Lambert Azimuthal Equal Area projection
+
+            P_ALP3D = GETVAL(  -90.0D0,  90.0D0,  30.0D0, 'Enter latitude of origin  P_ALP' )
+            P_BET3D = 0.0D0
+            P_GAM3D = GETVAL( -180.0D0, 180.0D0, -90.0D0, 'Enter central meridian    P_GAM' )
+            XCENT3D = GETVAL( -180.0D0, 180.0D0, P_GAM3D, 'Enter X coord origin lon  XCENT' )
+            YCENT3D = GETVAL(  -90.0D0,  90.0D0,  40.0D0, 'Enter Y coord origin lat  YCENT' )
+
         ELSE
 
             CALL M3EXIT( PNAME, 0, 0, 'Only Lat-Lon, Lambert, UTM, and Albers supported', 2 )
@@ -232,13 +286,13 @@ PROGRAM LATLON
 
         NCOLS3D = GETVAL( 1, 999999999, 48, 'Enter number NCOLS of grid columns' )
         NROWS3D = GETVAL( 1, 999999999, 50, 'Enter number NROWS of grid rows' )
-        NTHIK3D = GETVAL( 1, 999999999, 1, 'Enter bdy thickness NTHIK (cells)' )
+        NTHIK3D = GETVAL( 1, 999999999,  1, 'Enter bdy thickness NTHIK (cells)' )
 
-        XCELL3D = GETVAL( 0.0D0, 9.0D36, 54000.0D0, 'Enter X cell size XCELL (meters)' )
-        YCELL3D = GETVAL( 0.0D0, 9.0D36, XCELL3D, 'Enter Y cell size YCELL (meters)' )
-        XORIG3D = GETVAL( -9.0D36, 9.0D36, XCELL3D*( DBLE( NCOLS3D ) - 0.5D0 ),    &
+        XCELL3D = GETVAL(  0.0D0,  9.0D36, 54000.0D0, 'Enter X cell size XCELL (meters)' )
+        YCELL3D = GETVAL(  0.0D0,  9.0D36, XCELL3D,   'Enter Y cell size YCELL (meters)' )
+        XORIG3D = GETVAL( -9.0D36, 9.0D36, 0.5D0*XCELL3D*( DBLE( NCOLS3D ) - 0.5D0 ),    &
                      'Enter SW corner X coord for (1,1)-cell' )
-        YORIG3D = GETVAL( -9.0D36, 9.0D36, YCELL3D*( DBLE( NROWS3D ) - 0.5D0 ),    &
+        YORIG3D = GETVAL( -9.0D36, 9.0D36, 0.5D0*YCELL3D*( DBLE( NROWS3D ) - 0.5D0 ),    &
                      'Enter SW corner Y coord for (1,1)-cell' )
 
     END IF      !  if specify horizontal grid by name, or interactively
@@ -261,16 +315,27 @@ PROGRAM LATLON
 
     !!.......   Variables and their descriptions; file description
 
-    NVARS3D = 2
+    NVARS3D = 4
+
     VNAME3D( 1 ) = 'LAT'
     UNITS3D( 1 ) = 'degrees lat'
-    VDESC3D( 1 ) = 'cell-centers latitudes'
+    VDESC3D( 1 ) = 'ISO-Standard 6709 cell-centers latitudes as REAL'
     VTYPE3D( 1 ) = M3REAL
 
     VNAME3D( 2 ) = 'LON'
     UNITS3D( 2 ) = 'degrees lon'
-    VDESC3D( 2 ) = 'cell-centers longitudes'
+    VDESC3D( 2 ) = 'ISO-Standard 6709 cell-centers longitudes as REAL'
     VTYPE3D( 2 ) = M3REAL
+
+    VNAME3D( 3 ) = 'LATD'
+    UNITS3D( 3 ) = 'degrees lat'
+    VDESC3D( 3 ) = 'ISO-Standard 6709 cell-centers latitudes as REAL*8'
+    VTYPE3D( 3 ) = M3DBLE
+
+    VNAME3D( 4 ) = 'LOND'
+    UNITS3D( 4 ) = 'degrees lon'
+    VDESC3D( 4 ) = 'ISO-Standard 6709 cell-centers longitudes as REAL*8'
+    VTYPE3D( 4 ) = M3DBLE
 
     FTYPE3D = GRDDED3		!  set file data type
     FDESC3D = ' '
@@ -371,6 +436,16 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CALL M3EXIT( 'LATLON/MAKEGRD', 0, 0, MESG, 2 )
         END IF
 
+        IF ( .NOT. WRITE3( GNAME, 'LATD', 0, 0, LATD ) ) THEN
+            MESG = 'Error writing "LATD" to file "' // TRIM( GNAME ) // '"'
+            CALL M3EXIT( 'LATLON/MAKEGRD', 0, 0, MESG, 2 )
+        END IF
+
+        IF ( .NOT. WRITE3( GNAME, 'LOND', 0, 0, LOND ) ) THEN
+            MESG = 'Error writing "LOND" to file "' // TRIM( GNAME ) // '"'
+            CALL M3EXIT( 'LATLON/MAKEGRD', 0, 0, MESG, 2 )
+        END IF
+
         RETURN
 
         END SUBROUTINE  MAKEGRD
@@ -467,6 +542,16 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         IF ( .NOT. WRITE3( BNAME, 'LON', 0, 0, LONB ) ) THEN
             MESG = 'Error writing "LON" to file "' // TRIM( BNAME ) // '"'
+            CALL M3EXIT( 'LATLON/MAKEBDY', 0, 0, MESG, 2 )
+        END IF
+
+        IF ( .NOT. WRITE3( BNAME, 'LATD', 0, 0, LATD ) ) THEN
+            MESG = 'Error writing "LATD" to file "' // TRIM( BNAME ) // '"'
+            CALL M3EXIT( 'LATLON/MAKEBDY', 0, 0, MESG, 2 )
+        END IF
+
+        IF ( .NOT. WRITE3( BNAME, 'LOND', 0, 0, LOND ) ) THEN
+            MESG = 'Error writing "LOND" to file "' // TRIM( BNAME ) // '"'
             CALL M3EXIT( 'LATLON/MAKEBDY', 0, 0, MESG, 2 )
         END IF
 
