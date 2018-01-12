@@ -3,34 +3,18 @@
 
 <HTML>
 <HEAD>
-<!-- $HeadURL: svn+ssh://svn_bams@beech.baronams.com/bams_only/trunk/config_man/standards_bams.html $ -->
+<!-- $HeadURL: file:///work/svn/repos/ioapi-3.2/HTML/STANDARDS.html $ -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     M3IO Software Development Standards
 </TITLE>
-  <STYLE type="text/css">
-  span.green {font-weight: bold; color:green;}
-  span.red   {font-weight: bold; color:red;}
-  span.blue  {font-weight: bold; color:blue;}
-  body {
-  background-color: #FFFFFF;
-  margin-top:    15px;
-  margin-bottom: 15px;
-  margin-left:   15px;
-  margin-right:  15px;
-  }
-  </STYLE>
 </HEAD>
 
-<!--
-<BODY BGCOLOR     ="#FFFFFF"
-      TOPMARGIN   ="15"
+<BODY BGCOLOR="#FFFFFF"
+      TOPMARGIN="15"
       MARGINHEIGHT="15"
-      LEFTMARGIN  ="15"
-      MARGINWIDTH ="15">
--->
-
-<BODY>
+      LEFTMARGIN="15"
+      MARGINWIDTH="15">
 
 <!--#include virtual="/INCLUDES/header.html" -->
 
@@ -112,7 +96,7 @@
     Officer or his designate.
     <P>
 
-   Design review objectives include the following:
+   <STRONG>Design review</STRONG> objectives include the following:
    <UL>
        <LI>  faithful representation -- i. e., that design accurately
             addresses the requirements
@@ -130,7 +114,7 @@
    </UL>
    <P>
 
-   Code review objectives include the following</P>
+   <STRONG>Code review</STRONG> objectives include the following</P>
    <UL>
        <LI> code accurately follows the design
        <LI> structurally sound (well-thought-out) implementation
@@ -150,7 +134,7 @@
             must cooperate in order to perform that operation.
 
        <LI> <EM>Preconditions</EM> (what must be done before invocation) and
-            <EM>postconditions</EM>P (what is guaranteed to be true after
+            <EM>postconditions</EM> (what is guaranteed to be true after
             invocation)
 
        <LI> The set of <EM>input and output data structures</EM>, particularly
@@ -274,7 +258,7 @@
             <UL>
                 <LI> <CODE>Makefile.template</CODE> is the repository
                      copy.  It is not used directly.
-                <LI> <CODE>Makefile</CODE> is the local (non-Subversion)
+                <LI> <CODE>Makefile</CODE> is the local (non-repository)
                      customized copy, actually used for building codes.
                 <LI> Updating <CODE>Makefile.template</CODE> is a
                      required part of a repository commit.
@@ -397,9 +381,9 @@
              <P>
 
         <LI>  Avoid multiple (&gt;&nbsp;2) levels of definitions,
-              recursion, and other nested structures:  the cognitive
-              psychologyists say this greatly decreases understandability
-              of the code.
+              recursion, script-invocation, and other nested
+              structures:  the cognitive psychologyists say this greatly
+              decreases understandability of the code.
               <BR>
               For this purpose, &quot;perfect&quot; loop-nests may
               be regarded as a single control structure; indentation
@@ -465,7 +449,7 @@
 
         <LI>  For any <VAR>svn add</VAR> or <VAR>svn delete</VAR>, make
               corresponding changes to the master
-              <CODE>Makefile.template</CODE> before <VAR>svn commit</VAR>.
+              <CODE>Makefile.template</CODE> before <VAR>svn&nbsp;commit</VAR>.
               <P>
 
         <LI>  No one but the Chief Architect may change the source code in
@@ -477,7 +461,8 @@
               <P>
 
         <LI>  All I/O and memory-allocation operations (and other
-              operations that may potentially succeed or fail) shall check
+              operations that may potentially succeed or fail, e.g., 
+              environment-variable calls, MPI operations) shall check
               the success/failure status of the indicated operation, and
               shall log failures, preferably with the error-status value.
               (For M3IO <VAR>READ3()</VAR>, etc., the log-operation is
@@ -549,7 +534,7 @@
               <P>
 
         <LI>  Loop beginning and loop ending for loops constructed with
-              <CODE>IF</CODE>s and <CODE>GO TO</CODE>s must be documented by
+              <CODE>IF</CODE>s and <CODE>GO&nbsp;TO</CODE>s must be documented by
               comments.
               <P>
 
@@ -557,7 +542,7 @@
               (otherwise, the flow-of-control may not be clear).
               <P>
 
-        <LI>  Do not <CODE>GO TO</CODE> the interior of a <CODE>DO</CODE>-loop
+        <LI>  Do not <CODE>GO&nbsp;TO</CODE> the interior of a <CODE>DO</CODE>-loop
               or an <CODE>IF-THEN-ELSE</CODE> block from outside the
               block:  the effects are "unspecified", according to the
               Fortran standard, and if a compiler-vendor chooses to
@@ -607,7 +592,7 @@
 
         <LI>  Indentation shall be in multiples of four columns, with
               initiation and termination at the same level (e.g., a
-              <CODE>DO</CODE> and its terminating <CODE>END DO</CODE> start at
+              <CODE>DO</CODE> and its terminating <CODE>END&nbsp;DO</CODE> start at
               the same column) (&quot;Algol/Wirth/Whitesmith&quot; style
               indentation).
               <P>
@@ -649,15 +634,16 @@
 
         <LI>  Code with numerical round-off properties in mind.  In
               particular, avoid things like the following stupidity out
-              of MCIP (with a divide by GSFC at the end of
-              <VAR>F3</VAR>, and the a multiply by it in
-              <VAR>RSTOMI(C,R)</VAR>, accomplishing only round-off
+              of MCIP (with a divide by <CODE>GSFC</CODE> at the end of
+              scratch-variable <CODE>F3</CODE>, and the a multiply by it
+              in <CODE>RSTOMI(C,R)</CODE>, accomplishing only round-off
               error and wasting CPU time on an (expensive)
               divide-operation):
               <PRE>
-        F3 = 0.5 * ( GSFC - GA + SQRT( GA * GA
- &amp;                         + GA * GSFC * (4.0 * Q1C / QSS - 2.0)
- &amp;                                   + GSFC * GSFC ) ) / GSFC
+        F3 = 0.5 * ( GSFC - GA
+ &amp;                 + SQRT( GA * GA
+ &amp;                       + GA * GSFC * (4.0 * Q1C / QSS - 2.0)
+ &amp;                       + GSFC * GSFC ) ) / GSFC
         RSTOMI(C,R) = GSFC * F3
               </PRE>
               <P>
@@ -702,7 +688,7 @@
               where for a &quot;cold-start&quot; initialization,
               <CODE>INIT_STUFF</CODE> is the cold-start initialization
               file and  <CODE>OUTPUT_STUFF</CODE> is the new output file,
-              but for a restart, <CODE>INIT_STUFF</CODE>
+              but for a restart, <CODE>INIT_STUFF</CODE> and
               <CODE>OUTPUT_STUFF</CODE> are the same file, and we are
               using <CODE>CLOSE3</CODE> to avoid having the same physical
               file open in different (read-only vs read-write) modes under
@@ -710,7 +696,13 @@
               (You may recall we rather had to jump through hoops --
               generating obscure warning messages -- to avoid this
               problems without using <CODE>CLOSE3</CODE> in
-              <VAR>MAQSIP</VAR>.
+              <VAR>MAQSIP</VAR>).
+              <P>
+
+        <LI>  Note that there are standard tools like <VAR>findent</VAR>
+              (<A HREF="https://sourceforge.net/projects/findent/">
+              <U>https://sourceforge.net/projects/findent/</U></A>)
+              on Linux that can help you with the code-format issues above...
               <P>
 
     </UL>
@@ -790,7 +782,7 @@
 
         <LI>  Scripts that execute programs/models (e.g., Fortran
               programs) shall log program environment and (if present)
-              contents of UI-file.
+              contents of the command-input (&quot;UI&quot;) file.
               <P>
 
         <LI>  Scripts shall return program exit status.
@@ -826,6 +818,10 @@
              reduce the depth of calling sequences by bundling related
              functions  within a single script.
              <P>
+             In particular, it is bad practice to have three or more
+             levels of script-calling, for which definitions in one
+             level are used two or more calling-levels further down.
+             <P>
 
        <LI>  To ease analysis:  When appropriate, scripts will echo parameter
              information and configuration information.  Scripts will echo
@@ -845,8 +841,9 @@
              line of the error message.
              <P>
 
-        <LI>  Each script will include near the top a comment to display the
-              contents of the Subversion keyword <VAR>Id</VAR>.
+        <LI>  Each production script will include near the top a comment
+              to display the contents of the Subversion keyword
+              <VAR>Id</VAR>.
               <P>
 
         <LI>  Each script will include near the top a comment to display a
@@ -873,11 +870,15 @@
 
    </BLOCKQUOTE>
 
-    <P><STRONG><A href="#contents">Back to
-    <EM>Contents</EM></A></STRONG></P>
-<!--#include virtual="/INCLUDES/footer.html" -->
+<HR> <!- -------------------------------------------------------------- -->
+
+<STRONG><A HREF = "index.html">
+UP:  I/O&nbsp;API home page
+</A></STRONG>
+<P>
+
     <PRE>
-$Id: STANDARDS.html 421 2016-09-07 19:47:03Z coats $
+$Id: STANDARDS.html 75 2018-01-12 15:48:16Z coats $
      </PRE>
  </BODY>
 </HTML>

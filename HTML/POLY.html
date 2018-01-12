@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: POLY.html 103 2015-01-16 16:55:45Z coats $" -->
+<!-- "$Id: POLY.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> POLY() </TITLE>
 </HEAD>
@@ -60,6 +60,9 @@
     interpolations have stability problems.  NDEG &lt;= 5 is recommended. 
     -- CJC
 <P> 
+    
+    See also <A HREF = "PCOEF.html">PCOEF()</A>.
+    <P> 
 
 
 <H2> Preconditions: </H2>
@@ -74,8 +77,9 @@
     
 
 <H2> Fortran Usage: </H2>
-    Suppose X is between XPT( 17 ) and XPT( 18 ), and you want to
-    do a degree-3 interpolation (requiring XPT( 16 ) ... XPT( 19 ) ):
+    Suppose <CODE>X</CODE> is between <CODE>XPT(17)</CODE> and
+    <CODE>XPT(18)</CODE>, and you want to
+    do a degree-3 interpolation (requiring <CODE>XPT(16) ... XPT(19)</CODE> ):
 <PRE>
     ...
     USE M3UTILIO

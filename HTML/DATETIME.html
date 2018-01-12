@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: DATETIME.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: DATETIME.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Dates and Time Conventions </TITLE>
 </HEAD>
@@ -51,16 +51,17 @@ time step sequence starting at midnight January 2, 1980, with time step three ho
 </PRE>
 Note that 
 <A HREF = "VBLE.html#timestruct">each file has a time step
-sequence</A> (where by convention, time increment <STRONG>dT=0 means that
-the data in the file is time-independent,</STRONG> and routines like
-READ3() and WRITE3() which deal  with time-independent files ignore the 
-date-and-time arguments.  Note that programs (e.g., <VAR>m3tools</VAR>
-programs) which control their run timestep-sequence by specification
-of starting date&amp;time, timestep, and ending date&amp;time are
-in practice not subject to <CODE>INTEGER</CODE>-overflow problems; 
-however, older ones controlled by starting date&amp;time, timestep,
-and duration may well be subject to the above-mentioned 24.5-year limit.
-Unfortunately, this requires an incompatible interface-change to fix...
+sequence</A> (where by convention, time increment <STRONG>dT=0 means
+that the data in the file is time-independent,</STRONG> and routines
+like <CODE>READ3()</CODE> and <CODE>WRITE3()</CODE> which deal  with
+time-independent files ignore the  date-and-time arguments.  Note that
+programs (e.g., <VAR>m3tools</VAR> programs) which control their run
+timestep-sequence by specification of starting date&amp;time, timestep,
+and ending date&amp;time are in practice not subject to
+<CODE>INTEGER</CODE>-overflow problems;  however, older ones controlled
+by starting date&amp;time, timestep, and duration may well be subject to
+the above-mentioned 24.5-year limit. Unfortunately, this requires an
+incompatible interface-change to fix...
 <P> 
 
 <A NAME="stdday"><STRONG>Standard-Year</STRONG></A> and

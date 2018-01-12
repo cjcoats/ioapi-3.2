@@ -6,13 +6,14 @@
      &                            NLAYS, VGTYP, VGTOP, VGLEV )
 
 C***********************************************************************
-C Version "$Id: grdchk3.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: grdchk3.f 75 2018-01-12 15:48:16Z coats $"
 C EDSS/Models-3 I/O API.
-C Copyright (C) (C) 2005-2013 Baron Advanced Meteorological Systems
+C Copyright (C) 2005-2013 Baron Advanced Meteorological Systems and
+C (C) 2007-2018 Carlie J. Coats, Jr.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line 92
+C  function body starts at line 96
 C
 C  FUNCTION:
 C       Checks FDESC3 coordinate and grid description variables
@@ -73,6 +74,9 @@ C***********************************************************************
 
 
         !!........  Statement Functions:
+        !!  It is not reasonable that the two arguments are intended for
+        !!  the same thing, even though they may have been calculated
+        !!  on different machines, and using different precisions.
 
         LOGICAL         FLTERR
         REAL            PP, QQ

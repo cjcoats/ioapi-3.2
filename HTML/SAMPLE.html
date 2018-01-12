@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: SAMPLE.html 6 2017-05-04 18:54:56Z coats $" -->
+<!-- "$Id: SAMPLE.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> I/O API Sample Programs </TITLE>
 </HEAD>
@@ -40,11 +40,14 @@
     <UL>
         <LI>  <A HREF = "LATLON.txt"><STRONG><VAR>latlon</VAR></STRONG></A> 
               computes single-layer time-independent gridded and/or
-              boundary files containing variables &quot;LAT&quot;
-              and &quot;LON&quot; containing latitudes and longitudes 
-              at cell centers for the specified grid and/or its boundary 
-              (the choice of which file (or both) to generate is a 
-              user option).  Uses
+              boundary files containing <CODE>REAL</CODE> variables
+              <CODE>LAT</CODE> and <CODE>LON</CODE> and
+              <CODE>REAL*8</CODE> variables <CODE>LATD</CODE> and
+              <CODE>LOND</CODE> containing latitudes and longitudes at
+              cell centers for the specified grid and/or its boundary 
+              (the choice of which file (or both) to generate is a  user
+              option).  
+              Uses
               <UL>
                   <LI>  <A HREF = "M3UTILIO.html"><CODE>MODULE&nbsp;M3UTILIO</CODE></A>
                   <LI>  <A HREF = "MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE></A>

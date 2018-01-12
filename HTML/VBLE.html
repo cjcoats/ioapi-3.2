@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: VBLE.html 72 2017-12-12 17:54:20Z coats $" -->
+<!-- "$Id: VBLE.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> FILES:  Variables, Layers, and Time Steps </TITLE>
 </HEAD>
@@ -23,8 +23,8 @@ have units-designations (also (character strings of length at most 16)
 and text descriptions ((character strings of length at most 80).  For
 storing and retrieving metadata, and for storing ID-tables, indexes,
 etc. in structured datatypes (those requiring "all-variable"
-<A HREF = "READ3.html"> READ3() </A> and
-<A HREF = "WRITE3.html"> WRITE3() </A> operations) such as
+<A HREF = "READ3.html"><CODE>READ3()</CODE></A> and
+<A HREF = "WRITE3.html"><CODE>WRITE3()</CODE></A> operations) such as
 <A HREF = "DATATYPES.html#iddata">ID-referenced</A>,
 <A HREF = "DATATYPES.html#profil">vertical profile</A>, and
 <A HREF = "DATATYPES.html#smatrx">sparse matrix</A>,
@@ -41,21 +41,23 @@ and other analysis and visualization packages, and should not be used.)
 
 Names, units-designations, and text descriptions are stored in the
 file-headers and may be accessed via the
-<A HREF = "INCLUDE.html#fdesc"> FDESC data structures </A> after
-a call to <A HREF = "DESC3.html"> DESC3().</A>  The reverse procedure
-is used to create new files:  store the file's description in the
-FDESC data structures, and then call <A HREF = "OPEN3.html"> OPEN3() </A>.
+<A HREF = "INCLUDE.html#fdesc">FDESC data structures</A> after
+a call to <A HREF = "DESC3.html"><CODE>DESC3()</CODE>.</A>  The reverse
+procedure is used to create new files:  store the file's description in
+the FDESC data structures, and then call
+<A HREF = "OPEN3.html"><CODE>OPEN3()</CODE></A>.
 <P>
 
 <STRONG>For C programmers:</STRONG>  The <CODE>IOAPI_Cdesc3</CODE>
 fields (<CODE>gdnam, upnam, execn, fdesc[], updsc[], vname[],
-units[]</CODE>, and <CODE>vdesc[]</CODE> are <STRONG>blank-padded</STRONG>
-character arrays (padded to a length of NAMLEN3=16 for name fields and
-MXDLEN3=80 for description variables), not null-terminated C strings.
-On the other hand, file name and variable name <STRONG>arguments</STRONG>
-to <CODE>read3c()</CODE>, <CODE>write3c()</CODE>, <CODE>interp3c()</CODE>,
-and <CODE>xtract3c()</CODE> <STRONG>should be null-terminated</STRONG>
-C strings.
+units[]</CODE>, and <CODE>vdesc[]</CODE> are
+<STRONG>blank-padded</STRONG> character arrays (padded to a length of
+<CODE>NAMLEN3=16</CODE> for name fields and <CODE>MXDLEN3=80</CODE> for
+description variables), not null-terminated C strings. On the other
+hand, file name and variable name <STRONG>arguments</STRONG> to
+<CODE>read3c()</CODE>, <CODE>write3c()</CODE>, <CODE>interp3c()</CODE>,
+and <CODE>xtract3c()</CODE> <STRONG>should be null-terminated</STRONG> C
+strings.
 <BR>
 Fortran::C string-conversion routines <VAR><A HREF="CSTRINGS.html">fstr2cstr(),
 name2cstr(), cstr2fstr()</A></VAR> are very useful for passing
@@ -71,7 +73,7 @@ data structure,</A> although they may have different
 <A NAME = "DATATYPES.html#basic"> <STRONG>basic data type</STRONG></A>.
 <P>
 
-There are three kinds of <A NAME = "DATATYPES.html#basic">
+There are three (or four)  kinds of <A NAME = "DATATYPES.html#basic">
 <STRONG>basic data type</STRONG></A> which individual variables
 may have, as indicated by the following &quot;magic number&quot;
 parameters defined in <A HREF = "INCLUDE.html#parms"> PARMS3.EXT </A>,

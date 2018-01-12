@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ENVIRONMENT.html 72 2017-12-12 17:54:20Z coats $" -->
+<!-- "$Id: ENVIRONMENT.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> Environment Variables for the I/O&nbsp;API </TITLE>
 </HEAD>
@@ -32,10 +32,11 @@ correctly&mdash;for example:
     <LI>  <STRONG>LOGFILE</STRONG>  is the physical pathname for
           the program log.   If this logical name is present, the
           indicated file  is opened  for output; otherwise, Fortran
-          standard output to UNIT 6 for the log is assumed.  This log
-          file is used throughout the I/O&nbsp;API; also, its unit
-          number is returned by <A HREF = "INIT3.html"> INIT3() </A>.
-          <P>
+          standard output to <CODE>UNIT&nbsp;6</CODE> for the log is
+          assumed.  This log file is used throughout the I/O&nbsp;API;
+          also, its unit number is returned by calls to
+          <A HREF = "INIT3.html"><CODE>INIT3()</CODE></A>.
+          <BR>
           This facility was provided for use with (now-obsolete)
           devices like CalComp plotters that hijack <CODE>STDOUT</CODE>.
           <P>
@@ -75,7 +76,10 @@ correctly&mdash;for example:
           and routines <A HREF="SETSPHERE.html"><CODE>SETSPHERE,
           INITSPHERES,</CODE> and <CODE>SPHEREDAT</CODE></A>,  This
           environment variable is also used by a number of
-          <VAR>m3tools</VAR> programs that call these routines.
+          <VAR>m3tools</VAR> programs that call these routines;
+          see either the manual-pages for these programs or the
+          <CODE>PRECONDITIONS</CODE> sections of their respective
+          splash-screens.
           <P>
 
     <LI>  <STRONG>IOAPI_CHECK_HEADERS</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>)
@@ -95,6 +99,9 @@ correctly&mdash;for example:
           1000&times;1000&times;25 grid) occupies slightly less than
           2GB, so we're talking "quite large" model runs in order to
           need this...).  <BR>
+          The default value is <CODE>N</CODE> for I/O&nbsp;API versions
+          3.1 or earlier, or 3.2 before Dec.&nbsp;25, 2017, and
+          <CODE>Y</CODE> for 3.2 thereafter.<BR>
           Older versions of NetCDF still have a 2GB per variable per
           time step limitation, by the way&mdash;though it is worth
           noting that for your model to use single arrays larger than
@@ -107,9 +114,9 @@ correctly&mdash;for example:
 
     <LI>  <STRONG>IOAPI_LOG_WRITE</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>)
           controls whether a log message is written for each successful
-          WRITE3() operation (messages are always written for failures).
-          The default value is 'Y', indicating that the log messages
-          will be generated.
+          <CODE>WRITE3()</CODE> operation (messages are always written
+          for failures). The default value is 'Y', indicating that the
+          log messages will be generated.
           <P>
 
     <LI>  <STRONG>IOAPI_KEEP_NSTEPS</STRONG> (<CODE>INTEGER</CODE> value
@@ -121,19 +128,20 @@ correctly&mdash;for example:
 
     <LI>  <STRONG>PROMPTFLAG</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>,
           with default <CODE>N</CODE>) controls whether
-          routines <A HREF = "GETDBLE.html">GETDBLE()</A>,
+          routines <CODE><A HREF = "GETDBLE.html">GETDBLE()</A>,
           <A HREF = "GETMENU.html">GETMENU()</A>,
           <A HREF = "GETNUM.html">GETNUM()</A>,
           <A HREF = "GETREAL.html">GETREAL()</A>,
           <A HREF = "GETSTR.html">GETSTR()</A>,
           <A HREF = "GETYN.html">GETYN()</A>,
-          <A HREF = "PROMPTFFILE.html">PROMPTFFILE()</A>, and
-          <A HREF = "PROMPTMFILE.html">PROMPTMFILE()</A>, prompt the user for
-          the value requested, or not.  Setting PROMPTFLAG to &quot;N&quot;
-          can be used, in conjunction with the selection of &quot;smart&quot;
-          defaults within programs, to make it easier to write scripts for
-          running various programs that insist on using these prompt-style
-          interactive-orented routines.
+          <A HREF = "PROMPTFFILE.html">PROMPTFFILE()</A></CODE>, and <CODE>
+          <A HREF = "PROMPTMFILE.html">PROMPTMFILE()</A></CODE>, prompt the
+          user for the value requested, or not.  Setting
+          <CODE>PROMPTFLAG</CODE> to &quot;N&quot; can be used, in
+          conjunction with the selection of &quot;smart&quot; defaults
+          within programs, to make it easier to write scripts for
+          running various programs that insist on using these
+          prompt-style interactive-orented routines.
           <P>
 </UL>
 <P>
@@ -142,7 +150,7 @@ The following environment variables are for <STRONG>I/O&nbsp;API-3.2 or
 later only</STRONG>:
 <UL>
 
-    <LI>  <STRONG>IOAPI_CFMETA</STRONG>> (<CODE>LOGICAL&nbsp;Y/N</CODE>,
+    <LI>  <STRONG>IOAPI_CFMETA</STRONG> (<CODE>LOGICAL&nbsp;Y/N</CODE>,
           with default <CODE>N</CODE>)
           controls whether <A HREF="http://cfconventions.org/">CF
           compliant metadata</A> will be written
@@ -160,8 +168,8 @@ later only</STRONG>:
     (<VAR>NONE</VAR> (default), <VAR>ENV</VAR>, or
           <VAR>&lt;path to ASCII SMOKE metadata input file&gt;</VAR><BR>
           controls whether SMOKE-standard metadata will be written
-          to the headers of newly-created files (currently under
-          development, 10/2015).
+          to the headers of newly-created files (currently stubbed-in
+          but not yet turned on by the SMOKE developers, 10/2015).
           <P>
 
     <LI>  <STRONG>SNOOPTRY3, SNOOPSECS3</STRONG> control the

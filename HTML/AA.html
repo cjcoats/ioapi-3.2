@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 71 2017-12-11 13:25:39Z coats $" -->
+<!-- "$Id: AA.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -117,8 +117,8 @@ Contents
 
     This hyperdocument describes recent (second and third) versions of
     the  EDSS./Models-3/BAMS I/O&nbsp;API.  Copyright &copy; 1992-2002
-    MCNC, &copy; 1992-2013 Carlie J. Coats, Jr., &copy; 2003-2013
-    Baron Advanced Meteorological Systems, LLC., &copy; 2014-2015
+    MCNC, &copy; 1992-2013,2017- Carlie J. Coats, Jr., &copy; 2003-2013
+    Baron Advanced Meteorological Systems, LLC., &copy; 2014-
     UNC Institute for the Environment.  Distributed under the
     GNU Library Public License (LGPL) Version&nbsp;2.1. See the
     <A HREF="NOTICES.html">Notices and Acknowledgements</A> page.
@@ -252,10 +252,15 @@ Contents
              <STRONG>SPARSE MATRIX</STRONG>:
              </A>
              uses &quot;skyline-transpose&quot; representation
+             <P>
+        <DT> <A HREF = "MODNCFIO.html#decl">
+             <STRONG>&quot;Raw netCDF&quot;</STRONG>:
+             </A>
+             <CODE>MODULE MODNCFIO</CODE>
         <DT> <A HREF = "MODMPASFIO.html#decl">
              <STRONG>MPAS</STRONG>:
              </A>
-             unstructured Voronoi grid:  <CODE>MODULE MPASFIO</CODE>
+             unstructured Voronoi grids and MPAS-format netCDF:  <CODE>MODULE MPASFIO</CODE>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -285,17 +290,21 @@ Contents
              to retrofit an &quot;old-style&quot; code to one with
              <CODE>USE&nbsp;M3UTILIO</CODE>:
              <UL>
+                <LI> Add <CODE>USE&nbsp;M3UTILIO</CODE> before
+                     any <CODE>INCLUDE</CODE> statements or 
+                     variable-declarations;
                 <LI> Delete the <CODE>INCLUDE</CODE> statements
                      for <CODE>PARMS.EXT, FDESC3.EXT</CODE>,
-                     and <CODE>IODECL3.EXT</CODE>, 
+                     and <CODE>IODECL3.EXT</CODE>;
                 <LI> Deete the declarations and <CODE>EXTERNAL</CODE>
                      statements for I/O&nbsp;API functions.
              </UL>
              <P>
         <DT> <A HREF = "MODATTS3.html">
              <STRONG><VAR>MODULE MODATTS3</VAR></STRONG></A>:
-             parameters and routines for map-transform, CMAQ, and
+             parameters and routines for map-transform, CF, CMAQ, and
              SMOKE metadata.
+             <P>
         <DT> <A HREF = "MODGCTP.html">
              <STRONG><VAR>MODULE MODGCTP</VAR></STRONG></A>:
              parameters and routines for map-transform operations
@@ -323,14 +332,17 @@ Contents
              <STRONG>FDESC3.EXT</STRONG>:
              </A>
              file description data structures
+             <EM>:&nbsp;(Deprecated for I/O&nbsp;API-3.0 or later)</EM>
         <DT> <A HREF = "INCLUDE.html#iodecl">
              <STRONG>IODECL3.EXT</STRONG>:
              </A>
              declarations and usage comments for I/O routines
+             <EM>:&nbsp;(Deprecated for I/O&nbsp;API-3.0 or later)</EM>
         <DT> <A HREF = "INCLUDE.html#parms">
              <STRONG>PARMS3.EXT</STRONG>:
              </A>
              &quot;magic number &quot;tokens and dimensioning parameters
+             <EM>:&nbsp;(Deprecated for I/O&nbsp;API-3.0 or later)</EM>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -759,16 +771,16 @@ Contents
 
 <H2> <A NAME = "datestuff"> Date-Time Manipulation Routines </A> </H2>
 
-    See also programs <A HREF = "DATSHIFT.html">datshift</A>,
-    <A HREF = "GREGDATE.html">gregdate</A>, 
-    <A HREF = "GREG2JUL.html">greg2jul</A>, 
-    <A HREF = "JUL2GREG.html">jul2greg</A>,
-    <A HREF = "JULDATE.html">juldate</A>,
-    <A HREF = "JULDIFF.html">juldiff</A>,
-    <A HREF = "JULSHIFT.html">julshift</A>, and
-    <A HREF = "TIMESHIFT.html">timeshift</A> for date-related
-    calculations, and <A HREF = "M3TPROC.html">m3tproc</A> and
-    <A HREF = "M3TSHIFT">m3tshift</A> for time-related file
+    See also programs <A HREF = "DATSHIFT.html"><STRONG><VAR>datshift</VAR></STRONG></A>,
+    <A HREF = "GREGDATE.html"><STRONG><VAR>gregdate</VAR></STRONG></A>, 
+    <A HREF = "GREG2JUL.html"><STRONG><VAR>greg2jul</VAR></STRONG></A>, 
+    <A HREF = "JUL2GREG.html"><STRONG><VAR>jul2greg</VAR></STRONG></A>,
+    <A HREF = "JULDATE.html"><STRONG><VAR>juldate</VAR></STRONG></A>,
+    <A HREF = "JULDIFF.html"><STRONG><VAR>juldiff</VAR></STRONG></A>,
+    <A HREF = "JULSHIFT.html"><STRONG><VAR>julshift</VAR></STRONG></A>, and
+    <A HREF = "TIMESHIFT.html"><STRONG><VAR>timeshift</VAR></STRONG></A> for date-related
+    calculations, and <A HREF = "M3TPROC.html"><STRONG><VAR>m3tproc</VAR></STRONG></A> and
+    <A HREF = "M3TSHIFT"><STRONG><VAR>m3tshift</VAR></STRONG></A> for time-related file
     operations.
 
     <BLOCKQUOTE><DL>
@@ -977,18 +989,17 @@ Contents
              <STRONG>GETSTR</STRONG>:
              </A>
              prompt user for CHARACTER STRING, etc.
-        <DT> <STRONG>GETVAL</STRONG>: <EM>I/O&nbsp;API-3.2 or later, only</EM>
-        <DD> prompt user for a numeric or <CODE>LOGICAL</CODE> answer,
-             with <CODE>DEFAULT</CODE>.
-             <BR>
-             <EM>Fortran-90 generic function for:</EM>
-             <BLOCKQUOTE><CODE><STRONG>
-             <A HREF = "GETDBLE.html" >GETDBLE</A>,<BR>
+        <DT> <STRONG>GETVAL</STRONG>:  Fortran-90 generic function for
+             prompting user for a numeric or <CODE>LOGICAL</CODE>
+             answer, with <CODE>DEFAULT</CODE>.  Subsumes:
+        <DD> <CODE><STRONG>
+             <A HREF = "GETDBLE.html" >GETDBLE and GETDBLE1</A>,<BR>
              <A HREF = "GETMENU.html" >GETMENU</A>,<BR>
-             <A HREF = "GETNUM.html"  >GETNUM</A>,<BR>
-             <A HREF = "GETREAL.html" >GETREAL</A>,<BR>
+             <A HREF = "GETNUM.html"  >GETNUM and GETNUM1</A>,<BR>
+             <A HREF = "GETREAL.html" >GETREAL and GETREAL1</A>,<BR>
              <A HREF = "GETYN.html"   >GETYN</A>,<BR>
-             </STRONG></CODE></BLOCKQUOTE>
+             </STRONG></CODE><BR>
+             <EM>I/O&nbsp;API-3.2 or later, only</EM><P>
         <DT> <A HREF = "GETYN.html" >
              <STRONG>GETYN</STRONG>:
              </A>
@@ -1040,8 +1051,8 @@ Contents
              <STRONG>M3ERR</STRONG>:
              </A>
              <VAR>&lt;warning or error message&gt;</VAR>;
-             with SHUT3() and EXIT(2) if fatal error;
-             <STRONG>deprecated:</STRONG>  superseded by
+             with SHUT3() and EXIT(2) if fatal error;<BR>
+             &nbsp;&nbsp;&nbsp;&nbsp;<STRONG>Deprecated:</STRONG>  superseded by
 	         M3EXIT() and M3WARN()
         <DT> <A HREF = "M3EXIT.html" >
              <STRONG>M3EXIT</STRONG>:
@@ -1115,12 +1126,15 @@ Contents
              </A>
              applies sparse matrix to vector
         <DT> <A HREF = "SORTI.html" >
-             <STRONG>SORTC, SORTI, SORTI1, SORTI2, SORTI3, SORTI4,
+             <STRONG>SORTIC, SORTIC8, SORTINC4, SORTINC8.
+             SORTI1, SORTI2, SORTI3, SORTI4,
+             SORTL1, SORTL2, SORTL3, SORTI3, SORTL4,
              SORTR1, SORTR2, SORTR3, SORTR4 </STRONG>:
              </A>
              sort <VAR>&lt;index table&gt;</VAR> acording to a
-             CHARACTER-string key-table, or a
-             <VAR>&lt;keytuple-table&gt;</VAR> of INTEGERs or REALs.
+             <CODE>CHARACTER</CODE>-string key-table, or a
+             <VAR>&lt;keytuple-table&gt;</VAR> of <CODE>INTEGER</CODE>s.
+              <CODE>INTEGER(8)</CODE>s, or <CODE>REAL</CODE>s.
         <DT> <A HREF = "STR2S.html" >
              <STRONG>SCANINT, STR2INT, STR2REAL, and STR2DBLE</STRONG>:
              </A>
@@ -1135,7 +1149,7 @@ Contents
              <STRONG>TRIMLEN</STRONG></A>:
              length of <VAR>&lt;string&gt;</VAR>, not counting trailing
              blanks<BR>
-             <EM><STRONG>Deprecated</STRONG> for F90, since it duplicates intrinsic
+             &nbsp;&nbsp;&nbsp;&nbsp;<EM><STRONG>Deprecated</STRONG> for F90, since it duplicates intrinsic
              function <VAR>LEN_TRIM()</VAR></EM>
         <DT> <A HREF = "UNGRIDB.html" >
              <STRONG>UNGRIDB</STRONG>:
@@ -1193,19 +1207,7 @@ Contents
              </A>
              print file as structured ASCII;  from NCAR
         <P>
-        <DT> <A HREF = "MCPL.html" >
-             <STRONG>MCPL I/O&nbsp;API output module for MM5</STRONG>:
-             </A>
-             Generate I/O&nbsp;API output files directly from within
-             MM5, for analysis, emissions modeling, air quality
-             modeling, and model coupling.
-        <P>
-        <DT> <A HREF = "AIRS2M3.html" >
-             <STRONG>airs2m3</STRONG>:
-             </A>
-             import air quality monitor data from an AIRS AMP350-format
-             ASCII file and put it into an I/O&nbsp;API
-             &quot;observational data&quot; file.
+        <DT> <STRONG>Programs for data-analysis and manipulation </STRONG>
         <P>
         <DT> <A HREF = "BCWNDW.html" >
              <STRONG>bcwndw</STRONG>:
@@ -1213,12 +1215,6 @@ Contents
              extract data data from a gridded file to the boundary of
              a subgrid window (see <STRONG>m3wndw</STRONG> below for
              extracting to the window itself)
-        <P>
-        <DT> <A HREF = "CAMXTOM3.html" >
-             <STRONG>camxtom3</STRONG>:
-             </A>
-             convert CAMx and other UAM-format binary files to GRIDDED
-             I/O&nbsp;API files.
         <P>
         <DT> <A HREF = "DAYAGG.html" >
              <STRONG>dayagg</STRONG>:
@@ -1401,12 +1397,24 @@ Contents
              layer-thickness nor mass-weighting into account;
              think of it as a programming-example)
         <P>
+        <DT> <STRONG>Programs for Data Import/Export</STRONG>
+        <P>
+        <DT> <A HREF = "AIRS2M3.html" >
+             <STRONG>airs2m3</STRONG>:
+             </A>
+             import air quality monitor data from an AIRS AMP350-format
+             ASCII file and put it into an I/O&nbsp;API
+             &quot;observational data&quot; file.
+        <DT> <A HREF = "CAMXTOM3.html" >
+             <STRONG>camxtom3</STRONG>:
+             </A>
+             convert CAMx and other UAM-format binary files to GRIDDED
+             I/O&nbsp;API files.
         <DT> <A HREF = "WRFGRIDDESC.html" >
              <STRONG>wrfgriddesc</STRONG>:
              </A>
              Create a <VAR>GRIDDESC</VAR> file from the header-data
              in a WRF-format netCDF file.
-        <P>
         <DT> <A HREF = "WRFTOM3.html" >
              <STRONG>wrftom3</STRONG>:
              </A>
@@ -1418,9 +1426,12 @@ Contents
         <DT> <A HREF = "LATLON.html" >
              <STRONG>latlon</STRONG>:
              </A>
-             construct GRIDDED and/or BOUNDARY files with variables the
-             cell-center <CODE>LAT</CODE> and <CODE>LON</CODE>.for
-             Fortran, 
+             construct GRIDDED and/or BOUNDARY files with
+             <CODE>REAL</CODE> variables <CODE>LAT</CODE> and
+             <CODE>LON</CODE>  for the cell-centers.  <BR>
+             <EM>For I/O&nbsp;API-3.2 after Dec.&nbsp;25, 2017</EM>, also
+             constructs <CODE>DOUBLE&nbsp;PRECISION</CODE> variables
+             <CODE>LATD</CODE> and <CODE>LOND</CODE>.
         <DT> <A HREF = "PROJTOOL.html" >
              <STRONG>projtool</STRONG>:
              </A>
@@ -1512,6 +1523,13 @@ Contents
              Demonstration program for
              <A HREF="MODMPASFIO.html"><CODE>MODULE MPASFIO</CODE></A>
              <P>
+        <DT> <A HREF = "MCPL.html" >
+             <STRONG>MCPL I/O&nbsp;API output module for MM5</STRONG>:
+             </A>
+             Generate I/O&nbsp;API output files directly from within
+             MM5, for analysis, emissions modeling, air quality
+             modeling, and model coupling.
+        <P>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -1606,7 +1624,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AA.html 71 2017-12-11 13:25:39Z coats $
+$Id: AA.html 75 2018-01-12 15:48:16Z coats $
     </PRE>
 
 </BODY>

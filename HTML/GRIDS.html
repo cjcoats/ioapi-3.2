@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: GRIDS.html 72 2017-12-12 17:54:20Z coats $" -->
+<!-- "$Id: GRIDS.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> On The Definition of Grids and Coordinates for Models-3  </TITLE>
 </HEAD>
@@ -36,15 +36,15 @@ being of course integers).
 
 Grids and coordinate systems (map projections) are 
 <EM>named entities</EM>, for purposes of unambiguous tracking and 
-database storage.  Names are CHARACTER*16 strings (consistent with 
-the rest of the &quot;name&quot; objects manipulated within the 
-I/O system).  There are finite (and extensible) lists of names of 
-coordinate systems and of grids currently in use within the Models-3 
-system. I would not anticipate that we should need more than a
-few thousand such grids.  So that they are fully self-contained,
-both names and complete descriptions for grids and coordinate systems 
-(as specified below) are kept in file headers, and stored also in 
-file description data structures in 
+database storage.  Names are <CODE>CHARACTER*16</CODE> strings
+(consistent with  the rest of the &quot;name&quot; objects manipulated
+within the  I/O system).  There are finite (and extensible) lists of
+names of  coordinate systems and of grids currently in use within the
+Models-3  system. I would not anticipate that we should need more than a
+few thousand such grids.  So that they are fully self-contained, both
+names and complete descriptions for grids and coordinate systems  (as
+specified below) are kept in file headers, and stored also in  file
+description data structures in 
 <A HREF = "INCLUDE.html#fdesc"> <CODE>FDESC3.EXT</CODE> or 
 <CODE>fdesc3.h </CODE></A>.
 <P> 
@@ -108,7 +108,7 @@ in file description data structures such as those found in <A HREF =
 are specified in <A HREF =
 "INCLUDE.html#parms"><CODE>PARMS3.EXT</CODE></A>, which gives their
 names as <CODE>LATGRD3, LAMGRD3, MERGRD3, STEGRD3, UTMGRD3, POLGRD3,
-TRMGRD3, EQMGRD3, ALBGRD3,</CODE>, and <CODE>LEQGRD3</CODE> They may be
+TRMGRD3, EQMGRD3, ALBGRD3,</CODE> and <CODE>LEQGRD3</CODE> They may be
 identified by the corresponding map coordinate identifier, and further
 specified by five additional descriptive parameters
 <CODE>PROJ_ALPHA</CODE>, <CODE>PROJ_BETA</CODE>,
@@ -411,7 +411,7 @@ for example, surface temperature), the I/O&nbsp;API by convention
 </UL>
 In the usual EDSS or CMAQ modeling situation, there will be both 
 &quot;dot-point&quot; and &quot;cross-point&quot; grids present  (these
-grids are topologicalduals in the sense that the vertices  (corners) of
+grids are topological duals in the sense that the vertices  (corners) of
 one correspond to thecell-centers of the other.   The interpretation of
 parameters <VAR>X_ORIG</VAR>, <VAR>Y_ORIG</VAR>, <VAR>X_CELL</VAR>,
 and  <VAR>Y_CELL</VAR> for a dot-point and cross-point pair of grids 
@@ -446,10 +446,11 @@ geometry information into its own data file (what you might term a
 supported directly by the I/O&nbsp;API deal only with regular grids at 
 this time (although it allows for the later provision of irregular- or
 unstructured-grid file types).  <BR>
-<STRONG>Note&nbsp;1</STRONG> The MPAS Earth-System model uses unstructured
-Voronoi-complex grids for meteorology, land-surface, ocean, and
-atmospheric chemistry modeling.  The I/O&nbsp;API provides some high level
-I/O and grid utility data structures and routines in
+<STRONG>Note&nbsp;1</STRONG> The MPAS Earth-System model uses
+unstructured Voronoi-complex grids (with their dual
+Delaunay-Triangulation grids) for meteorology, land-surface, ocean, and
+atmospheric chemistry modeling.  The I/O&nbsp;API provides some high
+level I/O and grid utility data structures and routines in
 <CODE><A HREF="MODMPASFIO.html">MODULE&nbsp;MODMPASFIO</A></CODE>.
 The required data structures are quite complicated :-)<BR>
 <STRONG>Note&nbsp;2</STRONG> The I/O API also provides some high level
@@ -495,8 +496,8 @@ file resident file description data structures is the following:
 
 Vertical-coordinate descriptions are put into file headers and likewise
 into the file description data structures 
-(<A HREF = "INCLUDE.html#fdesc"> <CODE>FDESC3.EXT</CODE> and
-<CODE>fdesc3.h</CODE> </A>): vertical cordinate type specifier
+(<A HREF = "INCLUDE.html#fdesc"><CODE>FDESC3.EXT</CODE> and
+<CODE>fdesc3.h</CODE></A>): vertical cordinate type specifier
 <STRONG>VGTYP3D</STRONG> in <CODE>FDESC3.EXT</CODE>  and in file
 headers takes values from a short list of vertical coordinate  types
 with tokens for the types defined in <CODE>PARMS3.EXT</CODE>, as
@@ -526,7 +527,7 @@ an actual number of layers  in excess of this).  The array section
 <VAR>VGLVS3D(1:NLAYS3D+1)</VAR> contains valid  values; subscripts in
 excess of <VAR>NLAYS3D+1</VAR> may well point to garbage.   A new file
 attribute <STRONG>VGTOP3D</STRONG> is used to store the  MODEL-TOP for
-the sigma coord types.  For sigma-P coordinates,  <VAR>VGTOP3D</VAR> is
+the sigma coordinate types.  For sigma-P coordinates,  <VAR>VGTOP3D</VAR> is
 given in Pascals; for sigma-Z, it is in meters.
 <P> 
  
@@ -544,10 +545,10 @@ layer, and also when the  vertical coordinate values
 <VAR>VGLVS3D(MXLAYS3+1)</VAR> are irrelevant (e.g., if  the vertical
 coordinate value for the levels is spatially or temporally  varying, in
 which case the values should be store as variables either  in the same
-file or in an appropriate vertical-geometry file.  In principle,  layer
+file or in an appropriate vertical-geometry file).  In principle,  layer
 K goes from <VAR>VGLVS3D(K)</VAR> to <VAR>VGLVS3D(K+1)</VAR>.
 <VAR>VGTOP3D</VAR> is the  &quot;top of the model&quot; parameter used
-for sigma types of coordinates  (where generally the equation for sigma
+for sigma types of coordinates, where generally the equation for sigma
 is of the form 
 <PRE>
    sigma = ( X - X_top ) / ( X_bottom -X_top ).

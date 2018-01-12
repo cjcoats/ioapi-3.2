@@ -2,11 +2,11 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 72 2017-12-12 17:54:20Z coats $"
+    !! Version "$Id: init3.F90 75 2018-01-12 15:48:16Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
-    !! (c) 2007-2013 Carlie J. Coats, Jr., and (C) 2014-2015 UNC Institute
+    !! (c) 2007-2018 Carlie J. Coats, Jr., and (C) 2014-2015 UNC Institute
     !! for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
@@ -79,6 +79,8 @@ INTEGER FUNCTION INIT3 ( )
     !!
     !!      Modified 08/2015 by CJC for I/O API-3.2:  F90 free format;
     !!      support for MPI/PnetCDF; USE MODNCFIO, MODPDATA, NF_*() interfaces
+    !!
+    !!      Bugfix 1/2018 by CJC for INIT3()-after-SHUT3().
     !!***********************************************************************
 
     USE MODNCFIO
@@ -135,7 +137,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'ioapi-3.2: $Id: init3.F90 72 2017-12-12 17:54:20Z coats $'
+'ioapi-3.2: $Id: init3.F90 75 2018-01-12 15:48:16Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 
@@ -255,11 +257,11 @@ INTEGER FUNCTION INIT3 ( )
 
     ILCNT3 = 0
     DO    J = 1, MXFILE3
-        FLIST3( J ) = CMISS3  !  "invalid"
-        BSIZE3( J ) = IMISS3  !  "invalid"
-        NLIST3( J ) = 0       !  "empty"
-        IFRST3( J ) = IMISS3  !  "invalid"
-        ILIST3( J ) = IMISS3  !  "invalid"
+        FLIST3( J ) = CMISS3        !  "invalid"
+        BSIZE3( J ) = IMISS3        !  "invalid"
+        NLIST3( J ) = 0             !  "empty"
+        IFRST3( J ) = IMISS3        !  "invalid"
+        ILIST3( J ) = IMISS3        !  "invalid"
         DO    I = 1, MXVARS3
             LDATE3( I,J ) = IMISS3  !  "invalid"
             LTIME3( I,J ) = IMISS3  !  "invalid"
@@ -272,7 +274,8 @@ INTEGER FUNCTION INIT3 ( )
     CALL GETDTTIME( CURDATE, CURTIME )
 
     IF ( COUNT3 .LT. 0 ) THEN
-            WRITE( LOGDEV, '( /, 5X, A, /)'  ) 'INIT3() called subsequent to SHUT3()'
+        WRITE( LOGDEV, '( /, 5X, A, /)'  ) 'INIT3() called subsequent to SHUT3()'
+        COUNT3 = 0
     END IF
 
     CALL FLUSH( LOGDEV )

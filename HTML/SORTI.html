@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: SORTI.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: SORTI.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> SORTI*() </TITLE>
 </HEAD>
@@ -69,7 +69,7 @@
         INTEGER  , INTENT(IN   ) :: M           !  significant number of columns in table
         INTEGER*8, INTENT(IN   ) :: M8          !  significant number of columns in table
         INTEGER  , INTENT(INOUT) :: INDX ( N )  !  Fortran-subscript 1...N string-table to be sorted
-        INTEGER*8, INTENT(INOUT) :: INDX ( N )  !  Fortran-subscript 1...N string-table to be sorted
+        INTEGER*8, INTENT(INOUT) :: INDX8( N )  !  Fortran-subscript 1...N string-table to be sorted
 
         CHARACTER*(*), INTENT(IN   ) :: CLIST     !  table of key strings
 
@@ -290,7 +290,7 @@ To: <STRONG>Models-3/EDSS I/O API:   The Help Pages</STRONG>
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: SORTI.html 175 2015-02-27 12:57:33Z coats $
+    $Id: SORTI.html 75 2018-01-12 15:48:16Z coats $
     </PRE>
 
 </BODY>

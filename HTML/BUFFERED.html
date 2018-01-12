@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: BUFFERED.html 436 2016-11-22 18:23:01Z coats $" -->
+<!-- "$Id: BUFFERED.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
 REAL FILES, PARALLEL FILES,  AND &quot;VIRTUAL FILES&quot;
@@ -167,7 +167,8 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     setenv ANAME  LIST:FILE_1,...,FILE_N
     </PRE>
     subject to the requirement that the value for <CODE>ANAME</CODE>
-    has length at most 256.  In case of overlapping time step sequences,
+    has length at most 256 for I/O&nbsp;API 3.0 or earlier, and 65535
+    for 3.1 or later.  In case of overlapping time step sequences,
     the rule is &quot;first file wins,&quot; i.e., if the data is
     available from the first file, <CODE>FILE_1</CODE>, use it; else if
     it is available from the second file, use that, and so on.
@@ -221,10 +222,10 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     contents&mdash;out to disk until either a &quot;synch&quot; operation
     is performed, or until the file is closed.  This has the effect of
     making non-volatile output files unreadable until the program that
-    writes them does a  <A HREF="SYNC3.html">SYNC3()</A> call for the
-    individual files, or <A HREF="SHUT3.html">SHUT3()</A> or
-    <A HREF="M3EXIT.html">M3EXIT()</A> (or making the files unreadable
-    if the program crashes unexpectedly).
+    writes them does a  <A HREF="SYNC3.html"><CODE>SYNC3()</CODE></A> call for the
+    individual files, or <A HREF="SHUT3.html"><CODE>SHUT3()</CODE></A> or
+    <A HREF="M3EXIT.html"><CODE>M3EXIT()</CODE></A> (or making the files
+    unreadable if the program crashes unexpectedly).
     This extra &quot;synch&quot; operation does cause some (usually
     small) performance penalty, but it allows other programs to read
     I/O&nbsp;API files while they are still being written, and prevents
@@ -476,6 +477,10 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     <H3>Abstract:  Use</H3>
 
     <BLOCKQUOTE>
+    <EM><U>NOTE:</U>  These are primarily for use at NCEP, where
+    the office politics forbids the presence of netCDF on their
+    computers.</EM>
+    <P>
 
     The following environment-variable assignment tells the I/O&nbsp;API
     that the indicated file is in the I/O&nbsp;API version of native
@@ -489,10 +494,6 @@ REAL FILES AND &quot;VIRTUAL FILES&quot;
     ordinary &quot;I/O&nbsp;API M3TOOLS&quot; programs such as
     <A HREF="M3CPLE.html">M3CPLE</A> to serve as translators back and
     forth between I/O&nbsp;API native binary and I/O&nbsp;API netCDF.
-    <P>
-    <EM><U>NOTE:</U>  These are primarily for use at NCEP, where
-    the office politics forbids the presence of netCDF on their
-    computers.</EM>
     <P>
 
     </BLOCKQUOTE>

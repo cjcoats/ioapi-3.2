@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: TUTORIAL.html 236 2015-10-14 19:52:34Z coats $" -->
+<!-- "$Id: TUTORIAL.html 75 2018-01-12 15:48:16Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE> TUTORIAL:  Using the I/O&nbsp;API </TITLE>
 </HEAD>
@@ -212,7 +212,7 @@ names</STRONG></A>.   As a modeler, you can define your own logical
 names as  properties of a program (or even prompt the user for his own
 preferred logical names at run time) and then at run-time connect up
 the  logical names to any &quot;real&quot; file name you want to, using
-the  UNIX <VAR>csh setenv </VAR> command.  Additionally, there are four
+the  UNIX <VAR>csh&nbsp;setenv</VAR> command.  Additionally, there are four
 <A HREF = "ENVIRONMENT.html">standard logical names</A>:
 <BLOCKQUOTE>
 <DL>
@@ -226,7 +226,8 @@ the  UNIX <VAR>csh setenv </VAR> command.  Additionally, there are four
 </DL>
 </BLOCKQUOTE>
 For programming purposes, the significant facts are that names should
-not contain blanks (except at the end:
+not contain arithmetic operations (<CODE>+-*/</CODE>), or blanks (except
+at the end:
 <CODE>&quot;foo&nbsp;&quot;</CODE> is OK;
 <CODE>&quot;f&nbsp;oo&quot;</CODE> is not), and are at most 16
 characters long.
@@ -437,7 +438,7 @@ standard-week data</STRONG> are represented by using
 for example, if one has monthly standard year data, one may store the
 data in a file starting at Dec.&nbsp;16 of Year&nbsp;-1
 (<CODE>JDATE=-650=-1000+350</CODE>, where <CODE>YYYY=(-1000),
-DDD=350</CODE>), with time step 7300000 (15 days, 10 hours) and 14
+DDD=350</CODE>), with time step 7300000 (30 days, 10 hours) and 14
 time-steps (for December of Year&nbsp;(-1) through January of
 Year&nbsp;1), to provide &quot;fenceposts&quot; for daily or hourly
 interpolation using <CODE>INTERP3()</CODE>.<BR>
@@ -483,7 +484,7 @@ The basic types are associated with &quot;magic numbers&quot;
     <DT> <STRONG><CODE>M3DBLE</CODE></STRONG>, for 8-byte (64-bit)
          <CODE>REAL</CODE>s (i.e., <CODE>DOUBLE PRECISION</CODE>), and
     <DT> <STRONG><CODE>M3INT8</CODE></STRONG>, for 8-byte (64-bit) <CODE>INTEGER</CODE>s
-            (<EM>I/O&nbsp;API-3.2 or later only, if netCDF4 is enabled</EM>)
+            (<EM>I/O&nbsp;API-3.2 or later only, and if netCDF4 is enabled</EM>)
 </DL>
 </BLOCKQUOTE>
 also defined in <CODE>INCLUDE</CODE>-file <VAR>PARMS3.EXT</VAR>.
@@ -833,7 +834,7 @@ it was intended for use only by long-running visualization programs.
 
 <BLOCKQUOTE>
 <A NAME="open">Use</A> <A HREF="OPEN3.html"><STRONG><CODE>OPEN3(FNAME,FSTATUS,PGNAME)</CODE></STRONG></A>
-to open files, whether files that already exist or files that are new
+to open files, whether files that already exist or files that are new.
 <CODE>OPEN3()</CODE> is a logical function that return <CODE>TRUE</CODE>
 when it succeeds, and <CODE>FALSE</CODE> when it fails.  It also
 maintains much audit trail information stored in the file header
@@ -842,11 +843,11 @@ additional pieces of audit trail information requires a bit of work from
 you in setting up <A HREF = "ENVIRONMENT.html">standard environment
 variables</A>, if you want to take advantage of it:  if you define the
 description of your program run in a text file of up to 60 lines of up
-to 80 characters each, and then <VAR>setenv SCENFILE</VAR> to that file
+to 80 characters each, and then <VAR>setenv&nbsp;SCENFILE</VAR> to that file
 before you run the program, then <CODE>OPEN3()</CODE> will copy the
 <VAR>SCENFILE</VAR> information into the <CODE>UPDSC3D</CODE> field in
 the headers of any output files for that program.  Also, if you
-<VAR>setenv EXECUTION_ID</VAR> to your own identifier (up to
+<VAR>setenv&nbsp;EXECUTION_ID</VAR> to your own identifier (up to
 80-character quoted line) for the program execution, it will automate
 the storage and the logging of that identifier in the
 <CODE>EXECN3D</CODE> field .  Finally, if you <VAR>setenv
@@ -1072,9 +1073,10 @@ suppressed.  Typical <CODE>WRITE3()</CODE> calls to write data for date and time
 <CODE>JDATE:JTIME</CODE> might look like the following:
 <PRE>
     ...
-    REAL*4       ARRAY( NCOLS, NROWS, NLAYS, NVARS )
+    REAL*4       ARRAYA( NCOLS, NROWS, NLAYS )
+    REAL*4       ARRAYB( NCOLS, NROWS, NLAYS, NVARS )
     ...
-    IF ( .NOT. WRITE3( 'myfile', 'HNO3', JDATE, JTIME, ARRAY ) ) THEN
+    IF ( .NOT. WRITE3( 'myfile', 'HNO3', JDATE, JTIME, ARRAYA ) ) THEN
     ...(some kind of error happened--deal with it here)
     END IF
     IF ( .NOT. WRITE3( 'afile', 'ALL', JDATE, JTIME, ARRAYB ) )  THEN
@@ -1105,14 +1107,15 @@ day is the Julian day-number (1,...,365 or 366).  By convention,
 dates and times are <STRONG>stored in Greenwich Mean Time.</STRONG>
 <P>
 
-There are a number of utility routines for date and time manipulation,
-which are <A HREF="AA.html#datestuff">indexed here</A>, as well as
-a number of programs for date and time manipulation which are
-<A HREF="AA.html#datepgms">indexed here</A>; some of these programs
-are designed for interactive use, others for scripting.  The most
-frequently used of these programs are<A HREF = "JULDATE.html">
-<STRONG><VAR>juldate</VAR></STRONG></A>, for converting calendar dates to Julian
-dates, and <A HREF = "GREGDATE.html"><STRONG><VAR>gregdate</VAR></STRONG></A>,
+There are a number of <A HREF="AA.html#datestuff"><STRONG>utility
+routines</STRONG> for date and time manipulation, </A>, as well as a
+number of <A HREF="AA.html#datepgms"><STRONG>programs</STRONG> for date
+and time manipulation</A>; some of these programs are designed for
+interactive use, others for scripting.  The most frequently used of
+these programs are
+<A HREF = "JULDATE.html"><STRONG><VAR>juldate</VAR></STRONG></A>,
+for converting calendar dates to Julian dates, and
+<A HREF = "GREGDATE.html"><STRONG><VAR>gregdate</VAR></STRONG></A>,
 for converting Julian dates to calendar dates and reporting the
 day-of-the-week.  Both of these programs also report whether daylight
 savings time is in effect for  the specified date.

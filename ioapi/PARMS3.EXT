@@ -1,6 +1,6 @@
 
 !.........................................................................
-! Version "$Id: PARMS3.EXT 216 2015-08-17 17:47:29Z coats $"
+! Version "$Id: PARMS3.EXT 1 2017-06-10 18:05:20Z coats $"
 !   EDSS/Models-3 I/O API.
 !   Copyright (C) 1992-2002 MCNC, (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
 !   (C) 2003-2011 Baron Advanced Meteorological Systems, LLC., and
@@ -58,6 +58,8 @@
 !
 !       Modified 02/2015 by CJC:  SINUGRD3 map projection for MIMS
 !       Spatial Allocator
+!
+!       Modified 02/2015 by CJC:  M3INT2 (== netCDF nf_short == nf_int2)
 !....................................................................
 
 !...........   Dimensioning parameters:
@@ -90,12 +92,13 @@
             
         !!......  Data types (must match netCDF types):
 
-        INTEGER, PARAMETER :: M3BYTE  =   1    !  variable type value "Byte"
-        INTEGER, PARAMETER :: M3CHAR  =   2    !  variable type value "CHARACTER-string"
-        INTEGER, PARAMETER :: M3INT   =   4    !  variable type value "INTEGER"
-        INTEGER, PARAMETER :: M3REAL  =   5    !  variable type value "REAL"
-        INTEGER, PARAMETER :: M3DBLE  =   6    !  variable type value "DOUBLE PRECISION"
-        INTEGER, PARAMETER :: M3INT8  =  10    !  variable type value "INTEGER*8"
+        INTEGER, PARAMETER :: M3BYTE  =   1    !  variable type value "Byte" = nf_byte
+        INTEGER, PARAMETER :: M3CHAR  =   2    !  variable type value "CHARACTER-string" = nf_char
+        INTEGER, PARAMETER :: M3INT2  =   3    !  variable type value "INTEGER*2" = nf_int2
+        INTEGER, PARAMETER :: M3INT   =   4    !  variable type value "INTEGER" = nf_int
+        INTEGER, PARAMETER :: M3REAL  =   5    !  variable type value "REAL" = nf_float
+        INTEGER, PARAMETER :: M3DBLE  =   6    !  variable type value "DOUBLE PRECISION" = nf_double
+        INTEGER, PARAMETER :: M3INT8  =  10    !  variable type value "INTEGER*8" = nf_int64
 
         INTEGER, PARAMETER :: NM3TYPES = 4
         INTEGER, PARAMETER :: M3TYPES( NM3TYPES ) =                             &
