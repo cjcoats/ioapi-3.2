@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 75 2018-01-12 15:48:16Z coats $"
+    !! Version "$Id: init3.F90 76 2018-01-15 18:23:41Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -80,7 +80,7 @@ INTEGER FUNCTION INIT3 ( )
     !!      Modified 08/2015 by CJC for I/O API-3.2:  F90 free format;
     !!      support for MPI/PnetCDF; USE MODNCFIO, MODPDATA, NF_*() interfaces
     !!
-    !!      Bugfix 1/2018 by CJC for INIT3()-after-SHUT3().
+    !!      Bugfix 01/2018 by CJC for INIT3()-after-SHUT3().
     !!***********************************************************************
 
     USE MODNCFIO
@@ -137,7 +137,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'ioapi-3.2: $Id: init3.F90 75 2018-01-12 15:48:16Z coats $'
+'ioapi-3.2: $Id: init3.F90 76 2018-01-15 18:23:41Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 

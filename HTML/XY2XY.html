@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: XY2XY.html 416 2016-08-24 19:15:43Z coats $" -->
+<!-- "$Id: XY2XY.html 76 2018-01-15 18:23:41Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> XY2XY </TITLE>
 </HEAD>
@@ -87,6 +87,11 @@ of points being converted.
     two-stage process: first, using the input spheroid, from
     input-projection coordinates to Lat-Lon; then, using the output
     spheroid, from Lat-Lon to the output-projection coordinates).
+    <P>
+
+    <EM>I/O&nbsp;API Version 3.2 after 1/15/2018:</EM>  Pass-through
+    &quot;missing&quot; input locations (i.e., if arguments 
+    <CODE>X*_0&lt;AMISS3</CODE> or  <CODE>Y*_0&lt;AMISS3</CODE>).
     <P>
 
     <EM>For I/O&nbsp;API Version 3.2 or later, only:</EM>  generic module-routine

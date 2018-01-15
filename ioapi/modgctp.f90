@@ -2,8 +2,9 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 5 2017-06-30 15:57:51Z coats $"
-    !!  Copyright (c) 2014-2015 UNC Institute for the Environment.
+    !!  Version "$Id: modgctp.f90 76 2018-01-15 18:23:41Z coats $"
+    !!  Copyright (c) 2014-2015 UNC Institute for the Environment and
+    !!  (C) 2015-2018 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
     !!..............................................................
@@ -44,6 +45,7 @@ MODULE MODGCTP
     !!      Version  11/2015:  re-add LAMBERT etc. INTERFACEs from 3.1
     !!      to MODULE M3UTILIO, together with re-naming clauses here
     !!      to avoid double-declaration problems.
+    !!      Version  1/2018 by CJC:  Handle "missing" in XY2XY()
     !!..............................................................
 
     USE M3UTILIO, M3U_GTPZ0       => GTPZ0      ,   &
@@ -112,6 +114,9 @@ MODULE MODGCTP
     PRIVATE     !!  everything else  !!
 
     !!...........   PARAMETERs and their descriptions:
+
+    REAL*8, PARAMETER :: AMISSD  = DBLE(  AMISS3 )
+    REAL*8, PARAMETER :: BADVALD = DBLE( BADVAL3 )
 
     REAL*8, PARAMETER :: D60 = 1.0D0 / 60.0d0
     REAL*8, PARAMETER :: PI  = 3.141592653589793238462643383279d0
@@ -225,7 +230,7 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 5 2017-06-30 15:57:51Z coats                       $'
+'$Id:: modgctp.f90 76 2018-01-15 18:23:41Z coats                      $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:
@@ -343,8 +348,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 CALL M3MSG2( MESG )
             END IF
         ELSE
-            I1   = -NCALLS - 1
-            NCALLS = NCALLS + 1
+            I1     = -NCALLS - 1
+            NCALLS =  NCALLS + 1
             WRITE( MESG, '( A, 1X, 1PD25.16 )' ) 'SETSPHERE:  major axis', P1
             CALL M3MSG2( MESG )
             WRITE( MESG, '( A, 1X, 1PD25.16 )' ) 'SETSPHERE:  minor axis/eccentricity^2', P2
@@ -422,8 +427,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                     CALL M3MSG2( MESG )
                 END IF
             ELSE
-                I1   = -NCALLS - 1
-                NCALLS = NCALLS + 1
+                I1     = -NCALLS - 1
+                NCALLS =  NCALLS + 1
                 WRITE( MESG, '( A, 1X, 1PD25.16 )' )  'INITSPHERES:  major axis', P1
                 CALL M3MSG2( MESG )
                 WRITE( MESG, '( A, 1X, 1PD25.16 )' )  'INITSPHERES:  minor axis/eccentricity^2', P2
@@ -729,10 +734,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5 ) THEN
+        IF ( SPHER2 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
@@ -825,10 +830,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5 ) THEN
+        IF ( SPHER1 .GT. 19.5d0 ) THEN
             INSPH    = -2
             TPAIN(1) = SPHER1
-        ELSE IF ( SPHER1 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER1 < 0' )
         ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
@@ -1226,10 +1231,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5 ) THEN
+        IF ( SPHER2 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
@@ -1331,10 +1336,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5 ) THEN
+        IF ( SPHER1 .GT. 19.5d0 ) THEN
             INSPH    = -2
             TPAIN(1) = SPHER1
-        ELSE IF ( SPHER1 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER1 < 0' )
         ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
@@ -1749,10 +1754,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5 ) THEN
+        IF ( SPHER2 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
@@ -1841,10 +1846,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5 ) THEN
+        IF ( SPHER1 .GT. 19.5d0 ) THEN
             INSPH    = -2
             TPAIN(1) = SPHER1
-        ELSE IF ( SPHER1 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER1 < 0' )
         ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
@@ -2233,8 +2238,14 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  Body  ......................................................
 
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
+        IF ( XLOC2 .LT. AMISSD .OR. YLOC2 .LT. AMISSD ) THEN
+
+            XLOC1 = BADVALD
+            YLOC1 = BADVALD
+            RETURN
+
+        ELSE IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
+                            GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
 
             XLOC1 = XLOC2
             YLOC1 = YLOC2
@@ -2311,7 +2322,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         YLOC1 = CRDIO( 2 )
 
         IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+            CALL M3EXIT( PNAME, 0, 0, 'GRID2::GRID1 coord-transform error(s)', 2 )
         END IF
 
 
@@ -2384,8 +2395,14 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Calculate Lat-Lon:
         !!...............  Set up arguments for call to GTP0:
 
-        IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,     &
-                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
+        IF ( XLOC2 .LT. AMISSD .OR. YLOC2 .LT. AMISSD ) THEN
+
+            XLOC1 = BADVALD
+            YLOC1 = BADVALD
+            RETURN
+
+        ELSE IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,     &
+                             GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
 
             XLOC1 = XLOC2
             YLOC1 = YLOC2
@@ -2416,10 +2433,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5 ) THEN
+        IF ( SPHER2 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
@@ -2491,10 +2508,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5 ) THEN
+        IF ( SPHER1 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER1 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
@@ -2681,6 +2698,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CRDIN( 1 ) = XLOC2( K )
             CRDIN( 2 ) = YLOC2( K )
 
+            IF ( XLOC2( K ) .LT. AMISSD .OR. YLOC2( K ) .LT. AMISSD ) THEN
+                XLOC1( K ) = BADVALD
+                YLOC1( K ) = BADVALD
+                CYCLE
+            END IF
+
 !$OMP       CRITICAL( S_GTPZ0 )
             CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
                         IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
@@ -2702,7 +2725,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END DO
 
         IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+            CALL M3EXIT( PNAME, 0, 0, 'GRID2::GRID1 coord-transform error(s)', 2 )
         END IF
 
         RETURN
@@ -2817,10 +2840,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5 ) THEN
+        IF ( SPHER2 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
@@ -2865,6 +2888,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 CRDIN( 1 ) = XLOC2( K )
                 CRDIN( 2 ) = YLOC2( K )
+
+                IF ( CRDIN( 1 ) .LT. AMISSD .OR. CRDIN( 2 ) .LT. AMISSD ) THEN
+                    XLOC1( K ) = BADVALD
+                    YLOC1( K ) = BADVALD
+                    CYCLE
+                END IF
 
 !$OMP           CRITICAL( S_GTPZ0 )
                 CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
@@ -2916,10 +2945,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5 ) THEN
+        IF ( SPHER1 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER1 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
@@ -2946,6 +2975,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 CRDIN( 1 ) = XLOC1( K )
                 CRDIN( 2 ) = YLOC1( K )
+
+                 IF ( CRDIN( 1 ) .LT. AMISSD .OR. CRDIN( 2 ) .LT. AMISSD ) THEN
+                     XLOC1( K ) = BADVALD
+                     YLOC1( K ) = BADVALD
+                     CYCLE
+                 END IF
 
 !$OMP           CRITICAL( S_GTPZ0 )
                 CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
@@ -3123,6 +3158,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             CRDIN( 1 ) = XLOC2( C,R )
             CRDIN( 2 ) = YLOC2( C,R )
 
+            IF ( CRDIN( 1 ) .LT. AMISSD .OR. CRDIN( 2 ) .LT. AMISSD ) THEN
+                XLOC1( C,R ) = BADVALD
+                YLOC1( C,R ) = BADVALD
+                CYCLE
+            END IF
+
 !$OMP       CRITICAL( S_GTPZ0 )
             CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
                         IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
@@ -3145,7 +3186,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END DO
 
         IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'GRID2::LATLON coord-transform error(s)', 2 )
+            CALL M3EXIT( PNAME, 0, 0, 'GRID2::GRID1 coord-transform error(s)', 2 )
         END IF
 
         RETURN
@@ -3241,10 +3282,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5 ) THEN
+        IF ( SPHER2 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
@@ -3292,6 +3333,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 CRDIN( 1 ) = XLOC2( C,R )
                 CRDIN( 2 ) = YLOC2( C,R )
+
+                IF ( CRDIN( 1 ) .LT. AMISSD .OR. CRDIN( 2 ) .LT. AMISSD ) THEN
+                    XLOC1( C,R ) = BADVALD
+                    YLOC1( C,R ) = BADVALD
+                    CYCLE
+                END IF
 
 !$OMP           CRITICAL( S_GTPZ0 )
                 CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
@@ -3344,10 +3391,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5 ) THEN
+        IF ( SPHER1 .GT. 19.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
-        ELSE IF ( SPHER1 .LT. -0.05 ) THEN
+        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
         ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
@@ -3375,6 +3422,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 CRDIN( 1 ) = XLOC1( C,R )
                 CRDIN( 2 ) = YLOC1( C,R )
+
+                IF ( CRDIN( 1 ) .LT. AMISSD .OR. CRDIN( 2 ) .LT. AMISSD ) THEN
+                    XLOC1( C,R ) = BADVALD
+                    YLOC1( C,R ) = BADVALD
+                    CYCLE
+                END IF
 
 !$OMP           CRITICAL( S_GTPZ0 )
                 CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
@@ -3620,7 +3673,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     LOGICAL FUNCTION  M3TOGTPZ2( GDTYP, IZONE1, P_ALP, P_BET, P_GAM, YCENT, SPHER,  &
-                                TPA, ISYS, IZONE, IUNIT, ISPH )
+                                 TPA, ISYS, IZONE, IUNIT, ISPH )
 
         INTEGER, INTENT(IN   ) :: GDTYP, IZONE1
         REAL*8 , INTENT(IN   ) :: P_ALP, P_BET, P_GAM, YCENT, SPHER
@@ -3641,10 +3694,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ISPH = NINT( SPHER )
 
-        IF ( SPHER .GT. 19.5 ) THEN
+        IF ( SPHER .GT. 19.5d0 ) THEN
             ISPH   = -2
             TPA(1) = SPHER
-        ELSE IF ( SPHER .LT. -0.05 ) THEN
+        ELSE IF ( SPHER .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER < 0' )
         ELSE IF ( DBLERR( SPHER, DBLE( ISPH ) ) ) THEN

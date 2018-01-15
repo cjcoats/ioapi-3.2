@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 74 2017-12-22 19:40:11Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 76 2018-01-15 18:23:41Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 74 2017-12-22 19:40:11Z coats $
+    $Id: NEWSTUFF.html 76 2018-01-15 18:23:41Z coats $
     </EM>
     <HR>
 
@@ -33,6 +33,9 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
+         <LI>  <A HREF = "#jan1518">
+               Modified <CODE>XY2XY()</CODE</A> to pass-through
+               &quot;missing&quot; location-arguments, for SMOKE.
          <LI>  <A HREF = "#dec21017">
                Enhanced <VAR><STRONG>m3tools</STRONG></VAR> program
                <VAR><STRONG>latlon</STRONG></VAR><BR>
@@ -671,6 +674,28 @@
         0000000000001440 T ncclos_
     </VAR></BLOCKQUOTE>
     <P>
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
+<H2> <A NAME = "jan152018">
+     Modified <CODE>XY2XY()</CODE></A> to pass-through
+     &quot;missing&quot; location-arguments, for SMOKE.
+</A></H2>
+
+    <BLOCKQUOTE>
+    Modified generic routine <A HREF="XY2XY.html"><CODE>XY2XY()</CODE></A>     
+    from <A HREF="MODGCTP.html"><CODE>MODULE&nbsp;MODGCTP</CODE</A> to
+    &pass-through location arguments: if <CODE>X_IN&lt;AMISS3</CODE>
+    or <CODE>X_IN&lt;AMISS3</CODE> then after the call to
+    <CODE>XY2XY(&nbsp;...,&nbsp;X_IN,Y_IN,X_OUT,Y_OUT)</CODE>,
+    <CODE>X_OUT=Y_OUT=BADVAL3&lt;AMISS3</CODE>.
+    <P>
+    Enhanced (cleaned-up) documentation.
     </BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -6732,7 +6757,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 74 2017-12-22 19:40:11Z coats $
+    $Id: NEWSTUFF.html 76 2018-01-15 18:23:41Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
