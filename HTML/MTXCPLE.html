@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: MTXCPLE.html 175 2015-02-27 12:57:33Z coats $" -->
+<!-- "$Id: MTXCPLE.html 77 2018-01-18 15:29:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
 <TITLE> Program MTXCPLE </TITLE>
 </HEAD>
@@ -34,7 +34,10 @@ file, and output data files.
 <H2> Summary </H2>
 
 MTXCPLE is the general purpose linear-operator-transform
-file-to-file/grid-to-grid conversion program.
+file-to-file/grid-to-grid conversion program using sparse 
+matrices possibly constructed by programs
+<A HREF="MTXBUILD.html"><VAR>MTXBUILD</VAR></A> or
+<A HREF="MTXBUILD.html"><VAR>MTXCALC</VAR></A>.
 <P>
 
 The <CODE>MTXCPLE</CODE> program extracts all 
@@ -45,12 +48,13 @@ different I/O&nbsp;API file,  <VAR>outfile</VAR>, under the optional
 control of a <VAR>synchfile</VAR>.  Any combination of <A
 HREF="BUFFERED.html">physical or virtual files</A> is supported.
 <P>
- 
-The normal use of <CODE>MTXCPLE</CODE> with a <VAR>synchfile</VAR>
-is to fit into a system of coupled models exchanging data via the
-<A HREF="BUFFERED.html#pvm">I/O&nbsp;API coupling mode</A>, and
-extract/interpolate data either from a virtual file to a  physical
-file, or vice versa.
+
+<CODE>MTXCPLE</CODE> is normally used with <VAR>synchfile=NONE</VAR>
+for file-transform operations.  Other use of <CODE>MTXCPLE</CODE>
+with a <VAR>synchfile</VAR> is to fit into a system of coupled models
+exchanging data via the <A HREF="BUFFERED.html#pvm">I/O&nbsp;API
+coupling mode</A>, and extract/interpolate data either from a virtual
+file to a  physical file, or vice versa.
 <P>
 
 Requires Fortran-90 for compilation.
@@ -141,7 +145,7 @@ exit ( ${errornum} )
 
 <STRONG>See Also:</STRONG>
 <UL>
-    <LI>  <A HREF = "M3CPLE.html">Program <VAR>M3CPLE</VAR></A>for
+    <LI>  <A HREF = "M3CPLE.html">Program <VAR>M3CPLE</VAR></A> for
           bilinear file-to-file/grid-to-grid interpolation of GRIDDED
           files.
           <P>
@@ -152,12 +156,12 @@ exit ( ${errornum} )
           substitution/replacement into a &quot;base&quot; file.
           <P>
     <LI>  <A HREF = "MTXBUILD.html">Program <VAR>MTXBUILD</VAR></A> 
-          to build I/O API sparse matrices for 
+          to build I/O&nbsp;API sparse matrices for 
           file-to-file/grid-to-grid conversions from ASCII
           &quot;fractions&quot; input files.
           <P>
-    <LI>  <A HREF = "MTXCALC.html">Program <VAR>MTXBUILD</VAR></A> 
-          to build approximate I/O API sparse matrices and ASCII
+    <LI>  <A HREF = "MTXCALC.html">Program <VAR>MTCALC</VAR></A> 
+          to build approximate I/O&nbsp;API sparse matrices and ASCII
           &quot;fractions&quot; files for  file-to-file/grid-to-grid
           conversions in programs <VAR>MTXCPLE</VAR> and
           <VAR>MTXBLEND</VAR>.

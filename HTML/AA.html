@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AA.html 75 2018-01-12 15:48:16Z coats $" -->
+<!-- "$Id: AA.html 77 2018-01-18 15:29:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>  The BAMS/EDSS/Models-3 I/O&nbsp;API </TITLE>
 </HEAD>
@@ -257,6 +257,7 @@ Contents
              <STRONG>&quot;Raw netCDF&quot;</STRONG>:
              </A>
              <CODE>MODULE MODNCFIO</CODE>
+             <P>
         <DT> <A HREF = "MODMPASFIO.html#decl">
              <STRONG>MPAS</STRONG>:
              </A>
@@ -296,8 +297,11 @@ Contents
                 <LI> Delete the <CODE>INCLUDE</CODE> statements
                      for <CODE>PARMS.EXT, FDESC3.EXT</CODE>,
                      and <CODE>IODECL3.EXT</CODE>;
-                <LI> Deete the declarations and <CODE>EXTERNAL</CODE>
+                <LI> Delete the declarations and <CODE>EXTERNAL</CODE>
                      statements for I/O&nbsp;API functions.
+                <LI> <EM>Judging from experience, there is a substantial
+                     chance that you will find bad-argument-list bugs in
+                     your code...</EM>
              </UL>
              <P>
         <DT> <A HREF = "MODATTS3.html">
@@ -422,7 +426,11 @@ Contents
 
 <H3> Special (Convective-Event, Extra-Metadata) I/O Routines </H3>
 
-    <BLOCKQUOTE><DL>
+    <BLOCKQUOTE>
+    See also <A HREF = "MODATTS3.html"><STRONG><VAR>MODULE&nbsp;MODATTS3</VAR></STRONG></A>
+    with parameters and routines for map-transform, CF, CMAQ, and
+    SMOKE metadata.
+    <DL>
         <DT> <A HREF = "KFINDX.html" >
              <STRONG>KFINDX</STRONG>:
              </A>
@@ -595,7 +603,14 @@ Contents
              </A>
              Write timestep-value record to an MPAS-format file
              as MPAS-format ASCII 
-   </DL></BLOCKQUOTE>
+   </DL>
+
+    See also <STRONG><VAR>m3tools</VAR></STRONG> programs
+    <A HREF = "MPASDIFF.html" ><VAR>mpasdiff</VAR></A>,
+    <A HREF = "MPASSTAT.html" ><VAR>mpasstat</VAR></A>,
+    <A HREF = "MPASTOM3.html" ><VAR>mpastom3</VAR></A>, and
+    <A HREF = "MPASWTEST.html" ><VAR>mpaswtest</VAR></A>
+   </BLOCKQUOTE>
    <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -605,12 +620,15 @@ Contents
 
 <H2> <A NAME = "coordstuff"> Coordinate and Grid Related Routines </A> </H2>
 
-    See also programs <A HREF = "BCWNDW.html" >bcwndw</A>,
-    <A HREF = "M3WNDW.html" >m3wndw</A>, and
-    <A HREF = "PROJTOOL.html">projtool</A>.
+    See also <STRONG><VAR>m3tools</VAR></STRONG> programs
+    <A HREF = "BCWNDW.html" ><VAR>bcwndw</VAR></A>,
+    <A HREF = "LATLON.html" ><VAR>latlon</VAR></A>,
+    <A HREF = "M3CPLE.html" ><VAR>m3cple</VAR></A>,
+    <A HREF = "M3WNDW.html" ><VAR>m3wndw</VAR></A>, and
+    <A HREF = "PROJTOOL.html"><VAR>projtool</VAR></A>.
     <P>
     NOTE:  Longitudes are represented in <CODE>REAL</CODE> or
-    <CODE>DOUBLE PRECISION</CODE> within the range
+    (preferably) <CODE>DOUBLE PRECISION</CODE> within the range
     <CODE>[-180,180]</CODE>, as consistent with duly-enacted ISO Standard
     6709, treaty obligations since 1878, and several centuries of common
     usage.  <STRONG>Beware that the WMO with its GRIB
@@ -739,28 +757,34 @@ Contents
              or BMATVEC)</A> and for incidence-matrix re-gridding,
              respectively.
              <P>
-        <DT> <A HREF = "MODMPASFIO.html#dist" >
-             <STRONG>SPHEREDIST</STRONG>:
+        <DT> <A HREF = "MODMPASFIO.html">
+             <STRONG><CODE>MODULE&nbsp;MPASFIO</CODE></STRONG>
+             routines:
              </A>
-              compute spherical-Earth distance from  <CODE>(LAT1,LON1)</CODE>
-             to <CODE>(LAT2,LON2)</CODE>
-        <DT> <A HREF = "MODMPASFIO.html#find" >
-             <STRONG>FINDCELL</STRONG>:
-             </A>
-              find subscript for MPAS-grid cell  containing  the point
-              <CODE>(ALAT,ALON)</CODE>
-        <DT> <A HREF = "MODMPASFIO.html#find" >
-             <STRONG>FINDVRTX</STRONG>:
-             </A>
-              find subscript for MPAS-grid vertex closest to the point
-              <CODE>(ALAT,ALON)</CODE> (equivalently, for MPAS-grid 
-              dual-cell  containing  the point <CODE>(ALAT,ALON)</CODE>
-        <DT> <A HREF = "MODMPASFIO.html#wght" >
-             <STRONG>ARC2MPAS</STRONG>:
-             </A>
-              compute 2-D and 3-D weights for arc-segment between
-              points  <CODE>(LAT1,LON1[,HGT1])</CODE> and 
-              <CODE>(LAT2,LON2[,HGT2])</CODE> (e.g., for SMOKE)
+        <DD> <DL>
+             <DT> <A HREF = "MODMPASFIO.html#dist" >
+                  <STRONG>SPHEREDIST</STRONG>:
+                  </A>
+                  compute spherical-Earth distance from
+                  <CODE>(LAT1,LON1)</CODE> to <CODE>(LAT2,LON2)</CODE>
+             <DT> <A HREF = "MODMPASFIO.html#find" >
+                  <STRONG>FINDCELL</STRONG>:
+                  </A>
+                   find subscript for MPAS-grid cell  containing  the point
+                   <CODE>(ALAT,ALON)</CODE>
+             <DT> <A HREF = "MODMPASFIO.html#find" >
+                  <STRONG>FINDVRTX</STRONG>:
+                  </A>
+                   find subscript for MPAS-grid vertex closest to the point
+                   <CODE>(ALAT,ALON)</CODE> (equivalently, for MPAS-grid 
+                   dual-cell  containing  the point <CODE>(ALAT,ALON)</CODE>
+             <DT> <A HREF = "MODMPASFIO.html#wght" >
+                  <STRONG>ARC2MPAS</STRONG>:
+                  </A>
+                   compute 2-D and 3-D weights for arc-segment between
+                   points  <CODE>(LAT1,LON1[,HGT1])</CODE> and 
+                   <CODE>(LAT2,LON2[,HGT2])</CODE> (e.g., for SMOKE)
+        </DL>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -886,7 +910,8 @@ Contents
              <STRONG><CODE>MPSTR2DT()</CODE> and <CODE>MPDT2STR()</CODE></STRONG>:
              </A>
               convert MPAS-format ASCII date&amp;time to/from I/O&nbsp;API
-             convention <CODE>JDATE:JTIME</CODE>
+             convention <CODE>JDATE:JTIME</CODE><BR>
+             &nbsp;&nbsp;&nbsp;&nbsp;<EM>I/O&nbsp;API-3.2 or later</EM>
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -901,9 +926,10 @@ Contents
              <STRONG>BILIN and BMATVEC</STRONG>:
              </A>
              apply 4-band sparse matrix to vector (e.g., for bilinear
-             interpolation).  For layered data, BMATVEC performs
+             interpolation).  For layered data, <CODE>BMATVEC</CODE> performs
              interpolate-and-transpose, transforming data from
-             I/O&nbsp;API layer order to (e.g.) SMOKE LAYPOINT
+             I/O&nbsp;API layer order to (e.g.) SMOKE
+             <VAR>LAYPOINT</VAR>
              computational order.
         <DT> <A HREF = "CSTRINGS.html" >
              <STRONG>C/Fortran String Conversion</STRONG>:
@@ -918,7 +944,9 @@ Contents
              Use Barnes analysis to interpolate scattered data to a grid
         <DT> <STRONG>CHARACTER*2 FUNCTION CRLF()</STRONG>:
              returns character string &quot;&lt;CR&gt;&lt;LF&gt;&quot;
-             (DOS/Windows line terminator)
+             (DOS/Windows line terminator)<BR>
+             <EM>This should have been a <CODE>PARAMETER</CODE> instead
+             of a <CODE>FUNCTION</CODE>, but others insisted.</EM>
         <DT> <A HREF = "DMATVEC.html" >
              <STRONG>DMATVEC</STRONG>:
              </A>
@@ -931,13 +959,32 @@ Contents
              <STRONG>DSCGRID</STRONG>:
              </A>
              get description of <VAR>&lt;named grid&gt;</VAR>
-        <DT> <A HREF = "ENVGETS.html" >
-             <STRONG>ENVGET, BENVDBLE, BENVINT, BENVREAL,
-             ENVDBLE, ENVINT, ENVREAL, ENVSTR, ENVYN</STRONG>:
-             </A>
-             get DOUBLE PRECISION, INTEGER, REAL, CHARACTER-string,
-             or LOGICAL <VAR>&lt;value of logical name&gt;</VAR>
+        <DT> <A HREF = "ENVGETS.html" ><STRONG><CODE>ENVGET()</CODE></STRONG></A>:
+             Fortran-90 generic function for retrieving  a
+             <CODE>CHARACTER string,</CODE> numeric, or
+             <CODE>LOGICAL</CODE>  <VAR>&lt;value of logical
+             name&gt;</VAR> from the environment, with
+             <CODE>DEFAULT</CODE> and possible bounds-checking.<BR>
+             <EM>Generic form is I/O&nbsp;API-3.2 or later</EM>
+             and subsumes the following older specific forms (which
+             are still available):
+             <DD>
+             <STRONG><CODE>BENVDBLE(LNAME,&nbsp;...)</CODE></STRONG>:&nbsp; get <CODE>DOUBLE
+             PRECISION</CODE> from environment, with bounds-checking
+             <EM>(I/O&nbsp;API-3.2 or later)</EM><BR>
+             <STRONG><CODE>BENVINT(LNAME,&nbsp;...)</CODE></STRONG>:&nbsp; get <CODE>INTEGER</CODE> from
+             environment, with bounds-checking
+             <EM>(I/O&nbsp;API-3.2 or later)</EM><BR>
+             <STRONG><CODE>BENVREAL(LNAME,&nbsp;...)</CODE></STRONG>get <CODE>REAL</CODE> from 
+             environment, with bounds-checking
+             <EM>(I/O&nbsp;API-3.2 or later)</EM><BR>
+             <STRONG><CODE>ENVDBLE(LNAME,&nbsp;...)</CODE></STRONG>:&nbsp; get <CODE>DOUBLE PRECISION</CODE> from environment<BR>
+             <STRONG><CODE>ENVINT(LNAME,&nbsp;...)</CODE></STRONG>:&nbsp; get <CODE>INTEGER</CODE> from environment<BR>
+             <STRONG><CODE>ENVREAL(LNAME,&nbsp;...)</CODE></STRONG>:&nbsp; get <CODE>REAL</CODE>  from environment<BR>
+             <STRONG><CODE>ENVSTR(LNAME,&nbsp;...)</CODE></STRONG>:&nbsp; get <CODE>CHARACTER</CODE> string from environment<BR>
+             <STRONG><CODE>ENVYN(LNAME,&nbsp;...)</CODE></STRONG>:&nbsp; get <CODE>LOGICAL</CODE> from environment
              from the environment
+             <P>
         <DT> <A HREF = "FINDS.html" >
              <STRONG>FINDC, FINDKEY, FIND1, FIND2, FIND3, FIND4,
              FINDR1, FINDR2, FINDR3, FINDR4</STRONG>:
@@ -989,17 +1036,22 @@ Contents
              <STRONG>GETSTR</STRONG>:
              </A>
              prompt user for CHARACTER STRING, etc.
-        <DT> <STRONG>GETVAL</STRONG>:  Fortran-90 generic function for
+        <DT> <A HREF = "GETVAL.html"><STRONG><CODE>GETVAL</CODE></STRONG></A>:
+             Fortran-90 generic function for
              prompting user for a numeric or <CODE>LOGICAL</CODE>
-             answer, with <CODE>DEFAULT</CODE>.  Subsumes:
+             answer, with <CODE>DEFAULT</CODE> and bounds checking.<BR>
+             <EM>(I/O&nbsp;API-3.2 or later):</EM> Generic form and new
+             <CODE>GETDBLE1, GETNUM1, GETREAL1</CODE> forms that do not
+             have bounds checking.<BR>
+             Subsumes the following older specific forms (which
+             are still available):
         <DD> <CODE><STRONG>
              <A HREF = "GETDBLE.html" >GETDBLE and GETDBLE1</A>,<BR>
              <A HREF = "GETMENU.html" >GETMENU</A>,<BR>
              <A HREF = "GETNUM.html"  >GETNUM and GETNUM1</A>,<BR>
              <A HREF = "GETREAL.html" >GETREAL and GETREAL1</A>,<BR>
              <A HREF = "GETYN.html"   >GETYN</A>,<BR>
-             </STRONG></CODE><BR>
-             <EM>I/O&nbsp;API-3.2 or later, only</EM><P>
+             </STRONG></CODE><P>
         <DT> <A HREF = "GETYN.html" >
              <STRONG>GETYN</STRONG>:
              </A>
@@ -1033,16 +1085,24 @@ Contents
              </A>
              Read in (and count) environment variables that are comma
              delimited lists of the indicated type.
-        <DT> <A HREF = "LOCATS.html" >
-             <STRONG>LOCATE, LOCATC, LOCAT1, LOCAT2, LOCAT3, LOCAT4,
-             LOCATR1, LOCATR2, LOCATR3, LOCATR4</STRONG>:
-             </A>
-             find insertion-point for character-string
-             <VAR>&lt;key&gt;</VAR> or INTEGER or
-             REAL <VAR>&lt;key-tuple&gt;</VAR> into sorted
+        <DT> <A HREF = "LOCATS.html" ><STRONG><CODE>LOCATE()</CODE></STRONG></A>:
+             Fortran-90 generic function to find subscript for insertion
+             of keys <CODE>K</CODE> or key-tuples (e.g.,
+             <CODE>&lt;K1,K2,K3&gt;</CODE>)  into sorted
              <VAR>&lt;key-table&gt;</VAR> or
-             <VAR>&lt;keytuple-table&gt;</VAR>, or -1 if the
-             key is already present
+             <VAR>&lt;keytuple-table&gt;</VAR>, or -1 if the key is
+             already present<BR>
+             for  I/O&nbsp;API-3.2 or later<BR>
+             Subsumes the following specific forms:
+        <DD> <CODE><STRONG>LOCATC</STRONG></CODE>:&nbsp; for
+              <CODE>CHARACTER</CODE> keys<BR>
+             <CODE><STRONG>LOCAT1, LOCAT2, LOCAT3, LOCAT4</STRONG></CODE>:&nbsp; for
+              <CODE>INTEGER</CODE> key-tuples<BR>
+             <CODE><STRONG>LOCATL1, LOCATL2, LOCATL3, LOCATL4</STRONG></CODE>:&nbsp;  for
+              <CODE>INTEGER*8</CODE> key-tuples<BR>
+             <CODE><STRONG>LOCATR1, LOCATR2, LOCATR3, LOCATR4</STRONG></CODE>:&nbsp;  for
+              <CODE>REAL</CODE> key-tuples<BR>
+             </P>
         <DT> <A HREF = "LUSTR.html" >
              <STRONG>LUSTR</STRONG>:
              </A>
@@ -1125,16 +1185,29 @@ Contents
              <STRONG>SMATVEC</STRONG> and <STRONG>SMATVECP</STRONG>:
              </A>
              applies sparse matrix to vector
-        <DT> <A HREF = "SORTI.html" >
-             <STRONG>SORTIC, SORTIC8, SORTINC4, SORTINC8.
-             SORTI1, SORTI2, SORTI3, SORTI4,
-             SORTL1, SORTL2, SORTL3, SORTI3, SORTL4,
-             SORTR1, SORTR2, SORTR3, SORTR4 </STRONG>:
-             </A>
-             sort <VAR>&lt;index table&gt;</VAR> acording to a
-             <CODE>CHARACTER</CODE>-string key-table, or a
-             <VAR>&lt;keytuple-table&gt;</VAR> of <CODE>INTEGER</CODE>s.
-              <CODE>INTEGER(8)</CODE>s, or <CODE>REAL</CODE>s.
+        <DT> <A HREF = "SORTI.html"><STRONG><CODE>SORTI</CODE></STRONG></A>
+             Fortran-90 generic routine to sort <VAR>&lt;index
+             table&gt;</VAR> acording to a <CODE>CHARACTER</CODE>-string
+             key-table, or a <VAR>&lt;keytuple-table&gt;</VAR> of
+             <CODE>INTEGER</CODE>s. <CODE>INTEGER(8)</CODE>s, or
+             <CODE>REAL</CODE>s.<BR>
+             <EM>Generic form is I/O&nbsp;API-3.2 or later</EM>
+             and subsumes the following older specific forms (which
+             are still available):
+             <DD>
+             <STRONG><CODE>SORTIC SORTIC8, SORTINC4,
+             SORTINC8</CODE></STRONG>:&nbsp; for <CODE>CHARACTER</CODE>
+             key-tables, with optional <CODE>INTEGER*8</CODE> result
+             and/or initial-string-segment lengths<BR>
+             <STRONG><CODE>SORTI1, SORTI2, SORTI3,
+             SORTI4</CODE></STRONG>:&nbsp; for <CODE>INTEGER</CODE>
+             keytuple-tables<BR>
+             <STRONG><CODE>SORTL1, SORTL2, SORTL3, SORTL4</CODE></STRONG>:&nbsp;
+             for <CODE>INTEGER*8</CODE> keytuple-tables
+             <EM>(I/O&nbsp;API-3.2 or later)</EM><BR>
+             <STRONG><CODE>SORTR1, SORTR2, SORTR3, SORTR4</CODE></STRONG>:&nbsp;
+             for <CODE>REAL</CODE> keytuple-tables
+             </P>
         <DT> <A HREF = "STR2S.html" >
              <STRONG>SCANINT, STR2INT, STR2REAL, and STR2DBLE</STRONG>:
              </A>
@@ -1152,14 +1225,19 @@ Contents
              &nbsp;&nbsp;&nbsp;&nbsp;<EM><STRONG>Deprecated</STRONG> for F90, since it duplicates intrinsic
              function <VAR>LEN_TRIM()</VAR></EM>
         <DT> <A HREF = "UNGRIDB.html" >
-             <STRONG>UNGRIDB</STRONG>:
+             <STRONG>UNGRIDB</STRONG> and <STRONG>UNGRIDI</STRONG>:
              </A>
-             computes &quot;ungridding&quot;matrices for bilinear
-             interpolation
+             computes &quot;ungridding-matrices&quot; for bilinear
+             interpolation and &quot;incidence-matrices&quot; for
+             source-attribution, etc.<BR>
+             &nbsp;&nbsp;&nbsp;&nbsp;<EM>I/O&nbsp;API-3.2 or later: 
+             additional forms with <CODE>IERR</CODE> argument detect
+             out-of-grid input locations.</EM>
         <DT> <A HREF = "UPCASE.html" >
-             <STRONG>UPCASE</STRONG>:
+             <STRONG>UPCASE</STRONG> and <STRONG>DOWNCASE</STRONG>:
              </A>
-             make <VAR>&lt;string&gt;</VAR> into ALL CAPS
+             make <VAR>&lt;string&gt;</VAR> into <EM>ALL CAPS</EM> or
+             <EM>all lower-case</EM>.
     </DL></BLOCKQUOTE>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -1254,7 +1332,7 @@ Contents
              a target file, under the optional control of an
              <A HREF="BUFFERED.html#pvm">I/O&nbsp;API coupling-mode
              &quot;synch file&quot;</A>.  <BR>
-             <STRONG>m3interp</STRONG> also does time-interpolation.
+             &nbsp;&nbsp;&nbsp;&nbsp;<STRONG>m3interp</STRONG> also does time-interpolation.
         <DT> <A HREF = "M3COMBO.html" >
              <STRONG>m3combo</STRONG>:
              </A>
@@ -1410,6 +1488,11 @@ Contents
              </A>
              convert CAMx and other UAM-format binary files to GRIDDED
              I/O&nbsp;API files.
+        <DT> <A HREF = "MPASTOM3.html"><STRONG>mpastom3</STRONG></A>:
+             Interpolate a set of variables from an MPAS-format-netCDF
+             file for a specified time step sequence to a grid specified
+             by an I/O&nbsp;API gridded Lat-Lon file, and write the
+             result to a gridded I/O&nbsp;API file.
         <DT> <A HREF = "WRFGRIDDESC.html" >
              <STRONG>wrfgriddesc</STRONG>:
              </A>
@@ -1429,7 +1512,7 @@ Contents
              construct GRIDDED and/or BOUNDARY files with
              <CODE>REAL</CODE> variables <CODE>LAT</CODE> and
              <CODE>LON</CODE>  for the cell-centers.  <BR>
-             <EM>For I/O&nbsp;API-3.2 after Dec.&nbsp;25, 2017</EM>, also
+             &nbsp;&nbsp;&nbsp;&nbsp;<EM>For I/O&nbsp;API-3.2 after Dec.&nbsp;25, 2017</EM>, also
              constructs <CODE>DOUBLE&nbsp;PRECISION</CODE> variables
              <CODE>LATD</CODE> and <CODE>LOND</CODE>.
         <DT> <A HREF = "PROJTOOL.html" >
@@ -1445,7 +1528,7 @@ Contents
         <DT> <A HREF = "UTMTOOL.html" >
              <STRONG>utmtool</STRONG>:
              </A>
-             <EM>Deprecated for Version 3.1; deleted for Version
+             &nbsp;&nbsp;&nbsp;&nbsp;<EM>Deprecated for Version 3.1; deleted for Version
              3.2</EM><BR>
              Perform coordinate conversions and grid-related
              computations for Lat-Lon, Lambert, and UTM coordinate
@@ -1624,7 +1707,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-$Id: AA.html 75 2018-01-12 15:48:16Z coats $
+$Id: AA.html 77 2018-01-18 15:29:37Z coats $
     </PRE>
 
 </BODY>

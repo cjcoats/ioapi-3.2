@@ -2,16 +2,16 @@
 PROGRAM M3CPLE
 
     !!***********************************************************************
-    !! Version "$Id: m3cple.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: m3cple.f90 77 2018-01-18 15:29:37Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
-    !!   (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
+    !!   (C) 1995-2002,2005-2013, 2018- Carlie J. Coats, Jr.,
     !!   (C) 2003-2010 Baron Advanced Meteorological Systems. LLC., and
     !!   (C) 2014-2016 UNC Institute for the Environment.
     !!   Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!   See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  140
+    !!  program body starts at line  144
     !!
     !!  DESCRIPTION:
     !!       For each time step in the specified time step sequence,
@@ -51,6 +51,8 @@ PROGRAM M3CPLE
     !!       Version  12/2014 by CJC for I/O API v3.2:  USE MODGCTP: GRID2INDX(),
     !!       INDXMULT();  F90 free-format source; use generics for "GET*()"
     !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
+    !!       Version  01/2018 by CJC:  copy-operations for variables of
+    !!       types M3INT, M3DBLE.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -124,6 +126,8 @@ PROGRAM M3CPLE
     INTEGER, ALLOCATABLE ::  IX2( : )
     REAL,    ALLOCATABLE ::  PX2( : )
     REAL,    ALLOCATABLE ::  PY2( : )
+    INTEGER, ALLOCATABLE :: IBUF( :,: )
+    REAL(8), ALLOCATABLE :: DBUF( :,: )
 
 
     !!...........   STATEMENT FUNCTION:  REAL*8 "definitely unequal"
@@ -163,29 +167,10 @@ PROGRAM M3CPLE
 '    setenv GRIDDESC              <path-name> (if interp)',                 &
 '    setenv IOAPI_ISPH            <USGS spheroid, or REARTH>',              &
 '',                                                                         &
-'    time step sequence is valid for both input files',                     &
-'    For interpolation, file type must be GRIDDED, and either',             &
-'    the input and output coordinate systems must either be',               &
-'    the same, or must be selected from one of the following',              &
-'    supported coordinate conversions ("LL" mean "Lat-Lon, :',              &
-'    "LAM" means "Lambert", "UTM" means "Universal Transverse ',            &
-'    Mercator", "POL" means "Polar Stereographic", "EQM" means',            &
-'    means "Equatorial Mercator", and "TRM")',                              &
-'',                                                                         &
-'        LL   to/from  LL  (w/ different parameters),',                     &
-'        LAM  to/from  LAM (w/ different parameters),',                     &
-'        UTM  to/from  UTM (w/ different zones),',                          &
-'        POL  to/from  POL (w/ different parameters),',                     &
-'        EQM  to/from  EQM (w/ different parameters),',                     &
-'        LL   to/from  LAM, UTM, POL, EQM, TRM, or ALB,',                   &
-'        LAM  to/from  LL,  UTM, POL, EQM, TRM, or ALB,',                   &
-'        UTM  to/from  LL,  LAM, POL, EQM, TRM, or ALB,',                   &
-'        POL  to/from  LL,  LAM, UTM, EQM, TRM, or ALB,',                   &
-'        EQM  to/from  LL,  LAM, UTM, EQM, TRM, or ALB,',                   &
-'        TRM  to/from  LL,  LAM, UTM, POL, EQM, or ALB,',                   &
-'        ALB  to/from  LL,  LAM, UTM, POL, TRM, or EQM,',                   &
+'    Time step sequence is valid for both input files',                     &
 '',                                                                         &
 '    For COPY:  file type must be GRIDDED, BOUNDARY, or CUSTOM.',           &
+'    (respond "SAME" to the prompt for output grid name).',                 &
 '',                                                                         &
 '    For INTERPOLATION:  the files must be of type GRIDDED,',               &
 '    all of the variables must be of type REAL, and',                       &
@@ -197,11 +182,12 @@ PROGRAM M3CPLE
 '',                                                                         &
 '   https://www.cmascenter.org/ioapi/documentation/3.1/html/AA.html#tools', &
 '',                                                                         &
-'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013 Carlie J. Coats, Jr.', &
+'Program copyright (C) 1992-2002 MCNC,',                                    &
+'(C) 1995-2013, 2018- Carlie J. Coats, Jr.',                                &
 '(C) 2003-2010 Baron Advanced Meteorological Systems, LLC., and',           &
 '(C) 2014-2016 UNC Institute for the Environment.',                         &
-'Released under Version 2 of the GNU General Public License. See',          &
-'enclosed GPL.txt, or URL',                                                 &
+'Released under Version 2 of the GNU General Public License.',              &
+'See enclosed GPL.txt, or URL',                                             &
 ''  ,                                                                       &
 '    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',               &
 ''  ,                                                                       &
@@ -215,7 +201,7 @@ PROGRAM M3CPLE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3cple.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: m3cple.f90 77 2018-01-18 15:29:37Z coats $',&
 ' '
 
         IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -339,7 +325,9 @@ PROGRAM M3CPLE
             EFLAG = .TRUE.
         END IF
 
-        ALLOCATE( BUF1( NSIZE, NLAYS3D ), STAT = ISTAT )
+        ALLOCATE( BUF1( NSIZE, NLAYS3D ),   &
+                  IBUF( NSIZE, NLAYS3D ),   &
+                  DBUF( NSIZE, NLAYS3D ),   STAT = ISTAT )
         IF ( ISTAT .NE. 0 ) THEN
             WRITE( MESG, '( A, I10 )' ) 'Buffer allocation failed:  STAT=', ISTAT
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
@@ -498,7 +486,12 @@ PROGRAM M3CPLE
 
             DO  V = 1, NVARS3D
 
-                IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, BUF1 ) ) THEN
+                IF ( VTYPE3D( V ) .NE. M3REAL ) THEN
+                    EFLAG = .TRUE.
+                    MESG  = 'ERROR:  variable "' // TRIM( VNAME3D( V ) ) // '" not of type REAL'
+                    CALL M3MESG( MESG )
+                    CYCLE
+                ELSE IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, BUF1 ) ) THEN
                     EFLAG = .TRUE.
                     CALL M3MESG( 'ERROR:  read-failure' )
                     CYCLE
@@ -520,12 +513,36 @@ PROGRAM M3CPLE
 
             DO  V = 1, NVARS3D
 
-                IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, BUF1 ) ) THEN
-                    EFLAG = .TRUE.
-                    CALL M3MESG( 'ERROR:  read-failure' )
-                ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, BUF1 ) ) THEN
-                    EFLAG = .TRUE.
-                    CALL M3MESG( 'ERROR:  write-failure' )
+                IF ( VTYPE3D( V ) .EQ. M3REAL ) THEN
+
+                    IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, BUF1 ) ) THEN
+                        EFLAG = .TRUE.
+                        CALL M3MESG( 'ERROR:  read-failure' )
+                    ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, BUF1 ) ) THEN
+                        EFLAG = .TRUE.
+                        CALL M3MESG( 'ERROR:  write-failure' )
+                    END IF
+
+                ELSE IF ( VTYPE3D( V ) .EQ. M3INT ) THEN
+
+                    IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, IBUF ) ) THEN
+                        EFLAG = .TRUE.
+                        CALL M3MESG( 'ERROR:  read-failure' )
+                    ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, IBUF ) ) THEN
+                        EFLAG = .TRUE.
+                        CALL M3MESG( 'ERROR:  write-failure' )
+                    END IF
+
+                ELSE IF ( VTYPE3D( V ) .EQ. M3DBLE ) THEN
+
+                    IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, DBUF ) ) THEN
+                        EFLAG = .TRUE.
+                        CALL M3MESG( 'ERROR:  read-failure' )
+                    ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, DBUF ) ) THEN
+                        EFLAG = .TRUE.
+                        CALL M3MESG( 'ERROR:  write-failure' )
+                    END IF
+
                 END IF
 
             END DO      !  end loop on variables

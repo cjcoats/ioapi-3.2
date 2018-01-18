@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: ERRORS.html 3 2017-04-13 14:54:46Z coats $" -->
+<!-- "$Id: ERRORS.html 77 2018-01-18 15:29:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     I/O API Troubleshooting
@@ -48,9 +48,12 @@
          <LI>  <A HREF="#ncf331"> netCDF 3.3.1 Error Numbers list </A>
          <LI>  <A HREF="#other">  Other Problems </A>
     </UL>
+    Back to the <STRONG><EM><A HREF = "AA.html">I/O&nbsp;API User Manual</A></EM></STRONG>
+    <P>
 
 <H3>NOTE</H3>
 
+    <BLOCKQUOTE>
     If you run into troubles with I/O&nbsp;API related programs, it is
     useful to know the versions of all the software components.  The
     CVS-related program <VAR>ident</VAR> can report to you versioning
@@ -70,8 +73,9 @@
     Each I/O&nbsp;API source file will have its version embedded in the file's
     header-comment, e.g.
     <PRE>
-    !! Version "$Id: ERRORS.html 3 2017-04-13 14:54:46Z coats $"
+    !! Version "$Id: ERRORS.html 77 2018-01-18 15:29:37Z coats $"
     </PRE>
+    </BLOCKQUOTE>
 <P>
 
 
@@ -83,6 +87,7 @@
 
 </A></H2>
 
+    <BLOCKQUOTE>
     Since <CODE>MODULE&nbsp;M3UTILIO</CODE> itself <CODE>INCLUDE</CODE>s
     the standard I/O&nbsp; include-files and also has <CODE>INTERFACE</CODE>-blocks
     for (almost all of) the public I/O&nbsp;API functions, when you
@@ -115,6 +120,7 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
+    </BLOCKQUOTE>
 
 
 
@@ -126,6 +132,7 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
 
 </A></H2>
 
+    <BLOCKQUOTE>
     <EM>Problem:</EM>  When I try to link, I get &quot;missing
     symbol&quot; errors.
     <P>
@@ -146,7 +153,8 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
     <VAR>Makeinclude.${BIN}</VAR> used to build your I/O&nbsp;API
     library, in order to see what is needed for your compiler.
     <P>
-    Alternatively, 
+    </BLOCKQUOTE>
+    <P>
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
@@ -156,10 +164,11 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
 
 <H2><A NAME="ccfc">
 
-     Compiler/System-library compatibility issues
+     Compiler/system-library compatibility issues
 
 </A></H2>
 
+    <BLOCKQUOTE>
     In general, you are best off if you can build the whole modeling
     system (<VAR>libnetcdf.a</VAR>, <VAR>libpvm3.a</VAR>,
     <VAR>libioapi.a</VAR>, and your model(s)  <VAR>CMAQ</VAR>,
@@ -214,6 +223,7 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
                to the above...)
          <P>
     </UL>
+    </BLOCKQUOTE>
 
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
@@ -228,6 +238,7 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
 
 </A></H2>
 
+    <BLOCKQUOTE>
     Starting with their Version&nbsp;16 compilers, Intel has introduced
     a new compiler directive <CODE>-qopenmp</CODE> to enable OpenMP,
     and has deprecated the previous <CODE>-openmp</CODE>. This
@@ -238,6 +249,7 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
     <VAR>make</VAR>s, <CODE>Makeinclude</CODE>s, etc. incompatible with
     Intel-16 ones.
     <P>
+    </BLOCKQUOTE>
 
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
@@ -252,6 +264,7 @@ Error: Symbol 'getnum' at (1) conflicts with symbol from module 'm3utilio', use-
 
 </A></H2>
 
+    <BLOCKQUOTE>
     At least some versions of the Intel compilers <VAR>icc</VAR> and
     <VAR>ifort</VAR> cannot handle the internal complexity of some
     routines (usually <VAR>iobin3.c</VAR>) when compiling with full
@@ -289,6 +302,7 @@ make: *** [iobin3.o] Error 4
     This trick is also useful when trying to do highly-optimized builds
     of other models that contain large, complex routines (WRF, CMAQ, ...)
     <P>
+    </BLOCKQUOTE>
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
@@ -302,6 +316,7 @@ make: *** [iobin3.o] Error 4
 
 </A></H2>
 
+    <BLOCKQUOTE>
     <EM><STRONG>General Principle:</STRONG>  various Fortran compilers
     &quot;mangle&quot; subroutine names (etc.) for the linker in various
     ways.</EM>
@@ -356,6 +371,7 @@ make: *** [iobin3.o] Error 4
     </BLOCKQUOTE>
     to help you identify such problems.
     <P>
+    </BLOCKQUOTE>
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
@@ -369,6 +385,7 @@ make: *** [iobin3.o] Error 4
 
 </A></H2>
 
+    <BLOCKQUOTE>
     Added 4/4/2005
     <P>
 
@@ -410,6 +427,7 @@ class `AREG'
     <VAR>FC3/gcc/g77</VAR> systems, and the same fix seems to work for
     many other problems as well.
     <P>
+    </BLOCKQUOTE>
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
@@ -423,6 +441,7 @@ class `AREG'
 
 </A></H2>
 
+    <BLOCKQUOTE>
     If sizes of individual arrays or of <CODE>COMMON</CODE> blocks
     exceed 2GB on the <VAR>x86_64</VAR> platforms, Intel <VAR>ifort</VAR>
     and <VAR>icc</VAR> will give you failures, with messages about
@@ -452,6 +471,7 @@ class `AREG'
     Other compilers and other non-Linux <VAR>x86_64</VAR> platforms will
     have similar problems, but the solutions are compiler specific.
     <P>
+    </BLOCKQUOTE>
 
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
@@ -469,6 +489,7 @@ class `AREG'
 
 </A></H2>
 
+    <BLOCKQUOTE>
     <EM>Thanks to Christopher G. Nolte, Ph.D., US EPA Office of Research
     and Development for his <EM>M3USER</EM> mailing-list comments this one.</EM>
     <P>
@@ -540,6 +561,7 @@ class `AREG'
     https://en.wikipedia.org/wiki/Advanced_Vector_Extensions</A> for
     more information about the SSE and AVX families of new instructions.
     <P>
+    </BLOCKQUOTE>
 
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
@@ -553,6 +575,7 @@ class `AREG'
 
 </A></H2>
 
+    <BLOCKQUOTE>
     Added 12/18/2003<P>
     <STRONG>SGI F90 compiler-flag problems:</STRONG>  It seems that
     SGI version 7.4 and later Fortran compilers demand a different set
@@ -618,6 +641,7 @@ class `AREG'
                version&nbsp;7.4.)
                <P>
     </UL>
+    </BLOCKQUOTE>
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
 
@@ -630,6 +654,7 @@ class `AREG'
 
 </A></H2>
 
+    <BLOCKQUOTE>
     <UL>
          <LI>  <STRONG>NetCDF and IRIX 7.4 and later compilers</STRONG>
                Experience indicates that the IRIX&nbsp;7.4 compilers
@@ -853,6 +878,7 @@ class `AREG'
                </UL>
                <P>
     </UL>
+    </BLOCKQUOTE>
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
 
@@ -862,6 +888,7 @@ class `AREG'
 Other Problems
 </A></H2>
 
+    <BLOCKQUOTE>
     <UL>
          <LI>  What's this about <VAR>notCDF</VAR>?
                <P>
@@ -961,7 +988,7 @@ Other Problems
                have not activated the system parallel libraries in your
                model's build procedure.  For Intel compilers this means
                that you need to add <CODE>-openmp</CODE> (for
-               compiler-version 15 or earlier) or <CODE>-openmp</CODE>
+               compiler-version 15 or earlier) or <CODE>-qopenmp</CODE>
                (for compiler-version 16 or later); for GNU compilers,
                <CODE>-fopenmp</CODE>, and for PGI compilers,
                <CODE>-mp</CODE>. See the variable <CODE>OMPLIBS</CODE>
@@ -1030,12 +1057,23 @@ Other Problems
                and specifies the <EM>logical name</EM> rather than
                the physical file name.&quot;
                <P>
-               This usually means that the script which ran your program
-               failed to execute correctly the <VAR>setenv</VAR> to define
-               the logical name for the file.  Try using the <VAR>env</VAR>
-               command in the script before you run the program, in order
-               to get started debugging your script, and then check the
-               value of the problem-file's logical name.
+               This usually means one of two things:
+               <UL>
+                    <LI> The program is opening the file with mode
+                         <CODE>FSNEW3</CODE>, which means that the file
+                         must <U>not</U> exist (and will be created anew
+                         by <CODE>OPEN3()</CODE>), but the file actually
+                         <U>does</U> exist.<BR>
+                         Delete the file and re-run.
+                    <LI> The script which ran your program
+                         failed to execute correctly the
+                         <VAR>setenv</VAR> to define the logical name
+                         for the file.  Try using the <VAR>env</VAR>
+                         command in the script before you run the
+                         program, in order to get started debugging your
+                         script, and then check the value of the
+                         problem-file's logical name.
+               </UL>
                <P>
 
          <LI>  &quot;Why does the linker say <CODE>ncabor_</CODE>
@@ -1143,10 +1181,9 @@ Other Problems
                          needs.  Then go back and review the compiler
                          flags used in the  build-process for that
                          component. <BR>
-                         <VAR>The latest release of
-                         I/O&nbsp;API Version&nbsp;2.2 has a script
-                         <CODE>nm_test.csh</CODE> to help you with this:
-                         run</VAR>
+                         <EM>I/O&nbsp;API Version&nbsp;2.2 and later
+                         have a script <CODE>nm_test.csh</CODE> to help
+                         you with this: run</EM>
                          <BLOCKQUOTE><CODE>
                          nm_test.csh  &lt;obj-file&gt;
                          &lt;lib-file&gt;  &lt;symbol&gt;
@@ -1224,6 +1261,7 @@ Other Problems
                a problem situation...  It isn't.
                <P>
     </UL>
+    </BLOCKQUOTE>
     <A HREF="#contents">Back to &quot;Troubleshooting&quot; Contents</A>
     <P>
 

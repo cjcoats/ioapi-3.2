@@ -2,9 +2,9 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: M3CPLE.html 26 2017-10-13 17:30:06Z coats $" -->
+<!-- "$Id: M3CPLE.html 77 2018-01-18 15:29:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE"> 
-<TITLE> Programs <VAR>M3CPLE</VAR> and <VAR>M3INTERP</VAR></TITLE>
+<TITLE> Programs M3CPLE and M3INTERP</TITLE>
 </HEAD>
 
 <BODY BGCOLOR="#FFFFFF" 
@@ -35,13 +35,25 @@ interpolation rather than a copy operation.
 
 
 The <VAR>M3CPLE</VAR> program extracts all 
-<A HREF = "VBLE.html">variables</A> for a specified time step sequence 
-from one I/O&nbsp;API file, <VAR>infile</VAR>, optionally interpolates them 
-to a new grid, and writes them to a different I/O&nbsp;API file, 
-<VAR>outfile</VAR>, under the optional control of a <VAR>synchfile</VAR>. 
-Any combination of <A HREF="BUFFERED.html">physical or virtual files</A>
-is supported.  The output time step sequence must be a subsequence
-of the input file's time step sequence
+<A HREF = "VBLE.html">variables</A> for a specified time step sequence
+from one I/O&nbsp;API file, <VAR>infile</VAR>, copies them or optionally
+interpolates them bilinearly to a new grid, and writes them to a different
+I/O&nbsp;API file,  <VAR>outfile</VAR>, under the optional control of a
+<VAR>synchfile</VAR>.  Any combination of <A HREF="BUFFERED.html">physical
+or virtual files</A> is supported.  The output time step sequence must
+be a subsequence of the input file's time step sequence.
+<P>
+
+Note that <STRONG>repeated copy-operations may be used to concatenate
+multiple files</STRONG> that have the same grid and set of variables:
+for example, if <CODE>FILE1</CODE> has hourly data from 2018017:00 through
+2018018:00 and <CODE>FILE2</CODE> has hourly data from 2018018:00 
+through 2018019:00, a <VAR>M3CPLE</VAR> using <CODE>FILE2</CODE> as
+<VAR>infile</VAR> and <CODE>FILE1</CODE> as <VAR>outfile</VAR> may be
+used to copy the 2018018:01-2018019:00 data from <CODE>FILE2</CODE> to
+<CODE>FILE1</CODE>.  Repeated runs of this sort may be used to construct
+month-, year-, or even decade-long files from a (large) set of
+single-day files.
 <P>
  
 Program <VAR>M3INTERP</VAR> acts like <VAR>M3CPLE</VAR> 
@@ -61,14 +73,22 @@ operation is available for files of type
 <A HREF="DATATYPES.html#custom">CUSTOM3</A>,
 <A HREF="DATATYPES.html#bndary">BNDARY3</A>; in any case, all the
 variables must be of <A NAME = "DATATYPES.html#basic">basic data type
-M3REAL</A>.   For interpolation to be meaningful, <STRONG>the output
-resolution should be finer than the input resolution</STRONG>, else you
-should not be using any interpolation, but rather should be using some
-sort of aggregation  algorithm.
+M3REAL</A>.
 <P>
 
-The list of currently <STRONG>supported coordinate system</STRONG>
-conversions for interpolation is the following:
+For interpolation to be meaningful, <STRONG>the output
+resolution should be finer than the input resolution</STRONG>, else you
+should not be using any interpolation, but rather should be using some
+sort of aggregation  algorithm  (possibly using a matrix 
+from program <A HREF = "MTXBUILD.html"><VAR>MTXBUILD</VAR></A> 
+in conjunction with program <A HREF="MTXCPLE.html"><VAR>MTXCPLE</VAR></A>).
+<P>
+
+For the I/O&nbsp;API-3.2 or later, all grid-to-grid interpolations
+involving <A HREF="GRIDS.html#horiz">I/O&nbsp;API supported map
+projection types</A> are supported. For the I/O&nbsp;API-3.1 or earlier
+versions of the program, the list of <STRONG>supported coordinate
+system</STRONG> conversions for interpolation is the following:
 <UL>
     <LI>  <CODE>&quot;SAME&quot;:  &lt;input coordinate system type&gt; = 
           &lt;output coordinate system type&gt;</CODE>

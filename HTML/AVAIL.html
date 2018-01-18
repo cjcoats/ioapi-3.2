@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: AVAIL.html 72 2017-12-12 17:54:20Z coats $" -->
+<!-- "$Id: AVAIL.html 77 2018-01-18 15:29:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     Availability/Download of the BAMS/Models-3 I/O&nbsp;API
@@ -55,10 +55,14 @@
          <LI>  Release Notes&nbsp;/ Change Log are
               <A HREF="NEWSTUFF.html">available here.</A>
               <P>
+         <LI> <A HREF="ERRORS.html">I/O API Troubleshooting</A> Document
+              <P>
         <LI>  <A HREF = "#note">NOTE on File Types</A>
         <LI>  <A HREF = "#disc">DISCLAIMER</A>
-        <LI>  <A HREF = "#docs">I/O&nbsp;API Documents</A>
+        <LI>  <A HREF = "#docs">Note on I/O&nbsp;API Documents</A>
     </UL>
+
+    Back to the <STRONG><EM><A HREF = "AA.html">I/O&nbsp;API User Manual</A></EM></STRONG>
     <P>
 
 
@@ -132,6 +136,7 @@ m3stat:
     <H3><A NAME="build">Build and installation instructions</A>
                for I/O&nbsp;API Versions&nbsp;3.0, 3.1, and 3.2</H3>
 
+    <BLOCKQUOTE>
     As of this writing (Dec&nbsp;2015), I/O&nbsp;API Versions 2.2 and
     earlier are obsolete; 3.0 is obsolescent, in critical-fixes-only
     mode; 3.1 is the current stable/production version; and 3.2 is the
@@ -163,12 +168,16 @@ m3stat:
                        <A HREF="https://github.com/cjcoats/ioapi-3.2"><VAR>&lt;https://github.com/cjcoats/ioapi-3.2&gt;</VAR></A>.
                        To install a copy of this source code from
                        GitHub, go to the directory under which do the
-                       installation, and then do the command
+                       installation, (This directory will be the
+                       <CODE>BASEDIR</CODE> for subsequent steps in the
+                       installation.) and then do the command
     <PRE>
     git clone https://github.com/cjcoats/ioapi-3.2
     </PRE>
                   <P>
-                  <LI> <EM>cd</EM> to the directory under which you wish
+                  <LI> <STRONG>If you downoaded a
+                       <VAR>ioapi-*.tar.gz</VAR></STRONG>:<BR>
+                       <EM>cd</EM> to the directory under which you wish
                        to build the I/O&nbsp;API. <EM>gunzip</EM> and
                        untar it (<VAR>gtar&nbsp;xvfz&nbsp;ioapi-3.1.tar.gz</VAR>
                        [etc...] does this in one operation).<BR>
@@ -201,6 +210,7 @@ m3stat:
                        Additional definitions in <VAR>make</VAR>-variable
                        <CODE>DEFINEFLAGS</CODE> turn on various optional
                        capabilities:
+                       <BLOCKQUOTE>
                        <DL>
                             <DT> <CODE>IOAPI_NO_STDOUT</CODE>
                             <DD> suppresses write-operations to the screen
@@ -233,6 +243,7 @@ m3stat:
                                  netCDF-3 (for the rest of your
                                  <VAR>Makefile</VAR>s).
                        </DL>
+                       </BLOCKQUOTE>
                        <P>
                        You may also need to customize the <CODE>Makeinclude.*</CODE>
                        configuration-files for the configurations) you
@@ -257,6 +268,7 @@ m3stat:
                        for various purposes; they should serve as
                        templates if you need these capabilities for
                        different compilers:
+                       <BLOCKQUOTE>
                        <DL "COMPACT">
                            <DT><CODE>Makeinclude.*dbg</CODE>
                            <DD>Debug version of library
@@ -271,6 +283,7 @@ m3stat:
                            <DD>medium-memory-model (large stack/large-array)
                                version of library
                        </DL>
+                       </BLOCKQUOTE>
                        <P>
                        Note also that starting with their
                        Version&nbsp;16 (and later) compilers, Intel has
@@ -287,9 +300,17 @@ m3stat:
                        can eliminate this compile warning for current
                        Intel compilers.
                   <P>
+                  <LI> If you want to <STRONG>disable the
+                        <A HREF="BUFFERED.html#pvm">coupling-mode</A>
+                        configuration</STRONG> (which is enabled by
+                        default), <EM>cd&nbsp;ioapi</EM>  and then
+                        <EM>cp&nbsp;Makefile.nocpl&nbsp;Makefile</EM>
+                        and customize it, and similarly for the
+                        <EM>m3tools</EM> directory.
+                  <P>
                   <LI> <EM>I/O&nbsp;API 3.2 only:</EM> If you want to enable
                         the <A HREF="BUFFERED.html#pncf">PnetCDF
-                        distributed I/O</A> configuration,
+                        distributed I/O</A> configuration (for CMAQ),
                         <EM>cd&nbsp;ioapi</EM>  and then
                         <EM>cp&nbsp;Makefile.pncf&nbsp;Makefile</EM>
                         and <VAR>setenv</VAR> environment variable
@@ -304,7 +325,10 @@ m3stat:
                             <LI> <STRONG>PnetCDF enabled I/O&nbsp;API
                                  libraries are not compatible with
                                  &quot;normal&quot; libraries.</STRONG>
-                                 Make sure you keep them separate.
+                                 Make sure you keep them separate.<BR>
+                                 You will want to build both, since the
+                                 PnetCDF enabled libraries are for CMAQ
+                                 only.
                             <LI> What is called <VAR>mpif90</VAR> is really
                                  a script that understands about an
                                  underlying compiler-set (e.g., Intel
@@ -328,18 +352,11 @@ m3stat:
                             <LI> This part of the I/O&nbsp;API source code
                                  had to be hacked badly to deal with the above.
                         </OL>
-                 <P>
-                  <LI> If you want to disable the <A HREF="BUFFERED.html#pvm">coupling-mode
-                        </A> configuration (which is enabled by
-                        default), <EM>cd&nbsp;ioapi</EM>  and then
-                        <EM>cp&nbsp;Makefile.nocpl&nbsp;Makefile</EM>
-                        and customize it, and similarly for the
-                        <EM>m3tools</EM> directory.
-                  <P>
                   <P>
                   <LI> If you want to enable the <STRONG>360-day or 365-day
-                        climatology year</STRONG> (365 for
-                        <EM>I/O&nbsp;API 3.2 only</EM>) , customize your
+                        (no-leap-year) climatology year
+                        configuration</STRONG> (365-day for
+                        <EM>I/O&nbsp;API 3.2 only</EM>), customize your
                         <VAR>ioapi/Makefile</VAR> by adding
                         <CODE>-DIO_360=1</CODE> or
                         <CODE>-DIO_365=1</CODE> respectively to the
@@ -551,6 +568,7 @@ m3stat:
               </DL>
         <P>
     </DL>
+    </BLOCKQUOTE>
     <P>
 
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -725,6 +743,7 @@ or (PGI)
     <BLOCKQUOTE>
     There are three different binary-incompatible &quot;memory
     models&quot; available for 64-bit <CODE>x86</CODE> Linux:
+    <BLOCKQUOTE>
     <DL>
         <DT> <CODE>small</CODE>
         <DD> At most 2 GB each for static data (<CODE>COMMON</CODE>s,
@@ -739,6 +758,7 @@ or (PGI)
         <DD> No restrictions on code or data.
         <P>
     </DL>
+    </BLOCKQUOTE>
     <P>
 
     The <CODE>small</CODE> memory model basically is a 32-bit
@@ -864,23 +884,14 @@ or (PGI)
               Linux-distribution-vendor supplied <VAR>libnetcdf.a</VAR>
               rarely works with CMAS-supported compiler sets.
               <P>
-        <DT>  Note &nbsp;3 (appliocable for v3.0 and earlier only)
-        <DD>  On at least Sun Solaris and SGI IRIX platforms, <VAR>f77</VAR>
-              and <VAR>f90</VAR> are known not to be link compatible; you will
-              need to keep builds for them separate (which is the original
-              distinction for <CODE>BIN=IRIX64f77</CODE> vs
-              <CODE>BIN=IRIX64f90</CODE>,
-              for example).  It is recommended that for other systems you likewise
-              keep different compiler systems (and sometimes even different
-              versions of the same compiler--Intel <VAR>ifort</VAR> versions
-              10, 11, and 12, for example) separate.
-              <P>
-        <DT>  <STRONG>Note&nbsp;4</STRONG>
+        <DT>  <STRONG>Note&nbsp;3</STRONG>
         <DD>  For 64-bit platforms, it turns out that many compilers by
               default still only allow individual arrays and
               program-stack sizes smaller than 2&nbsp;GB.  For the vast
               majority of current modeling applications, this is not a
-              problem.<BR>
+              problem.  <A HREF="#medium">This is documented in detail
+              in a section above.</A>
+              <BR>
               <STRONG>To use &quot;large&quot; arrays, i.e., larger than
               2&nbsp;GB, or very-deep recursion, you will need  to build
               your entire model (libraries and all) using compile flags
@@ -894,6 +905,17 @@ or (PGI)
               Intel; Sun's Linux compilers default to medium 64-bit
               memory model.  For others, check your compiler
               documentation.)
+              <P>
+        <DT>  Note &nbsp;4 (appliocable for v3.0 and earlier only)
+        <DD>  On at least Sun Solaris and SGI IRIX platforms, <VAR>f77</VAR>
+              and <VAR>f90</VAR> are known not to be link compatible; you will
+              need to keep builds for them separate (which is the original
+              distinction for <CODE>BIN=IRIX64f77</CODE> vs
+              <CODE>BIN=IRIX64f90</CODE>,
+              for example).  It is recommended that for other systems you likewise
+              keep different compiler systems (and sometimes even different
+              versions of the same compiler--Intel <VAR>ifort</VAR> versions
+              10, 11, and 12, for example) separate.
               <P>
     </DL>
     Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
@@ -1538,11 +1560,6 @@ UP:  I/O&nbsp;API home page
 <P>
 </A></STRONG>
 
-<STRONG><A HREF = "/">
-UP:  Environmental Modeling Center at MCNC home page
-<P>
-</A></STRONG>
-
 Back to the <STRONG><EM><A HREF = "AA.html">
 I/O&nbsp;API User Manual</A></EM></STRONG>
 <P>
@@ -1554,7 +1571,7 @@ Send comments to
 
 <!--#include virtual="/INCLUDES/footer.html" -->
     <PRE>
-    $Id: AVAIL.html 72 2017-12-12 17:54:20Z coats $
+    $Id: AVAIL.html 77 2018-01-18 15:29:37Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->

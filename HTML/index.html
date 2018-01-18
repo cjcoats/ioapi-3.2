@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: index.html 75 2018-01-12 15:48:16Z coats $" -->
+<!-- "$Id: index.html 77 2018-01-18 15:29:37Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     The EDSS/Models-3 I/O&nbsp;API
@@ -48,9 +48,9 @@
     <BLOCKQUOTE>
     <STRONG>
      <DL>
-         <DT> The Models-3 I/O&nbsp;API is 
-         <A HREF="https://en.wikipedia.org/wiki/Application_programming_interface"><EM>
-         <U>not a data format&nbsp;!!</U></EM></A>
+         <DT> The Models-3 I/O&nbsp;API is A
+         <EM><A HREF="https://en.wikipedia.org/wiki/Application_programming_interface">
+         programming interface</A>, <U>not a data format&nbsp;!!</U></EM>
          <P>
          <DT> <EM>I/O&nbsp;API files are <U>not synonymous</U> with
               &quot;netCDF files&quot;&nbsp;!!</EM>
@@ -75,23 +75,23 @@
      There are only the following upward-compatibility issues:
      <DL>
         <DT>  <STRONG>I/O&nbsp;API-2.1 to I/O&nbsp;API-3.0:</STRONG>  <EM>2002</EM>
-        <DD>  <U><EM> requires re-linking</EM></U> due to <VAR>netCDF</VAR> API
+        <DD>  <U><EM> Requires re-linking</EM></U> due to <VAR>netCDF</VAR> API
         changes&mdash;fully source- and object-file compatible:  uses
         <VAR>netCDF-3.x</VAR> which was not fully compatible with
         <VAR>netCDF-2.x</VAR>.
-        <BR>
+        <P>
         Targets Fortran-90 compilers only, and starts to use Fortran-90
         features such as <CODE>MODULE</CODE>s
-        <BR>
+        <P>
         New features for 3.0 include <CODE>MODULE&nbsp;M3UTILIO</CODE>,
         containing  <CODE>INTERFACE</CODE>s, <CODE>INCLUDE</CODE>-files
         and other declarations.
-        <BR>
+        <P>
         Deprecate direct use of <CODE>INCLUDE</CODE>-files.
-        <BR>
+        <P>
         Deprecate use of <CODE>M3ERR()</CODE> routine in favor of the more
         general <CODE>M3EXIT()</CODE>
-        <BR>
+        <P>
         Deprecate <VAR>m3tools/utmtool</VAR>, in favor of its
         replacement <VAR>m3tools/projtool</VAR>.
         <P>
@@ -101,40 +101,48 @@
         not object compatible&mdash;fundamental
         <CODE>PARAMETER&nbsp;MXVARS3</CODE>
         changed from 120 to 2048.
-        <BR>
+        <P>
+        More <CODE>INTERFACE</CODE>s in <CODE>MODULE&nbsp;M3UTILIO</CODE>
+        <P>
         New experimental  <CODE>MODULE&nbsp;MATXATTS</CODE> supports full
-        input-grid and output-grid descriptions for matrix files.
+        input-grid and output-grid descriptions for matrix files (which
+        may be used, for example, for grid-to-grid transforms by such
+        programs as <A HREF="MTXCPLE.html"><STRONG><EM>m3tools/mtxcple</EM></STRONG></A>).
         <P>
 
         <DT>  <STRONG>I/O&nbsp;API-3.1 to I/O&nbsp;API-3.2:</STRONG>
         <DD>  <EM>Minor source code changes required:</EM>
-        <BR>
+        <P>
+        More <CODE>INTERFACE</CODE>s in <CODE>MODULE&nbsp;M3UTILIO</CODE>
+        <P>
         Experimental <CODE>MODULE&nbsp;MATXATTS</CODE> becomes
         <CODE>MODULE&nbsp;MODATTS3</CODE>, with additional support for
         various extra (CF, CMAQ, SMOKE(?)) metadata.
-        <BR>
+        <P>
         New <CODE>MODULE&nbsp;MODGCTP</CODE> for geospatial transform
         and interpolation operations; now contains some
         <CODE>INTERFACE</CODE>s formerly in
         <CODE>MODULE&nbsp;M3UTILIO</CODE>.
-        <BR>
-        PnetCDF/MPI distributed I/O support for CMAQ.  New
-        <CODE>MODULE&nbsp;MODNCFIO</CODE> safely encapsulates netCDF and
-        PnetCDF declarations, replacing include-file <CODE>NETCDF.EXT</CODE>
-        (and <CODE>pnetcdf.inc</CODE>); <CODE>MODULE&nbsp;MODPDATA</CODE> 
-        encapsulates data structures and routines for distributed CMAQ
-        I/O.
-        <BR>
-        New <CODE>MODULE&nbsp;MODWRFIO</CODE> for WRF-netCDF I/O
-        (currently, read-routines are implemented, but write-routines
-        are only &quot;stubbed in.&quot;
-        <BR>
+        <P>
+        New <CODE>MODULE&nbsp;MODNCFIO</CODE> safely encapsulates netCDF
+        and PnetCDF declarations, replacing include-file
+        <CODE>NETCDF.EXT</CODE> (and <CODE>pnetcdf.inc</CODE>)
+        <P>
+        PnetCDF/MPI distributed I/O support for CMAQ.
+        <CODE>MODULE&nbsp;MODPDATA</CODE>  encapsulates data structures
+        and routines for distributed CMAQ I/O.
+        <P>
+        New <CODE>MODULE&nbsp;MODWRFIO</CODE> for WRF-netCDF I/O.
+        <P>
+        New <CODE>MODULE&nbsp;MODMPASFIO</CODE> for MPAS-format-netCDF I/O
+        and MPAS (unstructured Voronoi-complex) grid-geometry utilities.
+        <P>
         Replace netCDF-2 <CODE>CALL&nbsp;NC*()</CODE> statements
         throughout with the corresponding netCDF-3
         <CODE>IERR&nbsp;=&nbsp;NF_*()</CODE>, to accommodate the fact
         that recent versions of netCDF-Fortran silently did away with
         the former.
-        <BR>
+        <P>
         Remove previously-deprecated <VAR>m3tools/utmtool</VAR>
         (superseded by <VAR>m3tools/projtool</VAR>).
      </DL>
@@ -154,11 +162,13 @@
     and model coupling (using PVM mailboxes). It is the standard data
     access library for both the NCSC/CMAS's EDSS project and EPA's
     Models-3, CMAQ, and SMOKE, as well as various other atmospheric and
-    hydrological modeling systems. There was a external-package wrapper for
-    the I/O&nbsp;API in the <A HREF = "http://wrf-model.org/index.php">Weather
-    Research and Forecasting Model [WRF]</A>, which optionally uses I/O&nbsp;API
-    for output, enabling the use of I/O&nbsp;API coupling mode to couple
-    WRF-Chem with SMOKE&mdash;an effort unfortunately dropped by NCAR.
+    hydrological modeling systems. There was a external-package wrapper
+    for the I/O&nbsp;API in the
+    <A HREF = "http://wrf-model.org/index.php">Weather Research and
+    Forecasting Model [WRF]</A>, which provided the option of direct
+    I/O&nbsp;API output, enabling (among other things) the use of
+    I/O&nbsp;API coupling mode to couple WRF-Chem with SMOKE&mdash;an
+    effort unfortunately dropped by NCAR.
     <P>
 
     Since it is built around an <STRONG>object based conception of
@@ -195,7 +205,9 @@
         <LI> <STRONG>simplicity:</STRONG>  data is presented in
              real-world/modeling terms:  no calculation of record
              numbers, etc., is needed (nor is the data accessed in
-             run-specific terms).
+             run-specific terms).  Moreover, time stepped files may
+             extend for many decades, without any associated performance
+             penalties.
 
         <LI> <STRONG>robustness:</STRONG>  data are "tagged" by name,
              date, and time; miscounted record-numbers don't scramble
@@ -247,7 +259,7 @@
               </UL>
 
         <LI>  They support three different <STRONG>time step
-              structures:</STRONG>
+              structures, as indicated below. </STRONG>
               <UL>
                   <LI>  <VAR>time-stepped</VAR> (with regular time-steps)
                         like hourly model-output concentration fields or
@@ -266,8 +278,10 @@
     The I/O&nbsp;API also contains an extensive set of utility routines
     for manipulating dates and times, performing coordinate conversions,
     storing and recalling grid definitions, sparse matrix arithmetic,
-    etc., as well as a set of data-manipulation and statistical analysis
-    programs.  It has an extensive documentation set, including
+    etc., as well as a set of geospatial-transform, data-manipulation
+    and statistical analysis programs, and programs for interfacing with
+    a number of external modeling systems, such as CAMX/UAM, WRF, and
+    MPAS.  It has an extensive documentation set, including
     <UL>
         <LI>  <A HREF = "TUTORIAL.html">tutorial</A>;
         <LI>  <A HREF = "REQUIREMENTS.html">requirements document</A>;
@@ -295,22 +309,23 @@
 
     <STRONG>Copyright</STRONG>
     <BR> 
-    These web pages are copyright &copy; 1992-2002 MCNC and
-    Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr.,  &copy; 2003-2005 by Baron
+    These web pages are copyright &copy;&nbsp;1992-2002 MCNC and
+    Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr.,  &copy;&nbsp;2003-2005 by Baron
     Advanced Meteorological Systems (hereinafter, BAMS), &copy;
-    2005-2013,2017- Carlie&nbsp;J.&nbsp;Coats, Jr., and &copy; 2014- UNC
-    Institute for the Environment. The I/O&nbsp;API source code and
-    documentation are copyright  &copy; 1992-2002 MCNC and
-    Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr.,  &copy; 2003-2013 BAMS,
-    &copy; 2005-2017 Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr., and &copy;
-    2014- UNC Institute for the Environment.  The library source code
-    is distributed under the
-    <A HREF="https://www.gnu.org/licenses/lgpl-2.1.html">GNU
-    Lesser (library) Public License (LGPL) Version&nbsp;2.1</A>,
-    and the tools-program source code is distrubuted under the
-    <A HREF="https://www.gnu.org/licenses/gpl-2.0.html">GNU General
-    Public License, Version&nbsp;2</A>, subject to
-    copyright-statement retention constraints. See the
+    2005-2013,2017- Carlie&nbsp;J.&nbsp;Coats, Jr., and
+    &copy;&nbsp;2014- UNC Institute for the Environment. The
+    I/O&nbsp;API source code and documentation are copyright 
+    &copy;&nbsp;1992-2002 MCNC and Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr., 
+    &copy;&nbsp;2003-2013 BAMS, &copy;&nbsp;2005-
+    Carlie&nbsp;J.&nbsp;Coats,&nbsp;Jr., and  &copy;&nbsp;2014- UNC
+    Institute for the Environment.  The library source code is
+    distributed under the
+    <A HREF="https://www.gnu.org/licenses/lgpl-2.1.html">GNU Lesser
+    (library) Public License (LGPL) Version&nbsp;2.1</A>, and the
+    tools-program source code is distrubuted under the
+    <A HREF="https://www.gnu.org/licenses/gpl-2.0.html">GNU General Public
+    License, Version&nbsp;2</A>, subject to copyright-statement
+    retention constraints. See the
     <A HREF = "NOTICES.html"><EM>Notices:  Copyright, and
     Acknowledgements</EM></A> page.
     <P>
@@ -318,7 +333,7 @@
     </BLOCKQUOTE>
 
     <PRE>
-    $Id: index.html 75 2018-01-12 15:48:16Z coats $
+    $Id: index.html 77 2018-01-18 15:29:37Z coats $
     </PRE>
 
  </BODY>
