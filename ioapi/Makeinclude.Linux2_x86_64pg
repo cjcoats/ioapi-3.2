@@ -30,10 +30,10 @@ AR   = ar
 CC   = pgcc
 FC   = pgf90
 M4   = m4
-CPP  = cpp
+CPP  = pgc++
 LINK = $(CC)
 
-MODI = "-module "       ## Module-include-directory command
+MODI = -module        ## Module-include-directory command
 E132 = -extend
 
 MFLAGS    = -fast # -Mnoupcase
