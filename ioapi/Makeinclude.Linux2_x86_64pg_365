@@ -36,7 +36,7 @@ M4   = m4
 CPP  = cpp
 LINK = $(CC)
 
-MODI = "-module "       ## Module-include-directory command
+MODI = '-module '       ## Module-include-directory command
 E132 = -extend
 
 MFLAGS    = -fast # -Mnoupcase

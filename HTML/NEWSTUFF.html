@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<!-- "$Id: NEWSTUFF.html 77 2018-01-18 15:29:37Z coats $" -->
+<!-- "$Id: NEWSTUFF.html 78 2018-01-26 21:27:04Z coats $" -->
 <META NAME="MSSmartTagsPreventParsing" CONTENT="TRUE">
 <TITLE>
     What's New with the I/O&nbsp;API
@@ -16,7 +16,7 @@
       MARGINWIDTH="15">
 
     <EM>
-    $Id: NEWSTUFF.html 77 2018-01-18 15:29:37Z coats $
+    $Id: NEWSTUFF.html 78 2018-01-26 21:27:04Z coats $
     </EM>
     <HR>
 
@@ -33,7 +33,9 @@
          <LI>  <A HREF = "#ncf">Notes on <VAR>netCDF-4</VAR></A>,
                <P>
 
-         <LI>  <A HREF = "#jan1518">
+         <LI>  <A HREF = "#jan262018">Bug-fix to
+               <VAR>Makeinclude.*pg*</VAR></A>
+         <LI>  <A HREF = "#jan152018">
                Modified <CODE>XY2XY()</CODE></A> to pass-through
                &quot;missing&quot; location-arguments.
          <LI>  <A HREF = "#dec21017">
@@ -682,6 +684,54 @@
 
 <HR> <!----------------------------------------------------------------->
 
+<H2> <A NAME = "jan262018">
+      Bug-fix to <VAR>Makeinclude.*pg*</VAR>
+</A></H2>
+
+    <BLOCKQUOTE>
+    Jim Dew points out that in the <VAR>Makeinclude.*pg*</VAR>
+    (the Makeinclude-files for PGI-compiler binary types), the 
+    use of double-quotes in the definition of <VAR>make</VAR>-variable
+    <CODE>MODI</CODE> is not supported by GNU <VAR>make</VAR>,
+    and creates compile-time errors.
+    <P>
+    It turns out that GNU <VAR>make</VAR> doesn't support
+    backslash-escapes of a trailing blank either; however, use
+    of single-quotes to force a trailing blank within that definition
+    <BLOCKQUOTE><CODE>
+    MODI = '-module '
+    </CODE></BLOCKQUOTE>
+    does work.
+    <P>
+    Note that the distinction of whether there is a trailing blank
+    is necessary:  the usual UNIX industry standard directive for
+    module-search directives is 
+    <BLOCKQUOTE><CODE>
+    -I<VAR>directory</VAR>
+    </CODE></BLOCKQUOTE>
+    and the Sun/Oracle variation is
+    <BLOCKQUOTE><CODE>
+    -M<VAR>directory</VAR>
+    </CODE></BLOCKQUOTE>
+    with no space (a space would be a directive "delete all current
+    module-search directives", which would subsequently be followed
+    by new module-search directives).  PGI wants 
+    <BLOCKQUOTE><CODE>
+    -module <VAR>directory</VAR>
+    </CODE></BLOCKQUOTE>
+    <U>with</U> a space.  And I need to define <CODE>MODI</CODE>
+    so that sometimes has a trailing space, and sometimes not.
+    The usual usages of either double-quotes to force the inclusion
+    of a trailing blank or of escaping the trailing blank with a
+    backslash (\) don't work for GNU <VAR>make</VAR> ;-(
+    </BLOCKQUOTE>
+
+    Back to <STRONG><EM><A HREF = "#contents">Contents</A></EM></STRONG>
+    <P>
+
+
+<HR> <!----------------------------------------------------------------->
+
 <H2> <A NAME = "jan152018">
      Modified <CODE>XY2XY()</CODE> to pass-through
      &quot;missing&quot; location-arguments, for SMOKE.
@@ -717,7 +767,10 @@
     <A HREF = "LATLON.html"><VAR><STRONG>latlon</STRONG></VAR></A>
     now also writes M3DBLE (double-precision) Latitude-Longitude
     variables <CODE>LATD</CODE> and <CODE>LOND</CODE>, in addition
-    to the original <CODE>LAT</CODE> and <CODE>LON</CODE>.    
+    to the original M3REAL (single-precision) variables <CODE>LAT</CODE>
+    and <CODE>LON</CODE>.  And since the I/O&nbsp;API features direct
+    access by variable (date&amp;time, and layer), this should not
+    break any existing application.
     <P>
 
     Additionally, it is now possible to do interactive definition of
@@ -6757,7 +6810,7 @@ Send comments to
 
 
     <PRE>
-    $Id: NEWSTUFF.html 77 2018-01-18 15:29:37Z coats $
+    $Id: NEWSTUFF.html 78 2018-01-26 21:27:04Z coats $
     </PRE>
 </BODY>      <!--end body  -->
 </HTML>      <!--end html  -->
