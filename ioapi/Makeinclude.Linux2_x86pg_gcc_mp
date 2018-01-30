@@ -30,7 +30,7 @@ CPP  = cpp
 LINK = $(CC)
 
 ## Module-include-directory command
-MODI = '-module '
+MODI = -module ## module-include directive
 E132 = -Mextend
 
 MFLAGS    = # -Mnoupcase
