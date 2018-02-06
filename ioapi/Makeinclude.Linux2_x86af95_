@@ -11,6 +11,7 @@
 
 AR = ar
 CC = gcc
+CXX= g++
 FC = f95
 M4 = m4
 LINK = $(CC)

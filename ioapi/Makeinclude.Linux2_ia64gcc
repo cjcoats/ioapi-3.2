@@ -4,7 +4,8 @@
 #
 AR   = ar
 CC   = gcc
-FC   = g77
+CXX  = g++
+FC   = gfortran
 M4   = m4
 CPP  = cpp
 LINK = $(CC)

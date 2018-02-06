@@ -2,6 +2,7 @@
 
 AR   = ar
 CC   = gcc
+CXX  = g++
 FC   = g95
 # FC = gfortran-ssa
 M4   = m4

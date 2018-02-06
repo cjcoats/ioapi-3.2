@@ -6,6 +6,7 @@
 
 AR   = ar
 CC   = pathcc  -m64
+CXX  = pathCC  -m64
 FC   = pathf90 -m64 -fsecond-underscore
 M4   = m4
 CPP  = cpp

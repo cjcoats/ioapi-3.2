@@ -2,11 +2,12 @@
 #
 #  Linux IA64 (itanium) with g95 / gcc
 
-AR = ar
-CC = gcc
-FC = g95
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = g95
 # FC = gfortran-ssa
-M4 = m4
+M4   = m4
 LINK = $(CC)
 
 MODI = -I       ## Module-include-directory command

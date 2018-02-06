@@ -4,6 +4,7 @@
 
 AR   = ar
 CC   = icc
+CXX  = icpc
 FC   = ifort -auto -warn notruncated_source -Bstatic -static-intel
 M4   = m4
 LINK = $(CC)

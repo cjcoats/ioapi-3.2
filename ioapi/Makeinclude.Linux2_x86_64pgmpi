@@ -31,6 +31,7 @@
 
 AR   = ar
 CC   = mpicc
+CXX  = mpiCC
 FC   = mpif90
 M4   = m4
 CPP  = cpp

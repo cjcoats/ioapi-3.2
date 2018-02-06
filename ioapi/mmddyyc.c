@@ -2,7 +2,7 @@
 /**************************************************************************
 VERSION:
     EDSS/Models-3 I/O API.
-    "locatsc.c" version "$Id: mmddyyc.c 361 2016-04-29 15:23:02Z coats $"
+    "locatsc.c" version "$Id: mmddyyc.c 80 2018-02-06 19:34:14Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
@@ -28,7 +28,8 @@ REVISION HISTORY:
     that uses a 360-day year; use m3mesgc() for error messages
 
     Version 4/2016 by CJC:  add Global Climate Model IO_365 version
-                    
+
+    Version 2/2018 by CJC:  Fix-up for "Standard-Year" and "Standard-week" data                    
 **************************************************************************/
 
 #include  <string.h>
@@ -64,7 +65,7 @@ static const int    leapday[ 13 ] =
 int   year, iday, mnth, leap ;
 char  mesg[256] ;
 
-if ( jdate > 9999999 || jdate < 0 ) 
+if ( jdate > 9999999 || jdate < -2000 ) 
     {                                
     sprintf( mesg, 
              "%s %d",
@@ -74,8 +75,8 @@ if ( jdate > 9999999 || jdate < 0 )
     return ;
     }
 
-year = jdate / 1000 ;
-iday = jdate % 1000 ;
+year = ( jdate + 2000 ) / 1000 - 2 ;
+iday = ( jdate + 2000 ) % 1000 ;
 
 #ifdef IO_360
 
@@ -98,6 +99,7 @@ iday = jdate % 1000 ;
     leap = 0 ;
 #else
     leap = ( year % 4 == 0 ) && ( year % 100 ? 1 : ( year % 400 == 0 ) ) ;
+    if ( year < 2 ) leap = 0 ;
 #endif
 
     if ( leap )

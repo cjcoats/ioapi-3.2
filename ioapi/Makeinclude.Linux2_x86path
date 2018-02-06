@@ -6,6 +6,7 @@
 
 AR   = ar
 CC   = pathcc  -m32
+CXX  = pathCC  -m32
 FC   = pathf95 -m32 -fsecond-underscore
 M4   = m4
 CPP  = cpp

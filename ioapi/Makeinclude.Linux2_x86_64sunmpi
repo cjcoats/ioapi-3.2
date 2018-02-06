@@ -8,6 +8,7 @@
 #
 AR   = ar
 CC   = mpicc
+CXX  = sunCC
 FC   = mpif95
 M4   = m4
 CPP  = cpp

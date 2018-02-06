@@ -5,6 +5,7 @@
 #
 AR   = ar
 CC   = ecc
+CXX  = ecpc
 FC   = efc -auto -w90 -cm
 M4   = m4
 CPP  = cpp

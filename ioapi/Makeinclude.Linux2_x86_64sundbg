@@ -5,6 +5,7 @@
 #
 AR   = ar
 CC   = suncc
+CXX  = sunCC
 FC   = sunf95
 M4   = m4
 CPP  = cpp

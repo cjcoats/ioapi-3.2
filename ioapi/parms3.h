@@ -2,7 +2,7 @@
 /********************************************************************
 C  INCLUDE FILE  parms3.h
 C
-C    VERSION "$Id: parms3.h 185 2015-04-28 19:14:38Z coats $"
+C    VERSION "$Id: parms3.h 80 2018-02-06 19:34:14Z coats $"
 C    EDSS/Models-3 I/O API Version 3.1.
 C       Copyright (C) 1992-2002 MCNC,
 C       (C) 1992-2002,2005-2013  Carlie J. Coats, Jr.,
@@ -250,6 +250,10 @@ typedef char   M3Line[ MXDLEN3 ] ; /* ... "description-line" objects  */
 #define   VGZVAL3    (5)  
                           /*  vert coord type 6:  H (m) (above ground) */
 #define   VGHVAL3    (6)  
+                          /*  vert coord type 6:  WRF mass-core sigma  */
+#define   VGWRFEM    (7)  
+                          /*  vert coord type 6:  WRF NMM              */
+#define   VGWRFNM    (8)  
 
 
                           /*  Flag value:  "good" values            */

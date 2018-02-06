@@ -5,6 +5,7 @@
 #
 AR   = ar
 CC   = cc
+CXX  = CC
 FC   = fort
 M4   = m4
 CPP  = cpp

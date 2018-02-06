@@ -24,6 +24,7 @@
 
 AR   = ar
 CC   = pgcc
+CXX  = pg++
 FC   = pgf90
 M4   = m4
 CPP  = cpp

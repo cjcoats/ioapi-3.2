@@ -10,10 +10,11 @@
 #
 #     -YEXT_NAMES=LCS -YEXT_SFX=_ -YCOM_NAMES=LCS -YCOM_PFX= -YCOM_SFX=_
 
-AR = ar
-CC = gcc
-FC = f95
-M4 = m4
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = f95
+M4   = m4
 LINK = $(CC)
 
 ## Module-include-directory command

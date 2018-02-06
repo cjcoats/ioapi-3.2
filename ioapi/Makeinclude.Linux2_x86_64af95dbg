@@ -3,10 +3,11 @@
 # Flags for Absoft "f95" on Opteron in 64-bit mode using native
 # Absoft name mangling
 
-AR = ar
-CC = gcc
-FC = f95
-M4 = m4
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = f95
+M4   = m4
 LINK = $(CC)
 
 ## Module-include-directory command

@@ -2,6 +2,7 @@
 
 AR   = ar
 CC   = icc
+CXX  = icpc
 FC   = ifort -auto -cm -w95 -warn notruncated_source
 M4   = m4
 CPP  = cpp

@@ -2,10 +2,11 @@
 #
 #       Linux for x86 using the GNU compiler suite
 #
-AR = ar
-CC = gcc
-FC = gfortran
-M4 = m4
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = gfortran
+M4   = m4
 LINK = $(CC)
 
 ## Module-include-directory command
