@@ -1,5 +1,5 @@
 /**************************************************************************
-VERSION "$Id: dt2strc.c 100 2015-01-16 16:52:16Z coats $"
+VERSION "$Id: dt2strc.c 1 2017-06-10 18:05:20Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -21,6 +21,8 @@ REVISION HISTORY:
     Prototype 3/1995 by Carlie J Coats, Jr, MCNC Environmental Programs
     Revised   8/1999 by CJC -- uses mmddyyc(), hhmmssc()
     Revised   2/2002 by CJC -- error messages via m3msgc()
+    Revised   3/2018 by CJC -- standard-[week|month|year] handling is managed
+                               by mmddyyc, hhmmsscs
 **************************************************************************/
 
 #include  <string.h>
@@ -34,26 +36,6 @@ void   dt2strc( int         jdate ,
 
 int  col ;
 char mesg[256] ;
-
-if ( jdate > 9999999 || jdate < 0 ) 
-    {
-    sprintf( mesg, 
-             "%s %d",
-             "Year-number error in dt2strc():  jdate = ", jdate ) ;
-    m3mesgc( mesg ) ;
-    strcpy( buffer, "<DATE&TIME ERROR>" ) ;
-    return ; 
-    }
-
-if ( jtime > 999999 || jtime < 0 ) 
-    {
-    sprintf( mesg, 
-             "%s %d",
-             "Time-number error in dt2strc():  jtime = ", jtime ) ;
-    m3mesgc( mesg ) ;
-    strcpy( buffer, "<DATE&TIME ERROR>" ) ;
-    return ; 
-    }
 
 hhmmssc( jtime, buffer ) ;
 col = STRLEN( buffer ) ;

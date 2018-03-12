@@ -19,7 +19,7 @@ E132 = -ffixed-line-length-132
 #  Weakening these flags seems to be necessary for the "gcc/g77"
 #  shipped with Fedoraa Core 3/x86_64:
 
-MFLAGS    =  -mcpu=opteron
+MFLAGS    = -Wsurprising -fbounds-check -ftrapuv
 
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -L/usr/lib/gcc/x86_64-mandriva-linux-gnu/4.2.2/ -lgomp
