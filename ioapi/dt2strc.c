@@ -35,7 +35,12 @@ void   dt2strc( int         jdate ,
 {
 
 int  col ;
-char mesg[256] ;
+
+if ( ( jdate == 0 ) && ( jtime == 0 ) )
+    {
+    strcpy( buffer, "date&time 0:0" ) ;
+    return ;    
+    }
 
 hhmmssc( jtime, buffer ) ;
 col = STRLEN( buffer ) ;

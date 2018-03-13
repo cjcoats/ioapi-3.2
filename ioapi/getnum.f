@@ -2,7 +2,7 @@
         INTEGER FUNCTION GETNUM ( LO , HI , DEFAULT , PROMPT )
 
 C********************************************************************
-C Version "$Id: getnum.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: getnum.f 86 2018-03-13 18:52:39Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -91,6 +91,10 @@ C       begin GETNUM
 
         MODE = 1
 
+        LLO  =  MIN ( LO , HI )
+        LHI  =  MAX ( LO , HI )
+        LDF  =  MIN ( LHI , MAX ( LLO , DEFAULT ) )
+
 11      CONTINUE        !!  target of entry getdble1()
 
         IF( FIRSTIME ) THEN
@@ -115,10 +119,6 @@ C       begin GETNUM
         END IF
 
         ERRCNT =  0
-
-        LLO  =  MIN ( LO , HI )
-        LHI  =  MAX ( LO , HI )
-        LDF  =  MIN ( LHI , MAX ( LLO , DEFAULT ) )
 
         WRITE ( DEFSTR , '( I15 )' ) LDF
         J  =  1 + LBLANK( DEFSTR )
@@ -180,6 +180,9 @@ C................   end body of GETNUM  .......................................
         ENTRY GETNUM1( DEFAULT , PROMPT )   !!  no "lo" nor "hi" bounds for result
         
         MODE = 0
+        LLO  = -2000000000
+        LHI  =  2000000000
+        LDF  =  MIN ( LHI , MAX ( LLO , DEFAULT ) )
         GO TO 11
 
 C................   end body of GETNUM1  .......................................

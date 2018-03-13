@@ -2,7 +2,7 @@
         REAL*8 FUNCTION GETDBLE( LO, HI, DEFAULT, PROMPT )
 
 C********************************************************************
-C Version "$Id: getdble.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: getdble.f 86 2018-03-13 18:52:39Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -75,12 +75,16 @@ C.......   LOCAL VARIABLES:
         LOGICAL, SAVE :: PROMPTON
         LOGICAL, SAVE :: FIRSTIME = .TRUE.
 
-        CHARACTER*16, PARAMETER :: PNAME = 'GETDBLE'
+        REAL*8      , PARAMETER :: BADDBL = -9.999D306
+        CHARACTER*16, PARAMETER :: PNAME  = 'GETDBLE'
 
 C*********************************************************************
 C       begin GETDBLE
 
         MODE = 1
+        LLO  =  DMIN1( LO , HI )
+        LHI  =  DMAX1( LO , HI )
+        LDF  =  DMIN1( LHI , DMAX1( LLO , DEFAULT ) )
 
 11      CONTINUE        !!  target of entry getdble1()
 
@@ -106,10 +110,6 @@ C       begin GETDBLE
         END IF
 
         ERRCNT =  0
-
-        LLO  =  DMIN1( LO , HI )
-        LHI  =  DMAX1( LO , HI )
-        LDF  =  DMIN1( LHI , DMAX1( LLO , DEFAULT ) )
 
 
 100     CONTINUE
@@ -183,6 +183,9 @@ C................   end body of GETDBLE  .......................................
         ENTRY GETDBLE1( DEFAULT , PROMPT )   !!  no "lo" nor "hi" bounds for result
         
         MODE = 0
+        LLO  =  DBLE(  BADDBL )
+        LHI  =  DBLE( -BADDBL )
+        LDF  =  MIN( LHI , MAX( LLO , DEFAULT ) )
         GO TO 11
 
 C................   end body of GETDBLE1  .......................................

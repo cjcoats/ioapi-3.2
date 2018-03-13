@@ -2,7 +2,7 @@
 /**************************************************************************
 VERSION:
     EDSS/Models-3 I/O API.
-    "locatsc.c" version "$Id: mmddyyc.c 80 2018-02-06 19:34:14Z coats $"
+    "locatsc.c" version "$Id: mmddyyc.c 86 2018-03-13 18:52:39Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
@@ -66,7 +66,7 @@ int   year, iday, mnth, leap ;
 char  mesg[256] ;
 
 if ( jdate > 9999999 || jdate < -2000 ) 
-    {                                
+    {
     sprintf( mesg, 
              "%s %d",
              "Year-number error in mmddyycc():  jdate = ", jdate ) ;
@@ -75,8 +75,16 @@ if ( jdate > 9999999 || jdate < -2000 )
     return ;
     }
 
-year = ( jdate + 2000 ) / 1000 - 2 ;
-iday = ( jdate + 2000 ) % 1000 ;
+if ( jdate == 0 )
+    {
+    strcpy( buffer, "date 0000000" ) ;
+    return ;    
+    }
+
+/*  Get correct year, day for "standard year/month/week/day" cases:  */
+
+year = ( jdate + 10000 ) / 1000 - 10 ;  
+iday = ( jdate + 10000 ) % 1000 ;
 
 #ifdef IO_360
 
@@ -99,10 +107,15 @@ iday = ( jdate + 2000 ) % 1000 ;
     leap = 0 ;
 #else
     leap = ( year % 4 == 0 ) && ( year % 100 ? 1 : ( year % 400 == 0 ) ) ;
-    if ( year < 2 ) leap = 0 ;
+    if ( year < 10 ) leap = 0 ;
 #endif
 
-    if ( leap )
+    if ( year < 10 )
+        {
+        sprintf( buffer, "year %d day %d", year, iday ) ;
+        return ;
+        }
+    else if ( leap )
         {
         for( mnth = 0 ; mnth < 13 ; mnth++ )
             {

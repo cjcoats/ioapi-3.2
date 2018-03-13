@@ -2,7 +2,7 @@
       SUBROUTINE NEXTIME  ( JDATE , JTIME, DTIME )
 
 C.....................................................................
-C Version "$Id: nextime.F 386 2016-07-05 20:45:07Z coats $"
+C Version "$Id: nextime.F 86 2018-03-13 18:52:39Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -83,18 +83,6 @@ C.......   LOCAL VARIABLES:  day and year components of date
 
 C........................................................................
 C       begin  NEXTIME
-C.......   Construct equivalent problem with positive IDATE = JDATE + IBIAS
-
-        IF ( JDATE .GE. 1000 ) THEN
-            IDATE = JDATE
-            IBIAS = 0
-        ELSE    ! adjust date by multiple of 400-year leap-year cycle
-            YEAR  = -JDATE
-            YEAR  = YEAR / 1000 + 1
-            YEAR  = 400 * ( YEAR / 400 + 1 )
-            IBIAS = 1000 * YEAR
-            IDATE = JDATE + IBIAS
-        END IF
 
 C.......   Increment seconds part of JTIME by DTIME (secs), and
 C.......   re-normalize minute, hour, day part of IDATE:JTIME
@@ -127,7 +115,7 @@ C.......   re-normalize minute, hour, day part of IDATE:JTIME
         MINS  =  MINS  -  SCR * 60
         HOUR  =  JTIME / 10000  +  SIGN * ( ATIME / 10000 )  +  SCR
 
-        DAYS  =  MOD ( IDATE , 1000 )
+        DAYS  =  0
 
         IF  ( HOUR .LT. -23 )  THEN
             SCR  = -HOUR / 24
@@ -151,9 +139,29 @@ C.......   re-normalize minute, hour, day part of IDATE:JTIME
 
         JTIME  =  10000 * HOUR  +  100 * MINS  +  SECS
 
+C.......   Construct equivalent problem with positive IDATE = JDATE + IBIAS
+
+        IF ( JDATE .GE. 2000 ) THEN
+            IDATE = JDATE
+            IBIAS = 0
+        ELSE IF ( JDATE .GE. -2000 ) THEN       !! standard-year processing
+            IDATE = JDATE + 3000
+            DAYS  = DAYS + MOD ( IDATE , 1000 )
+            YEAR  = IDATE / 1000 - 3
+            JDATE = 1000 * YEAR  +  DAYS
+            RETURN
+        ELSE    ! adjust date by multiple of 400-year leap-year cycle
+            YEAR  = ABS( JDATE )
+            YEAR  = YEAR / 1000 + 1
+            YEAR  = 400 * ( YEAR / 400 + 1 )
+            IBIAS = 1000 * YEAR
+            IDATE = JDATE + IBIAS
+        END IF
+
 C...........   Update IDATE:
 C...........   Note that each year must be treated individually
 
+        DAYS  =  DAYS + MOD ( IDATE , 1000 )
         YEAR  =  IDATE / 1000
 
 100     CONTINUE        !  loop normalizing negative day numbers
