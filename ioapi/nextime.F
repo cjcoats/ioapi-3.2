@@ -2,7 +2,7 @@
       SUBROUTINE NEXTIME  ( JDATE , JTIME, DTIME )
 
 C.....................................................................
-C Version "$Id: nextime.F 86 2018-03-13 18:52:39Z coats $"
+C Version "$Id: nextime.F 88 2018-03-16 17:43:05Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -139,6 +139,10 @@ C.......   re-normalize minute, hour, day part of IDATE:JTIME
 
         JTIME  =  10000 * HOUR  +  100 * MINS  +  SECS
 
+        IF ( DAYS .EQ. 0 .AND. JDATE .EQ. 0 ) THEN
+            RETURN
+        END IF
+
 C.......   Construct equivalent problem with positive IDATE = JDATE + IBIAS
 
         IF ( JDATE .GE. 2000 ) THEN
@@ -238,7 +242,7 @@ C...........   Note that each year must be treated individually
 #endif
 
         JDATE  =   1000 * YEAR  +  DAYS - IBIAS
-
+        IF ( JDATE .EQ. -635 )  JDATE = 0       !!  for standard-week/month/year accounting
 
         RETURN
         END  SUBROUTINE NEXTIME
