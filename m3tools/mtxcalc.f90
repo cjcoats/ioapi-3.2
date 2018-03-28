@@ -2,7 +2,7 @@
 PROGRAM MTXCALC
 
     !!***********************************************************************
-    !! Version "$Id: mtxcalc.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: mtxcalc.f90 94 2018-03-28 20:38:33Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -52,6 +52,8 @@ PROGRAM MTXCALC
     !!      SCALEFAC; USE routine GRID2XY from MODULE MODGCTP; USE routine
     !!      SETMTXATT from MODULE MODATTS3; use generics for "GET*()", "ENV*()"
     !!      Version  02/2016 by CJC:  bug-fix at lines 411&ff"  XLOC- XORFIG etc.
+    !!      Version  03/2018 by CJC:  Need to calculate NUMERX, NUMERY, 
+    !!      DENOMX, DENOMY
     !!***********************************************************************
 
     USE M3UTILIO
@@ -61,6 +63,11 @@ PROGRAM MTXCALC
     IMPLICIT NONE
 
     !!...........   PARAMETERS and their descriptions:
+
+    REAL*8, PARAMETER :: PI     = 3.141592653589793238462643383279d0
+    REAL*8, PARAMETER :: PI180  = PI / 180.0d0
+    REAL*8, PARAMETER :: REARTH = 6367333.0d0
+    REAL*8, PARAMETER :: DG2M   = REARTH * PI180
 
     CHARACTER*16, PARAMETER :: PNAME = 'MTXCALC'
     CHARACTER*72, PARAMETER :: BAR   =  &
@@ -216,7 +223,7 @@ PROGRAM MTXCALC
 '',                                                                             &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: mtxcalc.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: mtxcalc.f90 94 2018-03-28 20:38:33Z coats $',&
 ' '
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -357,6 +364,23 @@ PROGRAM MTXCALC
     CALL M3MESG( MESG )
 
     !!.......   Allocate scratch buffers:
+
+    IF ( GDTYP1 .EQ. LATGRD3 ) THEN
+        Y      = YORIG1 + 0.5D0*DBLE( NCOLS1 )*YCELL1
+        DENOMX = SNGL( DG2M * XCELL1 * COS( Y * PI180 ) )
+        DENOMY = SNGL( DG2M * YCELL1 )
+    ELSE
+        DENOMX = SNGL( XCELL1 )
+        DENOMY = SNGL( YCELL1 )
+    END IF
+    IF ( GDTYP2 .EQ. LATGRD3 ) THEN
+        Y      = YORIG2 + 0.5D0*DBLE( NCOLS2 )*YCELL2
+        NUMERX = SNGL( DG2M * XCELL2 * COS( Y * PI180 ) )
+        NUMERY = SNGL( DG2M * YCELL2 )
+    ELSE
+        NUMERX = SNGL( XCELL2 )
+        NUMERY = SNGL( YCELL2 )
+    END IF
 
     NFRACS = ( 2 + 2*NINT( ABS( NUMERX / DENOMX ) ) )*               &
              ( 2 + 2*NINT( ABS( NUMERY / DENOMY ) ) )*               &

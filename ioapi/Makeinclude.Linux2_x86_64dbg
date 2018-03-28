@@ -16,13 +16,13 @@ E132 = -ffixed-line-length-132
 # MFLAGS = #  -mcpu=opteron -march=opteron \
 #             -ffast-math -funroll-loops -fschedule-insns
 #
-#  Weakening these flags seems to be necessary for the "gcc/g77"
+#  Weakening these flags seems to be necessary for the "gcc/gfortran"
 #  shipped with Fedoraa Core 3/x86_64:
 
-MFLAGS    = -Wsurprising -fbounds-check -ftrapuv
+MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan -m64
 
 OMPFLAGS  = -fopenmp
-OMPLIBS   = -L/usr/lib/gcc/x86_64-mandriva-linux-gnu/4.2.2/ -lgomp
+OMPLIBS   = 
 COPTFLAGS = -g ${MFLAGS}
 FOPTFLAGS = -g ${MFLAGS}
 FPPFLAGS  =

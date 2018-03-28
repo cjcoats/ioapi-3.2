@@ -2,7 +2,7 @@
         PROGRAM AIRNOW2M3
 
 C***********************************************************************
-C Version "$Id: airnow2m3.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: airnow2m3.f 94 2018-03-28 20:38:33Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -97,17 +97,17 @@ C   begin body of program dummy
         WRITE( *, '( 5X, A )' )
      &' ',
      &'Program AIRNOW2M3 to read ASCII air quality monitor location',
-     &'and observation-data files, and  produce an I/O API file for',
-     &'input to program AIRNOW2M3.', ' ',
+     &'and observation-data files, and produce an "observation format"',
+     &'I/O API file.', ' ',
      &'You need to have assigned logical names to the physical file',
      &'names of the input files according to Models-3 conventions,',
      &'using the operation, and also for the program control input',
      &'RADIUS that controls the filtering radius used in producing',
      &'the OBS_CRO_2D gridded-observations file.',
      &' ',
-     &'    "setenv MONITORS <path-name for monitor locations file>".',
-     &'    "setenv MON_OBS  <path-name for monitor obs file>".',
-     &'    "setenv NCF_OBS  <path-name for netCDF obs output file>".',
+     &'    "setenv MONITORS <path-name for monitor locations  file>".',
+     &'    "setenv MON_OBS  <path-name for monitor obs input  file>".',
+     &'    "setenv NCF_OBS  <path-name for netCDF  obs output file>".',
      &' ',
      &'    setenv RADIUS    <filtering radius (km)>',
      &' ',
@@ -130,7 +130,7 @@ C   begin body of program dummy
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: airnow2m3.f 435 2016-11-22 18:10:58Z coats              $',
+     &'$Id:: airnow2m3.f 94 2018-03-28 20:38:33Z coats               $',
      &' '
 
         LDEV = INIT3()
