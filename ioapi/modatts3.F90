@@ -2,7 +2,7 @@
 MODULE MODATTS3
 
     !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    !! Version "$Id: modatts3.F90 381 2016-06-15 14:38:44Z coats $"
+    !! Version "$Id: modatts3.F90 96 2018-04-04 21:17:59Z coats $"
     !! Copyright (c) 2014-2016 UNC Institute for the Environment
     !! Distributed under the GNU LESSER PUBLIC LICENSE version 2
     !! See file "LGPL.txt" for conditions of use.
@@ -277,7 +277,7 @@ MODULE MODATTS3
     INTEGER, SAVE :: NROWS_OUT = IMISS3     !! number of grid rows
 
     CHARACTER*80, SAVE :: SVN_ID =  &
-'$Id:: modatts3.F90 381 2016-06-15 14:38:44Z coats                              $'
+'$Id:: modatts3.F90 96 2018-04-04 21:17:59Z coats                               $'
 
 
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -703,91 +703,91 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IF ( IMODE .EQ. INGRD3 ) THEN
 
             ANAME = GDNAMSTR // '_IN'
-            IF ( .NOT.RDATTC( FLIST3(FID), ALLVAR3, ANAME, GDNAM ) ) THEN
+            IF ( .NOT.RDATTC( FNAME, ALLVAR3, ANAME, GDNAM ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = GDTYPSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, GDTYP ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, ASIZE, GDTYP ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = P_ALPSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_ALP ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_ALP ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = P_BETSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_BET ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_BET ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = P_GAMSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_GAM ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_GAM ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = XCENTSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCENT ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCENT ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = YCENTSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCENT ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCENT ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = XORIGSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XORIG ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XORIG ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = YORIGSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YORIG ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YORIG ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = XCELLSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCELL ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCELL ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = YCELLSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCELL ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCELL ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = NCOLSSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NCOLS ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, ASIZE, NCOLS ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = NROWSSTR // '_IN'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NROWS ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, ASIZE, NROWS ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
@@ -796,91 +796,91 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         ELSE IF ( IMODE .EQ. OUTGRD3 ) THEN
 
             ANAME = GDNAMSTR // '_OUT'
-            IF ( .NOT.RDATTC( FLIST3(FID), ALLVAR3, ANAME, GDNAM ) ) THEN
+            IF ( .NOT.RDATTC( FNAME, ALLVAR3, ANAME, GDNAM ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = GDTYPSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, GDTYP ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, ASIZE, GDTYP ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = P_ALPSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_ALP ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_ALP ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = P_BETSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_BET ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_BET ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = P_GAMSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_GAM ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, P_GAM ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = XCENTSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCENT ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCENT ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = YCENTSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCENT ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCENT ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = XORIGSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XORIG ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XORIG ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = YORIGSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YORIG ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YORIG ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = XCELLSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCELL ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, XCELL ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = YCELLSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCELL ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3DBLE, 1, ASIZE, YCELL ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = NCOLSSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NCOLS ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, ASIZE, NCOLS ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
             END IF
 
             ANAME = NROWSSTR // '_OUT'
-            IF ( .NOT.RDATT3( FLIST3(FID), ALLVAR3, ANAME, M3INT, 1, ASIZE, NROWS ) ) THEN
+            IF ( .NOT.RDATT3( FNAME, ALLVAR3, ANAME, M3INT, 1, ASIZE, NROWS ) ) THEN
                 EFLAG = .TRUE.
                 MESG  = 'Could not read attribute "' // TRIM( ANAME ) // '" from ' // FNAME
                 CALL M3MESG( MESG )
@@ -2631,7 +2631,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_GETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 381 2016-06-15 14:38:44Z coats $"
+        !! Version "$Id: modatts3.F90 96 2018-04-04 21:17:59Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -4220,7 +4220,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     LOGICAL FUNCTION PN_SETCMAQ( FNUM, MDATA )
 
         !!***********************************************************************
-        !! Version "$Id: modatts3.F90 381 2016-06-15 14:38:44Z coats $"
+        !! Version "$Id: modatts3.F90 96 2018-04-04 21:17:59Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 2014-2015 UNC Institute for the Environment.
         !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1

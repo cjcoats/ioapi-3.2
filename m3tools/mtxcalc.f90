@@ -2,7 +2,7 @@
 PROGRAM MTXCALC
 
     !!***********************************************************************
-    !! Version "$Id: mtxcalc.f90 94 2018-03-28 20:38:33Z coats $"
+    !! Version "$Id: mtxcalc.f90 96 2018-04-04 21:17:59Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -99,12 +99,15 @@ PROGRAM MTXCALC
     REAL*8          XCELL1      ! X-coordinate cell dimension
     REAL*8          YCELL1      ! Y-coordinate cell dimension
 
-    INTEGER         NCOLS3
+    INTEGER         NCOLS3      ! for refined grud
     INTEGER         NROWS3
+    REAL*8          XCELL3
+    REAL*8          YCELL3
 
     CHARACTER*16    OGRID   !  GRIDDESC name, parameter for output grid
     INTEGER         NCOLS2
     INTEGER         NROWS2
+    INTEGER         NGRID2
     INTEGER         NTHIK2
     INTEGER         GDTYP2
     REAL*8          P_ALP2      ! first, second, third map
@@ -223,7 +226,7 @@ PROGRAM MTXCALC
 '',                                                                             &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: mtxcalc.f90 94 2018-03-28 20:38:33Z coats $',&
+'$Id: mtxcalc.f90 96 2018-04-04 21:17:59Z coats $',&
 ' '
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -287,6 +290,8 @@ PROGRAM MTXCALC
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
 
     END IF                  ! if dscgrid() failed for output grid
+    
+    NGRID2 = NCOLS2 * NROWS2
 
     CALL M3MESG( ' ' )
     I = MAX( 0, MIN( GDTYP2, 9 ) )
@@ -350,16 +355,20 @@ PROGRAM MTXCALC
         CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad environment variable "SCALEFAC"', 2 )
     END IF
 
-    DX = XCELL1 / DBLE( NX )
-    DY = YCELL1 / DBLE( NY )
+    !!........  Sampling-grid parameters:
+
+    NCOLS3 = NCOLS1*NX
+    NROWS3 = NROWS1*NY
+    XCELL3 = XCELL1 / DBLE( NX )
+    YCELL3 = XCELL3 / DBLE( NY )
 
     CALL M3MESG( ' ' )
     WRITE( MESG, '( A, 2( I8, 2X, A ) )' ) 'Sampling ratios:', NX, 'per input column', NY, 'per input row'
     CALL M3MESG( MESG )
     IF ( GDTYP1 .EQ. LATGRD3 ) THEN
-        WRITE( MESG, '( A, 2( 1PD15.7, 2X, A ) )' ) 'Sampling cellsize:', DX, 'by', DY, 'degrees'
+        WRITE( MESG, '( A, 2( 1PD15.7, 2X, A ) )' ) 'Sampling cellsize:', XCELL3, 'by', YCELL3, 'degrees'
     ELSE
-        WRITE( MESG, '( A, 2( 1PD15.7, 2X, A ) )' ) 'Sampling cellsize:', DX, 'by', DY, 'meters'
+        WRITE( MESG, '( A, 2( 1PD15.7, 2X, A ) )' ) 'Sampling cellsize:', XCELL3, 'by', YCELL3, 'meters'
     END IF
     CALL M3MESG( MESG )
 
@@ -382,12 +391,9 @@ PROGRAM MTXCALC
         NUMERY = SNGL( YCELL2 )
     END IF
 
-    NFRACS = ( 2 + 2*NINT( ABS( NUMERX / DENOMX ) ) )*               &
-             ( 2 + 2*NINT( ABS( NUMERY / DENOMY ) ) )*               &
-             NCOLS2*NROWS2
-
-    NCOLS3 = NCOLS1*NX
-    NROWS3 = NROWS1*NY
+    NFRACS = ( 3 + 2*CEILING( ABS( NUMERX / DENOMX ) ) )*               &
+             ( 3 + 2*CEILING( ABS( NUMERY / DENOMY ) ) )*               &
+             NGRID2
 
     CALL M3MESG( MESG )
 
@@ -414,7 +420,7 @@ PROGRAM MTXCALC
 
     CALL GRID2XY( GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,       &
                   GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,       &
-                  NCOLS3, NROWS3, XORIG1, YORIG1, XCELL1, YCELL1,       &
+                  NCOLS3, NROWS3, XORIG1, YORIG1, XCELL3, YCELL3,       &
                   XLOC, YLOC )
 
     DDX2 = 1.0 / XCELL2
@@ -458,7 +464,7 @@ PROGRAM MTXCALC
                 N = N + 1
                 IF ( N .LE. NFRACS ) THEN
                     FRAC( N ) = DDXY * FLOAT( ISCR( COL,ROW ) )
-                    ICEL( N ) =  C  +  R * NCOLS1           !  input cell #
+                    ICEL( N ) = 1 + C  +  R * NCOLS1        !  input cell #
                     OCEL( N ) = COL + ( ROW - 1 ) * NCOLS2  ! output cell #
                     ISCR( COL,ROW ) = 0                     ! reset to zero for next pass
                 END IF
@@ -483,22 +489,23 @@ PROGRAM MTXCALC
     !!.......   Allocate and organize the output sparse matrix:
     !!.......   (writing ASCII output file, if requested)
 
-    K = NCOLS2 * NROWS2
-    ALLOCATE( MATX( K + 2*N ), STAT = ISTAT )
+    ALLOCATE( MATX( NGRID2 + 2*N ), STAT = ISTAT )
 
     IF ( ISTAT .NE. 0 ) THEN
         MESG   = 'Output-buffer allocation failure'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
     END IF                  ! if allocate failed
 
-    CALL BLDMATRIX( K, N, ICEL, OCEL, FRAC,     &
-                    MATDEV, NCOLS1, NCOLS2,     &
-                    MATX, MATX( K+1 ), MATX( N+K+1 ) )
+    CALL BLDMATRIX( NGRID2, N, ICEL, OCEL, FRAC,    &
+                    MATDEV, NCOLS1, NCOLS2,         &
+                    MATX,                           &   !!  matrix-row counts
+                    MATX( NGRID2+1 ),               &   !!  indices inti input grid
+                    MATX( NGRID2+N+1 ) )                !!  coeffs
 
     !!.......   Open output file and write out the output sparse matrix:
 
     GDNAM3D = OGRID
-    NROWS3D = K
+    NROWS3D = NGRID2
     NCOLS3D = N
     FTYPE3D = SMATRX3
     NVARS3D = 1
@@ -533,12 +540,12 @@ PROGRAM MTXCALC
                                 P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, &
                                 XORIG1, YORIG1, XCELL1, YCELL1,         &
                                 NCOLS1, NROWS1,                         &
-                                OGRID, GDTYP2,                          &
+                                         OGRID, GDTYP2,                 &
                                 P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, &
                                 XORIG2, YORIG2, XCELL2, YCELL2,         &
                                 NCOLS2, NROWS2 ) ) THEN
         EFLAG = .TRUE.
-        MESG  = 'Could not set grid descriptions for "MATRIX"'
+        MESG  = 'Could not set grid description attributes for "MATRIX"'
         CALL M3MESG( MESG )
 
     ELSE IF ( .NOT. WRITE3( 'MATRIX', ALLVAR3, 0, 0, MATX ) ) THEN
@@ -581,7 +588,7 @@ END PROGRAM MTXCALC
         INTEGER, INTENT(IN   ) :: M               !  number of output rows
         INTEGER, INTENT(IN   ) :: N               !  number of input coefficients
         INTEGER, INTENT(IN   ) :: ICEL( N )       !  list of in-cells
-        INTEGER, INTENT(IN   ) :: OCEL( M )       !  list of out-cells
+        INTEGER, INTENT(IN   ) :: OCEL( N )       !  list of out-cells
         REAL   , INTENT(IN   ) :: FRAC( N )       !  list of coefficients
         INTEGER, INTENT(IN   ) :: MATDEV          !  optional ASCII output unit
         INTEGER, INTENT(IN   ) :: NCOLS1          !  input  grid-column

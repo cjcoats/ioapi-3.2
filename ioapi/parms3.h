@@ -2,7 +2,7 @@
 /********************************************************************
 C  INCLUDE FILE  parms3.h
 C
-C    VERSION "$Id: parms3.h 80 2018-02-06 19:34:14Z coats $"
+C    VERSION "$Id: parms3.h 96 2018-04-04 21:17:59Z coats $"
 C    EDSS/Models-3 I/O API Version 3.1.
 C       Copyright (C) 1992-2002 MCNC,
 C       (C) 1992-2002,2005-2013  Carlie J. Coats, Jr.,
@@ -167,7 +167,13 @@ typedef char   M3Line[ MXDLEN3 ] ; /* ... "description-line" objects  */
                           /*  file type value:  pointer-flyer files    */
 #define   PTRFLY3    (8)  
 
+                          /*  file type value:  MPI-distributed grid   */
+#define   MPIGRD3    (9)  
 
+
+
+                          /*  basic data type value:  byte (==INTEGER*1) */
+#define   M3BYTE     (1)  
 
                           /*  basic data type value:  character-string */
 #define   M3CHAR     (2)  

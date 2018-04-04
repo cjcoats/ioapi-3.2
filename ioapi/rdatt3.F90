@@ -2,7 +2,7 @@
 LOGICAL FUNCTION   RDATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, ASIZE, AVAL )
 
     !!***********************************************************************
-    !! Version "$Id: rdatt3.F90 264 2015-11-19 16:33:55Z coats $"
+    !! Version "$Id: rdatt3.F90 96 2018-04-04 21:17:59Z coats $"
     !! BAMS/MCNC/EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2011 Baron Advanced Meteorological Systems, and
@@ -46,6 +46,8 @@ LOGICAL FUNCTION   RDATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, ASIZE, AVAL )
     !!
     !!      Version  11/2015 by CJC: replace MPI_OFFSET_KIND by hard-coded INTEGER(8)
     !!      because OpenMPI-1.4.x does not follow the MPOI "standard" competently.
+    !!
+    !!      Version  04/2018 by CJC: bug-fix at line 198, 250
     !!***********************************************************************
 
     USE MODNCFIO
@@ -193,7 +195,7 @@ LOGICAL FUNCTION   RDATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, ASIZE, AVAL )
 
 !$OMP   CRITICAL( S_NC )
 
-    IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+    IF ( FTYPE3( F ) .EQ. MPIGRD3 ) THEN
 #ifdef IOAPI_PNCF
         IERR = NFMPI_INQ_ATT( FID, VID, ANAME, ATYP, SIZE )
         ALEN = SIZE
@@ -245,7 +247,7 @@ LOGICAL FUNCTION   RDATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, ASIZE, AVAL )
             CALL M3WARN( PNAME, 0, 0, MESG )
             EFLAG = .TRUE.
 
-        ELSE IF ( FTYPE3(FID) .EQ. MPIGRD3 ) THEN
+        ELSE IF ( FTYPE3(F) .EQ. MPIGRD3 ) THEN
 
 #ifdef IOAPI_PNCF
             IF ( ITYP .EQ. NF_INT    ) THEN

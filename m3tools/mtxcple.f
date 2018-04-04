@@ -2,15 +2,15 @@
         PROGRAM MTXCPLE
 
 C***********************************************************************
-C Version "$Id: mtxcple.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: mtxcple.f 96 2018-04-04 21:17:59Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
-C (C) 2014 UNC Institute for the Environment.
+C (C) 2014-2018 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  131
+C  program body starts at line  128
 C
 C  DESCRIPTION:
 C       Reads sparse (grid-to-grid transform) matrix.
@@ -42,6 +42,8 @@ C       Version 01/2013 by CJC:  use new LASTTIME() to find EDATE:ETIME
 C       Version 12/2014 by CJC for I/O API v3.2:  USE MODATTS3::GETMTXATT();
 C       consistency checking with FILCHK3(), GRDCHK3(); OpenMP parallel
 C       matrix-multiply
+C       Version 04/2018 by CJC:  Re-grid only REAL variables; bug-fixes
+C       at lines 251, 423-425
 C***********************************************************************
 
       USE M3UTILIO
@@ -62,6 +64,7 @@ C...........   LOCAL VARIABLES and their descriptions:
         CHARACTER*16    CNAME   !  output coordinate system name
 
         LOGICAL         SFLAG   !  true iff controlled by synch file
+        LOGICAL         EFLAG
 
         CHARACTER*256   MESG
 
@@ -127,8 +130,8 @@ C   begin body of program MTXCPLE
         WRITE( *, '( 5X, A )' )
      & ' ',
      & 'Program MTXCPLE to read a sparse (grid-to-grid transform)',
-     & 'matrix, and then all variables in each time step in the',
-     & 'specified time step sequence from the specified input',
+     & 'matrix, and then all REAL variables in each time step in',
+     & 'the specified time step sequence from the specified input',
      & 'file, optionally under the control of the specified',
      & 'synchronization file, copy or interpolate them to the ',
      & 'output grid, and write them to the specified output file.',
@@ -167,10 +170,11 @@ C   begin body of program MTXCPLE
      & ' ',
      &'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013',
      &'Carlie J. Coats, Jr., (C) 2002-2010 Baron Advanced',
-     &'Meteorological Systems, LLC., and (C) 2014 UNC Institute',
-     &'for the Environment.  Released under Version 2 of the',
-     &'GNU General Public License. See enclosed GPL.txt, or',
-     &'URL http://www.gnu.org/copyleft/gpl.html',
+     &'Meteorological Systems, LLC., and (C) 2014-2018 UNC',
+     &'Institute for the Environment.',
+     &'Released under Version 2 of the GNU General Public License.',
+     &'See enclosed GPL.txt, or URL',
+     &'https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html',
      &' ',
      &'Comments and questions are welcome and can be sent to',
      &' ',
@@ -182,7 +186,7 @@ C   begin body of program MTXCPLE
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: mtxcple.f 435 2016-11-22 18:10:58Z coats                $',
+     &'$Id:: mtxcple.f 96 2018-04-04 21:17:59Z coats                 $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -217,8 +221,7 @@ C...............  Open and get description for optional synch file
 C...............  Open and get description for input matrix transform file
 
         MESG  = 'Enter name for input matrix transform file'
-        MNAME = PROMPTMFILE( MESG, FSREAD3,
-     &                       'MATRIX_FILE', PNAME )
+        MNAME = PROMPTMFILE( MESG, FSREAD3, 'MATRIX', PNAME )
 
         IF ( .NOT. DESC3( MNAME ) ) THEN
             MESG = 'Could not get file description for ' // MNAME
@@ -246,8 +249,8 @@ C...............  Open and get description for input data file
         IF ( .NOT. DESC3( FNAME ) ) THEN
             MESG = 'Could not get file description for ' // FNAME
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        ELSE IF ( .NOT.FILCHK3( FNAME,  FTYPE3D,
-     &                          NCOLS1, NROWS1, NLAYS1, NTHIK3D ) ) THEN
+        ELSE IF ( .NOT.FILCHK3( FNAME,  FTYPE3D, NCOLS1, NROWS1,
+     &                          NLAYS3D, NTHIK3D ) ) THEN
             MESG = 'Inconsistent dimensions  for ' // FNAME
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         ELSE IF ( .NOT.GRDCHK3( FNAME,
@@ -315,6 +318,21 @@ C...............  from GRIDDESC file:
         YORIG3D = YORIG2
         XCELL3D = XCELL2
         YCELL3D = YCELL2
+        N = 0
+        DO V = 1, NVARS3D
+            IF ( VTYPE3D( V ) .EQ. M3REAL ) THEN
+                N = N + 1
+                VNAME3D( N ) = VNAME3D( V )
+                UNITS3D( N ) = UNITS3D( V )
+                VDESC3D( N ) = VDESC3D( V )
+                VTYPE3D( N ) = VTYPE3D( V )                
+            ELSE
+                MESG = 'Excluding non-REAL variable "' // 
+     &                  TRIM( VNAME3D( V ) ) // '"'
+                CALL M3MESG( MESG )
+            END IF
+        END DO
+        NVARS3D = N
 
         IF ( FTYPE2 .EQ. GRDDED3 ) THEN
             NSIZE2 = NCOLS3D*NROWS3D
@@ -401,11 +419,12 @@ C...............  Process output time step sequence
                 END IF
             END IF
 
-            WRITE( MESG, '( A, I7.7, A, I6.6 )' )
-     &          'Processing  ', JDATE, ':', JTIME
-
-            CALL M3MSG2( ' ' )
-            CALL M3MSG2( MESG )
+            IF ( TSTEP3D .GT. 0 ) THEN
+                WRITE( MESG, '( A, I7.7, A, I6.6 )' )
+     &              'Processing  ', JDATE, ':', JTIME
+                CALL M3MSG2( ' ' )
+                CALL M3MSG2( MESG )
+            END IF
 
             DO  V = 1, NVARS3D  !  loop on variables
 
@@ -419,7 +438,7 @@ C...............  Process output time step sequence
                 END IF
 
                 CALL MATVEC( NSIZE1, NSIZE2, NLAYS3D,
-     &                       NCOLSM, CBUF, CBUF(NROWSM+1),
+     &                       NCOLSM, CBUF(0), CBUF(NROWSM+1),
      &                       CBUF(NCOLSM+NROWSM+1),
      &                       INBUF, OUTBUF )
 
@@ -504,7 +523,7 @@ C   begin body of subroutine  MATVEC
                 SUM = 0.0D0
 
                 DO  C = N(R-1)+1, N(R)
-                    SUM = SUM  +  M( C ) * U( I( C ), L )
+                    SUM = SUM  +  M( C ) * U( I( C ), 1 )
                 END DO
 
                 V( R,1 ) = SUM

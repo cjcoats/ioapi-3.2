@@ -13,7 +13,7 @@ LINK = $(CC)
 MODI = -I
 E132 = -ffixed-line-length-132
 
-MFLAGS    = -march=opteron -ftrapuv
+MFLAGS    = -march=opteron
 
 OMPFLAGS  = # -mp
 OMPLIBS   = # -lmp

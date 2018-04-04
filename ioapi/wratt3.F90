@@ -2,7 +2,7 @@
 LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
 
     !!***********************************************************************
-    !! Version "$Id: wratt3.F90 290 2016-01-02 19:39:56Z coats $"
+    !! Version "$Id: wratt3.F90 96 2018-04-04 21:17:59Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2010 by Baron Advanced Meteorological Systems and
@@ -50,6 +50,8 @@ LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
     !!
     !!      Version  11/2015 by CJC: replace MPI_OFFSET_KIND by hard-coded INTEGER(8)
     !!      because OpenMPI-1.4.x does not follow the MPOI "standard" competently.
+    !!
+    !!      Version  04/2018 by CJC: FTYPE3(FID) ~~> FTYPE3(F)
     !!***********************************************************************
 
     USE MODNCFIO
@@ -202,7 +204,7 @@ LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
 
 !$OMP   CRITICAL( S_NC )
 
-    IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN  !!  pnetcdf operations:
+    IF ( FTYPE3( F ) .EQ. MPIGRD3 ) THEN  !!  pnetcdf operations:
 
 #ifdef IOAPI_PNCF
 
@@ -321,7 +323,7 @@ LOGICAL FUNCTION  WRATT3( FNAME, VNAME, ANAME, ATYPE, AMAX, AVAL )
     SFLAG = ( .NOT. EFLAG )
 
 #ifdef IOAPI_PNCF
-    IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+    IF ( FTYPE3( F ) .EQ. MPIGRD3 ) THEN
         IF ( .NOT.PN_FLAG( SFLAG ) ) THEN
             CALL M3MSG2( 'WRATT3:  MPI_SEND(EFLAG) error' )
             SFLAG = .FALSE.
