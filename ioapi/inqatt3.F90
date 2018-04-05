@@ -3,7 +3,7 @@ LOGICAL FUNCTION INQATT3( FNAME, VNAME, MXATTS,     &
                           NATTS, ANAMES, ATYPES, ASIZES )
 
     !!***********************************************************************
-    !! Version "$Id: inqatt3.F90 230 2015-10-08 20:44:26Z coats $"
+    !! Version "$Id: inqatt3.F90 99 2018-04-05 21:34:05Z coats $"
     !! BAMS/MCNC/EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2004-2007 Baron Advanced Meteorological Systems,
@@ -211,7 +211,7 @@ LOGICAL FUNCTION INQATT3( FNAME, VNAME, MXATTS,     &
            
 !$OMP   CRITICAL( S_NC )
 
-    IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+    IF ( FTYPE3( F ) .EQ. MPIGRD3 ) THEN
 #ifdef IOAPI_PNCF
         IERR = NFMPI_INQ_VARNATTS( FID, VID, NATTS )
 #endif
@@ -242,7 +242,7 @@ LOGICAL FUNCTION INQATT3( FNAME, VNAME, MXATTS,     &
 
         DO  I = 1, NATTS
 
-            IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+            IF ( FTYPE3( F ) .EQ. MPIGRD3 ) THEN
 #ifdef IOAPI_PNCF
                 IERR = NFMPI_INQ_ATTNAME( FID, VID, I, ANAME )
 #endif
