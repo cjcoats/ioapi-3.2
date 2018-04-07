@@ -1,5 +1,5 @@
 #.........................................................................
-# VERSION "$Id: Makefile.pncf.sed 11 2017-05-09 13:12:36Z coats $"
+# VERSION "$Id: Makefile.pncf.sed 1 2017-06-10 18:05:20Z coats $"
 #    EDSS/Models-3 I/O API Version 3.1
 #.........................................................................
 # COPYRIGHT
@@ -137,7 +137,7 @@ lblank.f      len2.f        ll2utm.f      locat1.f      locat2.f      \
 locat3.f      locat4.f      locatc.f      locatr1.f     locatr2.f     \
 locatr3.f     locatr4.f     lustr.f	      m3warn.f      name2fid.f    \
 pcoef.f	      pgrdsum.f     pmatvec.f     poly.f        promptdfile.f \
-promptffile.f promptgrid.f  promptmfile.f rdatt3.f      rdbndary.f    \
+promptffile.f promptgrid.f  promptmfile.f               rdbndary.f    \
 rdbuf3.f      rdcustom.f    rdgrdded.f    readsmet.f    realist.f     \
 scanint.f     setsphere.f   sec2time.f    str2dble.f    skipl.f       \
 smatvec.f     splitline.f   str2int.f     str2real.f    strlist.f     \
