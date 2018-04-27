@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfortdbg 94 2018-03-28 20:38:33Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfortdbg 104 2018-04-27 13:09:45Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -22,7 +22,7 @@ LINK = $(CC)
 MODI = -I
 E132 = -ffixed-line-length-132
 
-MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan -m64
+MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap -m64
 
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp

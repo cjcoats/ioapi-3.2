@@ -216,7 +216,7 @@ clean:  ${OBJDIR}
 	cd ${SRCDIR}; rm *.o core* *.mod *.MOD
 
 install: ${INSTDIR}
-	echo "Installing in ${INSTDIR}" ; cd ${OBJDIR}; cp ${LIB} ${INSTDIR}
+	echo "Installing in ${INSTDIR}" ; cd ${OBJDIR}; cp ${LIB} ${MODS} ${INSTDIR}
 
 dir:
 	mkdir -p ${OBJDIR}

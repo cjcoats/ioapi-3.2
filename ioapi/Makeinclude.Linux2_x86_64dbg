@@ -22,14 +22,19 @@ E132 = -ffixed-line-length-132
 MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan -m64
 
 OMPFLAGS  = -fopenmp
-OMPLIBS   = 
+OMPLIBS   = -fopenmp
 COPTFLAGS = -g ${MFLAGS}
 FOPTFLAGS = -g ${MFLAGS}
-FPPFLAGS  =
+FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
-ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DSECOND_UNDERSCORE=1
 PARFLAGS  =
-ARCHLIB   = -lc
+ARCHLIB   =  -dynamic -L/usr/lib64 -lm -lpthread-lc
+ARCHFLAGS = \
+ -DAUTO_ARRAYS=1 \
+ -DF90=1 -DFLDMN=1 \
+ -DFSTR_L=int \
+ -DIOAPI_NO_STDOUT=1 \
+ -DNEED_ARGS=1
 
 PVM_ROOT  = /usr/share/pvm3
 PVM_ARCH  = LINUX64

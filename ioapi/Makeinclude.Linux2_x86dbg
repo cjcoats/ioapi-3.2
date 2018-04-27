@@ -22,7 +22,7 @@ LINK = $(CC)
 MODI = -I
 E132 = -ffixed-line-length-132
 
-MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan
+MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap
 
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
