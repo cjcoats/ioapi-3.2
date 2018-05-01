@@ -1,6 +1,6 @@
 
 !.........................................................................
-! Version "$Id: STATE3.EXT 216 2015-08-17 17:47:29Z coats $"
+! Version "$Id: STATE3.EXT 1 2017-06-10 18:05:20Z coats $"
 ! EDSS/Models-3 I/O API.
 ! Copyright (C) 1992-2002 MCNC, (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
 ! (C) 2003-2011 Baron Advanced Meteorological Systems, LLC., and
@@ -11,8 +11,11 @@
 !....................................................................
 !  INCLUDE FILE  STATE3.EXT
 !
+!   PRIVATE!
+!       For internal I/O API use only.
+!       Do not use in model or other application code.
 !
-!  DO NOT EDIT !!
+!   DO NOT EDIT !!
 !
 !       The EDSS/Models-3 I/O API depends in an essential manner
 !       upon the contents of this INCLUDE file.  ANY CHANGES are
