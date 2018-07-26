@@ -2,7 +2,7 @@
         INTEGER FUNCTION NAME2FID( FNAME )
 
 C***********************************************************************
-C Version "$Id: name2fid.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: name2fid.f 107 2018-07-26 14:05:39Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
@@ -55,7 +55,7 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
         CHARACTER*16    FIL16           !  scratch file-name buffer
-        CHARACTER*80    MESG
+        CHARACTER*256   MESG
         INTEGER         L
         LOGICAL         EFLAG
 

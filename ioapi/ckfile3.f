@@ -2,7 +2,7 @@
         LOGICAL FUNCTION CKFILE3( FID )  RESULT( CKFLAG )
 
 C***********************************************************************
-C Version "$Id: ckfile3.f 390 2016-07-05 21:11:01Z coats $"
+C Version "$Id: ckfile3.f 1 2017-06-10 18:05:20Z coats $"
 C BAMS/MCNC/EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems, and
@@ -83,7 +83,7 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
         INTEGER         ENVSTAT         !  return value for ENVYN()
         INTEGER         L, U, V         !  loop counters
         LOGICAL         INCREASING
-        CHARACTER*80    MESG
+        CHARACTER*160   MESG
         INTEGER         VGTYP, IERR
         REAL            VGLVS( MXLAYS3 + 1 )  !  vertical coord values.
 

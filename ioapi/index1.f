@@ -2,7 +2,7 @@
       INTEGER FUNCTION INDEX1( NAME, N, NLIST )
 
 C***********************************************************************
-C Version "$Id: index1.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: index1.f 107 2018-07-26 14:05:39Z coats $"
 C EDSS/Models-3 I/O API.
 C BAMS/MCNC/EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
@@ -110,6 +110,52 @@ C.......   begin body of INDEX1()
 
         RETURN
         END FUNCTION INDEXINT1
+
+
+        ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+        INTEGER FUNCTION INDEXL1( IKEY, NLIST, KEYLIST )
+
+        !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+        !  Look up integer key IKEY in unsorted list <NLIST,KEYLIST>
+        !  of integer keys.  Return the subscript at which IKEY
+        !  occurs, or 0 in case of failure
+        !
+        !  PRECONDITIONS REQUIRED:
+        !      none
+        !
+        !  REVISION  HISTORY:
+        !      Prototype  11/2004 by CJC
+        !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+        IMPLICIT NONE
+
+
+        !!........  Arguments:
+
+        INTEGER*8, INTENT(IN   ) :: IKEY
+        INTEGER,   INTENT(IN   ) :: NLIST
+        INTEGER*8, INTENT(IN   ) :: KEYLIST( NLIST )
+
+
+        !!........  Local Variables:
+
+        INTEGER I
+
+        !!........  begin body ........................................
+
+        DO  I = 1, NLIST
+            IF ( IKEY .EQ. KEYLIST( I ) ) THEN
+                INDEXL1 = I
+                RETURN
+            END IF
+        END DO
+
+        INDEXL1 = 0
+
+        RETURN
+        END FUNCTION INDEXL1
 
 
 

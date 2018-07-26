@@ -125,7 +125,7 @@ PROGRAM LATLON
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: latlon.f90 74 2017-12-22 19:40:11Z coats $',&
+'$Id: latlon.f90 107 2018-07-26 14:05:39Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -203,7 +203,7 @@ PROGRAM LATLON
     ELSE        !  enter grid specs interactively
 
         CALL GETSTR( 'Enter grid name', 'SMRAQ54_48X50', GDNAM3D )
-        GDTYP3D = CTYPE( GETVAL( 6, 2, 'Enter number for horizontal coordinate system type', CMENU ) )
+        GDTYP3D = CTYPE( GETVAL( 10, 2, 'Enter number for horizontal coordinate system type', CMENU ) )
 
         IF ( GDTYP3D .EQ. LATGRD3 ) THEN !  lat-lon:  no P_ALP, ...
 

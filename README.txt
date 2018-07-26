@@ -12,16 +12,17 @@ I/O API DOCUMENTS:
     I/O API is copyright (C) 1992-2002 MCNC, (C) 1992-2002 and 2005-2013
     Carlie J. Coats Jr, (C) 2003-2011 Baron Advanced Meteorological
     Systems, LLC., and (C) 2013-2016 UNC Institute for the Environment.
-    Documentation may be found at URL
+    Documentation may be found at URLs
 
-        https://www.cmascenter.org/ioapi/documentation/3.1/html/index.html
+        https://www.cmascenter.org/ioapi/documentation/all_versions/html/index.html
+        https://cjcoats.github.io/ioapi/index.html
 
 CURRENT VERSION AVAILABILITY
 
     The current development version of the I/O API is Version 3.2; the
     "old" production version (in maintenance-only mode) is 3.1; versions
-    3.0 and earlier are obsolete.  These are available in source code
-    form (together with the documentation) from URL
+    3.0 and earlier are obsolete.  These earlier versions are available
+    in source code form (together with the documentation) from URL
 
         https://www.cmascenter.org/ioapi/documentation/3.1/html/AVAIL.html
 
@@ -36,7 +37,7 @@ CURRENT VERSION AVAILABILITY
 
     Change-Log and new features are documented at URL
 
-        https://www.cmascenter.org/ioapi/documentation/3.1/html/NEWSTUFF.html
+        https://www.cmascenter.org/ioapi/documentation/all_versions/html/NEWSTUFF.html
 
 I/O API INSTALLATION
 
@@ -52,8 +53,8 @@ I/O API INSTALLATION
     From these examples and from a knowledge of the compiler user
     manual, it should be relatively easy to build Makeinclude files
     for most UNIX or UNIX-like platforms and compilers.  Instructions
-    for building the I/O API library libioapi.a  and the I/O API tool
-    executable programs are as follows:
+    for building the I/O API library libioapi.a  and the I/O API
+    "m3tools" executable programs are as follows:
 
     Build instructions for I/O API 3.1 match those for I/O API 3.2
     except that they use ioapi-3.1.tar.gz, which is available only
@@ -91,8 +92,8 @@ I/O API INSTALLATION
           are exceptions where more work is needed for Cray, SGI and
           Linux systems, and F90, profiling, or DEBUG compiles. For
           64-bit Linux, BIN will be of the form "Linux2_x86_64*" (e.g.,
-          "Linux2_x86_64ifort" for 64-bit builds using Intel "ifort" and
-          "icc" compilers, Linux2_x86_64*dbg for debug-builds,
+          "Linux2_x86_64ifort" for 64-bit builds using Intel "ifort"
+          and "icc" compilers, Linux2_x86_64*dbg for debug-builds,
           Linux2_x86_64*mpi for Pnetcdf/MPI distributed I/O, or
           Linux2_x86_64*36[0,5] for climatological (no-leap-year)
           builds).  For 32-bit Linux, BIN will be of the form
@@ -132,7 +133,7 @@ I/O API INSTALLATION
           making the I/O&nbsp;API  thread-safe for OpenMP-parallel
           programs (like the MAQSIP-RT air quality model, the WRF or
           MCPL-enabled MM5 meteorology models, research versions of
-          SMOKE, and others.  It also enables OpenMP parallelism in a
+          SMOKE, and others).  It also enables OpenMP parallelism in a
           number of "m3tools" programs and a few additional (mostly
           coordinate-transform or interpolation related) I/O API
           routines.

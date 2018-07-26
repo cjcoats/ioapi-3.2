@@ -2,7 +2,7 @@
         MODULE M3UTILIO
 
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !! Version "$Id: m3utilio.f 70 2017-11-30 15:05:43Z coats $"
+        !! Version "$Id: m3utilio.f 107 2018-07-26 14:05:39Z coats $"
         !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
         !! (c) 2007-2013 Carlie J. Coats, Jr., and
         !! (C) 2014 UNC Institute for the Environment.
@@ -52,6 +52,7 @@
         !!      provide INTERFACE for it.
         !!      Version  11/2015:  re-add LAMBERT etc. INTERFACEs from 3.1,
         !!      together with re-naming clauses for MODULE MODGCTP
+        !!      Version  07/2018:  Add INDEXL1.  Generic INDEXKEY.
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
             IMPLICIT NONE
@@ -61,7 +62,7 @@
             INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
             CHARACTER*72, PRIVATE, SAVE :: ID =
-     &'$Id:: m3utilio.f 70 2017-11-30 15:05:43Z coats                 $'
+     &'$Id:: m3utilio.f 107 2018-07-26 14:05:39Z coats                $'
 
 
             !!........  PUBLIC Routines:
@@ -741,21 +742,28 @@
                 END FUNCTION  HHMMSS
             END INTERFACE
 
-            INTERFACE
+
+            INTERFACE INDEXKEY
+
                 INTEGER FUNCTION INDEX1( NAME, N, NLIST )
                 CHARACTER*(*), INTENT(IN   ) :: NAME        !  Character string being searched for
                 INTEGER      , INTENT(IN   ) :: N           !  Length of array to be searched
                 CHARACTER*(*), INTENT(IN   ) :: NLIST(*)    !  array to be searched
                 END FUNCTION INDEX1
-            END INTERFACE
 
-            INTERFACE
                 INTEGER FUNCTION INDEXINT1( IKEY, N, NLIST )
                 INTEGER, INTENT(IN   ) :: IKEY        !  integer being searched for
                 INTEGER, INTENT(IN   ) :: N           !  Length of array to be searched
                 INTEGER, INTENT(IN   ) :: NLIST(*)    !  array to be searched
                 END FUNCTION INDEXINT1
-            END INTERFACE
+
+                INTEGER FUNCTION INDEXL1( LKEY, N, NLIST )
+                INTEGER*8, INTENT(IN   ) :: LKEY        !  integer being searched for
+                INTEGER,   INTENT(IN   ) :: N           !  Length of array to be searched
+                INTEGER*8, INTENT(IN   ) :: NLIST(*)    !  array to be searched
+                END FUNCTION INDEXL1
+
+            END INTERFACE       !!  indexkey
 
             INTERFACE
                 LOGICAL FUNCTION ISDSTIME( JDATE )
