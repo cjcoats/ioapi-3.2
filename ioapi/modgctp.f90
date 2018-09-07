@@ -2,7 +2,7 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 76 2018-01-15 18:23:41Z coats $"
+    !!  Version "$Id: modgctp.f90 108 2018-09-07 18:59:37Z coats $"
     !!  Copyright (c) 2014-2015 UNC Institute for the Environment and
     !!  (C) 2015-2018 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -46,6 +46,7 @@ MODULE MODGCTP
     !!      to MODULE M3UTILIO, together with re-naming clauses here
     !!      to avoid double-declaration problems.
     !!      Version  1/2018 by CJC:  Handle "missing" in XY2XY()
+    !!      Version  8/2018 by CJC:  bug fixes in GRD2INDX, GRID2XY
     !!..............................................................
 
     USE M3UTILIO, M3U_GTPZ0       => GTPZ0      ,   &
@@ -122,6 +123,9 @@ MODULE MODGCTP
     REAL*8, PARAMETER :: PI  = 3.141592653589793238462643383279d0
     REAL*8, PARAMETER :: PI180  = PI / 180.0d0
     REAL*8, PARAMETER :: RPI180 = 180.0d0 / PI
+    REAL*8, PARAMETER :: RADE19   = 6370997.0d0
+    REAL*8, PARAMETER :: RADE20   = 6370000.0d0
+    REAL*8, PARAMETER :: RADE21   = 6371200.0d0
 
     CHARACTER*1,  PARAMETER ::  BLANK = ' '
     CHARACTER*16, PARAMETER ::  MNAME = 'MODGCTP'
@@ -230,7 +234,7 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 76 2018-01-15 18:23:41Z coats                      $'
+'$Id:: modgctp.f90 108 2018-09-07 18:59:37Z coats                     $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:
@@ -280,10 +284,10 @@ MODULE MODGCTP
     !!  corresponding ID by 4 = Number of types implemented
 
     INTEGER, SAVE :: LZONE = 61   !  Lambert
-    INTEGER, SAVE :: PZONE = 62   !  Polar Stereographic
-    INTEGER, SAVE :: TZONE = 63   !  Transverse Mercator
-    INTEGER, SAVE :: EZONE = 64   !  Equatorial Mercator
-    INTEGER, SAVE :: AZONE = 65   !  Equatorial Mercator
+    INTEGER, SAVE :: PZONE = 71   !  Polar Stereographic
+    INTEGER, SAVE :: TZONE = 81   !  Transverse Mercator
+    INTEGER, SAVE :: EZONE = 91   !  Equatorial Mercator
+    INTEGER, SAVE :: AZONE = 101  !  Equatorial Mercator
 
     !!.......   Arguments for GTPZ0 (in POLSTE(), etc...)
 
@@ -449,6 +453,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     END FUNCTION INITSPHERES
 
+
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
@@ -473,8 +478,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     END FUNCTION SPHEREDAT
 
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !  Compute cell-centers  <XLOC2,YLOC2> for GRID2 relative to
+    !  the coordinate system for GRID1
 
     SUBROUTINE GRID2XY1( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,    &
                          GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,    &
@@ -492,148 +499,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL*8 , INTENT(  OUT) :: XLOC2( NCOLS2,NROWS2 )
         REAL*8 , INTENT(  OUT) :: YLOC2( NCOLS2,NROWS2 )
 
-        !!........  PARAMETERs and their descriptions:
-
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/GRID2XY1'
-        CHARACTER*16, PARAMETER ::  BLANK = ' '
-        CHARACTER*80, PARAMETER ::  BAR   = &
-      '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
-
-
-        !!........  Local Variables and their descriptions:
-
-        INTEGER     C, R
-        LOGICAL     EFLAG
-        REAL*8      X0, Y0
-
-        CHARACTER*512   MESG
-
-        !!   Arguments for GTPZ0:
-
-        REAL*8          CRDIN( 2 )      !  input coordinates x,y
-        INTEGER*4       INSYS           !  input projection code
-        INTEGER*4       INZONE          !  input utm ZONE, etc.
-        REAL*8          TPAIN( 15 )     !  input projection parameters
-        INTEGER*4       INUNIT          !  input units code
-        INTEGER*4       INSPH           !  spheroid code
-        INTEGER*4       IPR             !  error print flag
-        INTEGER*4       JPR             !  projection parameter print flag
-        INTEGER*4       LEMSG           !  error message unit number
-        INTEGER*4       LPARM           !  projection parameter unit number
-        REAL*8          CRDIO( 2 )      !  output coordinates x,y
-        INTEGER*4       IOSYS           !  output projection code
-        INTEGER*4       IOZONE          !  output utm ZONE, etc.
-        REAL*8          TPOUT( 15 )     !  output projection parameters
-        INTEGER*4       IOUNIT          !  output units code
-        INTEGER*4       LN27            !  NAD1927 file unit number
-        INTEGER*4       LN83            !  NAD1983 file unit number
-        CHARACTER*128   FN27            !  NAD1927 file name
-        CHARACTER*128   FN83            !  NAD1983 file name
-        INTEGER*4       LENGTH          !  NAD* record-length
-        INTEGER*4       IFLG            !  error flag
-
-
-        !!........  Body  ......................................................
-
-        !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
-        !!...............  Set up arguments for call to GTP0:
-
-        EFLAG = .FALSE.
-
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
-
-            DO  R = 1, NROWS2
-            DO  C = 1, NCOLS2
-
-                XLOC2( C,R ) = X0  +  XCELL2 * DBLE( C )
-                YLOC2( C,R ) = Y0  +  YCELL2 * DBLE( R )
-
-            END DO
-            END DO          !  end traversal of input grid
-
-            RETURN
-
-        END IF
-
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
-
-        IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
-        IOUNIT = 4              !!  output units:  degrees
-
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
-                            TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
-            EFLAG = .TRUE.
-            WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output grid type', GDTYP2, 'not supported'
-            CALL M3MESG( MESG )
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
-                            TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Input grid type', GDTYP1,'not supported'
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT. INITSPHERES() ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/INITSPHERES() failure'
-            CALL M3MESG( MESG )
-        ELSE IF ( .NOT. SPHEREDAT( INSPH, TPAIN, TPOUT ) ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/SPHEREDAT() failure'
-            CALL M3MESG( MESG )
-        END IF
-
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
-
-        !!...............  Compute transform:
-
-        X0 = XORIG2 - 0.5 * XCELL2
-        Y0 = YORIG2 - 0.5 * YCELL2
-
-        DO  R = 1, NROWS2
-        DO  C = 1, NCOLS2
-
-            CRDIN( 1 ) = X0  +  XCELL2 * DBLE( C )
-            CRDIN( 2 ) = Y0  +  YCELL2 * DBLE( R )
-
-!$OMP       CRITICAL( S_GTPZ0 )
-            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                        LENGTH, IFLG )
-!$OMP       END CRITICAL( S_GTPZ0 )
-
-            IF ( IFLG .NE. 0 ) THEN
-                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
-                   'Failure:  status ', IFLG,                   &
-                   'in GTPZ0 at (c,r)=(', C, ',', R, ')'
-                EFLAG = .TRUE.
-                CALL M3MESG( MESG )
-                CYCLE
-            END IF
-
-            XLOC2( C,R ) = CRDIO( 1 )
-            YLOC2( C,R ) = CRDIO( 2 )
-
-        END DO
-        END DO          !  end traversal of input grid
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Grid coord-transform error(s)', 2 )
-        END IF
+        CALL GRID2XY2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, DBLE(KSPH),  &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, DBLE(KSPH),  &
+                       NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,              &
+                       XLOC2, YLOC2 )
 
         RETURN
 
@@ -650,7 +519,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                          XLOC2, YLOC2 )
 
         !!........  Arguments and their descriptions:
-        !!  SPHERE[1,2] should be 0-19 for "standard" spheres
+        !!  SPHERE[1,2] should be 0-21 for "standard" spheres
         !!  (as in SPHERENAMES above); or else Earth-radius for
         !!  non-standard perfect spheres.
 
@@ -666,7 +535,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  PARAMETERs and their descriptions:
 
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/GRID2XY2'
+        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/GRID2XY'
         CHARACTER*16, PARAMETER ::  BLANK = ' '
         CHARACTER*80, PARAMETER ::  BAR   = &
       '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
@@ -710,53 +579,18 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         EFLAG = .FALSE.
 
-        !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
-        !!...............  Set up arguments for call to GTP0:
-
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
-
-        IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
-        IOUNIT = 4              !!  output units:  degrees
-
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
-                            TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
-            EFLAG = .TRUE.
-            WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output grid type', GDTYP2, 'not supported'
-            CALL M3MESG( MESG )
-        END IF
-
-        !!...............  Sphere adjustment:
-
-        INSPH = NINT( SPHER2 )
-
-        IF ( SPHER2 .GT. 19.5d0 ) THEN
-            INSPH    = -1
-            TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
-        ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  non-integer SPHER2 ' )
-        END IF
-
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
-
-        !!...............  Compute intermediate REAL*8 Lat-Lon:
+        !!...............  Compute intermediate REAL*8 Lat-Lon for grid2 centers:
 
         X0 = XORIG2 - 0.5 * XCELL2
         Y0 = YORIG2 - 0.5 * YCELL2
 
         IF ( GDTYP2 .EQ. LATGRD3 ) THEN
+
+!$OMP        PARALLEL DO                                                &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0, XCELL2, YCELL2,       &
+!$OMP&                    XLOC2, YLOC2 ),                               &
+!$OMP&           PRIVATE( C, R )
 
             DO  R = 1, NROWS2
             DO  C = 1, NCOLS2
@@ -768,6 +602,36 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END DO          !  end traversal of input grid
 
         ELSE
+
+            !!...............  Set up arguments for call to GTP0:
+
+            IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2, SPHER2,    &
+                                TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
+                EFLAG = .TRUE.
+                WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Grid type', GDTYP2, 'not supported'
+                CALL M3MESG( MESG )
+                CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
+            END IF
+
+            TPOUT  = 0.0D0
+            IPR    = 0              !!  print error messages, if any
+            JPR    = 1              !!  do NOT print projection parameters
+            LEMSG  = INIT3()        !!  unit number for log file
+            LPARM  = LEMSG          !!  projection parameters file
+
+            IOSYS  = 0              !!  geographic coords (=Lat-Lon)
+            IOZONE = 0
+            IOUNIT = 4              !!  output units:  degrees
+
+!$OMP       PARALLEL DO                                                 &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0, XCELL2, YCELL2,       &
+!$OMP&                    XLOC2, YLOC2,                                 &
+!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&           PRIVATE( C, R, CRDIN, CRDIO, LENGTH, IFLG, MESG ),     &
+!$OMP&         REDUCTION( .OR.:  EFLAG )
 
             DO  R = 1, NROWS2
             DO  C = 1, NCOLS2
@@ -807,49 +671,43 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Then compute GRID1 coords for GRID2 cell-centers
 
-        TPAIN = 0.0D0       !!  array assignment
-        IPR   = 0           !!  print error messages, if any
-        JPR   = 1           !!  do NOT print projection parameters
-        LEMSG = INIT3()     !!  unit number for log file
-        LPARM = LEMSG       !!  projection parameters file
-
-        INSYS  = 0          !!  geographic (=Lat-Lon)
-        INZONE = 0
-        INUNIT = 4          !!  input units:  degrees
-
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
-                            TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP1,'not supported'
-            CALL M3MESG( MESG )
-
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        INSPH = NINT( SPHER1 )
-
-        IF ( SPHER1 .GT. 19.5d0 ) THEN
-            INSPH    = -2
-            TPAIN(1) = SPHER1
-        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  SPHER1 < 0' )
-        ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  non-integer SPHER1 ' )
-        END IF
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
         IF ( GDTYP1 .EQ. LATGRD3 ) THEN
 
             CONTINUE
 
         ELSE
+
+            IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1, SPHER1,     &
+                                TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
+
+                MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
+                CALL M3MSG2( MESG )
+                WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP1,'not supported'
+                CALL M3MESG( MESG )
+
+                CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
+
+            END IF
+
+            TPAIN   = 0.0D0     !!  array assignment
+            TPAIN(1)= RADE19
+            IPR     = 0         !!  print error messages, if any
+            JPR     = 1         !!  do NOT print projection parameters
+            LEMSG   = INIT3()   !!  unit number for log file
+            LPARM   = LEMSG     !!  projection parameters file
+
+            INSYS  = 0          !!  geographic (=Lat-Lon)
+            INZONE = 0
+            INUNIT = 4          !!  input units:  degrees
+
+!$OMP       PARALLEL DO                                                 &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NROWS2, NCOLS2, XLOC2, YLOC2,                 &
+!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&           PRIVATE( C, R, CRDIN, CRDIO, LENGTH, IFLG, MESG ),     &
+!$OMP&         REDUCTION( .OR.:  EFLAG )
 
             DO  R = 1, NROWS2
             DO  C = 1, NCOLS2
@@ -913,195 +771,16 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL   , INTENT(  OUT) :: PX2( NCOLS2*NROWS2 )
         REAL   , INTENT(  OUT) :: PY2( NCOLS2*NROWS2 )
 
-        !!........  PARAMETERs and their descriptions:
-
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/GRID2INDX1'
-        CHARACTER*16, PARAMETER ::  BLANK = ' '
-        CHARACTER*80, PARAMETER ::  BAR   = &
-      '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
-
-
-        !!........  Local Variables and their descriptions:
-
-        INTEGER     C, R, CC, RR, J
-        LOGICAL     EFLAG
-        REAL*8      X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1, XX, YY
-
-        CHARACTER*512   MESG
-
-        !!   Arguments for GTPZ0:
-
-        REAL*8          CRDIN( 2 )      !  input coordinates x,y
-        INTEGER*4       INSYS           !  input projection code
-        INTEGER*4       INZONE          !  input utm ZONE, etc.
-        REAL*8          TPAIN( 15 )     !  input projection parameters
-        INTEGER*4       INUNIT          !  input units code
-        INTEGER*4       INSPH           !  spheroid code
-        INTEGER*4       IPR             !  error print flag
-        INTEGER*4       JPR             !  projection parameter print flag
-        INTEGER*4       LEMSG           !  error message unit number
-        INTEGER*4       LPARM           !  projection parameter unit number
-        REAL*8          CRDIO( 2 )      !  output coordinates x,y
-        INTEGER*4       IOSYS           !  output projection code
-        INTEGER*4       IOZONE          !  output utm ZONE, etc.
-        REAL*8          TPOUT( 15 )     !  output projection parameters
-        INTEGER*4       IOUNIT          !  output units code
-        INTEGER*4       LN27            !  NAD1927 file unit number
-        INTEGER*4       LN83            !  NAD1983 file unit number
-        CHARACTER*128   FN27            !  NAD1927 file name
-        CHARACTER*128   FN83            !  NAD1983 file name
-        INTEGER*4       LENGTH          !  NAD* record-length
-        INTEGER*4       IFLG            !  error flag
-
-
-        !!........  Body  ......................................................
-
-        !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
-        !!...............  Set up arguments for call to GTP0:
-
-        EFLAG = .FALSE.
-
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
-
-!$OMP        PARALLEL DO                                                        &
-!$OMP&           DEFAULT( NONE ),                                               &
-!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1,   &
-!$OMP&                    NCOLS1, NROWS1, XCELL2, YCELL2, IX2, PX2, PY2 ),      &
-!$OMP&           PRIVATE( C, R, XX, YY, J, CC, RR )
-
-            DO  R = 1, NROWS2
-            DO  C = 1, NCOLS2
-
-                XX = DDX1 * ( X0  +  XCELL2 * DBLE( C ) - X1 )
-                YY = DDY1 * ( Y0  +  YCELL2 * DBLE( R ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                J  = C + NCOLS2 * ( R - 1 )
-                CC = INT( XX )
-                RR = INT( YY )
-                IX2( J ) = CC + NCOLS1 * ( RR - 1 )
-                PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-
-            END DO
-            END DO          !  end traversal of input grid
-
-            RETURN
-
-        END IF
-
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
-
-        IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
-        IOUNIT = 4              !!  output units:  degrees
-
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
-                            TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
-            EFLAG = .TRUE.
-            WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output grid type', GDTYP2, 'not supported'
-            CALL M3MESG( MESG )
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
-                            TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Input grid type', GDTYP1,'not supported'
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT. INITSPHERES() ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/INITSPHERES() failure'
-            CALL M3MESG( MESG )
-        ELSE IF ( .NOT. SPHEREDAT( INSPH, TPAIN, TPOUT ) ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/SPHEREDAT() failure'
-            CALL M3MESG( MESG )
-        END IF
-
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
-
-        !!...............  Compute transform, indices, and coefficients:
-
-        X0 = XORIG2 - 0.5D0 * XCELL2
-        Y0 = YORIG2 - 0.5D0 * YCELL2
-        X1 = XORIG1 - 0.5D0 * XCELL1
-        Y1 = YORIG1 - 0.5D0 * YCELL1
-        X2 = DBLE( NCOLS1 )
-        Y2 = DBLE( NROWS1 )
-
-!$OMP   PARALLEL DO                                                         &
-!$OMP&       DEFAULT( NONE ),                                               &
-!$OMP&        SHARED( NROWS2, NCOLS2, X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1,   &
-!$OMP&                NCOLS1, NROWS1, XCELL2, YCELL2, IX2, PX2, PY2,        &
-!$OMP&                INSYS, INZONE, TPAIN, INUNIT, INSPH, IPR, JPR,        &
-!$OMP&                LPARM, IOSYS, IOZONE,TPOUT, IOUNIT, LN27, LN83,       &
-!$OMP&                FN27, FN83, LENGTH  ),                                &
-!$OMP&       PRIVATE( C, R, XX, YY, J, CC, RR, LEMSG, CRDIN, CRDIO, IFLG,   &
-!$OMP&                MESG ),                                               &
-!$OMP&     REDUCTION( .OR.:  EFLAG )
-
-        DO  R = 1, NROWS2
-        DO  C = 1, NCOLS2
-
-            CRDIN( 1 ) = X0  +  XCELL2 * DBLE( C )
-            CRDIN( 2 ) = Y0  +  YCELL2 * DBLE( R )
-
-!$OMP       CRITICAL( S_GTPZ0 )
-            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                        LENGTH, IFLG )
-!$OMP       END CRITICAL( S_GTPZ0 )
-
-            IF ( IFLG .NE. 0 ) THEN
-                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
-                   'Failure:  status ', IFLG,                   &
-                   'in GTPZ0 at (c,r)=(', C, ',', R, ')'
-                EFLAG = .TRUE.
-                CALL M3MESG( MESG )
-                CYCLE
-            END IF
-
-            XX = DDX1 * ( CRDIO( 1 ) - X1 )
-            YY = DDY1 * ( CRDIO( 2 ) - Y1 )
-            J  = C + NCOLS2 * ( R - 1 )
-
-            IF ( XX .LT. 1.0D0 .OR. XX .GE. DBLE( NCOLS1 ) .OR.    &
-                 YY .LT. 1.0D0 .OR. YY .GE. DBLE( NROWS1 ) ) THEN
-                IX2( J ) = IMISS3
-            ELSE
-                CC = INT( XX )
-                RR = INT( YY )
-                IX2( J ) = 1 + CC + NCOLS1 * RR
-                PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-            END IF
-
-        END DO
-        END DO          !  end traversal of input grid
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Input-grid coord-transform error(s)', 2 )
-        END IF
+        CALL GRID2INDX2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, DBLE(KSPH),    &
+                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, DBLE(KSPH),    &
+                         NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,                &
+                         NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,                &
+                         IX2, PX2, PY2 )
 
         RETURN
 
 
     END SUBROUTINE GRID2INDX1
-
 
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1131,7 +810,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  PARAMETERs and their descriptions:
 
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/GRID2INDX2'
+        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/GRID2INDX'
         CHARACTER*16, PARAMETER ::  BLANK = ' '
         CHARACTER*80, PARAMETER ::  BAR   = &
       '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
@@ -1175,6 +854,15 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  Body  ......................................................
 
+        DDX1 = 1.0d0 / XCELL1
+        DDY1 = 1.0d0 / YCELL1
+        X0 = XORIG2 - 0.5D0 * XCELL2
+        Y0 = YORIG2 - 0.5D0 * YCELL2
+        X1 = XORIG1 - 0.5D0 * XCELL1
+        Y1 = YORIG1 - 0.5D0 * YCELL1
+        X2 = DBLE( NCOLS1 )
+        Y2 = DBLE( NROWS1 )
+
         IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
 
@@ -1189,11 +877,11 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 XX = DDX1 * ( X0  +  XCELL2 * DBLE( C ) - X1 )
                 YY = DDY1 * ( Y0  +  YCELL2 * DBLE( R ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
+                XX = MAX( XX, 1.0d0 )
+                YY = MAX( YY, 1.0d0 )
+                CC = MIN( INT( XX ), NCOLS1-1 )
+                RR = MIN( INT( YY ), NROWS1-1 )
                 J  = C + NCOLS2 * ( R - 1 )
-                CC = INT( XX )
-                RR = INT( YY )
                 IX2( J ) = CC + NCOLS1 * ( RR - 1 )
                 PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
                 PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
@@ -1210,52 +898,27 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Next, calculate Lat-Lon for GRID2 cell-centers
         !!...............  Set up arguments for call to GTP0:
 
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
+        TPOUT   = 0.0D0
+        TPOUT(1)= RADE19
+        IPR     = 0              !!  print error messages, if any
+        JPR     = 1              !!  do NOT print projection parameters
+        LEMSG   = INIT3()        !!  unit number for log file
+        LPARM   = LEMSG          !!  projection parameters file
 
         IOSYS  = 0              !!  geographic coords (=Lat-Lon)
         IOZONE = 0
         IOUNIT = 4              !!  output units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2, SPHER2,    &
                             TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output grid type', GDTYP2, 'not supported'
             CALL M3MESG( MESG )
-        END IF
-
-        !!...............  Sphere adjustment:
-
-        INSPH = NINT( SPHER2 )
-
-        IF ( SPHER2 .GT. 19.5d0 ) THEN
-            INSPH    = -1
-            TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
-        ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  non-integer SPHER2 ' )
-        END IF
-
-
-        IF ( EFLAG ) THEN
             CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
         END IF
 
 
         !!...............  Compute intermediate REAL*8 Lat-Lon:
-
-        X0 = XORIG2 - 0.5D0 * XCELL2
-        Y0 = YORIG2 - 0.5D0 * YCELL2
-        X1 = XORIG1 - 0.5D0 * XCELL1
-        Y1 = YORIG1 - 0.5D0 * YCELL1
-        X2 = DBLE( NCOLS1 )
-        Y2 = DBLE( NROWS1 )
 
         IF ( GDTYP2 .EQ. LATGRD3 ) THEN
 
@@ -1274,6 +937,16 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END DO          !  end traversal of input grid
 
         ELSE
+
+!$OMP        PARALLEL DO                                                &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0,  XCELL2, YCELL2,      &
+!$OMP&                    XLOC2, YLOC2,                                 &
+!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&           PRIVATE( C, R, CRDIN, CRDIO, LENGTH, IFLG, MESG ),     &
+!$OMP&         REDUCTION( .OR.:  EFLAG )
 
             DO  R = 1, NROWS2
             DO  C = 1, NCOLS2
@@ -1313,46 +986,39 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Then compute GRID1 coords for GRID2 cell-centers
 
-        TPAIN = 0.0D0       !!  array assignment
-        IPR   = 0           !!  print error messages, if any
-        JPR   = 1           !!  do NOT print projection parameters
-        LEMSG = INIT3()     !!  unit number for log file
-        LPARM = LEMSG       !!  projection parameters file
+        TPAIN   = 0.0D0       !!  array assignment
+        TPAIN(1)= RADE19
+        IPR     = 0           !!  print error messages, if any
+        JPR     = 1           !!  do NOT print projection parameters
+        LEMSG   = INIT3()     !!  unit number for log file
+        LPARM   = LEMSG       !!  projection parameters file
 
         INSYS  = 0          !!  geographic (=Lat-Lon)
         INZONE = 0
         INUNIT = 4          !!  input units:  degrees
 
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
+        IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1, SPHER1,     &
                             TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
 
             MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
             CALL M3MSG2( MESG )
             WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP1,'not supported'
             CALL M3MESG( MESG )
-
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        INSPH = NINT( SPHER1 )
-
-        IF ( SPHER1 .GT. 19.5d0 ) THEN
-            INSPH    = -2
-            TPAIN(1) = SPHER1
-        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  SPHER1 < 0' )
-        ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  non-integer SPHER1 ' )
-        END IF
-
-        IF ( EFLAG ) THEN
             CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
+
         END IF
 
 
         !!...............  Compute transform; indices and coefficients
+
+        DDX1 = 1.0d0 / XCELL1
+        DDY1 = 1.0d0 / YCELL1
+        X0 = XORIG2 - 0.5D0 * XCELL2
+        Y0 = YORIG2 - 0.5D0 * YCELL2
+        X1 = XORIG1 - 0.5D0 * XCELL1
+        Y1 = YORIG1 - 0.5D0 * YCELL1
+        X2 = DBLE( NCOLS1 )
+        Y2 = DBLE( NROWS1 )
 
         IF ( GDTYP1 .EQ. LATGRD3 ) THEN
 
@@ -1367,11 +1033,11 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 XX = DDX1 * ( XLOC2( C,R ) - X1 )
                 YY = DDY1 * ( YLOC2( C,R ) - Y1 )
+                XX = MAX( XX, 1.0d0 )
+                YY = MAX( YY, 1.0d0 )
+                CC = MIN( INT( XX ), NCOLS1-1 )
+                RR = MIN( INT( YY ), NROWS1-1 )
                 J  = C + NCOLS2 * ( R - 1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
                 IX2( J ) = CC + NCOLS1 * ( RR - 1 )
                 PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
                 PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
@@ -1380,6 +1046,18 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END DO          !  end traversal of input grid
 
         ELSE
+
+!$OMP        PARALLEL DO                                                &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NROWS2, NCOLS2, X0, Y0, X1, Y1, X2, Y2,       &
+!$OMP&                    DDX1, DDY1, XLOC2, YLOC2, NCOLS1, NROWS1,     &
+!$OMP&                    IX2, PX2, PY2,                                &
+!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&           PRIVATE( C, R, XX, YY, J, CC, RR, CRDIN, CRDIO,        &
+!$OMP&                    LENGTH, IFLG, MESG ),                         &
+!$OMP&         REDUCTION( .OR.:  EFLAG )
 
             DO  R = 1, NROWS2
             DO  C = 1, NCOLS2
@@ -1406,11 +1084,11 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 XX = DDX1 * ( CRDIO( 1 ) - X1 )
                 YY = DDY1 * ( CRDIO( 2 ) - Y1 )
+                XX = MAX( XX, 1.0d0 )
+                YY = MAX( YY, 1.0d0 )
+                CC = MIN( INT( XX ), NCOLS1-1 )
+                RR = MIN( INT( YY ), NROWS1-1 )
                 J  = C + NCOLS2 * ( R - 1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
                 IX2( J ) = CC + NCOLS1 * ( RR - 1 )
                 PX2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
                 PY2( J ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
@@ -1452,177 +1130,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL   , INTENT(  OUT) :: PX2( NPNTS2 )
         REAL   , INTENT(  OUT) :: PY2( NPNTS2 )
 
-        !!........  PARAMETERs and their descriptions:
-
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/PNTS2INDX1'
-        CHARACTER*16, PARAMETER ::  BLANK = ' '
-        CHARACTER*80, PARAMETER ::  BAR   = &
-      '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
-
-
-        !!........  Local Variables and their descriptions:
-
-        INTEGER     C, R, CC, RR, J, K
-        LOGICAL     EFLAG
-        REAL*8      X0, Y0, X1, Y1, X2, Y2, DDX1, DDY1, XX, YY
-
-        CHARACTER*512   MESG
-
-        !!   Arguments for GTPZ0:
-
-        REAL*8          CRDIN( 2 )      !  input coordinates x,y
-        INTEGER*4       INSYS           !  input projection code
-        INTEGER*4       INZONE          !  input utm ZONE, etc.
-        REAL*8          TPAIN( 15 )     !  input projection parameters
-        INTEGER*4       INUNIT          !  input units code
-        INTEGER*4       INSPH           !  spheroid code
-        INTEGER*4       IPR             !  error print flag
-        INTEGER*4       JPR             !  projection parameter print flag
-        INTEGER*4       LEMSG           !  error message unit number
-        INTEGER*4       LPARM           !  projection parameter unit number
-        REAL*8          CRDIO( 2 )      !  output coordinates x,y
-        INTEGER*4       IOSYS           !  output projection code
-        INTEGER*4       IOZONE          !  output utm ZONE, etc.
-        REAL*8          TPOUT( 15 )     !  output projection parameters
-        INTEGER*4       IOUNIT          !  output units code
-        INTEGER*4       LN27            !  NAD1927 file unit number
-        INTEGER*4       LN83            !  NAD1983 file unit number
-        CHARACTER*128   FN27            !  NAD1927 file name
-        CHARACTER*128   FN83            !  NAD1983 file name
-        INTEGER*4       LENGTH          !  NAD* record-length
-        INTEGER*4       IFLG            !  error flag
-
-
-        !!........  Body  ......................................................
-
-        !!...............  Next, calculate Lat-Lon for PNTS2 cell-centers
-        !!...............  Set up arguments for call to GTP0:
-
-        EFLAG = .FALSE.
-
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
-
-!$OMP        PARALLEL DO                                                    &
-!$OMP&           DEFAULT( NONE ),                                           &
-!$OMP&            SHARED( NPNTS2, X1, Y1, X2, Y2, DDX1, DDY1,               &
-!$OMP&                    NCOLS1, NROWS1, XPNTS2, YPNTS2, IX2, PX2, PY2 ),  &
-!$OMP&           PRIVATE( K, XX, YY, CC, RR )
-
-            DO  K = 1, NPNTS2
-
-                XX = DDX1 * ( XPNTS2( K ) - X1 )
-                YY = DDY1 * ( YPNTS2( K ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
-                IX2( K ) = CC + NCOLS1 * ( RR - 1 )
-                PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-                PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-
-            END DO          !  end traversal of input PNTS
-
-            RETURN
-
-        END IF
-
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
-
-        IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
-        IOUNIT = 4              !!  output units:  degrees
-
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
-                            TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
-            EFLAG = .TRUE.
-            WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output PNTS type', GDTYP2, 'not supported'
-            CALL M3MESG( MESG )
-        END IF  ! if non-Lam PNTS (etc...) for GTP0 input
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
-                            TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Input PNTS type', GDTYP1,'not supported'
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        END IF  ! if non-Lam PNTS (etc...) for GTP0 input
-
-        IF ( .NOT. INITSPHERES() ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/INITSPHERES() failure'
-            CALL M3MESG( MESG )
-        ELSE IF ( .NOT. SPHEREDAT( INSPH, TPAIN, TPOUT ) ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/SPHEREDAT() failure'
-            CALL M3MESG( MESG )
-        END IF
-
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
-
-        !!...............  Compute transform, indices, and coefficients:
-
-        X1 = XORIG1 - 0.5D0 * XCELL1
-        Y1 = YORIG1 -0.5D0 *  YCELL1
-        X2 = DBLE( NCOLS1 )
-        Y2 = DBLE( NROWS1 )
-
-!$OMP   PARALLEL DO                                                     &
-!$OMP&      DEFAULT( NONE ),                                            &
-!$OMP&       SHARED( NPNTS2, X1, Y1, X2, Y2, DDX1, DDY1,                &
-!$OMP&               NCOLS1, NROWS1, XPNTS2, YPNTS2, IX2, PX2, PY2,     &
-!$OMP&               INSYS, INZONE, TPAIN, INUNIT, INSPH, IPR, JPR,     &
-!$OMP&               LEMSG, LPARM, IOSYS, IOZONE,TPOUT, IOUNIT,         &
-!$OMP&               LN27, LN83, FN27, FN83, LENGTH ),                  &
-!$OMP&      PRIVATE( K, XX, YY, CC, RR, CRDIN, CRDIO, IFLG, MESG )      &
-!$OMP&    REDUCTION( .OR.:  EFLAG )
-
-        DO  K = 1, NPNTS2
-
-            CRDIN( 1 ) = XPNTS2( K )
-            CRDIN( 2 ) = XPNTS2( K )
-
-!$OMP       CRITICAL( S_GTPZ0 )
-            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                        LENGTH, IFLG )
-!$OMP       END CRITICAL( S_GTPZ0 )
-
-            IF ( IFLG .NE. 0 ) THEN
-                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                WRITE( MESG, '( A, I3, 2X, A, I9, A )' )        &
-                   'Failure:  status ', IFLG,                   &
-                   'in GTPZ0 at k=(', K, ')'
-                EFLAG = .TRUE.
-                CALL M3MESG( MESG )
-                CYCLE
-            END IF
-
-            XX = DDX1 * ( CRDIO( 1 ) - X1 )
-            YY = DDY1 * ( CRDIO( 2 ) - Y1 )
-            XX = MIN( MAX( 1.0D0, XX ), X2 )
-            YY = MIN( MAX( 1.0D0, YY ), Y2 )
-            CC = INT( XX )
-            RR = INT( YY )
-            IX2( K ) = CC + NCOLS1 * ( RR - 1 )
-            PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-            PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
-
-        END DO          !  end traversal of input PNTS
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Input-PNTS coord-transform error(s)', 2 )
-        END IF
-
+        CALL PNTS2INDX2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, DBLE(KSPH),    &
+                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, DBLE(KSPH),    &
+                         NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,                &
+                         NPNTS2, XPNTS2, YPNTS2,                                        &
+                         IX2, PX2, PY2 )
+ 
         RETURN
 
 
@@ -1635,7 +1148,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     SUBROUTINE PNTS2INDX2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,  &
                            GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2,  &
                            NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,          &
-                           NPNTS2, XPNTS2, YPNTS2,                              &
+                           NPNTS2, XPNTS2, YPNTS2,                                  &
                            IX2, PX2, PY2 )
 
         !!........  Arguments and their descriptions:
@@ -1657,7 +1170,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  PARAMETERs and their descriptions:
 
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/PNTS2INDX2'
+        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/PNTS2INDX'
         CHARACTER*16, PARAMETER ::  BLANK = ' '
         CHARACTER*80, PARAMETER ::  BAR   = &
       '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
@@ -1701,6 +1214,13 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!........  Body  ......................................................
 
+        DDX1 = 1.0d0 / XCELL1
+        DDY1 = 1.0d0 / YCELL1
+        X1 = XORIG1 - 0.5D0 * XCELL1
+        Y1 = YORIG1 - 0.5D0 * YCELL1
+        X2 = DBLE( NCOLS1 )
+        Y2 = DBLE( NROWS1 )
+
         IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
 
@@ -1714,10 +1234,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 XX = DDX1 * ( XPNTS2( K ) - X1 )
                 YY = DDY1 * ( YPNTS2( K ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
+                XX = MAX( XX, 1.0d0 )
+                YY = MAX( YY, 1.0d0 )
+                CC = MIN( INT( XX ), NCOLS1-1 )
+                RR = MIN( INT( YY ), NROWS1-1 )
                 IX2( K ) = CC + NCOLS1 * ( RR - 1 )
                 PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
                 PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
@@ -1733,41 +1253,23 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         !!...............  Next, calculate Lat-Lon for PNTS2 cell-centers
         !!...............  Set up arguments for call to GTP0:
 
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
+        TPOUT   = 0.0D0
+        TPOUT(1)= RADE19
+        IPR     = 0              !!  print error messages, if any
+        JPR     = 1              !!  do NOT print projection parameters
+        LEMSG   = INIT3()        !!  unit number for log file
+        LPARM   = LEMSG          !!  projection parameters file
 
         IOSYS  = 0              !!  geographic coords (=Lat-Lon)
         IOZONE = 0
         IOUNIT = 4              !!  output units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2, SPHER2,    &
                             TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output PNTS type', GDTYP2, 'not supported'
             CALL M3MESG( MESG )
-        END IF
-
-        !!...............  Sphere adjustment:
-
-        INSPH = NINT( SPHER2 )
-
-        IF ( SPHER2 .GT. 19.5d0 ) THEN
-            INSPH    = -1
-            TPAIN(1) = SPHER2
-        ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  SPHER2 < 0' )
-        ELSE IF ( DBLERR( SPHER2, DBLE( INSPH ) ) ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  non-integer SPHER2 ' )
-        END IF
-
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
+             CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
         END IF
 
 
@@ -1787,6 +1289,16 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END DO          !  end traversal of input PNTS
 
         ELSE
+
+!$OMP        PARALLEL DO                                                &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NPNTS2, XPNTS2, YPNTS2, XLOC2, YLOC2,         &
+!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&           PRIVATE( C, R, XX, YY, J, CC, RR, CRDIN, CRDIO,        &
+!$OMP&                    LENGTH, IFLG, MESG ),                         &
+!$OMP&         REDUCTION( .OR.:  EFLAG )
 
             DO  K = 1, NPNTS2
 
@@ -1824,50 +1336,28 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         !!...............  Then compute PNTS1 coords for PNTS2 cell-centers
 
-        TPAIN = 0.0D0       !!  array assignment
-        IPR   = 0           !!  print error messages, if any
-        JPR   = 1           !!  do NOT print projection parameters
-        LEMSG = INIT3()     !!  unit number for log file
-        LPARM = LEMSG       !!  projection parameters file
+        TPAIN   = 0.0D0     !!  array assignment
+        TPAIN(1)= RADE19
+        IPR     = 0         !!  print error messages, if any
+        JPR     = 1         !!  do NOT print projection parameters
+        LEMSG   = INIT3()   !!  unit number for log file
+        LPARM   = LEMSG     !!  projection parameters file
 
         INSYS  = 0          !!  geographic (=Lat-Lon)
         INZONE = 0
         INUNIT = 4          !!  input units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
+        IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1, SPHER1,     &
                             TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-
             MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
             CALL M3MSG2( MESG )
             WRITE( MESG, '( A, I6, 2X, A, A )' ) 'PNTS type', GDTYP1,'not supported'
             CALL M3MESG( MESG )
-
-        END IF  ! if non-Lam PNTS (etc...) for GTP0 input
-
-        INSPH = NINT( SPHER1 )
-
-        IF ( SPHER1 .GT. 19.5d0 ) THEN
-            INSPH    = -2
-            TPAIN(1) = SPHER1
-        ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  SPHER1 < 0' )
-        ELSE IF ( DBLERR( SPHER1, DBLE( INSPH ) ) ) THEN
-            EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  non-integer SPHER1 ' )
-        END IF
-
-        IF ( EFLAG ) THEN
             CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
         END IF
 
 
         !!...............  Compute transform; indices and coefficients
-
-        X1 = XORIG1 - 0.5D0 * XCELL1
-        Y1 = YORIG1 - 0.5D0 * YCELL1
-        X2 = DBLE( NCOLS1 )
-        Y2 = DBLE( NROWS1 )
 
         IF ( GDTYP1 .EQ. LATGRD3 ) THEN
 
@@ -1881,10 +1371,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 XX = DDX1 * ( XLOC2( K ) - X1 )
                 YY = DDY1 * ( YLOC2( K ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
+                XX = MAX( XX, 1.0d0 )
+                YY = MAX( YY, 1.0d0 )
+                CC = MIN( INT( XX ), NCOLS1-1 )
+                RR = MIN( INT( YY ), NROWS1-1 )
                 IX2( K ) = CC + NCOLS1 * ( RR - 1 )
                 PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
                 PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
@@ -1892,6 +1382,17 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             END DO          !  end traversal of input PNTS
 
         ELSE
+
+!$OMP        PARALLEL DO                                                &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NPNTS2, X1, Y1, X2, Y2, DDX1, DDY1,           &
+!$OMP&                    XLOC2, YLOC2, NCOLS1, NROWS1, IX2, PX2, PY2,  &
+!$OMP&                    INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
+!$OMP&                    IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
+!$OMP&                    IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
+!$OMP&           PRIVATE( C, R, XX, YY, J, CC, RR, CRDIN, CRDIO,        &
+!$OMP&                    LENGTH, IFLG, MESG ),                         &
+!$OMP&         REDUCTION( .OR.:  EFLAG )
 
             DO  K = 1, NPNTS2
 
@@ -1917,10 +1418,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
                 XX = DDX1 * ( CRDIO( 1 ) - X1 )
                 YY = DDY1 * ( CRDIO( 2 ) - Y1 )
-                XX = MIN( MAX( 1.0D0, XX ), X2 )
-                YY = MIN( MAX( 1.0D0, YY ), Y2 )
-                CC = INT( XX )
-                RR = INT( YY )
+                XX = MAX( XX, 1.0d0 )
+                YY = MAX( YY, 1.0d0 )
+                CC = MIN( INT( XX ), NCOLS1-1 )
+                RR = MIN( INT( YY ), NROWS1-1 )
                 IX2( K ) = CC + NCOLS1 * ( RR - 1 )
                 PX2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
                 PY2( K ) = SNGL( 1.0D0 - MOD( XX, 1.0D0 ) )
@@ -1957,6 +1458,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER     I, ILL, ILR, IUL, IUR
         REAL        ALL, ALR, AUL, AUR, PX, PY, QX, QY
 
+        !!........  Body  ......................................................
+
 !$OMP    PARALLEL DO                                                        &
 !$OMP&       DEFAULT( NONE ),                                               &
 !$OMP&        SHARED( NSIZE1, IX1, PX1, PY1, NCOLS2, NROWS2, GR1, GR2 ),    &
@@ -1965,6 +1468,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         DO I = 1, NSIZE1
             ILL = IX1( I )
+            IF ( ILL .LT. 0 ) THEN
+                GR1( I ) = BADVAL3
+                CYCLE
+            END IF
             ILR = ILL + 1
             IUL = ILL + NCOLS2
             IUR = ILL + NCOLS2 + 1
@@ -1979,7 +1486,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             AUL = PX * QY
             AUR = QX * QY
 
-            GR1( ILL ) = ALL * GR2(ILL) + ALR * GR2(ILR) + AUL * GR2(IUL) + AUR * GR2(IUR)
+            GR1( I ) = ALL * GR2(ILL) + ALR * GR2(ILR) + AUL * GR2(IUL) + AUR * GR2(IUR)
         END DO
 
         RETURN
@@ -2005,6 +1512,42 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER     I, L, ILL, ILR, IUL, IUR
         REAL        ALL, ALR, AUL, AUR, PX, PY, QX, QY
 
+        !!........  Body  ......................................................
+
+        IF ( NLAYS .EQ. 1 ) THEN
+
+!$OMP        PARALLEL DO                                                &
+!$OMP&           DEFAULT( NONE ),                                       &
+!$OMP&            SHARED( NLAYS, NSIZE1, IX1, PX1, PY1,                 &
+!$OMP&                    NCOLS2, NROWS2, GR1, GR2 ),                   &
+!$OMP&           PRIVATE( I, ILL, ILR, IUL, IUR, PX, QX, PY, QY,        &
+!$OMP&                    ALL, ALR, AUL, AUR )
+
+            DO I = 1, NSIZE1
+                ILL = IX1( I )
+                IF ( ILL .LT. 0 ) THEN
+                    GR1( I,1 ) = BADVAL3
+                    CYCLE
+                END IF
+                ILR = ILL + 1
+                IUL = ILL + NCOLS2
+                IUR = ILL + NCOLS2 + 1
+
+                PX = PX1( I )
+                QX = 1.0 - PX
+                PY = PY1( I )
+                QY = 1.0 - PY
+
+                ALL = PX * PY
+                ALR = QX * PY
+                AUL = PX * QY
+                AUR = QX * QY
+
+                GR1( I,1 ) = ALL * GR2(ILL,1) + ALR * GR2(ILR,1) + AUL * GR2(IUL,1) + AUR * GR2(IUR,1)
+            END DO
+
+        ELSE
+
 !$OMP        PARALLEL DO                                                &
 !$OMP&           DEFAULT( NONE ),                                       &
 !$OMP&            SHARED( NLAYS, NSIZE1, IX1, PX1, PY1,                 &
@@ -2012,26 +1555,32 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !$OMP&           PRIVATE( L, I, ILL, ILR, IUL, IUR, PX, QX, PY, QY,     &
 !$OMP&                    ALL, ALR, AUL, AUR )
 
-        DO L = 1, NLAYS
-        DO I = 1, NSIZE1
-            ILL = IX1( I )
-            ILR = ILL + 1
-            IUL = ILL + NCOLS2
-            IUR = ILL + NCOLS2 + 1
+            DO L = 1, NLAYS
+            DO I = 1, NSIZE1
+                ILL = IX1( I )
+                IF ( ILL .LT. 0 ) THEN
+                    GR1( I,L ) = BADVAL3
+                    CYCLE
+                END IF
+                ILR = ILL + 1
+                IUL = ILL + NCOLS2
+                IUR = ILL + NCOLS2 + 1
 
-            PX = PX1( I )
-            QX = 1.0 - PX
-            PY = PY1( I )
-            QY = 1.0 - PY
+                PX = PX1( I )
+                QX = 1.0 - PX
+                PY = PY1( I )
+                QY = 1.0 - PY
 
-            ALL = PX * PY
-            ALR = QX * PY
-            AUL = PX * QY
-            AUR = QX * QY
+                ALL = PX * PY
+                ALR = QX * PY
+                AUL = PX * QY
+                AUR = QX * QY
 
-            GR1( ILL,L ) = ALL * GR2(ILL,L) + ALR * GR2(ILR,L) + AUL * GR2(IUL,L) + AUR * GR2(IUR,L)
-        END DO
-        END DO
+                GR1( I,L ) = ALL * GR2(ILL,L) + ALR * GR2(ILR,L) + AUL * GR2(IUL,L) + AUR * GR2(IUR,L)
+            END DO
+            END DO
+
+        END IF
 
         RETURN
 
@@ -2120,8 +1669,14 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
             DO R = 1, NROWS1
             DO C = 1, NCOLS1
+
                 K  = C + ( R - 1) * NCOLS1
                 I  = IX1( K ) - 1
+                IF ( I .LT. 0 ) THEN
+                    GR1( C,R,1 ) = BADVAL3
+                    CYCLE
+                END IF
+
                 CC = 1 + MOD( I , NCOLS2 )
                 RR = 1 +      I / NCOLS2
 
@@ -2152,7 +1707,13 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DO L = 1, NLAYS
             DO R = 1, NROWS1
             DO C = 1, NCOLS1
+
                 K  = C + ( R - 1) * NCOLS1
+                IF ( IX1( K ) .LT. 0 ) THEN
+                    GR1( C,R,L ) = BADVAL3
+                    CYCLE
+                END IF
+
                 I  = IX1( K ) - 1
                 CC = 1 + MOD( I , NCOLS2 )
                 RR = 1 +      I / NCOLS2
@@ -2197,135 +1758,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL*8 , INTENT(  OUT) :: XLOC1
         REAL*8 , INTENT(  OUT) :: YLOC1
 
-        !!........  PARAMETERs and their descriptions:
-
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/XY2XY0D'
-        CHARACTER*16, PARAMETER ::  BLANK = ' '
-        CHARACTER*80, PARAMETER ::  BAR   = &
-      '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
-
-
-        !!........  Local Variables and their descriptions:
-
-        LOGICAL     EFLAG
-
-        CHARACTER*512   MESG
-
-        !!   Arguments for GTPZ0:
-
-        REAL*8          CRDIN( 2 )      !  input coordinates x,y
-        INTEGER*4       INSYS           !  input projection code
-        INTEGER*4       INZONE          !  input utm ZONE, etc.
-        REAL*8          TPAIN( 15 )     !  input projection parameters
-        INTEGER*4       INUNIT          !  input units code
-        INTEGER*4       INSPH           !  spheroid code
-        INTEGER*4       IPR             !  error print flag
-        INTEGER*4       JPR             !  projection parameter print flag
-        INTEGER*4       LEMSG           !  error message unit number
-        INTEGER*4       LPARM           !  projection parameter unit number
-        REAL*8          CRDIO( 2 )      !  output coordinates x,y
-        INTEGER*4       IOSYS           !  output projection code
-        INTEGER*4       IOZONE          !  output utm ZONE, etc.
-        REAL*8          TPOUT( 15 )     !  output projection parameters
-        INTEGER*4       IOUNIT          !  output units code
-        INTEGER*4       LN27            !  NAD1927 file unit number
-        INTEGER*4       LN83            !  NAD1983 file unit number
-        CHARACTER*128   FN27            !  NAD1927 file name
-        CHARACTER*128   FN83            !  NAD1983 file name
-        INTEGER*4       LENGTH          !  NAD* record-length
-        INTEGER*4       IFLG            !  error flag
-
-
-        !!........  Body  ......................................................
-
-        IF ( XLOC2 .LT. AMISSD .OR. YLOC2 .LT. AMISSD ) THEN
-
-            XLOC1 = BADVALD
-            YLOC1 = BADVALD
-            RETURN
-
-        ELSE IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                            GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
-
-            XLOC1 = XLOC2
-            YLOC1 = YLOC2
-            RETURN
-
-        END IF
-
-        !!...............  Calculate Lat-Lon:
-        !!...............  Set up arguments for call to GTP0:
-
-        EFLAG = .FALSE.
-
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
-
-        IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
-        IOUNIT = 4              !!  output units:  degrees
-
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
-                            TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
-            EFLAG = .TRUE.
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output grid type', GDTYP2, 'not supported'
-            CALL M3MESG( MESG )
-        END IF
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
-                            TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP1,'not supported'
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT. INITSPHERES() ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/INITSPHERES() failure'
-            CALL M3MESG( MESG )
-        ELSE IF ( .NOT. SPHEREDAT( INSPH, TPAIN, TPOUT ) ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/SPHEREDAT() failure'
-            CALL M3MESG( MESG )
-        END IF
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
-
-        !!...............  Compute transforms:
-
-        CRDIN( 1 ) = XLOC2
-        CRDIN( 2 ) = YLOC2
-
-        CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                    IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                    TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                    LENGTH, IFLG )
-
-        IF ( IFLG .NE. 0 ) THEN
-            IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-            WRITE( MESG, '( A, I3, 2X, A )' )   &
-               'Failure:  status ', IFLG, 'in GTPZ0'
-            EFLAG = .TRUE.
-            CALL M3MESG( MESG )
-        END IF
-
-        XLOC1 = CRDIO( 1 )
-        YLOC1 = CRDIO( 2 )
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'GRID2::GRID1 coord-transform error(s)', 2 )
-        END IF
-
-
+        CALL XY2XY0D2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, DBLE(KSPH),  &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, DBLE(KSPH),  &
+                       XLOC2, YLOC2, XLOC1, YLOC1 )
+ 
         RETURN
 
 
@@ -2420,7 +1856,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IOZONE = 0
         IOUNIT = 4              !!  output units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
                             TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
@@ -2433,7 +1869,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5d0 ) THEN
+        IF ( SPHER2 .GT. 21.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
         ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
@@ -2497,7 +1933,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INZONE = 0
         INUNIT = 4           !!  input units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 71, P_ALP1, P_BET1, P_GAM1, YCENT1,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1,    &
                             TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             MESG  = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
@@ -2508,7 +1944,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5d0 ) THEN
+        IF ( SPHER1 .GT. 21.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
         ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
@@ -2573,160 +2009,9 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL*8 , INTENT(  OUT) :: XLOC1( NPTS )
         REAL*8 , INTENT(  OUT) :: YLOC1( NPTS )
 
-        !!........  PARAMETERs and their descriptions:
-
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/XY2XY1D'
-        CHARACTER*16, PARAMETER ::  BLANK = ' '
-        CHARACTER*80, PARAMETER ::  BAR   = &
-      '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
-
-
-        !!........  Local Variables and their descriptions:
-
-        INTEGER     K
-        LOGICAL     EFLAG
-
-        CHARACTER*512   MESG
-
-        !!   Arguments for GTPZ0:
-
-        REAL*8          CRDIN( 2 )      !  input coordinates x,y
-        INTEGER*4       INSYS           !  input projection code
-        INTEGER*4       INZONE          !  input utm ZONE, etc.
-        REAL*8          TPAIN( 15 )     !  input projection parameters
-        INTEGER*4       INUNIT          !  input units code
-        INTEGER*4       INSPH           !  spheroid code
-        INTEGER*4       IPR             !  error print flag
-        INTEGER*4       JPR             !  projection parameter print flag
-        INTEGER*4       LEMSG           !  error message unit number
-        INTEGER*4       LPARM           !  projection parameter unit number
-        REAL*8          CRDIO( 2 )      !  output coordinates x,y
-        INTEGER*4       IOSYS           !  output projection code
-        INTEGER*4       IOZONE          !  output utm ZONE, etc.
-        REAL*8          TPOUT( 15 )     !  output projection parameters
-        INTEGER*4       IOUNIT          !  output units code
-        INTEGER*4       LN27            !  NAD1927 file unit number
-        INTEGER*4       LN83            !  NAD1983 file unit number
-        CHARACTER*128   FN27            !  NAD1927 file name
-        CHARACTER*128   FN83            !  NAD1983 file name
-        INTEGER*4       LENGTH          !  NAD* record-length
-        INTEGER*4       IFLG            !  error flag
-
-
-        !!........  Body  ......................................................
-
-        !!...............  Calculate Lat-Lon:
-        !!...............  Set up arguments for call to GTP0:
-
-        EFLAG = .FALSE.
-
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
-
-!$OMP        PARALLEL DO                                            &
-!$OMP&           DEFAULT( NONE ),                                   &
-!$OMP&            SHARED( NPTS, XLOC1, YLOC1, XLOC2, YLOC2 ),       &
-!$OMP&           PRIVATE( K )
-
-            DO  K = 1, NPTS
-
-                XLOC1( K ) = XLOC2( K )
-                YLOC1( K ) = YLOC2( K )
-
-            END DO
-
-            RETURN
-
-        END IF
-
-
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
-
-        IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
-        IOUNIT = 4              !!  output units:  degrees
-
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
-                            TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
-            EFLAG = .TRUE.
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output grid type', GDTYP2, 'not supported'
-            CALL M3MESG( MESG )
-        END IF
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
-                            TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP1,'not supported'
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT. INITSPHERES() ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/INITSPHERES() failure'
-            CALL M3MESG( MESG )
-        ELSE IF ( .NOT. SPHEREDAT( INSPH, TPAIN, TPOUT ) ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/SPHEREDAT() failure'
-            CALL M3MESG( MESG )
-        END IF
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
-
-        !!...............  Compute transforms:
-
-!$OMP   PARALLEL DO                                                 &
-!$OMP&       DEFAULT( NONE ),                                       &
-!$OMP&        SHARED( NPTS, XLOC1, YLOC1, XLOC2, YLOC2,             &
-!$OMP&                INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
-!$OMP&                IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
-!$OMP&                IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
-!$OMP&       PRIVATE( K, CRDIN, CRDIO, LENGTH, IFLG, MESG ),        &
-!$OMP&     REDUCTION( .OR.:  EFLAG )
-
-        DO K = 1, NPTS
-
-            CRDIN( 1 ) = XLOC2( K )
-            CRDIN( 2 ) = YLOC2( K )
-
-            IF ( XLOC2( K ) .LT. AMISSD .OR. YLOC2( K ) .LT. AMISSD ) THEN
-                XLOC1( K ) = BADVALD
-                YLOC1( K ) = BADVALD
-                CYCLE
-            END IF
-
-!$OMP       CRITICAL( S_GTPZ0 )
-            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                        LENGTH, IFLG )
-!$OMP       END CRITICAL( S_GTPZ0 )
-
-            IF ( IFLG .NE. 0 ) THEN
-                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                WRITE( MESG, '( A, I3, 2X, A, I4 )' )   &
-                   'Failure:  status ', IFLG, 'in GTPZ0 at K=', K
-                EFLAG = .TRUE.
-                CALL M3MESG( MESG )
-            END IF
-
-            XLOC1( K ) = CRDIO( 1 )
-            YLOC1( K ) = CRDIO( 2 )
-
-        END DO
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'GRID2::GRID1 coord-transform error(s)', 2 )
-        END IF
+        CALL XY2XY1D2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, DBLE(KSPH),  &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, DBLE(KSPH),  &
+                       NPTS, XLOC2, YLOC2, XLOC1, YLOC1 )
 
         RETURN
 
@@ -2827,7 +2112,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IOZONE = 0
         IOUNIT = 4              !!  output units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
                             TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
@@ -2840,7 +2125,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5d0 ) THEN
+        IF ( SPHER2 .GT. 21.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
         ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
@@ -2934,7 +2219,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INZONE = 0
         INUNIT = 4           !!  input units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 71, P_ALP1, P_BET1, P_GAM1, YCENT1,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1,    &
                             TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             MESG  = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
@@ -2945,7 +2230,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5d0 ) THEN
+        IF ( SPHER1 .GT. 21.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
         ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
@@ -3031,163 +2316,9 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         REAL*8 , INTENT(  OUT) :: XLOC1( NCOLS,NROWS )
         REAL*8 , INTENT(  OUT) :: YLOC1( NCOLS,NROWS )
 
-        !!........  PARAMETERs and their descriptions:
-
-        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/XY2XY2D'
-        CHARACTER*16, PARAMETER ::  BLANK = ' '
-        CHARACTER*80, PARAMETER ::  BAR   = &
-      '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
-
-
-        !!........  Local Variables and their descriptions:
-
-        INTEGER     C, R
-        LOGICAL     EFLAG
-
-        CHARACTER*512   MESG
-
-        !!   Arguments for GTPZ0:
-
-        REAL*8          CRDIN( 2 )      !  input coordinates x,y
-        INTEGER*4       INSYS           !  input projection code
-        INTEGER*4       INZONE          !  input utm ZONE, etc.
-        REAL*8          TPAIN( 15 )     !  input projection parameters
-        INTEGER*4       INUNIT          !  input units code
-        INTEGER*4       INSPH           !  spheroid code
-        INTEGER*4       IPR             !  error print flag
-        INTEGER*4       JPR             !  projection parameter print flag
-        INTEGER*4       LEMSG           !  error message unit number
-        INTEGER*4       LPARM           !  projection parameter unit number
-        REAL*8          CRDIO( 2 )      !  output coordinates x,y
-        INTEGER*4       IOSYS           !  output projection code
-        INTEGER*4       IOZONE          !  output utm ZONE, etc.
-        REAL*8          TPOUT( 15 )     !  output projection parameters
-        INTEGER*4       IOUNIT          !  output units code
-        INTEGER*4       LN27            !  NAD1927 file unit number
-        INTEGER*4       LN83            !  NAD1983 file unit number
-        CHARACTER*128   FN27            !  NAD1927 file name
-        CHARACTER*128   FN83            !  NAD1983 file name
-        INTEGER*4       LENGTH          !  NAD* record-length
-        INTEGER*4       IFLG            !  error flag
-
-
-        !!........  Body  ......................................................
-
-        !!...............  Calculate Lat-Lon:
-        !!...............  Set up arguments for call to GTP0:
-
-        EFLAG = .FALSE.
-
-        IF ( SAMEPROJ( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,      &
-                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2 ) ) THEN
-
-!$OMP        PARALLEL DO                                                &
-!$OMP&           DEFAULT( NONE ),                                       &
-!$OMP&            SHARED( NCOLS, NROWS, XLOC1, YLOC1, XLOC2, YLOC2 ),   &
-!$OMP&           PRIVATE( C, R )
-
-            DO  R = 1, NROWS
-            DO  C = 1, NCOLS
-
-                XLOC1( C,R ) = XLOC2( C,R )
-                YLOC1( C,R ) = YLOC2( C,R )
-
-            END DO
-            END DO
-
-            RETURN
-
-        END IF
-
-        TPOUT = 0.0D0
-        IPR    = 0              !!  print error messages, if any
-        JPR    = 1              !!  do NOT print projection parameters
-        LEMSG  = INIT3()        !!  unit number for log file
-        LPARM  = LEMSG          !!  projection parameters file
-
-        IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
-        IOUNIT = 4              !!  output units:  degrees
-
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
-                            TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
-            EFLAG = .TRUE.
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Output grid type', GDTYP2, 'not supported'
-            CALL M3MESG( MESG )
-        END IF
-
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 80, P_ALP1, P_BET1, P_GAM1, YCENT1,     &
-                            TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
-            MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP1,'not supported'
-            CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT. INITSPHERES() ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/INITSPHERES() failure'
-            CALL M3MESG( MESG )
-        ELSE IF ( .NOT. SPHEREDAT( INSPH, TPAIN, TPOUT ) ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/SPHEREDAT() failure'
-            CALL M3MESG( MESG )
-        END IF
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
-        END IF
-
-
-        !!...............  Compute transforms:
-
-!$OMP   PARALLEL DO                                                 &
-!$OMP&       DEFAULT( NONE ),                                       &
-!$OMP&        SHARED( NCOLS, NROWS, XLOC1, YLOC1, XLOC2, YLOC2,     &
-!$OMP&                INSYS, INZONE, TPAIN, INUNIT, INSPH,          &
-!$OMP&                IOSYS, IOZONE, TPOUT, IOUNIT, LPARM,          &
-!$OMP&                IPR, JPR, LEMSG, LN27, LN83, FN27, FN83 ),    &
-!$OMP&       PRIVATE( C, R, CRDIN, CRDIO, LENGTH, IFLG, MESG ),     &
-!$OMP&     REDUCTION( .OR.:  EFLAG )
-
-        DO  R = 1, NROWS
-        DO  C = 1, NCOLS
-
-            CRDIN( 1 ) = XLOC2( C,R )
-            CRDIN( 2 ) = YLOC2( C,R )
-
-            IF ( CRDIN( 1 ) .LT. AMISSD .OR. CRDIN( 2 ) .LT. AMISSD ) THEN
-                XLOC1( C,R ) = BADVALD
-                YLOC1( C,R ) = BADVALD
-                CYCLE
-            END IF
-
-!$OMP       CRITICAL( S_GTPZ0 )
-            CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
-                        IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
-                        TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
-                        LENGTH, IFLG )
-!$OMP       END CRITICAL( S_GTPZ0 )
-
-            IF ( IFLG .NE. 0 ) THEN
-                IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
-                WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' )   &
-                   'Failure:  status ', IFLG, 'in GTPZ0 at (C,R)=(', C, ',', R, ')'
-                EFLAG = .TRUE.
-                CALL M3MESG( MESG )
-            END IF
-
-            XLOC1( C,R ) = CRDIO( 1 )
-            YLOC1( C,R ) = CRDIO( 2 )
-
-        END DO
-        END DO
-
-        IF ( EFLAG ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'GRID2::GRID1 coord-transform error(s)', 2 )
-        END IF
+        CALL XY2XY2D2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, DBLE(KSPH),  &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, DBLE(KSPH),  &
+                       NCOLS, NROWS, XLOC2, YLOC2, XLOC1, YLOC1 )
 
         RETURN
 
@@ -3269,7 +2400,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         IOZONE = 0
         IOUNIT = 4              !!  output units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP2, 70, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2,    &
                             TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
@@ -3282,7 +2413,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER2 )
 
-        IF ( SPHER2 .GT. 19.5d0 ) THEN
+        IF ( SPHER2 .GT. 21.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
         ELSE IF ( SPHER2 .LT. -0.05d0 ) THEN
@@ -3380,7 +2511,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INZONE = 0
         INUNIT = 4           !!  input units:  degrees
 
-        IF ( .NOT.M3TOGTPZ( GDTYP1, 71, P_ALP1, P_BET1, P_GAM1, YCENT1,    &
+        IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1,    &
                             TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
             EFLAG = .TRUE.
             MESG  = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
@@ -3391,7 +2522,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         INSPH = NINT( SPHER1 )
 
-        IF ( SPHER1 .GT. 19.5d0 ) THEN
+        IF ( SPHER1 .GT. 21.5d0 ) THEN
             INSPH    = -1
             TPAIN(1) = SPHER2
         ELSE IF ( SPHER1 .LT. -0.05d0 ) THEN
@@ -3465,7 +2596,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-    LOGICAL FUNCTION  M3TOGTPZ1( GDTYP, IZONE1, P_ALP, P_BET, P_GAM, YCENT,   &
+    LOGICAL FUNCTION  M3TOGTPZ1( GDTYP, IZONE1, P_ALP, P_BET, P_GAM, YCENT, &
                                  TPA, ISYS, IZONE, IUNIT, ISPH )
 
         INTEGER, INTENT(IN   ) :: GDTYP, IZONE1
@@ -3474,194 +2605,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         INTEGER, INTENT(  OUT) :: ISYS, IZONE, IUNIT
         INTEGER, INTENT(INOUT) :: ISPH
 
-        REAL*8      DSCR            !  scratch variables
-        INTEGER     DEG, MNT        !  scratch variables
-        LOGICAL     EFLAG
-
-        CHARACTER*512   MESG
-
-        !!..........   body   .........................................
-
-        EFLAG = .FALSE.
-        TPA   = 0.0D0           !  array assignment
-
-        IF ( GDTYP .EQ. LATGRD3 ) THEN
-
-            ISYS  = 0       !  geographic (=Lat-Lon)
-            IZONE = 0
-            IUNIT = 4       !  output units:  REAL degrees
-
-        ELSE IF ( GDTYP .EQ. LAMGRD3 ) THEN
-
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 3 ) = DSCR + 1000.0D0 * ( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_BET
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = YCENT
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            ISYS  = 4       !  Lambert conformal conic
-            IZONE = IZONE1 + 1
-            IUNIT = 2       !  input units:  meters
-
-        ELSE IF ( GDTYP .EQ. UTMGRD3 ) THEN
-
-            ISYS  = 1       !  Universal Transverse Mercator
-            IZONE = NINT( P_ALP )
-            IUNIT = 2       !  input units:  meters
-            ISPH  = 8       !  GRS 1980 spheroid
-
-        ELSE IF ( GDTYP .EQ. POLGRD3 ) THEN
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_BET
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            ISYS  = 6       !  Polar stereographic
-            IZONE = IZONE1 + 2
-            IUNIT = 2       !  input units:  meters
-
-        ELSE IF ( GDTYP .EQ. TRMGRD3 ) THEN
-
-            TPA( 3 ) = P_BET
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            ISYS  = 9       !  Transverse Mercator
-            IZONE = IZONE1 + 3
-            IUNIT = 2       !  input units:  meters
-
-        ELSE IF ( GDTYP .EQ. EQMGRD3 ) THEN
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0 * ( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            ISYS  = 5       !  Equatorial Mercator
-            IZONE = IZONE1 + 4
-            IUNIT = 2       !  input units:  meters
-
-        ELSE IF ( GDTYP .EQ. ALBGRD3 ) THEN
-
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 3 ) = DSCR + 1000.0D0 * ( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_BET
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            DSCR = YCENT
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            ISYS  = 3       !  Albers Conic Equal Area
-            IZONE = IZONE1 + 5
-            IUNIT = 2       !  input units:  meters
-
-        ELSE IF ( GDTYP .EQ. SINUGRD3 ) THEN
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            ISYS  = 16       !  Sinusoidal Equal Area
-            IZONE = IZONE1 + 5
-            IUNIT = 2       !  input units:  meters
-
-        ELSE
-
-            EFLAG = .TRUE.
-            MESG  = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
-            CALL M3MSG2( MESG )
-            WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP,'not supported'
-            CALL M3MESG( MESG )
-
-        END IF  ! if non-Lam grid (etc...) for GTP0 input
-
-        IF ( .NOT. INITSPHERES() ) THEN
-            EFLAG = .TRUE.
-            MESG  = 'SETSPHERE/INITSPHERES() failure'
-            CALL M3MESG( MESG )
-        ELSE
-            ISPH     = KSPH
-            TPA( 1 ) = AXISMAJ
-            TPA( 2 ) = AXISMIN
-        END IF
-
-        M3TOGTPZ1 = ( .NOT.EFLAG )
+        M3TOGTPZ1 =  M3TOGTPZ2( GDTYP, IZONE1, P_ALP, P_BET, P_GAM, YCENT,  &
+                                DBLE(KSPH),                                 &
+                                TPA, ISYS, IZONE, IUNIT, ISPH )
+        
 
         RETURN
 
@@ -3694,15 +2641,28 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ISPH = NINT( SPHER )
 
-        IF ( SPHER .GT. 19.5d0 ) THEN
-            ISPH   = -2
+        IF ( SPHER .GT. 21.5d0 ) THEN
+            ISPH   = -1
             TPA(1) = SPHER
+            TPA(2) = 0.0d0
         ELSE IF ( SPHER .LT. -0.05d0 ) THEN
             EFLAG = .TRUE.
             CALL M3MESG( 'Illegal sphere:  SPHER < 0' )
         ELSE IF ( DBLERR( SPHER, DBLE( ISPH ) ) ) THEN
             EFLAG = .TRUE.
-            CALL M3MESG( 'Illegal sphere:  non-integer SPHER ' )
+            CALL M3MESG( 'Illegal sphere:  non-integer SPHER2 ' )
+        ELSE IF ( ISPH .EQ. 21 ) THEN
+            ISPH   = -1
+            TPA(1) = RADE21
+            TPA(2) = 0.0d0
+        ELSE IF ( ISPH .EQ. 20 ) THEN
+            ISPH   = -1
+            TPA(1) = RADE20
+            TPA(2) = 0.0d0
+        ELSE IF ( ISPH .EQ. 19 ) THEN
+            ISPH   = -1
+            TPA(1) = RADE19
+            TPA(2) = 0.0d0
         END IF
 
         IF ( GDTYP .EQ. LATGRD3 ) THEN
@@ -3713,33 +2673,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ELSE IF ( GDTYP .EQ. LAMGRD3 ) THEN
 
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 3 ) = DSCR + 1000.0D0 * ( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_BET
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            DSCR = YCENT
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
+            TPA( 3 ) = DDDMMMSSS( P_ALP ) !  dddmmmsss.sssD0
+            TPA( 4 ) = DDDMMMSSS( P_BET ) !  dddmmmsss.sssD0
+            TPA( 5 ) = DDDMMMSSS( P_GAM ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DDDMMMSSS( YCENT ) !  dddmmmsss.sssD0
 
             ISYS  = 4       !  Lambert conformal conic
             IZONE = IZONE1 + 1
@@ -3754,19 +2691,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ELSE IF ( GDTYP .EQ. POLGRD3 ) THEN
 
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            DSCR = P_BET
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
+            TPA( 5 ) = DDDMMMSSS( P_GAM ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DDDMMMSSS( P_BET ) !  dddmmmsss.sssD0
 
             ISYS  = 6       !  Polar stereographic
             IZONE = IZONE1 + 2
@@ -3774,21 +2700,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ELSE IF ( GDTYP .EQ. TRMGRD3 ) THEN
 
-            TPA( 3 ) = P_BET
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
+            TPA( 5 ) = DDDMMMSSS( P_GAM ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DDDMMMSSS( P_ALP ) !  dddmmmsss.sssD0
 
             ISYS  = 9       !  Transverse Mercator
             IZONE = IZONE1 + 3
@@ -3796,19 +2709,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ELSE IF ( GDTYP .EQ. EQMGRD3 ) THEN
 
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0 * ( MNT + 1000*DEG ) !  dddmmmsss.sssD0
+            TPA( 5 ) = DDDMMMSSS( P_GAM ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DDDMMMSSS( P_ALP ) !  dddmmmsss.sssD0
 
             ISYS  = 5       !  Equatorial Mercator
             IZONE = IZONE1 + 4
@@ -3816,33 +2718,11 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ELSE IF ( GDTYP .EQ. ALBGRD3 ) THEN
 
-            DSCR = P_ALP
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 3 ) = DSCR + 1000.0D0 * ( MNT + 1000*DEG ) !  dddmmmsss.sssD0
 
-            DSCR = P_BET
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 4 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
-
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG ) !  dddmmmsss.sssD0
-
-            DSCR = YCENT
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 6 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
+            TPA( 3 ) = DDDMMMSSS( P_ALP ) !  dddmmmsss.sssD0
+            TPA( 4 ) = DDDMMMSSS( P_BET ) !  dddmmmsss.sssD0
+            TPA( 5 ) = DDDMMMSSS( P_GAM ) !  dddmmmsss.sssD0
+            TPA( 6 ) = DDDMMMSSS( YCENT ) !  dddmmmsss.sssD0
 
             ISYS  = 3       !  Albers Conic Equal Area
             IZONE = IZONE1 + 5
@@ -3850,12 +2730,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         ELSE IF ( GDTYP .EQ. SINUGRD3 ) THEN
 
-            DSCR = P_GAM
-            DEG  = INT( DSCR )                              !  int degrees
-            DSCR = 60.0D0 * ( DSCR - DBLE( DEG ) )          !  minutes
-            MNT  = INT( DSCR )                              !  int minutes
-            DSCR = 60.0D0 * ( DSCR - DBLE( MNT ) )          !  seconds
-            TPA( 5 ) = DSCR + 1000.0D0*( MNT + 1000*DEG )   !  dddmmmsss.sssD0
+            TPA( 6 ) = DDDMMMSSS( P_GAM ) !  dddmmmsss.sssD0
 
             ISYS  = 16      !  Sinusoidal Equal Area
             IZONE = IZONE1 + 5

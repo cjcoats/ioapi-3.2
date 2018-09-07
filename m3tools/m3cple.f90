@@ -2,7 +2,7 @@
 PROGRAM M3CPLE
 
     !!***********************************************************************
-    !! Version "$Id: m3cple.f90 77 2018-01-18 15:29:37Z coats $"
+    !! Version "$Id: m3cple.f90 108 2018-09-07 18:59:37Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
     !!   (C) 1995-2002,2005-2013, 2018- Carlie J. Coats, Jr.,
@@ -11,7 +11,7 @@ PROGRAM M3CPLE
     !!   Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!   See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  144
+    !!  program body starts at line  136
     !!
     !!  DESCRIPTION:
     !!       For each time step in the specified time step sequence,
@@ -53,6 +53,7 @@ PROGRAM M3CPLE
     !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
     !!       Version  01/2018 by CJC:  copy-operations for variables of
     !!       types M3INT, M3DBLE.
+    !!       Version  08/2018 by CJC:  fix coordinate-check error
     !!***********************************************************************
 
     USE M3UTILIO
@@ -129,15 +130,6 @@ PROGRAM M3CPLE
     INTEGER, ALLOCATABLE :: IBUF( :,: )
     REAL(8), ALLOCATABLE :: DBUF( :,: )
 
-
-    !!...........   STATEMENT FUNCTION:  REAL*8 "definitely unequal"
-
-    LOGICAL         DBLERR
-    REAL*8          P, Q
-
-    DBLERR( P, Q ) = ( (P - Q)**2  .GT.  1.0E-10*( P*P + Q*Q + 1.0E-5 ) )
-
-
     !!***********************************************************************
     !!   begin body of program M3CPLE
 
@@ -201,7 +193,7 @@ PROGRAM M3CPLE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3cple.f90 77 2018-01-18 15:29:37Z coats $',&
+'$Id: m3cple.f90 108 2018-09-07 18:59:37Z coats $',&
 ' '
 
         IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -435,13 +427,6 @@ PROGRAM M3CPLE
             WRITE( MESG, '( A, I10)' ) 'Buffer allocation failed:  STAT=', ISTAT
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         END IF
-
-        AFLAG = DBLERR( P_ALP1, P_ALP3D )
-        BFLAG = DBLERR( P_BET1, P_BET3D )
-        CFLAG = DBLERR( P_GAM1, P_GAM3D )
-        XFLAG = DBLERR( XCENT1, XCENT3D )
-        YFLAG = DBLERR( YCENT1, YCENT3D )
-        EFLAG = (AFLAG .OR. BFLAG .OR. CFLAG .OR. XFLAG .OR. YFLAG)
 
         CALL GRID2INDX( GDTYP1,P_ALP1,P_BET1,P_GAM1,XCENT1,YCENT1,     &
                         GDTYP2,P_ALP2,P_BET2,P_GAM2,XCENT2,YCENT2,     &

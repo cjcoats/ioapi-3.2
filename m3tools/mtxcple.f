@@ -2,7 +2,7 @@
         PROGRAM MTXCPLE
 
 C***********************************************************************
-C Version "$Id: mtxcple.f 96 2018-04-04 21:17:59Z coats $"
+C Version "$Id: mtxcple.f 108 2018-09-07 18:59:37Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -10,7 +10,7 @@ C (C) 2014-2018 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  128
+C  program body starts at line  143
 C
 C  DESCRIPTION:
 C       Reads sparse (grid-to-grid transform) matrix.
@@ -51,6 +51,27 @@ C***********************************************************************
       IMPLICIT NONE
 
 C...........   PARAMETERS and their descriptions:
+
+        INTEGER,      PARAMETER :: TYPES( 3 ) = 
+     &       (/ GRDDED3, BNDARY3, CUSTOM3 /)
+
+        CHARACTER*32, PARAMETER :: TMENU( 3 ) =
+     &       (/ 'Output file type GRIDDED  ',
+     &          'Output file type BOUNDARY ',
+     &          'Output file type CUSTOM   '    /)
+
+        CHARACTER*24, PARAMETER :: GTYPES( 0:10 ) =
+     &       (/ 'Unknown/Invalid       ',
+     &          'Latitude-Longitude    ',
+     &          'Lambert               ',
+     &          'General Mercator      ',
+     &          'General Stereographic ',
+     &          'UTM                   ',
+     &          'Polar Stereographic   ',
+     &          'Equatorial Mercator   ',
+     &          'Transverse Mercator   ',
+     &          'Albers Equal-Area     ',
+     &          'Unknown/Invalid       '    /)
 
        CHARACTER*16, PARAMETER :: PNAME = 'MTXCPLE'
 
@@ -110,12 +131,6 @@ C...........   LOCAL VARIABLES and their descriptions:
 
         INTEGER         JDATE, JTIME, TSTEP
         INTEGER         EDATE, ETIME, TSECS, NRECS
-
-        INTEGER::       TYPES( 3 ) = (/ GRDDED3, BNDARY3, CUSTOM3 /)
-        CHARACTER*72::  TMENU( 3 ) = (/
-     &          'Output file type GRIDDED  ',
-     &          'Output file type BOUNDARY ',
-     &          'Output file type CUSTOM   ' /)
 
         REAL,    ALLOCATABLE::   INBUF( :, :, : )
         REAL,    ALLOCATABLE::   OUTBUF( :, :, : )
@@ -186,7 +201,7 @@ C   begin body of program MTXCPLE
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: mtxcple.f 96 2018-04-04 21:17:59Z coats                 $',
+     &'$Id:: mtxcple.f 108 2018-09-07 18:59:37Z coats                $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -197,9 +212,8 @@ C   begin body of program MTXCPLE
 
 C...............  Open and get description for optional synch file
 
-        MESG = 'Enter name for input synch file, or "NONE"'
-        SNAME = PROMPTMFILE( MESG, FSREAD3,
-     &                       'SYNCH_FILE', PNAME )
+        MESG  = 'Enter name for input synch file, or "NONE"'
+        SNAME = PROMPTMFILE( MESG, FSREAD3, 'NONE', PNAME )
 
         CALL LUSTR( SNAME )
         SFLAG = ( SNAME .NE. 'NONE ' )
@@ -239,7 +253,6 @@ C...............  Open and get description for input matrix transform file
         NCOLSM = NCOLS3D
         NROWSM = NROWS3D
 
-
 C...............  Open and get description for input data file
 
         MESG  = 'Enter name for input data file'
@@ -278,6 +291,14 @@ C...............  Get output grid description, time step sequence
      &         '" to grid "'               // TRIM( GDNAM2 ) // '"'
         CALL M3MSG2( MESG )
 
+        IF ( TSTEP3D .EQ. 0 ) THEN
+            JDATE = 0
+            JTIME = 0
+            TSTEP = 0
+            NRECS = 1
+            GO TO  11
+        END IF
+
         JDATE = GETNUM( SDATE3D, 9999999, SDATE3D,
      &                  'Enter STARTING DATE for time step sequence' )
 
@@ -291,6 +312,8 @@ C...............  Get output grid description, time step sequence
         N  =  CURREC( EDATE, ETIME, JDATE, JTIME, TSTEP, C, R )
         NRECS = GETNUM( 1, 9999999, N,
      &                  'Enter     NRECS     for time step sequence' )
+
+11      CONTINUE        !  target of "if tstep3d is zero"
 
         FTYPE2  = TYPES( GETMENU( 3, 1,
      &                    'Enter FILE TYPE for output file', TMENU ) )
@@ -372,7 +395,6 @@ C...............  from GRIDDESC file:
                 EXIT
             END IF
         END DO
-11      CONTINUE        !  exit from loop
 
 
 C...............  Allocate buffers; compute re-gridding matrix

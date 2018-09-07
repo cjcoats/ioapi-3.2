@@ -2,7 +2,7 @@
 PROGRAM MTXCALC
 
     !!***********************************************************************
-    !! Version "$Id: mtxcalc.f90 96 2018-04-04 21:17:59Z coats $"
+    !! Version "$Id: mtxcalc.f90 108 2018-09-07 18:59:37Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -64,6 +64,19 @@ PROGRAM MTXCALC
 
     !!...........   PARAMETERS and their descriptions:
 
+    CHARACTER*24, PARAMETER :: GTYPES( 0:10 ) = &
+          (/ 'Unknown/Invalid       ',          &
+             'Latitude-Longitude    ',          &
+             'Lambert               ',          &
+             'General Mercator      ',          &
+             'General Stereographic ',          &
+             'UTM                   ',          &
+             'Polar Stereographic   ',          &
+             'Equatorial Mercator   ',          &
+             'Transverse Mercator   ',          &
+             'Albers Equal-Area     ',          &
+             'Unknown/Invalid       ' /)
+
     REAL*8, PARAMETER :: PI     = 3.141592653589793238462643383279d0
     REAL*8, PARAMETER :: PI180  = PI / 180.0d0
     REAL*8, PARAMETER :: REARTH = 6367333.0d0
@@ -123,7 +136,7 @@ PROGRAM MTXCALC
     REAL*8          DDY2        ! 1/ycell
 
     INTEGER         NX, NY, NFRACS
-    INTEGER         I, J, K, L, N, C, R
+    INTEGER         I, J, K, L, N, C, R, CC, RR
     INTEGER         COL, ROW
     INTEGER         COLMAX, ROWMAX
     INTEGER         COLMIN, ROWMIN
@@ -137,20 +150,7 @@ PROGRAM MTXCALC
     REAL            NUMERX, DENOMX      !  worst-case XCELL1,2 in meters
     REAL            NUMERY, DENOMY      !  worst-case YCELL1,2 in meters
     REAL*8          DX, DY
-    REAL*8          XX0, YY0, X, Y, XADJ
-
-    CHARACTER*24::  GTYPES( 0:10 ) =        &
-          (/ 'Unknown/Invalid       ',      &
-             'Latitude-Longitude    ',      &
-             'Lambert               ',      &
-             'General Mercator      ',      &
-             'General Stereographic ',      &
-             'UTM                   ',      &
-             'Polar Stereographic   ',      &
-             'Equatorial Mercator   ',      &
-             'Transverse Mercator   ',      &
-             'Albers Equal-Area     ',      &
-             'Unknown/Invalid       '      /)
+    REAL*8          X0, Y0, X, Y, XADJ
 
     INTEGER, ALLOCATABLE :: ISCR( :, : )
     INTEGER, ALLOCATABLE :: ICEL( : )
@@ -226,7 +226,7 @@ PROGRAM MTXCALC
 '',                                                                             &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: mtxcalc.f90 96 2018-04-04 21:17:59Z coats $',&
+'$Id: mtxcalc.f90 108 2018-09-07 18:59:37Z coats $',&
 ' '
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -243,10 +243,10 @@ PROGRAM MTXCALC
     END IF
 
     MATDEV = PROMPTFFILE( 'Enter ASCII MATRIX file name, or "NONE"', .FALSE., .TRUE., 'MATTXT', PNAME )
-    IF ( MATDEV .LT. 0 ) THEN
+    IF ( MATDEV .EQ. -1 ) THEN
         MESG= 'ERROR opening ASCII matrix file'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-    ELSE
+    ELSE IF ( MATDEV .GT. 0 ) THEN
         WRITE( MATDEV, '(A)' ) '# Fractions for sparse transform matrix'
         WRITE( MATDEV, '(A)' ) '# FRAC=Area(INCELL OUTCELL)/Area(INCELL)'
         WRITE( MATDEV, '(A)' ) '# INGRID    ' // IGRID
@@ -266,25 +266,26 @@ PROGRAM MTXCALC
 
     END IF  ! if dscgrid() failed for input grid
 
-    CALL M3MESG( ' ' )
     I = MAX( 0, MIN( GDTYP1, 9 ) )
     MESG = 'Input grid:  "' // TRIM( IGRID ) // '" is of type "' // TRIM( GTYPES( I ) ) // '"'
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 3( 1PE15.7, 2X ) )' ) 'Defining angles', P_ALP1, P_BET1,P_GAM1
+    WRITE( MESG, '( A, 2X, 3(   F15.7, 2X ) )' ) 'Defining angles  ', P_ALP1, P_BET1,P_GAM1
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'Coordinate Origin', XCENT1, YCENT1
+    WRITE( MESG, '( A, 2X, 2(   F15.7, 2X ) )' ) 'Coordinate Origin', XCENT1, YCENT1
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) '(1,1) Grid Corner', XORIG1, YORIG1
+    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'SW Grid Corner   ', XORIG1, YORIG1
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'Cell Size', XCELL1, YCELL1
+    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'NE Grid Corner   ', XORIG1+DBLE(NCOLS1)*XCELL1, YORIG1+DBLE(NROWS1)*YCELL1
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( I6, 2X, A ) )'   ) 'Dimensions:', NCOLS1, 'cols', NROWS1, 'rows'
+    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'Cell Size        ', XCELL1, YCELL1
+    CALL M3MESG( MESG )
+    WRITE( MESG, '( A, 2X, 2( I6, 2X, A ) )'   ) 'Dimensions:      ', NCOLS1, 'cols', NROWS1, 'rows'
     CALL M3MESG( MESG )
 
-  IF ( .NOT. DSCGRID( OGRID, SCRBUF, GDTYP2,                    &
-                      P_ALP2, P_BET2,P_GAM2, XCENT2, YCENT2,    &
-                      XORIG2, YORIG2, XCELL2, YCELL2,           &
-                      NCOLS2, NROWS2, NTHIK2 ) ) THEN
+    IF ( .NOT. DSCGRID( OGRID, SCRBUF, GDTYP2,                    &
+                        P_ALP2, P_BET2,P_GAM2, XCENT2, YCENT2,    &
+                        XORIG2, YORIG2, XCELL2, YCELL2,           &
+                        NCOLS2, NROWS2, NTHIK2 ) ) THEN
 
         MESG   = 'Grid "' // TRIM( OGRID ) // '" not found in GRIDDESC file'
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
@@ -297,20 +298,24 @@ PROGRAM MTXCALC
     I = MAX( 0, MIN( GDTYP2, 9 ) )
     MESG = 'Output grid:  "' // TRIM( OGRID ) // '" is of type "' // TRIM( GTYPES( I ) ) // '"'
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 3( 1PE15.7, 2X ) )' ) 'Defining angles', P_ALP2, P_BET2,P_GAM2
+    WRITE( MESG, '( A, 2X, 3(   F15.7, 2X ) )' ) 'Defining angles  ', P_ALP2, P_BET2,P_GAM2
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'Coordinate Origin', XCENT2, YCENT2
+    WRITE( MESG, '( A, 2X, 2(   F15.7, 2X ) )' ) 'Coordinate Origin', XCENT2, YCENT2
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) '(1,1) Grid Corner', XORIG2, YORIG2
+    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'SW Grid Corner   ', XORIG2, YORIG2
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'Cell Size', XCELL2, YCELL2
+    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'NE Grid Corner   ', XORIG2+DBLE(NCOLS2)*XCELL2, YORIG2+DBLE(NROWS2)*YCELL2
     CALL M3MESG( MESG )
-    WRITE( MESG, '( A, 2X, 2( I6, 2X, A ) )'   ) 'Dimensions:', NCOLS2, 'cols', NROWS2, 'rows'
+    WRITE( MESG, '( A, 2X, 2( 1PE15.7, 2X ) )' ) 'Cell Size        ', XCELL2, YCELL2
     CALL M3MESG( MESG )
+    WRITE( MESG, '( A, 2X, 2( I6, 2X, A ) )'   ) 'Dimensions:      ', NCOLS2, 'cols', NROWS2, 'rows'
+    CALL M3MESG( MESG )
+    CALL M3MESG( ' ' )
 
 
-    !!.......   Compute longitude adjustment to compensate for WMO screw-up
-    !!.......   that declares all longitudes should be positive:
+    !!.......   Compute longitude adjustment to compensate for WMO violation
+    !!.......   of ISO Standard 6709 ("-180 < LON <= 180"), where WMO
+    !!.......   declares longitude range 0 <= LON < 360:
 
     XADJ = 0.0D0
     IF       ( GDTYP1.EQ.LATGRD3 .AND. XORIG1.GT.0.0D0 ) THEN           !  WMO LL input
@@ -360,7 +365,7 @@ PROGRAM MTXCALC
     NCOLS3 = NCOLS1*NX
     NROWS3 = NROWS1*NY
     XCELL3 = XCELL1 / DBLE( NX )
-    YCELL3 = XCELL3 / DBLE( NY )
+    YCELL3 = YCELL1 / DBLE( NY )
 
     CALL M3MESG( ' ' )
     WRITE( MESG, '( A, 2( I8, 2X, A ) )' ) 'Sampling ratios:', NX, 'per input column', NY, 'per input row'
@@ -391,8 +396,8 @@ PROGRAM MTXCALC
         NUMERY = SNGL( YCELL2 )
     END IF
 
-    NFRACS = ( 3 + 2*CEILING( ABS( NUMERX / DENOMX ) ) )*               &
-             ( 3 + 2*CEILING( ABS( NUMERY / DENOMY ) ) )*               &
+    NFRACS = ( 3 + 3*CEILING( ABS( NUMERX / DENOMX ) ) )*               &
+             ( 3 + 3*CEILING( ABS( NUMERY / DENOMY ) ) )*               &
              NGRID2
 
     CALL M3MESG( MESG )
@@ -409,6 +414,10 @@ PROGRAM MTXCALC
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
     END IF                  ! if allocate failed
 
+    CALL GRID2XY( GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,       &
+                  GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,       &
+                  NCOLS3, NROWS3, XORIG1, YORIG1, XCELL3, YCELL3,       &
+                  XLOC, YLOC )
 
     !!.......   Compute fractions:
 
@@ -418,31 +427,28 @@ PROGRAM MTXCALC
     END DO
     END DO
 
-    CALL GRID2XY( GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,       &
-                  GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,       &
-                  NCOLS3, NROWS3, XORIG1, YORIG1, XCELL3, YCELL3,       &
-                  XLOC, YLOC )
-
     DDX2 = 1.0 / XCELL2
     DDY2 = 1.0 / YCELL2
     DDXY = SCALEFAC / FLOAT( NX * NY )
     N    = 0
+    K    = 0
 
-    DO  R = 0, NROWS1-1         !  traverse input grid:
-    DO  C = 0, NCOLS1-1         !  SERIAL LOOP:  dependency on ISCR, N
+    DO  R = 1, NROWS1         !  traverse input grid:
+    DO  C = 1, NCOLS1         !  SERIAL LOOP:  dependency on ISCR, N
+
+        K = K + 1
 
         COLMAX = 0
         ROWMAX = 0
         COLMIN = NCOLS2 + 1
         ROWMIN = NROWS2 + 1
-
         DO  J = 1, NY
         DO  I = 1, NX
 
-            K = NX*C + I
-            L = NY*R + J
-            X = XLOC( K,L ) - XORIG2
-            Y = YLOC( K,L ) - YORIG2
+            CC = I + NX * ( C - 1 )
+            RR = J + NY * ( R - 1 )
+            X = XLOC(CC,RR)  -  XORIG2  -  XADJ
+            Y = YLOC(CC,RR)  -  YORIG2
             IF ( X .GE. 0.0D0  .AND. Y .GE. 0.0 ) THEN
                 COL = 1 + INT( DDX2 * X )
                 ROW = 1 + INT( DDY2 * Y )
@@ -464,9 +470,9 @@ PROGRAM MTXCALC
                 N = N + 1
                 IF ( N .LE. NFRACS ) THEN
                     FRAC( N ) = DDXY * FLOAT( ISCR( COL,ROW ) )
-                    ICEL( N ) = 1 + C  +  R * NCOLS1        !  input cell #
+                    ICEL( N ) =  C  +  ( R  - 1 ) * NCOLS1  !  input cell #
                     OCEL( N ) = COL + ( ROW - 1 ) * NCOLS2  ! output cell #
-                    ISCR( COL,ROW ) = 0                     ! reset to zero for next pass
+                    ISCR( COL,ROW ) = 0   ! reset to zero for next pass
                 END IF
             END IF
         END DO

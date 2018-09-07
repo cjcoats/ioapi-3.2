@@ -2,7 +2,7 @@
         PROGRAM PROJTOOL
 
     !!***********************************************************************
-    !! Version "$Id: projtool.f 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: projtool.f 108 2018-09-07 18:59:37Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1997-2013 Carlie J. Coats, Jr.,
     !! (C) 2002-2012 Baron Advanced Meteorological Systems. LLC., and
@@ -162,7 +162,7 @@ C   begin body of program PROJTOOL
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: projtool.f 435 2016-11-22 18:10:58Z coats               $',
+     &'$Id:: projtool.f 108 2018-09-07 18:59:37Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) )
@@ -318,6 +318,7 @@ C   begin body of program PROJTOOL
                 CALL M3MESG( MESG )
                 CALL M3MESG( ' ' )
                 CALL M3MESG( BAR )
+                MODE = MODE - 1
 
             ELSE IF ( MODE .EQ. 10 ) THEN       ! compute grid corners
 
@@ -512,6 +513,7 @@ C   begin body of program PROJTOOL
      &             'Output  grid-normal Y = ', YY, 'row =', RR
                 CALL M3MESG( MESG )
                 CALL M3MESG( BAR )
+                MODE = MODE - 1
 
             ELSE                                ! error
 
