@@ -73,6 +73,10 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     !!      because OpenMPI-1.4.x does not follow the MPOI "standard" competently.
     !!
     !!      Version  10/2016 by CJC: "snoop" functionality
+    !!
+    !!      Version  3/2019 by CJC: Normalize dates&times before testing
+    !!      for equality, for compatibility with MEGAN usage of non-standard
+    !!      dates&times
     !!***********************************************************************
 
     USE M3UTILIO
@@ -257,6 +261,7 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
             FLAG1 = 0
             FLAG2 = 0
         END IF
+        CALL NEXTIME( FLAG1, FLAG2, 0 )
 
     END IF          ! if dictionary-file, or not
 
@@ -400,6 +405,7 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 
     IF ( VID .GT. 0 ) THEN
 
+        CALL NEXTIME( FLAGS( 1,1 ), FLAGS( 2,1 ), 0 )
         IF ( FLAGS( 1,1 ) .NE. FLAG1  .OR.          &
              FLAGS( 2,1 ) .NE. FLAG2  ) THEN
 
@@ -415,6 +421,7 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 
         DO  V = 1, DELT( 2 )
 
+            CALL NEXTIME( FLAGS( 1,1 ), FLAGS( 2,1 ), 0 )
             IF ( FLAGS( 1,V ) .NE. FLAG1  .OR.      &
                  FLAGS( 2,V ) .NE. FLAG2  ) THEN
 
