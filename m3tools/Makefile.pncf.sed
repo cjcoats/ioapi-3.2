@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.pncf.sed 30 2017-10-21 01:07:49Z coats $"
+# Version "$Id: Makefile.pncf.sed 115 2019-06-11 21:11:40Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -88,7 +88,7 @@ insertgrid.f90  jul2greg.f90    juldate.f90     juldiff.f90     julshift.f90    
 latlon.f90      m3fake.f90      m3mask.f90      m3pair.f90      m3probe.f90     \
 m3totxt.f90     m3tproc.f90     m3tshift.f90    m3wndw.f90      mtxcalc.f90     \
 pairstep.f90    presz.f90       timeshift.f90   vertot.f90      vertimeproc.f90 \
-vertintegral.f90                wrfgriddesc.f90 wrftom3.f90                     \
+vertintegral.f90                wrfgriddesc.f90 wrftom3.f90     wndwdesc.f90    \
 mpasdiff.f90    mpasstat.f90    mpastom3.f90
 
 OBJ = $(fSRC:.f=.o) $(f90SRC:.f90=.o)
@@ -104,7 +104,7 @@ m3stat          m3totxt         m3tproc         m3tshift        m3wndw          
 m3xtract        mtxblend        mtxbuild        mtxcalc         mtxcple         \
 presterp        presz           projtool        selmrg2d        timeshift       \
 vertot          vertimeproc     vertintegral    wrfgriddesc     wrftom3         \
-mpasdiff        mpasstat        mpastom3
+wndwdesc        mpasdiff        mpasstat        mpastom3
 
 
 
@@ -202,6 +202,7 @@ mtxbuild.o      : m3utilio.mod  modatts3.mod
 mtxcalc.o       : m3utilio.mod  modatts3.mod modgctp.mod
 mtxcple.o       : m3utilio.mod  modatts3.mod
 projtool.o      : m3utilio.mod  modgctp.mod
+wndwdesc.o      : m3utilio.mod  modgctp.mod
 wrfgriddesc.o   : m3utilio.mod  modwrfio.mod
 wrftom3.o       : m3utilio.mod  modwrfio.mod
 
@@ -364,6 +365,9 @@ vertintegral:  vertintegral.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 vertot:  vertot.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+wndwdesc:  wndwdesc.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 wrfgriddesc:  wrfgriddesc.o
