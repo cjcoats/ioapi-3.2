@@ -26,7 +26,7 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     !!
     !!      If VERBOSE, writes warning message when data not available.
     !!
-    !!       If SNOOP is enabled: 
+    !!       If SNOOP is enabled:
     !!         - Initializes SNOOP-delay (secs) and max attempts by
     !!           calling entry INITSNOOP() or from environment
     !!           variables  SNOOPSECS3 and SNOOPTRY3
@@ -184,34 +184,11 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 
     FNAME = FLIST3( FID )
 
-    IF ( CDFID3( FID ) .EQ. LSTFIL3 ) THEN     !  list "file set"
-
-        F = IFRST3( MXFILE3 ) - 1
-        DO  I = 1, NLIST3( FID )
-            F = F + 1
-            IF ( BEGRC3( FID ) .LE. STEP .AND.      &
-                 ENDRC3( FID ) .GE. STEP ) THEN
-                FID   = ILIST3( F )
-                GO TO  11
-            END IF
-        END DO
-
-        !!  if you get to here:  data not available in this file-set
-
-        WRITE( MESG,91020 ) 'Requested date & time:', JDATE, JTIME
-        CALL M3MSG2( MESG )
-        MESG = 'Time step not available in file-set ' // FNAME
-        CALL M3WARN( 'RDTFLAG', JDATE, JTIME, MESG )
-        RDFLAG = .FALSE.
-        RETURN
-
-11      CONTINUE
-
-    ELSE IF ( CDFID3( FID ) .EQ. VIRFIL3 ) THEN     !  virtual "file"
+    IF ( CDFID3( FID ) .EQ. VIRFIL3 ) THEN     !  virtual "file"
 
         CALL M3WARN( 'RDTFLAG', JDATE, JTIME, 'Bad call to RDTFLAG' )
         RDFLAG = .FALSE.
-        RETURN        
+        RETURN
 
     END IF                  !  if cdfid3(fid) = lstfil3
 
@@ -246,6 +223,28 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
             END IF          !  if verbose
             RDFLAG = .FALSE.
             RETURN
+
+        ELSE  IF ( CDFID3( FID ) .EQ. LSTFIL3 ) THEN     !  list "file set"
+
+            DO  I = IFRST3(FID), IFRST3(FID) + NLIST3(FID) - 1
+                F = ILIST3( I )
+                IF ( BEGRC3( F ) .LE. STEP .AND. ENDRC3( F ) .GE. STEP ) THEN
+                    FID  = F
+                    STEP = STEP - BEGRC3( F ) + 1
+                    GO TO  11
+                END IF
+            END DO
+
+            !!  if you get to here:  data not available in this file-set
+
+            WRITE( MESG,91020 ) 'Requested date & time:', JDATE, JTIME
+            CALL M3MSG2( MESG )
+            MESG = 'Time step not available in file-set ' // FNAME
+            CALL M3WARN( 'RDTFLAG', JDATE, JTIME, MESG )
+            RDFLAG = .FALSE.
+            RETURN
+
+11          CONTINUE
 
         END IF          !  check on step number
 
@@ -421,11 +420,11 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
 
         DO  V = 1, DELT( 2 )
 
-            CALL NEXTIME( FLAGS( 1,1 ), FLAGS( 2,1 ), 0 )
+            CALL NEXTIME( FLAGS( 1,V ), FLAGS( 2,V ), 0 )
             IF ( FLAGS( 1,V ) .NE. FLAG1  .OR.      &
                  FLAGS( 2,V ) .NE. FLAG2  ) THEN
 
-                VNAME =VLIST3( V,FID )
+                VNAME = VLIST3( V,FID )
                 MESG  = 'Time step not available in file ' // FNAME // ' for variable ' // VNAME
                 EFLAG = .TRUE.
                 CALL M3WARN( 'RDTFLAG', JDATE, JTIME, MESG )
@@ -446,7 +445,7 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
     ENTRY INITSNOOP( DELAY, TRIES )
 
 #ifdef  IOAPI_SNOOP
-      
+
         IF ( DELAY .LE. 0 .OR. TRIES .LT. 0 ) THEN
             SLEEPSECS = -2
             SLEEPTRY  = -2
@@ -464,7 +463,7 @@ LOGICAL FUNCTION RDTFLAG( FID,VID, JDATE,JTIME, STEP, VERBOSE ) RESULT( RDFLAG )
                 '(secs) and TRIES=', TRIES
         END IF
 
-        CALL M3MESG( '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-' )  
+        CALL M3MESG( '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-' )
         CALL M3MESG( MESG )
         CALL M3MESG( '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-' )
 

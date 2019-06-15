@@ -2,7 +2,7 @@
 LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
     !!***********************************************************************
-    !! Version "$Id: opnlist3.f 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: opnlist3.f90 118 2019-06-15 20:50:32Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -97,7 +97,7 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
     L     = ILCNT3
     IFRST3( FID ) = L + 1
-    NLIST3( FID ) = 0
+    NLIST3( FID ) = LISTCNT
     CDFID3( FID ) = LSTFIL3
     SDATE3( FID ) = 99999999
     STIME3( FID ) = 0
@@ -129,7 +129,6 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
             IF ( OPNFIL3( EQNAME, I, FSREAD3, PGNAME ) ) THEN
 
-                NLIST3( F ) = NLIST3( F ) + 1
                 L = L + 1
                 ILIST3( L ) = I
 
@@ -166,12 +165,6 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
                         EFLAG = .TRUE.
                         MESG = 'Bad TSTEP for ' //FIL16// ' in file list ' // FLIST3( FID )
                         CALL M3WARN( 'OPEN3', 0, 0, MESG )
-                    END IF
-
-                    IF ( SECSDIFF( SDATE3( FID ),STIME3( FID ),     &
-                                   SDATE3(   I ),STIME3(   I ) ) .LT. 0 ) THEN
-                        SDATE3( FID ) = SDATE3( I )
-                        STIME3( FID ) = STIME3( I )
                     END IF
 
                     IF ( FTYPE3( I ) .NE. FTYPE3( FID ) ) THEN
@@ -288,6 +281,10 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
                     IF ( EFLAG ) THEN
                         FLIST3( I ) = CMISS3
+                    ELSE IF ( SECSDIFF( SDATE3( FID ),STIME3( FID ),     &
+                                        SDATE3(   I ),STIME3(   I ) ) .LT. 0 ) THEN
+                        SDATE3( FID ) = SDATE3( I )
+                        STIME3( FID ) = STIME3( I )
                     END IF
 
                 END IF              !  if F = 1 or not
@@ -323,6 +320,7 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
                 END IF
             END IF
             FLIST3( I ) = CMISS3
+            CDFID3( I ) = IMISS3
         END DO
 
         FLIST3( FID ) = CMISS3
@@ -332,13 +330,14 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
     ELSE                    !  process success
 
-        DO  F = ILCNT3 + 1, ILCNT3 + LISTCNT
+        DO  I = IFRST3(FID), IFRST3(FID) + NLIST3(FID) - 1
+            F = ILIST3( I )
             J = JSTEP3( SDATE3(   F ), STIME3(   F ),       &
-                        SDATE3( FID ), STIME3( FID ),       &
-                        TSTEP3( FID ) )
+                        SDATE3( FID ), STIME3( FID ), TSTEP3( FID ) )
             BEGRC3( F ) = J
-            ENDRC3( F ) = J + MXREC3( F )
+            ENDRC3( F ) = J + MXREC3( F ) - 1
             COUNT3      = MAX( COUNT3, ILIST3( F ) )
+            MXREC3( FID ) = MAX( MXREC3( FID ), ENDRC3( F ) )
         END DO
         NLIST3( FID ) = LISTCNT
         IFRST3( FID ) = ILCNT3 + 1

@@ -1,8 +1,8 @@
 
-SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
+RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
 
     !!***********************************************************************
-    !! Version "$Id: opnlog3.F90 385 2016-07-01 15:31:15Z coats $"
+    !! Version "$Id: opnlog3.F90 118 2019-06-15 20:50:32Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -40,6 +40,8 @@ SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
     !!      Modified 7/2016 by CJC:  bug-fix from Edward Anderson
     !!      (Lockheed Martin, supporting the U.S. EPA:: NF_GET_ATT_TEXT(()
     !!      argument-list
+    !!
+    !!      Modified 6/2019 by CJC:  bug-fix for LIST-files
     !!***********************************************************************
 
     USE M3UTILIO
@@ -113,9 +115,21 @@ SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
     !!.......   Get execution-ID for the program which produced this file:
 
     IF( FNUM .EQ. BUFFIL3 ) THEN
+
         IERR   = 0
         EXECID = EXECN3
+
+    ELSE IF( FNUM .EQ. LSTFIL3 ) THEN
+
+        WRITE( LOGDEV, '( /5X, A )' ) 'Opening LIST-FILE SEQUENCE'
+        DO IT = IFRST3(FID), IFRST3(FID) + NLIST3(FID) - 1
+            CALL OPNLOG3( ILIST3(IT) , EQNAME, STATUS )
+        END DO
+        WRITE( LOGDEV, '( /5X, A, I5, / )' ) 'End of LIST-FILE SEQUENCE.  NLIST=', NLIST3( FID )
+        RETURN
+
     ELSE IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
+
         IF ( .NOT. PN_IO_PE )  GO TO  99
 #ifdef  IOAPI_PNCF
 !$OMP CRITICAL( S_NC )
@@ -126,9 +140,12 @@ SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
 !$OMP CRITICAL( S_NC )
         IERR = NF_GET_ATT_TEXT( FNUM, NF_GLOBAL, 'EXEC_ID', EXECID )
 !$OMP END CRITICAL( S_NC )
+
     ELSE
+
         CALL M3MESG( 'OPNLOG3:  unrecognized file' )
         GO TO  99
+
     END IF
 
     IS = MAX( MIN( STATUS, 6 ), 0  )
@@ -206,8 +223,6 @@ SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
         WRITE( LOGDEV, '( 5X, 2A )' )  'BUFFERED "file" opened as ', SBUF
     ELSE IF ( FNUM .EQ. VIRFIL3 ) THEN
         WRITE( LOGDEV, '( 5X, 2A )' )  'VIRTUAL "file" opened as ',  SBUF
-    ELSE IF ( FNUM .EQ. LSTFIL3 ) THEN
-        WRITE( LOGDEV, '( 5X, 2 A )' ) 'LIST-FILE SEQUENCE opened as ', SBUF
     ELSE IF ( FNUM .EQ. BINFIL3 ) THEN
         WRITE( LOGDEV, '( 5X, 2A )' )  'Native-binary file opened as ', SBUF
     END IF
