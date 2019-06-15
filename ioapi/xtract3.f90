@@ -4,7 +4,7 @@ LOGICAL FUNCTION  XTRACT3 ( FNAME, VNAME,                           &
                             JDATE, JTIME, BUFFER )
 
     !!***********************************************************************
-    !!Version "$Id: xtract3.f90 255 2015-11-06 14:55:40Z coats $"
+    !!Version "$Id: xtract3.f90 117 2019-06-15 14:56:29Z coats $"
     !!EDSS/Models-3 I/O API.
     !!Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !!(C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -202,7 +202,7 @@ LOGICAL FUNCTION  XTRACT3 ( FNAME, VNAME,                           &
         CALL M3MSG2( MESG )
         WRITE( MESG, '( A, I9 )' ) 'Actual number of rows:', NROWS3( FID )
         CALL M3MSG2( MESG )
-        MESG = 'Error in row-bounds VNAME for file ' // FNAME // ' variable ' // VNAME
+        MESG = 'Error in row-bounds specification for file ' // FNAME // ' variable ' // VNAME
         CALL M3WARN( 'XTRACT3', JDATE, JTIME, MESG )
         XTRACT3 = .FALSE.
         RETURN

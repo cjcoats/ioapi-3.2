@@ -2,7 +2,7 @@
         PROGRAM  M3STAT
 
 C***********************************************************************
-C Version "$Id: m3stat.f 17 2017-09-02 16:47:59Z coats $"
+C Version "$Id: m3stat.f 117 2019-06-15 14:56:29Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC,
 C (C) 1995-2002,2005-2013,2017 Carlie J. Coats, Jr.,
@@ -44,6 +44,8 @@ C
 C      Version 05/2011 by CJC:  STATACUST() arglist bugfix for case CUSTOM3 & VARMODE
 C
 C      Version  09/2017 by CJC for I/O API v3.2:  Enhanced default RUNLEN
+C
+C       Version  06/2019 by CJC:  Bugfix for RUNLEN
 C***********************************************************************
 
       USE M3UTILIO
@@ -123,6 +125,8 @@ C   begin body of program  M3STAT
      &  'USAGE:  m3stat [INFILE [REPORTFILE]] [DEFAULT]',
      &  '(and then answer the prompts).',
      &' ',
+     &  'Note that RUNLEN=0 for single-step runs ("fenceposts"...)',
+     &' ',
      &'See URL',
      &'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',
      &  ' ',
@@ -142,7 +146,7 @@ C   begin body of program  M3STAT
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3stat.f 17 2017-09-02 16:47:59Z coats                  $',
+     &'$Id:: m3stat.f 117 2019-06-15 14:56:29Z coats                 $',
      &' '
 
         ARGCNT = IARGC()
@@ -468,8 +472,10 @@ C...........   Get time period studied:
             RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
             RUNLEN = GETNUM( 0, 999999999, RUNLEN,
      &                  'Enter duration (HHMMSS) for run' )
-            NSTEPS = TIME2SEC( TSTEP )
-            NSTEPS = (TIME2SEC( RUNLEN ) + NSTEPS - 1)/NSTEPS
+            JDATE = SDATE
+            JTIME = STIME
+            CALL NEXTIME( JDATE, JTIME, RUNLEN )
+            NSTEPS = CURREC( JDATE,JTIME,SDATE,STIME,TSTEP,EDATE,ETIME )
 
         END IF          !  time-independent file, or not
 

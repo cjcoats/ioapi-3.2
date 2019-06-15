@@ -2,7 +2,7 @@
         PROGRAM  M3DIFF
 
 C***********************************************************************
-C Version "$Id: m3diff.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: m3diff.f 117 2019-06-15 14:56:29Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -10,7 +10,7 @@ C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  124
+C  program body starts at line  126
 C
 C  FUNCTION:
 C       For a user-specified pair of GRIDDED Models-3 file and lists of
@@ -35,6 +35,8 @@ C       Version 02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C
 C       Version 02/2010 by CJC for I/O API v3.2:  Use FIKCHK3(), GRDCHK3()
+C
+C       Version  06/2019 by CJC:  Bugfix for RUNLEN
 C***********************************************************************
 
       USE M3UTILIO
@@ -159,7 +161,7 @@ C   begin body of program  M3DIFF
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3diff.f 435 2016-11-22 18:10:58Z coats                 $',
+     &'$Id:: m3diff.f 117 2019-06-15 14:56:29Z coats                 $',
      &' '
 
         ARGCNT = IARGC()
@@ -519,7 +521,7 @@ C.......   Get mode of operation:
 
                 RUNLEN = GETNUM( 0, 999999999, SEC2TIME( RUNLEN ),
      &                      'Enter duration (HHMMSS) for run' )
-                NSTEPS = ( TIME2SEC( RUNLEN ) + TSTEP - 1 ) / TSTEP
+                NSTEPS = ( TIME2SEC( RUNLEN ) + TSTEP ) / TSTEP
                 TSTEP  = SEC2TIME( TSTEP )
 
             END IF          !  time-independent file, or not

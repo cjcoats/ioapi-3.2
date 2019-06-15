@@ -2,7 +2,7 @@
 PROGRAM  BCWNDW
 
     !!***********************************************************************
-    !! Version "$Id: bcwndw.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: bcwndw.f90 117 2019-06-15 14:56:29Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.,
@@ -10,7 +10,7 @@ PROGRAM  BCWNDW
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  83
+    !!  program body starts at line  89
     !!
     !!  FUNCTION:
     !!       Window a subrectangle of the grid from gridded input file
@@ -24,16 +24,18 @@ PROGRAM  BCWNDW
     !!       Models-3 I/O.
     !!
     !!  REVISION  HISTORY:
-    !!       Prototype 5/96 by CJC
+    !!      Prototype 5/96 by CJC
     !!
-    !!       Modified  9/99 by CJC for enhanced portability
+    !!      Modified  9/99 by CJC for enhanced portability
     !!
-    !!       Version  11/2001 by CJC for I/O API Version 2.1
+    !!      Version  11/2001 by CJC for I/O API Version 2.1
     !!
-    !!       Version  02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
-    !!       USE M3UTILIO, and related changes.
+    !!      Version  02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
+    !!      USE M3UTILIO, and related changes.
     !!
     !!      Version  01/2015 by CJC for I/O API v3.2:  F90 free-format source
+    !!
+    !!      Version  06/2019 by CJC:  Bugfix for RUNLEN
     !!***********************************************************************
 
     USE M3UTILIO
@@ -67,6 +69,8 @@ PROGRAM  BCWNDW
     INTEGER         STIME   !  starting time, from user
     INTEGER         JDATE   !  current date
     INTEGER         JTIME   !  current time
+    INTEGER         EDATE   !  ending date
+    INTEGER         ETIME   !  ending time
     INTEGER         TSTEP   !  time step, from INAME header
     INTEGER         TSECS
     INTEGER         RUNLEN  !  duration, HHMMSS from user
@@ -102,7 +106,9 @@ PROGRAM  BCWNDW
 'THE PROGRAM WILL PROMPT YOU for the logical names of the input and',       &
 'output files, if these are not supplied on the command line, and',         &
 'for the specifications (low- and high- column and row) for the',           &
-'grid whose boundary-file is being constructed.',                           &
+'grid whose boundary-file is being constructed and for the duration',       &
+'RUNLEN (HHMMSS)',                                                          &
+'Note that RUNLEN=0 for single-step runs (a "fencepost problem")',          &
 '',                                                                         &
 'See URL',                                                                  &
 '',                                                                         &
@@ -126,7 +132,7 @@ PROGRAM  BCWNDW
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: bcwndw.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: bcwndw.f90 117 2019-06-15 14:56:29Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -185,12 +191,15 @@ PROGRAM  BCWNDW
 
     ELSE                            !  time-dependent file
 
+        CALL LASTTIME( SDATE, STIME, TSTEP, MXREC3D, EDATE, ETIME )
         SDATE  = GETNUM( SDATE3D, 9999999, SDATE3D, 'Enter starting date (YYYYDDD) for run' )
         STIME  = GETNUM(       0,  239999, STIME3D, 'Enter starting time (HHMMSS) for run' )
         TSECS  = SEC2TIME( MXREC3D * TIME2SEC( TSTEP3D ) )
         RUNLEN = GETNUM( 0, 999999999, TSECS, 'Enter duration (HHMMSS) for run' )
-        TSECS  = TIME2SEC( TSTEP )
-        NSTEPS = ( TIME2SEC( RUNLEN ) + TSECS - 1 ) / TSECS
+        JDATE = SDATE
+        JTIME = STIME
+        CALL NEXTIME( JDATE, JTIME, RUNLEN )
+        NSTEPS = CURREC( JDATE,JTIME,SDATE,STIME,TSTEP,EDATE,ETIME )
 
     END IF          !  time-independent file, or not
 

@@ -2,7 +2,7 @@
 PROGRAM  M3WNDW
 
     !!***********************************************************************
-    !! Version "$Id: m3wndw.f90 71 2017-12-11 13:25:39Z coats $"
+    !! Version "$Id: m3wndw.f90 117 2019-06-15 14:56:29Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014 Carlie J. Coats, Jr.,
@@ -11,7 +11,7 @@ PROGRAM  M3WNDW
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  107
+    !!  program body starts at line  111
     !!
     !!  FUNCTION:
     !!       Window a subrectangle of the grid from gridded input file
@@ -38,7 +38,9 @@ PROGRAM  M3WNDW
     !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
     !!      expand WNDW for M3DBLE and M3INT8 variables.
     !!
-    !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
+    !!      Version  06/2016 by CJC:  copy CMAQ metadata, if present
+    !!
+    !!      Version  06/2019 by CJC:  Bugfix for RUNLEN
     !!***********************************************************************
 
     USE M3UTILIO
@@ -117,6 +119,7 @@ PROGRAM  M3WNDW
 'You will be asked to select the window into the input grid, either',   &
 'by GRIDDESC grid-name or by entering the window-boundary row and',     &
 'column numbers, and time period to be windowed.',                      &
+'Note that RUNLEN=0 for single-step runs  (a "fencepost" problem)',     &
 ' ',                                                                    &
 'USAGE:  m3wndw [INFILE OUTFILE]   (and then answer the prompts). ',    &
 ' ',                                                                    &
@@ -144,7 +147,7 @@ PROGRAM  M3WNDW
 '    Chapel Hill, NC 27599-1105',                                       &
 '',                                                                     &
 'Program version: ',                                                    &
-'$Id: m3wndw.f90 71 2017-12-11 13:25:39Z coats $',&
+'$Id: m3wndw.f90 117 2019-06-15 14:56:29Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -231,9 +234,11 @@ PROGRAM  M3WNDW
         STIME  = GETNUM(       0,  239999, STIME3D, 'Enter starting time  (HHMMSS) for run' )
         RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
         RUNLEN = GETNUM( 0, 999999999, RUNLEN,      'Enter duration (HHMMSS) for run' )
-        NSTEPS = TIME2SEC( TSTEP )
-        NSTEPS = ( TIME2SEC( RUNLEN ) + NSTEPS - 1 ) / NSTEPS
-
+        JDATE = SDATE
+        JTIME = STIME
+        CALL NEXTIME( JDATE, JTIME, RUNLEN )
+        NSTEPS = CURREC( JDATE, JTIME, SDATE, STIME, TSTEP, EDATE, ETIME )
+ 
     END IF          !  time-independent file, or not
 
 

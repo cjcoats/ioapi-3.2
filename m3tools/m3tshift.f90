@@ -2,7 +2,7 @@
 PROGRAM  M3TSHIFT
 
     !!***********************************************************************
-    !! Version "$Id: m3tshift.f90 71 2017-12-11 13:25:39Z coats $"
+    !! Version "$Id: m3tshift.f90 117 2019-06-15 14:56:29Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2014, 2017 Carlie J. Coats, Jr.,
@@ -35,7 +35,7 @@ PROGRAM  M3TSHIFT
     !!      Version  02/2015 by CJC for I/O API v3.2:  F90 free-format source;
     !!      inlined SUBROUTINE TSHIFT, explicit ALLOCATE. Support for M3INT8 variables.
     !!
-    !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
+    !!      Version  06/2016 by CJC:  copy CMAQ metadata, if present
     !!
     !!      Version  09/2017 by CJC for I/O API v3.2:  Enhanced default RUNLEN
     !!***********************************************************************
@@ -99,6 +99,7 @@ PROGRAM  M3TSHIFT
 'You need to have set environment variables for the input and output',      &
 'file logical names.  You will be asked to select the time period to be',   &
 'copied and the start of the time period to receive the results.',          &
+'Note that RUNLEN=0 for single-step runs (a "fencepost" problem)',          &
 '',                                                                         &
 'USAGE:  m3tproc [INFILE OUTFILE]     (and then answer the prompts).',      &
 '',                                                                         &
@@ -124,7 +125,7 @@ PROGRAM  M3TSHIFT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tshift.f90 71 2017-12-11 13:25:39Z coats $',&
+'$Id: m3tshift.f90 117 2019-06-15 14:56:29Z coats $',&
 ' '
 
     ARGCNT = IARGC()

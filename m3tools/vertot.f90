@@ -2,7 +2,7 @@
 PROGRAM  VERTOT
 
     !!***********************************************************************
-    !! Version "$Id: vertot.f90 61 2017-11-13 18:15:21Z coats $"
+    !! Version "$Id: vertot.f90 117 2019-06-15 14:56:29Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1992-2002, 2017 Carlie J. Coats, Jr,
     !! (C) 2002-2010 Baron Advanced Meteorological Systems, LLC.,
@@ -152,7 +152,7 @@ PROGRAM  VERTOT
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertot.f90 61 2017-11-13 18:15:21Z coats $',&
+'$Id: vertot.f90 117 2019-06-15 14:56:29Z coats $',&
 ''
 
     IF ( ARGCNT .GT. 1 ) THEN
@@ -277,13 +277,13 @@ PROGRAM  VERTOT
     ELSE
         SDATE  = GETNUM( SDATE3D, 9999999, SDATE3D, 'Enter starting date (YYYYDDD) for run' )
         STIME  = GETNUM(       0,  239999, STIME3D, 'Enter starting time (HHMMSS) for run' )
-        N      = CURREC( EDATE, ETIME, SDATE, STIME, TSTEP3D, I, J )
+        N      = CURREC( EDATE, ETIME, SDATE, STIME, TSTEP3D, I, J ) - 1
         RUNLEN = SEC2TIME( N * TIME2SEC( TSTEP3D ) )
         RUNLEN = GETNUM( 0, 999999999, RUNLEN, 'Enter duration (HHMMSS) for run' )
         JDATE  = SDATE
         JTIME  = STIME
         CALL NEXTIME( JDATE, JTIME, RUNLEN )
-        NRECS  = CURREC( JDATE, JTIME, SDATE, STIME, TSTEP, EDATE, ETIME ) - 1  ! fencepost problem
+        NRECS  = CURREC( JDATE, JTIME, SDATE, STIME, TSTEP, EDATE, ETIME )
     END IF          !  time-independent file, or not
 
     IF ( OUTFLAG ) THEN     !  create output file

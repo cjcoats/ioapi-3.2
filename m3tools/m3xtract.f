@@ -2,7 +2,7 @@
         PROGRAM  M3XTRACT
 
 C***********************************************************************
-C Version "$Id: m3xtract.f 17 2017-09-02 16:47:59Z coats $"
+C Version "$Id: m3xtract.f 117 2019-06-15 14:56:29Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC,
 C (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ C (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  134
+C  program body starts at line  136
 C
 C  FUNCTION:
 C       extracts a subset of variables from the input file for a
@@ -58,6 +58,8 @@ C
 C       Version  06/2016 by CJC:  copy CMAQ metadata, if present
 C
 C       Version  09/2017 by CJC for I/O API v3.2:  Enhanced default RUNLEN
+C
+C       Version  06/2019 by CJC:  Bugfix for RUNLEN
 C***********************************************************************
 
       USE M3UTILIO
@@ -148,7 +150,9 @@ C   begin body of program  M3XTRACT
      &  'extract them for.',
      &  ' ',
      &  'USAGE:  m3xtract [INFILE OUTFILE]',
-     &  '(and then answer the prompts). ',
+     &  '(and then answer the prompts).',
+     &' ',
+     &  'Note that RUNLEN=0 for single-step runs ("fenceposts"...)',
      &' ',
      &'See URL',
      &'https://www.cmascenter.org/ioapi/documentation/3.1/html#tools',
@@ -172,7 +176,7 @@ C   begin body of program  M3XTRACT
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3xtract.f 17 2017-09-02 16:47:59Z coats                $',
+     &'$Id:: m3xtract.f 117 2019-06-15 14:56:29Z coats               $',
      &' '
 
         ARGCNT = IARGC()
@@ -402,8 +406,10 @@ C.......   Get starting date and time, and duration:
             RUNLEN = SEC2TIME( SECSDIFF( SDATE, STIME, EDATE, ETIME ) )
             RUNLEN = GETNUM( 0, 999999999, RUNLEN,
      &                  'Enter duration (HHMMSS) for run' )
-            NSTEPS = TIME2SEC( TSTEP )
-            NSTEPS = ( TIME2SEC( RUNLEN ) + NSTEPS - 1 ) / NSTEPS
+            JDATE = SDATE
+            JTIME = STIME
+            CALL NEXTIME( JDATE, JTIME, RUNLEN )
+            NSTEPS = CURREC( JDATE,JTIME,SDATE,STIME,TSTEP,EDATE,ETIME )
 
         END IF          !  time-independent file, or not
 
