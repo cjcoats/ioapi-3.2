@@ -2,7 +2,7 @@
 RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
 
     !!***********************************************************************
-    !! Version "$Id: opnlog3.F90 118 2019-06-15 20:50:32Z coats $"
+    !! Version "$Id: opnlog3.F90 119 2019-06-20 13:37:39Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -126,7 +126,7 @@ RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
             CALL OPNLOG3( ILIST3(IT) , EQNAME, STATUS )
         END DO
         WRITE( LOGDEV, '( /5X, A, I5, / )' ) 'End of LIST-FILE SEQUENCE.  NLIST=', NLIST3( FID )
-        RETURN
+        GO TO  99
 
     ELSE IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
 
