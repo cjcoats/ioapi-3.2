@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 98 2018-04-05 14:35:07Z coats $"
+    !! Version "$Id: init3.F90 120 2019-06-21 14:18:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ INTEGER FUNCTION INIT3 ( )
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  subroutine body starts at line  148
+    !!  subroutine body starts at line  150
     !!
     !!  FUNCTION:
     !!      Initialize state for Models-3 I/O.
@@ -81,6 +81,8 @@ INTEGER FUNCTION INIT3 ( )
     !!      support for MPI/PnetCDF; USE MODNCFIO, MODPDATA, NF_*() interfaces
     !!
     !!      Bugfix 01/2018 by CJC for INIT3()-after-SHUT3().
+    !!
+    !!      Version 06/2019 by CJC:  new code ID, copyright date
     !!***********************************************************************
 
     USE MODNCFIO
@@ -118,7 +120,7 @@ INTEGER FUNCTION INIT3 ( )
       'Copyright (C) 1992-2002 MCNC,                                 ',     &
       '(C) 1992-2013 Carlie J. Coats, Jr.,                           ',     &
       '(C) 2003-2012 Baron Advanced Meteorological Systems, LLC, and ',     &
-      '(C) 2014-2016 UNC Institute for the Environment.              ',     &
+      '(C) 2014-2019 UNC Institute for the Environment.              ',     &
       'Released under the GNU LGPL  License, version 2.1.  See URL   ',     &
       '                                                              ',     &
       '    https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html   ',     &
@@ -137,7 +139,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'ioapi-3.2: $Id: init3.F90 98 2018-04-05 14:35:07Z coats $'
+'ioapi-3.2: $Id: init3.F90 120 2019-06-21 14:18:20Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 

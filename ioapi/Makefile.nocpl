@@ -224,27 +224,39 @@ gtar:
 
 bins:
 	make BIN=Linux2_x86_64
-	make BIN=Linux2_x86_64sun
 	make BIN=Linux2_x86_64ifort
+	make BIN=Linux2_x86_64pg
+	make BIN=Linux2_x86_64sun
 	make BIN=Linux2_x86_64dbg
 	make BIN=Linux2_x86_64sundbg
 	make BIN=Linux2_x86_64ifortdbg
+	make BIN=Linux2_x86_64ifort_365
+	make BIN=Linux2_x86_64ifortmpi
+	make BIN=Linux2_x86_64ifort_medium
 
 binclean:
-	make BIN=Linux2_x86_64          clean
-	make BIN=Linux2_x86_64sun       clean
-	make BIN=Linux2_x86_64ifort     clean
-	make BIN=Linux2_x86_64dbg       clean
-	make BIN=Linux2_x86_64sundbg    clean
-	make BIN=Linux2_x86_64ifortdbg  clean
+	make BIN=Linux2_x86_64              clean
+	make BIN=Linux2_x86_64ifort         clean
+	make BIN=Linux2_x86_64pg            clean
+	make BIN=Linux2_x86_64sun           clean
+	make BIN=Linux2_x86_64dbg           clean
+	make BIN=Linux2_x86_64sundbg        clean
+	make BIN=Linux2_x86_64ifortdbg      clean
+	make BIN=Linux2_x86_64ifort_365     clean
+	make BIN=Linux2_x86_64ifortmpi      clean
+	make BIN=Linux2_x86_64ifort_medium  clean
 
 bindirs:
-	make BIN=Linux2_x86_64          dir
-	make BIN=Linux2_x86_64sun       dir
-	make BIN=Linux2_x86_64ifort     dir
-	make BIN=Linux2_x86_64dbg       dir
-	make BIN=Linux2_x86_64sundbg    dir
-	make BIN=Linux2_x86_64ifortdbg  dir
+	make BIN=Linux2_x86_64              dir
+	make BIN=Linux2_x86_64ifort         dir
+	make BIN=Linux2_x86_64pg            dir
+	make BIN=Linux2_x86_64sun           dir
+	make BIN=Linux2_x86_64dbg           dir
+	make BIN=Linux2_x86_64sundbg        dir
+	make BIN=Linux2_x86_64ifortdbg      dir
+	make BIN=Linux2_x86_64ifort_365     dir
+	make BIN=Linux2_x86_64ifortmpi      dir
+	make BIN=Linux2_x86_64ifort_medium  dir
 
 fixed_src:  ${FIXDIR} $(fix_EXT)
 
