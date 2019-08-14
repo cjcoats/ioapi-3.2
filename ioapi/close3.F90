@@ -2,7 +2,7 @@
 LOGICAL FUNCTION CLOSE3( FNAME )
 
     !!***********************************************************************
-    !!Version "$Id: close3.F90 235 2015-10-14 15:44:39Z coats $"
+    !!Version "$Id: close3.F90 1 2017-06-10 18:05:20Z coats $"
     !!EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC, (C) 1992-2012 Carlie J. Coats, Jr.,
     !! (C) 2003-2011 Baron Advanced Meteorological Systems, and 
@@ -79,7 +79,7 @@ LOGICAL FUNCTION CLOSE3( FNAME )
 
     FILE = NAME2FID( FNAME )
     IF ( FILE .EQ. 0 ) THEN !  file not open.
-        MESG = 'File "' // FNAME // '" not currently open'
+        MESG = 'CLOSE3:  File "' // FNAME // '" not currently open'
         CALL M3MSG2( MESG )
         CLOSE3 = .FALSE.
         RETURN

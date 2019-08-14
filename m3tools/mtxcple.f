@@ -2,7 +2,7 @@
         PROGRAM MTXCPLE
 
 C***********************************************************************
-C Version "$Id: mtxcple.f 108 2018-09-07 18:59:37Z coats $"
+C Version "$Id: mtxcple.f 122 2019-08-14 16:09:25Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -201,7 +201,7 @@ C   begin body of program MTXCPLE
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: mtxcple.f 108 2018-09-07 18:59:37Z coats                $',
+     &'$Id:: mtxcple.f 122 2019-08-14 16:09:25Z coats                $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -561,7 +561,7 @@ C   begin body of subroutine  MATVEC
 
             DO  L = 1, NLAYS
 
-                DO  R = 1, NROWS
+                DO  R = N(R-1)+1, N(R)
 
                     SUM = 0.0
 
