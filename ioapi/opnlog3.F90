@@ -1,8 +1,8 @@
 
-RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
+    SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
 
     !!***********************************************************************
-    !! Version "$Id: opnlog3.F90 119 2019-06-20 13:37:39Z coats $"
+    !! Version "$Id: opnlog3.F90 123 2019-08-29 21:31:17Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  function body starts at line  105
+    !!  function body starts at line  113
     !!
     !!  FUNCTION:  puts description of file at FID into the program log.
     !!
@@ -42,6 +42,8 @@ RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
     !!      argument-list
     !!
     !!      Modified 6/2019 by CJC:  bug-fix for LIST-files
+    !!
+    !!      Modified 8/2019 by CJC:  LIST-file logging done inside OPNLIST3()
     !!***********************************************************************
 
     USE M3UTILIO
@@ -121,12 +123,7 @@ RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
 
     ELSE IF( FNUM .EQ. LSTFIL3 ) THEN
 
-        WRITE( LOGDEV, '( /5X, A )' ) 'Opening LIST-FILE SEQUENCE'
-        DO IT = IFRST3(FID), IFRST3(FID) + NLIST3(FID) - 1
-            CALL OPNLOG3( ILIST3(IT) , EQNAME, STATUS )
-        END DO
-        WRITE( LOGDEV, '( /5X, A, I5, / )' ) 'End of LIST-FILE SEQUENCE.  NLIST=', NLIST3( FID )
-        GO TO  99
+        GO TO  99       !!  logging done inside ONNLIST3()
 
     ELSE IF ( FTYPE3( FID ) .EQ. MPIGRD3 ) THEN
 
@@ -136,7 +133,9 @@ RECURSIVE SUBROUTINE OPNLOG3( FID , EQNAME, STATUS )
         IERR = NFMPI_GET_ATT_TEXT( FNUM, NF_GLOBAL, 'EXEC_ID', EXECID )
 !$OMP END CRITICAL( S_NC )
 #endif
+
     ELSE IF ( FNUM .GT. 0 ) THEN
+
 !$OMP CRITICAL( S_NC )
         IERR = NF_GET_ATT_TEXT( FNUM, NF_GLOBAL, 'EXEC_ID', EXECID )
 !$OMP END CRITICAL( S_NC )

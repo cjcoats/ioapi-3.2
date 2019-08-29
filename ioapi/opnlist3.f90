@@ -2,7 +2,7 @@
 LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
     !!***********************************************************************
-    !! Version "$Id: opnlist3.f90 118 2019-06-15 20:50:32Z coats $"
+    !! Version "$Id: opnlist3.f90 123 2019-08-29 21:31:17Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -11,7 +11,7 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
     !!.........................................................................
-    !!  function body starts at line  83
+    !!  function body starts at line  87
     !!
     !!  FUNCTION:
     !!       Open a FILE-LIST multi-file data set for status FSREAD3
@@ -30,6 +30,8 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
     !!
     !!      Modified 10/2015 by CJC for I/O API 3.2: use NF_*() instead of NC*()
     !!      for netCDF-Fortran 4.x compatibility
+    !!
+    !!      Modified 8/2019 by CJC:  Logging:  call OPNLOG3() per file here.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -82,15 +84,15 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
     !!.............................................................................
     !!   begin body of subroutine  OPNFIL3
 
-    IF ( .NOT. STRLIST( FLIST3( FID ), 'Logical name list',  MXFILE3, LISTCNT, LISTNAME ) ) THEN
+    CALL NAMEVAL( FIL16, EQNAME )
 
+    IF ( .NOT. STRLIST( FLIST3( FID ), 'Logical name list',  MXFILE3, LISTCNT, LISTNAME ) ) THEN
          MESG = FIL16 // ':'//TRIM( EQNAME )
         CALL M3MSG2( MESG )
         CALL M3WARN( 'OPEN3', 0, 0, 'Bad FILE_LIST.' )
         FLIST3( FID ) = CMISS3
         OFLAG         = .FALSE.
         RETURN
-
     END IF
 
     EFLAG = .FALSE.
@@ -101,6 +103,8 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
     CDFID3( FID ) = LSTFIL3
     SDATE3( FID ) = 99999999
     STIME3( FID ) = 0
+
+    WRITE( LOGDEV, '( /5X, 2A, /5X, A )' ) 'Opening LIST-FILE SEQUENCE', FLIST3( FID ), EQNAME
 
     DO  F = 1, LISTCNT
 
@@ -288,6 +292,8 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
                     END IF
 
                 END IF              !  if F = 1 or not
+                
+                CALL OPNLOG3( I, EQNAME, FSREAD3 )
 
             ELSE
 
@@ -329,6 +335,8 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
         RETURN
 
     ELSE                    !  process success
+
+        WRITE( LOGDEV, '( /5X, A, I5, / )' ) 'End of LIST-FILE SEQUENCE.  NLIST=', LISTCNT
 
         DO  I = IFRST3(FID), IFRST3(FID) + NLIST3(FID) - 1
             F = ILIST3( I )
