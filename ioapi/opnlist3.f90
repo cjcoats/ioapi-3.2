@@ -2,7 +2,7 @@
 LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
     !!***********************************************************************
-    !! Version "$Id: opnlist3.f90 123 2019-08-29 21:31:17Z coats $"
+    !! Version "$Id: opnlist3.f90 124 2019-08-30 16:08:55Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -31,7 +31,7 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
     !!      Modified 10/2015 by CJC for I/O API 3.2: use NF_*() instead of NC*()
     !!      for netCDF-Fortran 4.x compatibility
     !!
-    !!      Modified 8/2019 by CJC:  Logging:  call OPNLOG3() per file here.
+    !!      Modified 8/2019 by CJC:  call OPNLOG3() per file here.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -104,7 +104,7 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
     SDATE3( FID ) = 99999999
     STIME3( FID ) = 0
 
-    WRITE( LOGDEV, '( /5X, 2A, /5X, A )' ) 'Opening LIST-FILE SEQUENCE', FLIST3( FID ), EQNAME
+    WRITE( LOGDEV, '( /5X, 2A, /5X, A )' ) 'Opening LIST-FILE SEQUENCE ', FLIST3( FID ), EQNAME
 
     DO  F = 1, LISTCNT
 
@@ -129,12 +129,12 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
                 VOLAT3( I ) = .FALSE.
             END IF
 
-            FLIST3( I ) = FIL16
-
             IF ( OPNFIL3( EQNAME, I, FSREAD3, PGNAME ) ) THEN
 
                 L = L + 1
                 ILIST3( L ) = I
+                FLIST3( I ) = FIL16
+                RONLY3( I ) = .TRUE.
 
                 IF ( F .EQ. 1 ) THEN
 

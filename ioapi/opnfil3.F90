@@ -2,7 +2,7 @@
 LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
 
     !!***********************************************************************
-    !! Version "$Id: opnfil3.F 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: opnfil3.F90 124 2019-08-30 16:08:55Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !! (C) 2003-2010 Baron Advanced Meteorological Systems
@@ -61,6 +61,8 @@ LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
     !!
     !!      Modified 10/2015: use NF_*() instead of NC*(), for
     !!      netCDF-Fortran 4.x compatibility;  F90 "free" source format
+    !!
+    !!      Modified 08/2019 by CJC to fix bug relatyed to LIST: file-lists
     !!***********************************************************************
 
     USE MODNCFIO
@@ -112,21 +114,14 @@ LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
         RETURN
     END IF
 
-    IF ( FSTATUS .NE. NF_WRITE ) THEN
-        FMODE = FSTATUS
+    IF ( FSTATUS .EQ. FSREAD3 ) THEN
+        FMODE = NF_NOWRITE
     ELSE
-#if _CRAY
         FMODE = NF_WRITE
-#endif
-#if ! ( _CRAY )
-       FMODE = IOR( NF_SHARE, NF_WRITE )
-#endif
     END IF
-#if ! ( _CRAY )
     IF ( VOLAT3( FID ) ) THEN
-        FMODE = IOR( FMODE , NF_SHARE )
+        FMODE = IOR( FSTATUS , NF_SHARE )
     END IF
-#endif
 
     EFLAG = .FALSE.
 
@@ -678,7 +673,7 @@ LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
 
     !!.......   If opened for WRITE:  put attribute HISTORY:  update description
 
-    IF ( IAND( FSTATUS, NF_WRITE ) .NE. 0 ) THEN
+    IF ( IAND( FMODE, NF_WRITE ) .NE. 0 ) THEN
 
         IERR = NF_REDEF( FNUM )
         IF ( IERR .NE. 0 ) THEN
