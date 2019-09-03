@@ -2,7 +2,7 @@
 PROGRAM JULDIFF
 
     !!******************************************************************
-    !! Version "$Id: juldiff.f90 121 2015-01-20 22:24:38Z coats $"
+    !! Version "$Id: juldiff.f90 125 2019-09-03 14:51:51Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2014 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -74,7 +74,7 @@ PROGRAM JULDIFF
 
     !!...........   Number of days, in terms of 24-hour timestep sequence:
 
-    WRITE( *,'( 2( A, I10, 2X ) )' ) 'JDATE=',JDATE, 'KDATE=',KDATE
+    !!  WRITE( *,'( 2( A, I10, 2X ) )' ) 'JDATE=',JDATE, 'KDATE=',KDATE
     IF ( JDATE .LT. KDATE ) THEN
         IDAYS = -1 + CURREC( KDATE, 0, JDATE, 0, 240000, I, J )
     ELSE
