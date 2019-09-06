@@ -2,7 +2,7 @@
 LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
 
     !!***********************************************************************
-    !! Version "$Id: opnfil3.F90 124 2019-08-30 16:08:55Z coats $"
+    !! Version "$Id: opnfil3.F90 126 2019-09-06 18:20:12Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !! (C) 2003-2010 Baron Advanced Meteorological Systems
@@ -62,7 +62,7 @@ LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
     !!      Modified 10/2015: use NF_*() instead of NC*(), for
     !!      netCDF-Fortran 4.x compatibility;  F90 "free" source format
     !!
-    !!      Modified 08/2019 by CJC to fix bug relatyed to LIST: file-lists
+    !!      Modified 09/2019 by CJC to fix bug related to LIST: file-lists
     !!***********************************************************************
 
     USE MODNCFIO
@@ -79,7 +79,7 @@ LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
 
     CHARACTER*(*), INTENT(IN   ) :: EQNAME  !  physical name of file to be opened
     INTEGER      , INTENT(IN   ) :: FID     !  index into STATE3 tables
-    INTEGER      , INTENT(IN   ) :: FSTATUS !  read-only/read-write status for NF_OPEN()
+    INTEGER      , INTENT(IN   ) :: FSTATUS !  (netCDF) read-only/read-write status for NF_OPEN()
     CHARACTER*(*), INTENT(IN   ) :: PGNAME  !  name of calling program
 
 
@@ -114,12 +114,8 @@ LOGICAL FUNCTION  OPNFIL3 ( EQNAME, FID, FSTATUS, PGNAME )
         RETURN
     END IF
 
-    IF ( FSTATUS .EQ. FSREAD3 ) THEN
-        FMODE = NF_NOWRITE
-    ELSE
-        FMODE = NF_WRITE
-    END IF
-    IF ( VOLAT3( FID ) ) THEN
+    FMODE = FSTATUS
+    IF ( VOLAT3( FID ) .OR. ( FSTATUS .EQ. NF_WRITE ) ) THEN
         FMODE = IOR( FSTATUS , NF_SHARE )
     END IF
 

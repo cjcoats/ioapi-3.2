@@ -2,7 +2,7 @@
 LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
 
     !!***********************************************************************
-    !! Version "$Id: opnlist3.f90 124 2019-08-30 16:08:55Z coats $"
+    !! Version "$Id: opnlist3.f90 126 2019-09-06 18:20:12Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -82,7 +82,7 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
     DBLERR( P, Q ) = ( (P - Q)**2  .GT.  1.0E-10*( P*P + Q*Q + 1.0E-5 ) )
 
     !!.............................................................................
-    !!   begin body of subroutine  OPNFIL3
+    !!   begin body of subroutine  OPNLIST3
 
     CALL NAMEVAL( FIL16, EQNAME )
 
@@ -129,7 +129,7 @@ LOGICAL FUNCTION OPNLIST3( FID, PGNAME ) RESULT( OFLAG )
                 VOLAT3( I ) = .FALSE.
             END IF
 
-            IF ( OPNFIL3( EQNAME, I, FSREAD3, PGNAME ) ) THEN
+            IF ( OPNFIL3( EQNAME, I, NF_NOWRITE, PGNAME ) ) THEN
 
                 L = L + 1
                 ILIST3( L ) = I
