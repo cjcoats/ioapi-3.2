@@ -2,7 +2,7 @@
 PROGRAM FINDWNDW
 
     !!***************************************************************
-    !!  Version "$Id: findwndw.f90 128 2019-09-13 19:55:58Z coats $"
+    !!  Version "$Id: findwndw.f90 130 2019-09-13 20:42:32Z coats $"
     !!  Copyright (c) 2016 UNC Institute for the Environment
     !!  All rights reserved.
     !!..............................................................
@@ -19,7 +19,7 @@ PROGRAM FINDWNDW
     !!      Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
     !!***************************************************************
 
-    USE M3UTILIO
+    USE M3UTILIO, M3U_INITSPHERES => INITSPHERES
     USE MODGCTP
 
     IMPLICIT NONE
@@ -120,7 +120,7 @@ PROGRAM FINDWNDW
 '    Albers Conic Equal Area',                                                  &
 '',                                                                             &
 'Program version:',                                                             &
-'$Id: findwndw.f90 128 2019-09-13 19:55:58Z coats $',&
+'$Id: findwndw.f90 130 2019-09-13 20:42:32Z coats $',&
 '',                                                                             &
 'Copyright (C) 2016 UNC Institute for the Environment',                         &
 'All rights reserved.',                                                         &
@@ -225,7 +225,9 @@ PROGRAM FINDWNDW
 
     !!..........  Calculate grid-to-grid transform:
 
-    CALL INITSPHERES()
+    IF ( .NOT. INITSPHERES() ) THEN
+        CALL M3EXIT( PNAME, 0,0, 'INITSPHERES() failure', 2 )
+    END IF
     CALL GRID2XY( GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,    &
                   GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,    &
                   NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,    &
