@@ -2,7 +2,7 @@
         PROGRAM PROJTOOL
 
     !!***********************************************************************
-    !! Version "$Id: projtool.f 108 2018-09-07 18:59:37Z coats $"
+    !! Version "$Id: projtool.f 128 2019-09-13 19:55:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1997-2013 Carlie J. Coats, Jr.,
     !! (C) 2002-2012 Baron Advanced Meteorological Systems. LLC., and
@@ -34,6 +34,7 @@
     !!       Version  8/2014 by CJC:  need to call SETPROJ() for cases 6,7
     !!       Version 12/2014 by CJC:  Version for I/O API-v3.2: bug-fix in SHOWGRID(),
     !!       menu-display; new "define output grid" menu item; USE MODGCTP/XY2XY()
+    !!       Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
     !!***********************************************************************
 
       USE M3UTILIO
@@ -162,11 +163,13 @@ C   begin body of program PROJTOOL
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: projtool.f 108 2018-09-07 18:59:37Z coats               $',
+     &'$Id:: projtool.f 128 2019-09-13 19:55:58Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) )
      &      CALL M3EXIT( PNAME, 0, 0, 'Exit at user request', 0 )
+
+        CALL INITSPHERES()
 
         MODE = 1
         XX   = 0.0D0

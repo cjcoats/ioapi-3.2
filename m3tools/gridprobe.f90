@@ -2,7 +2,7 @@
 PROGRAM GRIDPROBE
 
     !!***************************************************************
-    !! Version "$Id: gridprobe.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: gridprobe.f90 128 2019-09-13 19:55:58Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, 
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -22,6 +22,7 @@ PROGRAM GRIDPROBE
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  11/2015 by CJC for I/O API v3.2
+    !!      Version    09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
     !!***************************************************************
 
     USE M3UTILIO
@@ -144,7 +145,7 @@ PROGRAM GRIDPROBE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: gridprobe.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: gridprobe.f90 128 2019-09-13 19:55:58Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -154,6 +155,8 @@ PROGRAM GRIDPROBE
 
 
     !!...............  Open files:
+
+    CALL INITSPHERES()
 
     IF ( .NOT.OPEN3( 'INFILE', FSREAD3, PNAME ) ) THEN
         EFLAG = .TRUE.

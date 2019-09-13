@@ -2,7 +2,7 @@
         PROGRAM M3INTERP
 
 C***********************************************************************
-C Version "$Id: m3interp.f 15 2017-05-17 15:54:47Z coats $"
+C Version "$Id: m3interp.f 128 2019-09-13 19:55:58Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -10,7 +10,7 @@ C   (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  137
+C  program body starts at line  138
 C
 C  DESCRIPTION:
 C       For each time step in the specified time step sequence,
@@ -43,6 +43,7 @@ C       Version  01/2013 by CJC:  use new LASTTIME() to find EDATE:ETIME
 C       Version  12/2014 by CJC for I/O API v3.2:  USE MODGCTP: GRID2INDX(),
 C       INDXMULT(), and related changes.
 C       Version  06/2016 by CJC:  copy CMAQ metadata, if present
+C       Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
 C***********************************************************************
 
       USE M3UTILIO
@@ -208,7 +209,7 @@ C   begin body of program M3INTERP
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3interp.f 15 2017-05-17 15:54:47Z coats                $',
+     &'$Id:: m3interp.f 128 2019-09-13 19:55:58Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -320,7 +321,7 @@ C...............  Setup for mode of operation:  copy or interpolate:
             IF ( FTYPE3D .EQ. GRDDED3 ) THEN
                 SIZE = NCOLS3D * NROWS3D * NLAYS3D
             ELSE IF ( FTYPE3D .EQ. BNDARY3 ) THEN
-                SIZE = ( 2 * ( NCOLS3D + NROWS3D + 2*NTHIK3D ) )*NLAYS3D
+                SIZE = NCOLS3D * NROWS3D * NLAYS3D
             ELSE IF ( FTYPE3D .EQ. CUSTOM3 ) THEN
                 SIZE = NCOLS3D * NROWS3D * NLAYS3D
             ELSE
@@ -330,7 +331,7 @@ C...............  Setup for mode of operation:  copy or interpolate:
                 EFLAG = .TRUE.
             END IF
 
-            ALLOCATE( BUF1( SIZE, NLAYS3D ), STAT = ISTAT )
+            ALLOCATE( BUF1( NCOLS3D*NROWS3D, NLAYS3D ), STAT = ISTAT )
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10 )' )
      &               'Buffer allocation failed:  STAT=', ISTAT
@@ -431,10 +432,10 @@ C...............  Setup for mode of operation:  copy or interpolate:
 C...............  Allocate buffers; compute re-gridding matrix
 
             ALLOCATE( BUF1 ( NCOLS1*NROWS1, NLAYS1 ),
-     &                BUF2 ( NCOLS2*NROWS2, NLAYS1 ),
-     &                IX2  ( NCOLS2*NROWS2 ),
-     &                PX2  ( NCOLS2*NROWS2 ),
-     &                PY2  ( NCOLS2*NROWS2 ),  STAT = ISTAT )
+     &                BUF2( NCOLS2*NROWS2, NLAYS1 ),
+     &                IX2   ( NCOLS2*NROWS2 ),
+     &                PX2   ( NCOLS2*NROWS2 ),
+     &                PY2   ( NCOLS2*NROWS2 ),  STAT = ISTAT )
 
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10)' )
@@ -449,6 +450,7 @@ C...............  Allocate buffers; compute re-gridding matrix
             YFLAG = DBLERR( YCENT1, YCENT3D )
             EFLAG = (AFLAG .OR. BFLAG .OR. CFLAG .OR. XFLAG .OR. YFLAG)
 
+            CALL INITSPHERES()
             CALL GRID2INDX( GDTYP1,P_ALP1,P_BET1,P_GAM1,XCENT1,YCENT1,     &
      &                      GDTYP2,P_ALP2,P_BET2,P_GAM2,XCENT2,YCENT2,     &
      &                      NCOLS1,NROWS1,XORIG1,YORIG1,XCELL1,YCELL1,     &
@@ -521,7 +523,7 @@ C...............  Process output time step sequence
                 DO  V = 1, NVARS3D
 
                     IF ( .NOT. INTERP3( FNAME, VNAME3D(V), PNAME,
-     &                                  JDATE, JTIME, SIZE, BUF1
+     &                                  JDATE, JTIME, NSIZE1, BUF1
      &                                  ) ) THEN
                         MESG = 'Failure reading variable "' //
      &                         TRIM( VNAME3D( V ) ) //

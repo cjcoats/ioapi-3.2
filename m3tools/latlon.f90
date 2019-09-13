@@ -43,6 +43,7 @@ PROGRAM LATLON
     !!      Fortran-90 "free" source format; use generics for "GET*()"
     !!      Version 12/2017 by CJC;  add double-precision vbles LATD, LOND;
     !!      add/fix EQMGRD3, TRMGRD3, MERGRD3, POLGRD3, STEGRD3, LEQGRD3 support.
+    !!      Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
     !!***********************************************************************
 
     USE M3UTILIO
@@ -125,7 +126,7 @@ PROGRAM LATLON
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: latlon.f90 107 2018-07-26 14:05:39Z coats $',&
+'$Id: latlon.f90 128 2019-09-13 19:55:58Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -297,6 +298,7 @@ PROGRAM LATLON
 
     END IF      !  if specify horizontal grid by name, or interactively
 
+    CALL INITSPHERES()
 
     !!.......   Now enter vertical coordinate structure:
 

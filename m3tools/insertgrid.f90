@@ -2,7 +2,7 @@
 PROGRAM INSERTGRID
 
     !!***************************************************************
-    !!  Version "$Id: insertgrid.f90 222 2015-08-19 13:16:40Z coats $"
+    !!  Version "$Id: insertgrid.f90 128 2019-09-13 19:55:58Z coats $"
     !!  Copyright (c) 2015 UNC Institute for the Environment
     !!  All rights reserved.
     !!..............................................................
@@ -14,6 +14,7 @@ PROGRAM INSERTGRID
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  7/2015 by Carlie J. Coats, Jr., UNC IE
+    !!      Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
     !!***************************************************************
 
     USE M3UTILIO
@@ -159,7 +160,7 @@ PROGRAM INSERTGRID
 '    Albers Conic Equal Area',                                                  &
 '',                                                                             &
 'Program version:',                                                             &
-'$Id: insertgrid.f90 222 2015-08-19 13:16:40Z coats $',&
+'$Id: insertgrid.f90 128 2019-09-13 19:55:58Z coats $',&
 '',                                                                             &
 'Copyright (C) 2015 UNC Institute for the Environment',                         &
 'All rights reserved.',                                                         &
@@ -416,6 +417,7 @@ PROGRAM INSERTGRID
 
     !!..........  Calculate grid-to-grid transform:
 
+    CALL INITSPHERES()
     CALL GRID2XY( GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,    &
                   GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,    &
                   NCOLS3, NROWS3, XORIG1, YORIG1, XCELL3, YCELL3,    &
