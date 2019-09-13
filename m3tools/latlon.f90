@@ -46,7 +46,7 @@ PROGRAM LATLON
     !!      Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
     !!***********************************************************************
 
-    USE M3UTILIO
+    USE M3UTILIO, AVOID_INITSPHERES => INITSPHERES
     USE MODGCTP
 
     IMPLICIT NONE
@@ -126,7 +126,7 @@ PROGRAM LATLON
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: latlon.f90 128 2019-09-13 19:55:58Z coats $',&
+'$Id: latlon.f90 130 2019-09-13 20:42:32Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -298,7 +298,9 @@ PROGRAM LATLON
 
     END IF      !  if specify horizontal grid by name, or interactively
 
-    CALL INITSPHERES()
+    IF ( .NOT. INITSPHERES() ) THEN
+        CALL M3EXIT( PNAME, 0,0, 'INITSPHERES() failure', 2 )
+    END IF
 
     !!.......   Now enter vertical coordinate structure:
 

@@ -2,7 +2,7 @@
         PROGRAM PROJTOOL
 
     !!***********************************************************************
-    !! Version "$Id: projtool.f 128 2019-09-13 19:55:58Z coats $"
+    !! Version "$Id: projtool.f 130 2019-09-13 20:42:32Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1997-2013 Carlie J. Coats, Jr.,
     !! (C) 2002-2012 Baron Advanced Meteorological Systems. LLC., and
@@ -37,7 +37,7 @@
     !!       Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
     !!***********************************************************************
 
-      USE M3UTILIO
+      USE M3UTILIO, AVOID_INITSPHERES => INITSPHERES
       USE MODGCTP
 
       IMPLICIT NONE
@@ -163,13 +163,15 @@ C   begin body of program PROJTOOL
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: projtool.f 128 2019-09-13 19:55:58Z coats               $',
+     &'$Id:: projtool.f 130 2019-09-13 20:42:32Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) )
      &      CALL M3EXIT( PNAME, 0, 0, 'Exit at user request', 0 )
 
-        CALL INITSPHERES()
+        IF ( .NOT. INITSPHERES() ) THEN
+            CALL M3EXIT( PNAME, 0,0, 'INITSPHERES() failure', 2 )
+        END IF
 
         MODE = 1
         XX   = 0.0D0

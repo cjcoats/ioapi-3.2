@@ -2,7 +2,7 @@
 PROGRAM M3CPLE
 
     !!***********************************************************************
-    !! Version "$Id: m3cple.f90 128 2019-09-13 19:55:58Z coats $"
+    !! Version "$Id: m3cple.f90 130 2019-09-13 20:42:32Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
     !!   (C) 1995-2002,2005-2013, 2018- Carlie J. Coats, Jr.,
@@ -57,7 +57,7 @@ PROGRAM M3CPLE
     !!       Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP
     !!***********************************************************************
 
-    USE M3UTILIO
+    USE M3UTILIO, AVOID_INITSPHERES => INITSPHERES
     USE MODGCTP
     USE MODATTS3
 
@@ -194,7 +194,7 @@ PROGRAM M3CPLE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3cple.f90 128 2019-09-13 19:55:58Z coats $',&
+'$Id: m3cple.f90 130 2019-09-13 20:42:32Z coats $',&
 ' '
 
         IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -429,7 +429,9 @@ PROGRAM M3CPLE
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         END IF
 
-        CALL INITSPHERES()
+        IF ( .NOT. INITSPHERES() ) THEN
+            CALL M3EXIT( PNAME, 0,0, 'INITSPHERES() failure', 2 )
+        END IF
         CALL GRID2INDX( GDTYP1,P_ALP1,P_BET1,P_GAM1,XCENT1,YCENT1,     &
                         GDTYP2,P_ALP2,P_BET2,P_GAM2,XCENT2,YCENT2,     &
                         NCOLS1,NROWS1,XORIG1,YORIG1,XCELL1,YCELL1,     &

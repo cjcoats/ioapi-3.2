@@ -2,7 +2,7 @@
         PROGRAM M3INTERP
 
 C***********************************************************************
-C Version "$Id: m3interp.f 128 2019-09-13 19:55:58Z coats $"
+C Version "$Id: m3interp.f 130 2019-09-13 20:42:32Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -46,7 +46,7 @@ C       Version  06/2016 by CJC:  copy CMAQ metadata, if present
 C       Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
 C***********************************************************************
 
-      USE M3UTILIO
+      USE M3UTILIO, AVOID_INITSPHERES => INITSPHERES
       USE MODGCTP
       USE MODATTS3
 
@@ -209,7 +209,7 @@ C   begin body of program M3INTERP
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3interp.f 128 2019-09-13 19:55:58Z coats               $',
+     &'$Id:: m3interp.f 130 2019-09-13 20:42:32Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -450,7 +450,9 @@ C...............  Allocate buffers; compute re-gridding matrix
             YFLAG = DBLERR( YCENT1, YCENT3D )
             EFLAG = (AFLAG .OR. BFLAG .OR. CFLAG .OR. XFLAG .OR. YFLAG)
 
-            CALL INITSPHERES()
+            IF ( .NOT. INITSPHERES() ) THEN
+                CALL M3EXIT( PNAME, 0,0, 'INITSPHERES() failure', 2 )
+            END IF
             CALL GRID2INDX( GDTYP1,P_ALP1,P_BET1,P_GAM1,XCENT1,YCENT1,     &
      &                      GDTYP2,P_ALP2,P_BET2,P_GAM2,XCENT2,YCENT2,     &
      &                      NCOLS1,NROWS1,XORIG1,YORIG1,XCELL1,YCELL1,     &
