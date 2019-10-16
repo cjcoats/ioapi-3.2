@@ -66,7 +66,7 @@
             
         INTEGER, PARAMETER :: MXDLEN3 =   80   !  description line length
         INTEGER, PARAMETER :: NAMLEN3 =   16   !  name length (logical names, etc.)
-        INTEGER, PARAMETER :: MXFILE3 =   64   !  max number of open files
+        INTEGER, PARAMETER :: MXFILE3 =  256   !  max number of open files
         INTEGER, PARAMETER :: MXVARS3 = 2048   !  max number of variables per file
         INTEGER, PARAMETER :: MXDESC3 =   60   !  max number of description lines
         INTEGER, PARAMETER :: MXLAYS3 =  100   !  max # of layers per file

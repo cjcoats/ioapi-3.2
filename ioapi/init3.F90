@@ -2,11 +2,11 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 120 2019-06-21 14:18:20Z coats $"
+    !! Version "$Id: init3.F90 136 2019-10-16 13:57:49Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
-    !! (c) 2007-2018 Carlie J. Coats, Jr., and (C) 2014-2015 UNC Institute
+    !! (c) 2007-2018 Carlie J. Coats, Jr., and (C) 2014-2019 UNC Institute
     !! for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.
@@ -118,7 +118,7 @@ INTEGER FUNCTION INIT3 ( )
       'Program) and the PVM parallel-programming library (from       ',     &
       'Oak Ridge National Laboratory).                               ',     &
       'Copyright (C) 1992-2002 MCNC,                                 ',     &
-      '(C) 1992-2013 Carlie J. Coats, Jr.,                           ',     &
+      '(C) 1992-2018 Carlie J. Coats, Jr.,                           ',     &
       '(C) 2003-2012 Baron Advanced Meteorological Systems, LLC, and ',     &
       '(C) 2014-2019 UNC Institute for the Environment.              ',     &
       'Released under the GNU LGPL  License, version 2.1.  See URL   ',     &
@@ -139,7 +139,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'ioapi-3.2: $Id: init3.F90 120 2019-06-21 14:18:20Z coats $'
+'ioapi-3.2: $Id: init3.F90 136 2019-10-16 13:57:49Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 
