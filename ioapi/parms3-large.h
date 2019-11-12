@@ -2,7 +2,7 @@
 /********************************************************************
 C  INCLUDE FILE  parms3.h
 C
-C    VERSION "$Id: parms3.h 139 2019-11-12 19:14:44Z coats $"
+C    VERSION "$Id: parms3-large.h 139 2019-11-12 19:14:44Z coats $"
 C    EDSS/Models-3 I/O API Version 3.1.
 C       Copyright (C) 1992-2002 MCNC,
 C       (C) 1992-2002,2005-2013  Carlie J. Coats, Jr.,
@@ -106,10 +106,10 @@ extern "C" {
 #endif
 
                           /*  max number of open files                 */
-#define   MXFILE3  (256)
+#define   MXFILE3  (512)
 
                           /*  max number of layers per file            */
-#define   MXVARS3  (2048)
+#define   MXVARS3  (16384)
 
                           /*  max number of additional TSRIES3 atts    */
 #define   MXDESC3   (60)
