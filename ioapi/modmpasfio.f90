@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 67 2017-11-22 21:07:51Z coats $"
+    !!  Version "$Id: modmpasfio.f90 140 2019-11-27 22:51:15Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -144,9 +144,11 @@ MODULE MODMPASFIO
 
     !!........   Parameters:  required MPAS-file "header" structure:
 
-    INTEGER     , PUBLIC, PARAMETER :: MPSTRLEN  = 64
-    INTEGER     , PUBLIC, PARAMETER :: NMPASDIMS = 11
-    INTEGER     , PUBLIC, PARAMETER :: NMPASVARS = 36
+    INTEGER     , PUBLIC, PARAMETER :: MPSTRLEN   =   64
+    INTEGER     , PUBLIC, PARAMETER :: NMPASDIMS  =   11
+    INTEGER     , PUBLIC, PARAMETER :: NMPASVARS =    36
+    INTEGER     , PUBLIC, PARAMETER :: MXMPASVARS = 2048
+    INTEGER     , PUBLIC, PARAMETER :: MXMPASFILE =   64
 
     CHARACTER(LEN=16), PUBLIC, PARAMETER :: MPASDIMNAMES( NMPASDIMS ) = (/   &
            'Time           ',       &       !!  1
@@ -288,33 +290,33 @@ MODULE MODMPASFIO
 
     INTEGER     , SAVE :: MPCOUNT = 0                            !!  current number of active output MP-files
 
-    CHARACTER*16, SAVE :: MPFILES ( MXFILE3 ) = CMISS3           !!  logical file-names table
-    INTEGER     , SAVE :: MPCDFID ( MXFILE3 )                    !!  netCDF file IDs
-    INTEGER     , SAVE :: MPTIMDID( MXFILE3 ) = IMISS3           !!  netCDF time-dimension IDs
-    INTEGER     , SAVE :: MPTWODID( MXFILE3 ) = IMISS3           !!  netCDF "TWO"-dimension IDs
-    INTEGER     , SAVE :: MPSTRDID( MXFILE3 ) = IMISS3           !!  netCDF "STRLEN"-dimension IDs
-    INTEGER     , SAVE :: MPCELDID( MXFILE3 ) = IMISS3           !!  netCDF cell-dimension IDs
-    INTEGER     , SAVE :: MPEDGDID( MXFILE3 ) = IMISS3           !!  netCDF edge-dimension IDs
-    INTEGER     , SAVE :: MPVRTDID( MXFILE3 ) = IMISS3           !!  netCDF vertex-dimension IDs
-    INTEGER     , SAVE :: MPBDYDID( MXFILE3 ) = IMISS3           !!  netCDF bdy-cell-dimension IDs
-    INTEGER     , SAVE :: MP2BDYID( MXFILE3 ) = IMISS3           !!  netCDF bdy-cell-dimension IDs
-    INTEGER     , SAVE :: MPDEGDID( MXFILE3 ) = IMISS3           !!  netCDF vertex-degree dimension IDs
-    INTEGER     , SAVE :: MPLVLDID( MXFILE3 ) = IMISS3           !!  netCDF level-dimension IDs
-    INTEGER     , SAVE :: MPNRECS ( MXFILE3 ) = 0                !!  netCDF max step-number (1,2,...)
-    INTEGER     , SAVE :: MPNVARS ( MXFILE3 )                    !!  number of variables, per file
-    INTEGER     , SAVE :: MPNCELLS( MXFILE3 )                    !!  number of cells, per file
-    INTEGER     , SAVE :: MPNEDGES( MXFILE3 )                    !!  number of edges, per file
-    INTEGER     , SAVE :: MPNVRTXS( MXFILE3 )                    !!  number of vertics, per file
-    INTEGER     , SAVE :: MPNVLVLS( MXFILE3 )                    !!  number of levels, per file
-    INTEGER     , SAVE :: MPNVORDR( MXFILE3 )                    !!  max cells per vertex, per file
-    INTEGER     , SAVE :: MPNBNDYC( MXFILE3 )                    !!  max edges per cell, per file
-    CHARACTER*32, SAVE :: MPVNAME ( MXVARS3, MXFILE3 ) = CMISS3  !!  variable-names table
-    INTEGER     , SAVE :: MPVARID ( MXVARS3, MXFILE3 )           !!  netCDF variable-IDs
-    INTEGER     , SAVE :: MPVTYPE ( MXVARS3, MXFILE3 )           !!  netCDF variable-types (M3REAL, etc.)
-    INTEGER     , SAVE :: MPVDCNT ( MXVARS3, MXFILE3 )           !!  dimension-count per variable
-    CHARACTER*32, SAVE :: MPVDNAM ( 7, MXVARS3, MXFILE3 )        !!  dimension-names  "
-    INTEGER     , SAVE :: MPVDIDS ( 7, MXVARS3, MXFILE3 )        !!  dimension-IDs    "
-    INTEGER     , SAVE :: MPVDIMS ( 7, MXVARS3, MXFILE3 )        !!  dimension-sizes  "
+    CHARACTER*16, SAVE :: MPFILES ( MXMPASFILE ) = CMISS3           !!  logical file-names table
+    INTEGER     , SAVE :: MPCDFID ( MXMPASFILE )                    !!  netCDF file IDs
+    INTEGER     , SAVE :: MPTIMDID( MXMPASFILE ) = IMISS3           !!  netCDF time-dimension IDs
+    INTEGER     , SAVE :: MPTWODID( MXMPASFILE ) = IMISS3           !!  netCDF "TWO"-dimension IDs
+    INTEGER     , SAVE :: MPSTRDID( MXMPASFILE ) = IMISS3           !!  netCDF "STRLEN"-dimension IDs
+    INTEGER     , SAVE :: MPCELDID( MXMPASFILE ) = IMISS3           !!  netCDF cell-dimension IDs
+    INTEGER     , SAVE :: MPEDGDID( MXMPASFILE ) = IMISS3           !!  netCDF edge-dimension IDs
+    INTEGER     , SAVE :: MPVRTDID( MXMPASFILE ) = IMISS3           !!  netCDF vertex-dimension IDs
+    INTEGER     , SAVE :: MPBDYDID( MXMPASFILE ) = IMISS3           !!  netCDF bdy-cell-dimension IDs
+    INTEGER     , SAVE :: MP2BDYID( MXMPASFILE ) = IMISS3           !!  netCDF bdy-cell-dimension IDs
+    INTEGER     , SAVE :: MPDEGDID( MXMPASFILE ) = IMISS3           !!  netCDF vertex-degree dimension IDs
+    INTEGER     , SAVE :: MPLVLDID( MXMPASFILE ) = IMISS3           !!  netCDF level-dimension IDs
+    INTEGER     , SAVE :: MPNRECS ( MXMPASFILE ) = 0                !!  netCDF max step-number (1,2,...)
+    INTEGER     , SAVE :: MPNVARS ( MXMPASFILE )                    !!  number of variables, per file
+    INTEGER     , SAVE :: MPNCELLS( MXMPASFILE )                    !!  number of cells, per file
+    INTEGER     , SAVE :: MPNEDGES( MXMPASFILE )                    !!  number of edges, per file
+    INTEGER     , SAVE :: MPNVRTXS( MXMPASFILE )                    !!  number of vertics, per file
+    INTEGER     , SAVE :: MPNVLVLS( MXMPASFILE )                    !!  number of levels, per file
+    INTEGER     , SAVE :: MPNVORDR( MXMPASFILE )                    !!  max cells per vertex, per file
+    INTEGER     , SAVE :: MPNBNDYC( MXMPASFILE )                    !!  max edges per cell, per file
+    CHARACTER*32, SAVE :: MPVNAME ( MXMPASVARS, MXMPASFILE ) = CMISS3  !!  variable-names table
+    INTEGER     , SAVE :: MPVARID ( MXMPASVARS, MXMPASFILE )           !!  netCDF variable-IDs
+    INTEGER     , SAVE :: MPVTYPE ( MXMPASVARS, MXMPASFILE )           !!  netCDF variable-types (M3REAL, etc.)
+    INTEGER     , SAVE :: MPVDCNT ( MXMPASVARS, MXMPASFILE )           !!  dimension-count per variable
+    CHARACTER*32, SAVE :: MPVDNAM ( 7, MXMPASVARS, MXMPASFILE )        !!  dimension-names  "
+    INTEGER     , SAVE :: MPVDIDS ( 7, MXMPASVARS, MXMPASFILE )        !!  dimension-IDs    "
+    INTEGER     , SAVE :: MPVDIMS ( 7, MXMPASVARS, MXMPASFILE )        !!  dimension-sizes  "
 
     LOGICAL     , SAVE :: VERBOSE  = .FALSE.
     LOGICAL     , SAVE :: CHK_FILL = .FALSE.
@@ -463,7 +465,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 67 2017-11-22 21:07:51Z coats $',&
+        'Version $Id: modmpasfio.f90 140 2019-11-27 22:51:15Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -628,7 +630,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 67 2017-11-22 21:07:51Z coats $',&
+        'Version $Id: modmpasfio.f90 140 2019-11-27 22:51:15Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -2287,7 +2289,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         END IF
 
         F = MPCOUNT+1
-        IF ( F .GT. MXFILE3 ) THEN
+        IF ( F .GT. MXMPASFILE ) THEN
             MESG = PNAME // ' File-table overflow for "' //TRIM(FNAME)// '"'
             CALL M3MESG( MESG )
             OPENMPAS = .FALSE.
@@ -2546,11 +2548,11 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
                 CALL M3MESG( NF_STRERROR(ISTAT) )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        ELSE IF ( NVARS .GT. MXVARS3 ) THEN
+        ELSE IF ( NVARS .GT. MXMPASVARS ) THEN
             WRITE( MESG, '( 2( A, I3, 2X ), 3A )' )     &
-                'Actual NVARS=', NVARS, 'exceeds MXVAR=', MXVARS3, 'in "', TRIM( FNAME ), '":  list truncated'
+                'Actual NVARS=', NVARS, 'exceeds MXVAR=', MXMPASVARS, 'in "', TRIM( FNAME ), '":  list truncated'
             CALL M3WARN( PNAME, 0,0, MESG )
-            NVARS = MXVARS3
+            NVARS = MXMPASVARS
         ELSE
             MPNVARS( F ) = NVARS
         END IF
@@ -2706,7 +2708,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
             RETURN
         END IF
 
-        IF ( NVARS .GT. MXVARS3 ) THEN
+        IF ( NVARS .GT. MXMPASVARS ) THEN
             MESG = 'Max NVARS for this build exceeded:  file' // FNAME
             CALL M3WARN( PNAME, 0,0, MESG )
             CREATEMPAS2 = .FALSE.
@@ -2722,7 +2724,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         END IF
 
         F = MPCOUNT+1
-        IF ( F .GT. MXFILE3 ) THEN
+        IF ( F .GT. MXMPASFILE ) THEN
             MESG = PNAME // ' File-table overflow for "' //TRIM(FNAME)// '"'
             CALL M3MESG( MESG )
             CREATEMPAS2 = .FALSE.
@@ -4318,12 +4320,12 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         CHARACTER*(*), INTENT(IN   ) :: FNAME                   !!  logical file name
         INTEGER      , INTENT(  OUT) :: NRECS                   !!  number of time steps
         INTEGER      , INTENT(  OUT) :: NVARS                   !!  number of (extra) output variables
-        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVARS3 )       !!  variable-names
-        CHARACTER*(*), INTENT(  OUT) :: VUNITS( MXVARS3 )       !!  variable-names
-        INTEGER      , INTENT(  OUT) :: VTYPES( MXVARS3 )       !!  variable-type M3REAL, etc...)
-        INTEGER      , INTENT(  OUT) :: VNDIMS( MXVARS3 )       !!  rank (number of dimensions)
-        INTEGER      , INTENT(  OUT) :: VDIMS ( 7,MXVARS3 )     !!  list of dimensions
-        CHARACTER*(*), INTENT(  OUT) :: VDNAME( 7,MXVARS3 )     !!  names for dimensions used for the variables
+        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXMPASVARS )       !!  variable-names
+        CHARACTER*(*), INTENT(  OUT) :: VUNITS( MXMPASVARS )       !!  variable-names
+        INTEGER      , INTENT(  OUT) :: VTYPES( MXMPASVARS )       !!  variable-type M3REAL, etc...)
+        INTEGER      , INTENT(  OUT) :: VNDIMS( MXMPASVARS )       !!  rank (number of dimensions)
+        INTEGER      , INTENT(  OUT) :: VDIMS ( 7,MXMPASVARS )     !!  list of dimensions
+        CHARACTER*(*), INTENT(  OUT) :: VDNAME( 7,MXMPASVARS )     !!  names for dimensions used for the variables
 
         INTEGER         F, V, N, IERR
         LOGICAL         EFLAG
@@ -4349,7 +4351,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
             NRECS = MPNRECS( F )
             NVARS = MPNVARS( F )
 
-            DO V = 1, MIN( MXVARS3, NVARS )
+            DO V = 1, MIN( MXMPASVARS, NVARS )
 
                 IERR = NF_GET_ATT_TEXT( MPCDFID( F ), MPVARID( V,F ), 'units', VUNITS( V ) )
                 IF ( IERR .EQ. NF_EEXIST ) THEN
@@ -4379,11 +4381,11 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         CHARACTER*(*), INTENT(IN   ) :: FNAME                   !!  logical file name
         INTEGER      , INTENT(  OUT) :: NRECS                   !!  number of time steps
         INTEGER      , INTENT(  OUT) :: NVARS                   !!  number of (extra) output variables
-        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVARS3 )       !!  variable-names
-        INTEGER      , INTENT(  OUT) :: VTYPES( MXVARS3 )       !!  variable-type M3REAL, etc...)
-        INTEGER      , INTENT(  OUT) :: VNDIMS( MXVARS3 )       !!  rank (number of dimensions)
-        INTEGER      , INTENT(  OUT) :: VDIMS ( 7,MXVARS3 )     !!  list of dimensions
-        CHARACTER*(*), INTENT(  OUT) :: VDNAME( 7,MXVARS3 )     !!  names for dimensions used for the variables
+        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXMPASVARS )       !!  variable-names
+        INTEGER      , INTENT(  OUT) :: VTYPES( MXMPASVARS )       !!  variable-type M3REAL, etc...)
+        INTEGER      , INTENT(  OUT) :: VNDIMS( MXMPASVARS )       !!  rank (number of dimensions)
+        INTEGER      , INTENT(  OUT) :: VDIMS ( 7,MXMPASVARS )     !!  list of dimensions
+        CHARACTER*(*), INTENT(  OUT) :: VDNAME( 7,MXMPASVARS )     !!  names for dimensions used for the variables
 
         CHARACTER*1, PARAMETER :: BLANK = ' '
 
@@ -4410,7 +4412,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         NVARS = MPNVARS( F )
         EFLAG = .FALSE.
 
-        DO V = 1, MIN( MXVARS3, NVARS )
+        DO V = 1, MIN( MXMPASVARS, NVARS )
 
             VNAMES( V ) = MPVNAME( V,F )
             VTYPES( V ) = MPVTYPE( V,F )
