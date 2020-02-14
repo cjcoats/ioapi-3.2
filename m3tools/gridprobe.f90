@@ -2,7 +2,7 @@
 PROGRAM GRIDPROBE
 
     !!***************************************************************
-    !! Version "$Id: gridprobe.f90 130 2019-09-13 20:42:32Z coats $"
+    !! Version "$Id: gridprobe.f90 143 2020-02-14 16:40:32Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, 
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -23,6 +23,7 @@ PROGRAM GRIDPROBE
     !!  REVISION  HISTORY:
     !!      Prototype  11/2015 by CJC for I/O API v3.2
     !!      Version    09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
+    !!      Version    02/2020 by CJC:  ASCII, M3IO output options
     !!***************************************************************
 
     USE M3UTILIO, M3U_INITSPHERES => INITSPHERES
@@ -62,11 +63,12 @@ PROGRAM GRIDPROBE
     REAL            VBUF( MXPNT )
     CHARACTER*16    VNAME
 
-    LOGICAL         EFLAG, HEADER
+    LOGICAL         EFLAG, HEADER, REPORT, OUTFILE
 
     CHARACTER*72    PROMPT
     CHARACTER*144   MENU( MXVARS3 )
     CHARACTER*256   MESG
+    CHARACTER*512   PATH
 
     !!     GRIDDESC name, parameters for output grid
 
@@ -109,7 +111,8 @@ PROGRAM GRIDPROBE
 'PRECONDITIONS REQUIRED:',                                                  &
 '    setenv INFILE     <path name for  input gridded file>',                &
 '    setenv POINTS     <path name for  input points  file>',                &
-'    setenv REPORT     <path name for output ASCII   file>',                &
+'    setenv OUTFILE    <path name for output M3IO    file> or "NONE"',      &
+'    setenv REPORT     <path name for output ASCII   file> or "NONE"',      &
 '    setenv HEADER     <Header-lines on output file? (Y/N) [N]',            &
 '',                                                                         &
 '    at most 256 points in the set of points.',                             &
@@ -119,7 +122,7 @@ PROGRAM GRIDPROBE
 '        <latitude for site>  <longitude for site>',                        &
 '',                                                                         &
 'THE PROGRAM WILL PROMPT YOU for starting and ending date&time for the',    &
-'report period, time step, and name of the variable to interpolate.',       &
+'report period, time step, and name of the REAL variable to interpolate.',  &
 'For multi-layer files, the program will also prompt you for the',          &
 'layer to extract.',                                                        &
 '',                                                                         &
@@ -145,7 +148,7 @@ PROGRAM GRIDPROBE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: gridprobe.f90 130 2019-09-13 20:42:32Z coats $',&
+'$Id: gridprobe.f90 143 2020-02-14 16:40:32Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -216,7 +219,7 @@ PROGRAM GRIDPROBE
     PDEV = GETEFILE( 'POINTS', .TRUE., .TRUE., PNAME )
     IF ( PDEV .LT. 0 ) THEN
         EFLAG = .TRUE.
-        CALL M3MESG( 'ERROR:  Could not open file "REPORT"'  )
+        CALL M3MESG( 'ERROR:  Could not open file "POINTS"'  )
     ELSE
 
         NPNTS = 0
@@ -255,17 +258,27 @@ PROGRAM GRIDPROBE
 
     END IF
 
-
-    RDEV = GETEFILE( 'REPORT', .FALSE., .TRUE., PNAME )
-    IF ( RDEV .LT. 0 ) THEN
-        EFLAG = .TRUE.
-        CALL M3MESG( 'ERROR:  Could not open file "REPORT"'  )
-    END IF
-
-    HEADER = ENVYN( 'HEADER', 'ASCII header on ${REPORT}?', .FALSE., ISTAT )
+    CALL ENVSTR( 'OUTFILE', 'path name for output M3IO file, or "NONE', 'NONE', PATH, ISTAT )
+    CALL UPCASE( PATH )
     IF ( ISTAT .GT. 0 ) THEN
         EFLAG = .TRUE.
-        CALL M3MESG( 'Bad environment variable "HEADER"' )
+        CALL M3MESG( 'ERROR:  Bad environment variable "OUTFILE"'  )
+    ELSE
+        OUTFILE = ( PATH .NE. 'NONE' )
+    END IF
+
+    CALL ENVSTR( 'REPORT', 'path name for output M3IO file, or "NONE', 'REPORT.txt', PATH, ISTAT )
+    CALL UPCASE( PATH )
+    IF ( ISTAT .GT. 0 ) THEN
+        EFLAG = .TRUE.
+        CALL M3MESG( 'ERROR:  Bad environment variable "REPORT"'  )
+    ELSE
+        REPORT = ( PATH .NE. 'NONE' )
+    END IF
+    
+    IF ( .NOT.OUTFILE .AND. .NOT.REPORT ) THEN
+        EFLAG = .TRUE.
+        CALL M3MESG( 'ERROR:  no output files requested'  )
     END IF
 
 
@@ -308,9 +321,73 @@ PROGRAM GRIDPROBE
     END IF
 
 
+    IF ( EFLAG ) THEN
+        CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad input set-up', 2 )
+    END IF
 
-    IF ( EFLAG) THEN
-        CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad set-up', 2 )
+
+    !!...............  Open output files:
+
+    IF ( OUTFILE ) THEN
+        FTYPE3D = CUSTOM3
+        SDATE3D = SDATE
+        STIME3D = STIME
+        TSTEP3D = TSTEP
+        NCOLS3D = NPNTS
+        NROWS3D = 1
+        NLAYS3D = 1
+        NTHIK3D = 1
+        GDTYP3D = 1
+        NVARS3D = 1
+        P_ALP3D = 0.0D0
+        P_BET3D = 0.0D0
+        P_GAM3D = 0.0D0
+        XCENT3D = 0.0D0
+        YCENT3D = 0.0D0
+        XORIG3D = 0.0D0
+        YORIG3D = 0.0D0
+        XCELL3D = 0.0D0
+        YCELL3D = 0.0D0
+        
+        VNAME3D( 1 ) = VNAME
+        UNITS3D( 1 ) = UNITS3D( V )
+        VDESC3D( 1 ) = VDESC3D( V )
+        VTYPE3D( 1 ) = M3REAL
+        
+        FDESC3D      = BLANK
+        FDESC3D( 1 ) = 'Values interpolated from ' // GDNAM3D
+        
+        GDNAM3D = 'LATLON'
+
+        IF ( .NOT. OPEN3( 'OUTFILE', FSUNKN3, PNAME ) ) THEN
+            EFLAG = .TRUE.
+            MESG  = 'Could not open "OUTFILE"'
+            CALL M3MESG( MESG )
+        END IF
+        
+    END IF
+
+    IF ( REPORT ) THEN
+
+        RDEV = GETEFILE( 'REPORT', .FALSE., .TRUE., PNAME )
+        IF ( RDEV .LT. 0 ) THEN
+            EFLAG = .TRUE.
+            CALL M3MESG( 'ERROR:  Could not open file "REPORT"'  )
+        END IF
+
+        HEADER = ENVYN( 'HEADER', 'ASCII header on ${REPORT}?', .FALSE., ISTAT )
+        IF ( ISTAT .GT. 0 ) THEN
+            EFLAG = .TRUE.
+            CALL M3MESG( 'Bad environment variable "HEADER"' )
+        END IF
+
+    ELSE
+        HEADER = .FALSE.
+    END IF
+
+
+    IF ( EFLAG ) THEN
+        CALL M3EXIT( PNAME, 0, 0, 'ERROR:  Bad output set-up', 2 )
     END IF
 
 
@@ -343,9 +420,21 @@ PROGRAM GRIDPROBE
         IF ( .NOT.READ3( 'INFILE', VNAME, ALLAYS3, JDATE, JTIME, RBUF ) ) THEN
             EFLAG = .TRUE.
         ELSE
+
             CALL INDXMULT( NPNTS, NCOLS1, NROWS1, INDX, XFAC, YFAC, VBUF, RBUF )
+
+            IF ( REPORT ) THEN
             WRITE( RDEV, '( I9.7, A, I6.6, 256( 2X, 1PE14.6, : ) )' )     &
                 JDATE, ':', JTIME, ( RBUF( K ), K = 1, NPNTS )
+            END IF
+
+            IF ( OUTFILE ) THEN
+                IF ( .NOT.WRITE3( 'OUTFILE', VNAME, JDATE, JTIME, RBUF ) ) THEN
+                    EFLAG = .TRUE.
+                    CALL M3MESG( 'ERROR:  write-failure' )
+                END IF
+            END IF
+
         END IF
 
         CALL NEXTIME( JDATE, JTIME, TSTEP )
