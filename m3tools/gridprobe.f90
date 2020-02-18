@@ -2,7 +2,7 @@
 PROGRAM GRIDPROBE
 
     !!***************************************************************
-    !! Version "$Id: gridprobe.f90 144 2020-02-15 14:46:10Z coats $"
+    !! Version "$Id: gridprobe.f90 145 2020-02-18 14:53:59Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, 
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -148,7 +148,7 @@ PROGRAM GRIDPROBE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: gridprobe.f90 144 2020-02-15 14:46:10Z coats $',&
+'$Id: gridprobe.f90 145 2020-02-18 14:53:59Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -400,9 +400,10 @@ PROGRAM GRIDPROBE
 
     !!...............  Processing loop
 
+    JDATE = SDATE
+    JTIME = STIME
+
     IF ( HEADER ) THEN
-        JDATE = SDATE
-        JTIME = STIME
         WRITE( RDEV, '(1X, A)' ) BAR
         WRITE( RDEV, '(1X, A)' ) 'Interpolation Points and Grid-Normal Coordinates'
         DO K = 1, NPNTS
