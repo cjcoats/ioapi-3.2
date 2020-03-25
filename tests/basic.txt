@@ -1,0 +1,46 @@
+
+    BASIC TEST
+
+    This test will test file-creation and file-reading.  It will create
+    a simple time independent gridded file "LL_2D" using M3Tools
+    program "latlon" and then will report on its statistics using
+    "m3stat".
+
+    M3Tools program "latlon" is a standard command-line driven tool  for
+    creating time independent GRIDDED and/or BOUNDARY files containing
+    latitudes and longitudes for a specified I/O API grid. It is
+    controlled by various environment variables and a "GRIDDESC" file,
+    which contains sets of definitions for multiple coordinate systems
+    and grids in human readable/editable ASCII format. The sample
+    GRIDDESC file for this test contains a selection of Lat-Lon,
+    Lambert, and UTM coordinate systems and grids, including the grid
+    "LL_Terrain" for high resolution (30 arc-second) CONUS MM5/WRF
+    terrain, the  "BELD3_US_1KM" high resolution BELD biogenics grid,
+    and a pair of sample grids covering North Carolina.
+    Environment variable IOAPI_ISPH specifies that the (default) MM5/WRF
+    perfect sphere is used as the spheroid for the coordinate
+    computations.
+    
+    M3Tools program "m3stat" is a standard command-line driven tool that
+    reads I/O API files and computes statistics (max and its location,
+    min and its location, mean, and standard deviation) for a
+    user-specified GRIDDED, BOUNDARY, CUSTOM, IDDATA, or SPARSE-MATRIX
+    Models-3 file and list of variables within it.
+
+    See
+    <https://cjcoats.github.io/ioapi/GRIDDESC.html>
+    <https://cjcoats.github.io/ioapi/LATLON.html>
+    <https://cjcoats.github.io/ioapi/M3STAT.html>
+    <https://cjcoats.github.io/ioapi/SETSPHERE.html>
+
+    The  "latlon" output file can be found as "LL_2D.NC45KM_LAM_9x7.nc"
+    in the tests output-directory.  This file contains four output
+    variables:
+    LAT:  ISO-Standard ;709 cell-center latitudes  as REAL
+    LON:  ISO-Standard 6709 cell-center longitudes as REAL
+    LATD: ISO-Standard 6709 cell-center latitudes  as REAL*8
+    LOND: ISO-Standard 6709 cell-center longitudes as REAL*8
+    
+    In this case, the "m3stat" output statistics-report will be written
+    to a file, which can be found as "LL_2D.NC45KM_LAM_9x7.stats" in the
+    test output-directory,

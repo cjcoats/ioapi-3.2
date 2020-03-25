@@ -22,11 +22,11 @@ E132 = -extend-source 132
 # MFLAGS  = -traceback -mavx    -xAVX2   -march=corei7-avx2     # Haswell
 MFLAGS    = -xHost -traceback
 
-# OMPFLAGS  = -qopenmp      # for Intel compilers, version 16 or later
-# OMPLIBS   = -qopenmp
+# OMPFLAGS  = -openmp      # for Intel compilers, version 15 or earlier
+# OMPLIBS   = -openmp
+OMPFLAGS  = -openmp -qopenmp
+OMPLIBS   = -openmp -qopenmp -qopenmp-link=static -shared_intel
 
-OMPFLAGS  = -openmp
-OMPLIBS   = -openmp
 COPTFLAGS = -g -O0 ${MFLAGS}
 FOPTFLAGS = -g -O0 -C -debug-parameters all -ftrapuv -check bounds -check uninit -check noarg_temp_created -stack_temps -safe_cray_ptr ${MFLAGS}
 FPPFLAGS  = -DF90=1

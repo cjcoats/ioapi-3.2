@@ -1,0 +1,56 @@
+
+        TESTING I/O API and DEMONSTRATION OF SOME OF ITS FEATURES.
+
+
+    BEFORE YOU RUN THESE TESTS:  You should have built both the I/O API
+    library and the M3Tools programs.  The normal way to run these tests
+    is to issue the command "make tests" from the I/O API installation's
+    base directory, after having established environment variable BIN.
+    There are various levels of tests, which employ M3Tools programs
+    "latlon", "m3stat", "m3fake" and "randomstat".
+
+    You will be prompted for which tests to perform, etc.  Default
+    responses are indicated in square brackets [LIKE THIS] and may
+    be accepted by hitting the RETURN key.
+
+    As the tests run, you will see the program-logs (and sometimes the
+    content of various control  and output files) echoing to your
+    screen; if any test fails, there will be a message written to your
+    screen also.
+
+    You will be prompted whether to "clean up" the output directory
+    that was created, along with all the relevant files, or to leave
+    them in place for you to view for yourself (with PAVE, VERDI, etc.)
+    at the end of the testing,
+
+    ------------
+
+    NOTE 1:  For building the I/O API and M3Tools program, sas well as
+    notes on netCDF Version 4, "gfortran", building CMAQ and SMOKE, and
+    other topics, see
+    <https://cjcoats.github.io/ioapi/AVAIL.html>
+
+    NOTE 2:  If you're interested in how these programs are run, you can
+    look at script "ioapi-3.2/tests/ioapitest.csh"
+
+    NOTE 3:  In case of netCDF errors, the netCDF error-numbers list can be
+    found here:
+    <https://cjcoats.github.io/ioapi/ERRORS.html#ncferr>
+
+    NOTE 4:  Notice that the I/O API uses Julian-date representations
+    1000*YEAR + DAYNUMBER for dates (integer YYYYDDD) and 
+    10000*HOUR + 100*MINUTE + SECOND (integer HHMMSS).  Times are GMT.
+    <https://cjcoats.github.io/ioapi/DATETIME.html>
+
+    NOTE 5:  Properly-formed I/O API client programs use routine M3EXIT
+    to return exit-status to the calling script, according to UNIX/Linux
+    conventions:
+        0       for success,
+        nonzero for failure (usually, 1 for I/O error, 2 otherwise)
+    This is intendended for use by process management.  Experience shows
+    that searching logs for strings like "ERROR" is not adequate for
+    error detection.
+    You may wish to look at the "tests/ioapitest.csh" script to see how
+    scripts should use this status in order to detect errors and
+    correctly perform their tasks.
+

@@ -1,12 +1,12 @@
 #.........................................................................
-# VERSION "$Id: Makefile.template 440 2016-11-30 18:26:47Z coats $"
+# VERSION "$Id: Makefile.template 1 2017-06-10 18:05:20Z coats $"
 #      EDSS/Models-3 I/O API Version 3.2.
 #.........................................................................
 # COPYRIGHT
 #       (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 #       (C) 2003-2004 by Baron Advanced Meteorological Systems,
 #       (C) 2005-2014 Carlie J. Coats, Jr., and
-#       (C) 2014-2015 UNC Institute for the Environment
+#       (C) 2014-     UNC Institute for the Environment
 #       Distributed under the GNU Lesser PUBLIC LICENSE version 2.1
 #       See file "LGPL.txt" for conditions of use.
 #.........................................................................
@@ -116,9 +116,14 @@
 #       mode routines.
 ######################################################################
 #      ----------   Default/fall-back Definitions --------------------
-#      Environment variables override these; 
+#      For POSIX "make", environment variables override these; 
 #      variable setting on the command line ("make VAR=VALUE ...")
 #      overrides that.
+#
+#      GNU "make" DOES NOT FOLLOW POSIX, AND INSTEAD DOES ITS OWN
+#       WRONG-HEADED THING, MAKING IT IMPOSSIBLE TO HAVE DEFAULTS
+#       THAT ARE THEN OVER-RIDDEN BY THE ENVIRONMENT !!
+#
 #  BIN        : Use 64-bit gcc/gfortran
 #  BASEDIR    : source under this current directory
 #  INSTALL    : installation directly under ${HOME}
@@ -128,18 +133,18 @@
 #  IOAPIDEFS  : none (can override for climo-year, etc.
 #  PVMINCL    : none
 #  NCFLIBS    : assumes netCDF-4-style separate libs
-
-
-BIN        = Linux2_x86_64
-BASEDIR    = ${PWD}
-INSTALL    = ${HOME}
-LIBINST    = $(INSTALL)/$(BIN)
-BININST    = $(INSTALL)/$(BIN)
-CPLMODE    = nocpl
-IOAPIDEFS  = 
-PVMINCL    =
-NCFLIBS    = -lnetcdff -lnetcdf
-
+# 
+# 
+# BIN        = Linux2_x86_64
+# BASEDIR    = ${PWD}
+# INSTALL    = ${HOME}
+# LIBINST    = $(INSTALL)/$(BIN)
+# BININST    = $(INSTALL)/$(BIN)
+# CPLMODE    = nocpl
+# IOAPIDEFS  = 
+# PVMINCL    =
+# NCFLIBS    = -lnetcdff -lnetcdf
+# 
 #               ****   Variants   ****
 #
 # BASEDIR    = ${HOME}/ioapi-3.2    # fall-back to versioned source under this directory
@@ -183,8 +188,9 @@ SEDCMD = \
 
 #      ----------   I/O API Build System directory definitions  --------
 
-VERSION = 3.2-${CPLMODE}
-
+VERSION    = 3.2-${CPLMODE}
+BASEDIR    = ${PWD}
+NCFLIBS    = -lnetcdff -lnetcdf
 IODIR      = $(BASEDIR)/ioapi
 FIXDIR     = $(IODIR)/fixed_src
 HTMLDIR    = $(BASEDIR)/HTML
@@ -229,7 +235,7 @@ fix:
 gtar:
 	cd $(BASEDIR); date > VERSION.txt; \
 gtar cvfz ioapi-$(VERSION).tar.gz --dereference -X exclude \
-Makefile*  *.txt exclude ioapi HTML m3tools
+Makefile*  *.txt exclude ioapi HTML m3tools tests
 
 lib:  dirs
 	(cd $(IODIR)   ; make all)

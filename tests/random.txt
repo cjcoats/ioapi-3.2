@@ -1,0 +1,59 @@
+
+    TESTING I/O API RANDOM ACCESS
+
+    This test demonstrates:
+
+        *  that I/O API files can be much longer than one day
+           (in this case, a year-long file is created and analyzed; in
+           fact, existing hydrological applications have created and
+           used multi-decade files)
+
+        *  that data access is "random/direct" -- THE FILE MAY BE READ
+           IN ANY ORDER, NOT JUST SEQUENTIALLY, WITHOUT THE PENALTIES
+           suffered by sequential files, where one must read through all
+           of the data from the beginning of the file.
+
+    These tests will create/use a year-long time-stepped GRIDDED file
+    (with "fenceposts":  0Z Jan 1 this-year -- 0Z Jan 1 next-year)
+    on the "NC15_LAM_19x17" Lambert-based 15-KM-resolution 19-col by
+    17-row grid, with one REAL variable "STEP" that contains the
+    time-step number (constant across each time-step's grid) -- about
+    11MB of data.
+
+    This test will be in three portions:
+
+    The first portion uses the  M3Tools program "m3fake" to create the
+    file.  This will take some substantial amount of time, and will
+    generate quite a long log (containing, among other things, one line
+    per hour of output generated--more than 9000 lines of output), which
+    will be stored in the test-output directory rather than displayed to
+    the screen.
+
+    The second and third portions use a program, "randomstat", adapted
+    and simplified from the M3Tools "m3stat" program, to demonstrate
+    various features of this random direct access, while acting on the
+    year-long file created in the first portion.  This program
+    prompts for an "analysis window" with a starting day and and
+    ending day, and then reports the mean values for each of the 24
+    hours in the days for that analysis window.  Both starting day and
+    ending day may be any one of the 365 days in the year (even in
+    reverse order, if you want).
+
+    For the second portion, "randomstat" will be run for Christmas Eve
+    and Christmas of the current year, skipping over the first 8586
+    hours of data (8610 in leap years), reading the relevant 48-hour
+    period and logging the grid-mean.  Note how much faster the direct
+    access makes this operation: for a sequential file on a "spinning"
+    disk with access time 50 msec, you would have to wait a probable
+    430,500 milliseconds -- over 7 minutes! -- reading the data up to
+    Christmas Eve, before processing the requested data and seeing any
+    results; even on an SSD with a 1 msec access times, you would have
+    to wait about 9 seconds before you see anything. Contrast this with
+    the way you see results "immediately" here.
+
+    In the third portion, "randomstat" will be run to do an analysis in
+    REVERSE CHRONOLOGICAL ORDER, from Dec.1 back to Nov. 30 to
+    demonstrate random access.  Note that this is the sort of thing that
+    source-attribution analysis might expect to do.  It is also
+    something that CANNOT be done efficiently with sequential files.
+

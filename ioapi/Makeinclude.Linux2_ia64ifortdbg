@@ -13,8 +13,12 @@ E132 = -extend-source 132
 
 MFLAGS    = -xHost -traceback
 
-OMPFLAGS  = -openmp
-OMPLIBS   = -Vaxlib -openmp
+
+# OMPFLAGS  = -openmp      # for Intel compilers, version 15 or earlier
+# OMPLIBS   = -openmp
+OMPFLAGS  = -openmp -qopenmp
+OMPLIBS   = -openmp -qopenmp -qopenmp-link=static -shared_intel
+
 COPTFLAGS = -g -O0 ${MFLAGS}
 FOPTFLAGS = -g -O0 ${MFLAGS} -debug-parameters all -ftrapuv -check bounds -check uninit
 FPPFLAGS  = -DF90=1

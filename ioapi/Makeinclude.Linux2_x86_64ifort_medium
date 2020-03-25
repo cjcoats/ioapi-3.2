@@ -26,10 +26,10 @@ E132 = -extend-source 132
 # MFLAGS  = -mcmodel=medium -shared-intel -traceback -mavx    -xAVX2   -march=corei7-avx2     # Haswell
 MFLAGS    = -mcmodel=medium -shared-intel -traceback -xHost
 
-# OMPFLAGS  = -qopenmp      # for Intel compilers, version 16 or later
-# OMPLIBS   = -qopenmp
-OMPFLAGS    = -openmp
-OMPLIBS     = -openmp
+OMPFLAGS = -openmp -qopenmp      # for Intel compilers, version 16 or later
+OMPLIBS  = -openmp -qopenmp
+# OMPFLAGS = -openmp
+# OMPLIBS  = -openmp
 
 COPTFLAGS = -O3 ${MFLAGS}
 FOPTFLAGS = -O3 -no-fp-port -unroll -stack_temps -safe_cray_ptr ${MFLAGS}

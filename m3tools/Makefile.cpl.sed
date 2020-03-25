@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.cpl.sed 30 2017-10-21 01:07:49Z coats $"
+# Version "$Id: Makefile.cpl.sed 146 2020-03-25 18:03:32Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -8,6 +8,9 @@
 #    (C) 2014-2017 UNC Institute for the Environment
 # Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 # See file "GPL.txt" for conditions of use.
+#.........................................................................
+#   Makefile for Coupling-Mode version of M3Tools
+#   Note that I/O API must also have been built for Coupling-Mode
 #.........................................................................
 #  Environment Variables:
 #       BIN     machine/OS/compiler/mode type. Shows up as suffix
@@ -86,9 +89,9 @@ fills.f90       findwndw.f90    greg2jul.f90    gregdate.f90    gridprobe.f90   
 insertgrid.f90  jul2greg.f90    juldate.f90     juldiff.f90     julshift.f90    \
 latlon.f90      m3fake.f90      m3mask.f90      m3pair.f90      m3probe.f90     \
 m3totxt.f90     m3tproc.f90     m3tshift.f90    m3wndw.f90      mtxcalc.f90     \
-pairstep.f90    presz.f90       timeshift.f90   vertot.f90      vertimeproc.f90 \
-vertintegral.f90                wrfgriddesc.f90 wrftom3.f90                     \
-mpasdiff.f90    mpasstat.f90    mpastom3.f90
+pairstep.f90    presz.f90       timediff.f90    timeshift.f90   vertot.f90      \
+vertimeproc.f90 vertintegral.f90                wndwdesc.f90    wrfgriddesc.f90 \
+wrftom3.f90     mpasdiff.f90    mpasstat.f90    mpastom3.f90    raandomstat.f90
 
 OBJ = $(fSRC:.f=.o) $(f90SRC:.f90=.o)
 
@@ -101,9 +104,10 @@ m3combo         m3diff          m3edhdr         m3fake          m3hdr           
 m3interp        m3mask          m3merge         m3pair          m3probe         \
 m3stat          m3totxt         m3tproc         m3tshift        m3wndw          \
 m3xtract        mtxblend        mtxbuild        mtxcalc         mtxcple         \
-presterp        presz           projtool        selmrg2d        timeshift       \
-vertot          vertimeproc     vertintegral    wrfgriddesc     wrftom3         \
-mpasdiff        mpasstat        mpastom3
+mpasdiff        mpasstat        mpastom3        presterp        presz           \
+projtool        selmrg2d        timediff        timeshift       vertot          \
+vertimeproc     vertintegral    wndwdesc        wrfgriddesc     wrftom3         \
+randomstat
 
 
 #      ----------------------   TOP-LEVEL TARGETS:   ------------------
@@ -183,23 +187,54 @@ flags:
 
 #  ---------------------------  Dependencies:  --------------------
 
-
+aggvars.o       : m3utilio.mod
+agmask.o        : m3utilio.mod
+agmax.o         : m3utilio.mod
+airnow2m3.o     : m3utilio.mod
+airs2m3.o       : m3utilio.mod
+cdiffstep.o     : m3utilio.mod
+dayagg.o        : m3utilio.mod
+diffstep.o      : m3utilio.mod
+aggvars.o       : m3utilio.mod
+agmask.o        : m3utilio.mod
+agmax.o         : m3utilio.mod
+airnow2m3.o     : m3utilio.mod
+airs2m3.o       : m3utilio.mod
+cdiffstep.o     : m3utilio.mod
+dayagg.o        : m3utilio.mod
+diffstep.o      : m3utilio.mod
 gridprobe.o     : m3utilio.mod  modgctp.mod
 insertgrid.o    : m3utilio.mod  modgctp.mod
 latlon.o        : m3utilio.mod  modgctp.mod
+m3agmask.o      : m3utilio.mod
+m3agmax.o       : m3utilio.mod
 m3combo.o       : m3utilio.mod  modatts3.mod
 m3cple.o        : m3utilio.mod  modgctp.mod modatts3.mod
+m3diff.o        : m3utilio.mod
+m3edhdr.o       : m3utilio.mod
 m3hdr.o         : m3utilio.mod  modatts3.mod
 m3interp.o      : m3utilio.mod  modgctp.mod modatts3.mod
-m3mask.o        : m3utilio.mod  modgctp.mod
+m3mask.o        : m3utilio.mod
+m3merge.o       : m3utilio.mod  modgctp.mod
+m3stat.o        : m3utilio.mod
 m3tproc.o       : m3utilio.mod  modatts3.mod
 m3tshift.o      : m3utilio.mod  modatts3.mod
 m3xtract.o      : m3utilio.mod  modatts3.mod
 m3wndw.o        : m3utilio.mod  modatts3.mod
+mpasdiff.o      : m3utilio.mod  modmpasfio.mod
+mpasstat.o      : m3utilio.mod  modmpasfio.mod
+mpastom3.o      : m3utilio.mod  modmpasfio.mod
 mtxbuild.o      : m3utilio.mod  modatts3.mod
 mtxcalc.o       : m3utilio.mod  modatts3.mod modgctp.mod
 mtxcple.o       : m3utilio.mod  modatts3.mod
 projtool.o      : m3utilio.mod  modgctp.mod
+selmrg2d.o      : m3utilio.mod
+statbdry.o      : m3utilio.mod
+statcust.o      : m3utilio.mod
+statgrid.o      : m3utilio.mod
+statiddat.o     : m3utilio.mod
+statspars.o     : m3utilio.mod
+wndwdesc.o      : m3utilio.mod  modgctp.mod
 wrfgriddesc.o   : m3utilio.mod  modwrfio.mod
 wrftom3.o       : m3utilio.mod  modwrfio.mod
 
@@ -349,10 +384,16 @@ presz:  presz.o
 projtool: projtool.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
+randomstat:  randomstat.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
 selmrg2d:  selmrg2d.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 sfcmet:  sfcmet.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+timediff: timediff.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 timeshift: timeshift.o
@@ -365,6 +406,9 @@ vertintegral:  vertintegral.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 vertot:  vertot.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+wndwdesc:  wndwdesc.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 wrfgriddesc:  wrfgriddesc.o

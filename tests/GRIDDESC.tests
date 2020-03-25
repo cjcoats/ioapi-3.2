@@ -1,0 +1,25 @@
+!  coords-list --2 lines:  name; type, P-alpha, P-beta, P-gamma, xcent, ycent
+ 'LAM_40N90W'           !  standard Lambert for BELD, etc.
+ 2  0.30D2  0.60D2 -0.90D2 -0.90D2  0.40D2
+ 'LAM_45N_110W'
+  2    30.0D0    60.0D0   -110.00D0   -110.00D0    45.0D0
+ 'LATLON'               !  "the" lat-lon coord. system
+ 1,  0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0
+ 'UTM_16'                            !  UTM zone containing much of midwest
+ 5, 16.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0
+ 'UTM_17'                            !  UTM zone containing much of East Coast except New England
+ 5, 17.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0
+ 'UTM_18'                            !  UTM zone containing New England
+ 5, 18.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0
+ 'UTM_19'
+ 5, 19.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0
+ ' '        !! end coords;  Grids  --2 lines:  name; coord-name; xorig, yorig, xcell, ycell, ncols, nrows, nthik
+ 'LL_Terrain'
+ 'LL_US'   -140.0D0     60.0D0   0.00833333333333333333D0  -0.00833333333333333333D0  9600 5400 1
+ 'NC15_LAM_19x17'
+ 'LAM_40N90W', 752.0D3 , -532.0D3,  15.0D3,  15.0D3, 9, 7, 1
+ 'BELD3_US_1KM'
+ 'LAM_40N_90W'  -3996.0D+03  -2808.0D+03    1.0D+03    1.0D+03  7992  5616  1
+ 'NC5_UTM_90x60'
+ 'UTM_17', 350.0D3, 3785.0D3, 5.0D3, 5.0D3, 90, 60, 1
+ ' '                                                !  end grids:  this is a blank

@@ -2,7 +2,7 @@
 PROGRAM  M3TPROC
 
     !!***********************************************************************
-    !! Version "$Id: m3tproc.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: m3tproc.f90 146 2020-03-25 18:03:32Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -67,7 +67,9 @@ PROGRAM  M3TPROC
     !!      AGGVAR ~~> TIMEAGG;  now CONTAINs  SUBROUTINE TIMEAGG.
     !!      Corrected/improved error-status behavior. Support for M3INT8 variables.
     !!
-    !!       Version  06/2016 by CJC:  copy CMAQ metadata, if present
+    !!      Version  06/2016 by CJC:  copy CMAQ metadata, if present
+    !!
+    !!      Version  03/2020 by CJC:  correct fencepost problem in default EDATE:ETIME
     !!***********************************************************************
 
     USE M3UTILIO
@@ -155,6 +157,11 @@ PROGRAM  M3TPROC
 'Program M3TPROC to sum, average, or find the maximum values over a',       &
 'repeating time period from a selected time window.',                       &
 '',                                                                         &
+'NOTE that the time period includes both ends:  for example, for a',        &
+'file with a 1-hour time-step, a 24-hour aggregation period starting at',   &
+'2019001:000000 ends at 2010002:000000, having 24 "fence-rails" and',       &
+'25 "fence-posts".',                                                        &
+'',                                                                         &
 'The time period and starting time window set the start and duration',      &
 'of all subsequent time windows. The program inputs and outputs',           &
 'Models-3 files.',                                                          &
@@ -187,7 +194,7 @@ PROGRAM  M3TPROC
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tproc.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: m3tproc.f90 146 2020-03-25 18:03:32Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -382,23 +389,14 @@ PROGRAM  M3TPROC
 
     OSTEP = GETNUM(    0, 999999999,  AGLEN, 'Enter output time step' )
 
+    CALL NEXTIME( EDATE, ETIME, -AGLEN )
     NRECS = CURREC( EDATE, ETIME, SDATE, STIME, OSTEP, KDATE, KTIME )
 
     EDATE = GETNUM( SDATE3D, 9999999, KDATE, 'Enter final date for analysis' )
 
     ETIME = GETNUM( 0, 9999999, KTIME, 'Enter final time for analysis' )
 
-    JDATE = SDATE
-    JTIME = STIME
-    CALL NEXTIME( JDATE, JTIME, AGLEN )
-    ASTEPS = CURREC( JDATE, JTIME, SDATE, STIME, INSTEP, KDATE, KTIME )
-
-    N     = JSTEP3( EDATE, ETIME, SDATE, STIME, OSTEP )
     NRECS = CURREC( EDATE, ETIME, SDATE, STIME, OSTEP, KDATE, KTIME )
-
-    IF ( N .EQ. NRECS ) THEN        !!  correct fencepost problem:
-        NRECS = NRECS - 1
-    END IF
 
 
     !!.......   Build description for the output file, and create accordingly:
