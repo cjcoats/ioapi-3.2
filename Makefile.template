@@ -74,6 +74,9 @@
 #       all:      OBJDIR, FIXDIR, libioapi.a, and executables, with
 #                 the current mode.
 #       lib:      OBJDIR, FIXDIR, libioapi.a
+#       tests:    Requires "make" of "m3tools":  run various tests to
+#                 ensure that this is a working netCDF/I/O API
+#                 configuration
 #       clean:    remove .o's, libioapi.a, and executables from OBJDIR
 #       rmexe:    remove executables from OBJDIR
 #       relink:   rebuild executables from OBJDIR
@@ -100,7 +103,7 @@
 #       be used only with an MPI-based ${BIN} (e.g., Linux2_x86_64ifortmpi)
 #
 #       Defining IOAPI_NCF4 turns on full netCDF-4 interfaces, including
-#       support for INTEGER*8 variables and attributes.  It requires
+#       support for INTEGER*8 variables and attributes.  netCDF-4 requires
 #       extra libraries for linking, which can be found by running the
 #       commands  "nf-config --flibs" and "nc-config --libs"
 #
@@ -203,6 +206,9 @@ OBJDIR     = $(BASEDIR)/$(BIN)
 all:  dirs fix configure
 	(cd $(IODIR)   ; make BIN=${BIN} all)
 	(cd $(TOOLDIR) ; make BIN=${BIN} all)
+
+tests:
+        (cd $(BASEDIR)/tests; ioapitest.csh ${BASEDIR} ${BIN} )
 
 configure:
 	(cd $(IODIR)   ;  sed $(SEDCMD) < Makefile.$(CPLMODE).sed > Makefile )

@@ -4,7 +4,7 @@ LOGICAL FUNCTION  XTRACT3 ( FNAME, VNAME,                           &
                             JDATE, JTIME, BUFFER )
 
     !!***********************************************************************
-    !!Version "$Id: xtract3.f90 117 2019-06-15 14:56:29Z coats $"
+    !!Version "$Id: xtract3.f90 150 2020-04-11 17:51:44Z coats $"
     !!EDSS/Models-3 I/O API.
     !!Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !!(C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -68,6 +68,8 @@ LOGICAL FUNCTION  XTRACT3 ( FNAME, VNAME,                           &
     !!      for MPI/PnetCDF distributed I/O
     !!
     !!      Modified 08/2015 by CJC:  bug-fix for MPIGRD3
+    !!
+    !!      Bug-fixes 04/2020 from Fahim Sidi, US EPA
     !!***********************************************************************
 
     IMPLICIT NONE
@@ -230,31 +232,28 @@ LOGICAL FUNCTION  XTRACT3 ( FNAME, VNAME,                           &
         RETURN
 
     END IF          !  end range checks on col, row, layer
+    
+    
+    IF ( CDFID3( FID ) .EQ. BUFFIL3 ) THEN !  BUFFERED "file"
 
+        XTRACT3 = XTBUF3( FID,  VID,  LAY0, LAY1,   &
+                          ROW0, ROW1, COL0, COL1,   &
+                          JDATE, JTIME, BUFFER )
+        RETURN
 
-    !!   Note:  rdtflag() calls NCSNC()
-
-    IF ( .NOT. RDTFLAG( FID,VID, JDATE,JTIME, STEP, .TRUE. ) ) THEN
+    ELSE IF ( .NOT. RDTFLAG( FID,VID, JDATE,JTIME, STEP, .TRUE. ) ) THEN
 
         MESG = 'Time step not available for file:  ' // FNAME
         CALL M3WARN( 'XTRACT3', JDATE, JTIME, MESG )
         XTRACT3 = .FALSE.
         RETURN
 
-    END IF
-
-    IF ( CDFID3( FID ) .EQ. BINFIL3 ) THEN  !  native-binary file
+    ELSE IF ( CDFID3( FID ) .EQ. BINFIL3 ) THEN  !  native-binary file
 
         IERR = XTRBIN3( FID,  VID,  LAY0, LAY1,     &
                         ROW0, ROW1, COL0, COL1,     &
                         STEP, BUFFER )
         XTRACT3 = ( IERR .NE. 0 )
-    
-    ELSE IF ( CDFID3( FID ) .EQ. BUFFIL3 ) THEN !  BUFFERED "file"
-
-        XTRACT3 = XTBUF3( FID,  VID,  LAY0, LAY1,   &
-                          ROW0, ROW1, COL0, COL1,   &
-                          JDATE, JTIME, BUFFER )
 
     ELSE IF ( CDFID3( FID ) .GT. 0 ) THEN   !  PnetCDF or netCDF file
 

@@ -6,7 +6,7 @@
      &                    RESULT( XTFLAG )
 
 C***********************************************************************
-C Version "$Id: xtbuf3.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: xtbuf3.f 150 2020-04-11 17:51:44Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -15,7 +15,7 @@ C (C) 2015 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  87
+C  function body starts at line  89
 C
 C  FUNCTION:  reads data from Models-3 BUFFERED "file" with M3 file
 C       index FID for variable with index VID and indicated col-row-layer
@@ -46,6 +46,8 @@ C       Modified 03/2010 by CJC
 C
 C       Modified 02/2015 by CJC for I/O API 3.2: Support for INTEGER*8,
 C       USE M3UTILIO
+C
+C       Bug-fixes 04/2020 from Fahim Sidi, US EPA
 C***********************************************************************
 
         USE M3UTILIO
@@ -140,17 +142,12 @@ C   begin body of function  XTBUF3
             END IF
                 
         ELSE				!  xtract on all variables
+
+            XTFLAG = .TRUE.
         
             DO  11  VAR = 1, NVARS3( FID )
-        
-                IF ( VTYPE3( VAR,FID ) .NE. M3REAL ) THEN
                     
-                    MESG = 'ALLVAR3 nonREAL types not supported'
-                    CALL M3WARN( 'XTRACT3/XTBUF3', JDATE, JTIME, MESG )
-                    XTFLAG = .FALSE.
-                    RETURN
-                    
-                ELSE IF ( TSTEP3( FID ) .EQ. 0 ) THEN
+                IF ( TSTEP3( FID ) .EQ. 0 ) THEN
                        
                     IF( LDATE3( VAR,FID ) .EQ. 0 ) THEN
                         STEP = ILAST3( VAR,FID )
@@ -179,15 +176,37 @@ C   begin body of function  XTBUF3
                     RETURN
                     
                 END IF
+        
+                IF ( VTYPE3( VAR,FID ) .EQ. M3REAL ) THEN
                 
-                IF ( 0 .EQ. BUFXTR3( FID, VAR, 
-     &                               LAY0, LAY1, ROW0, ROW1, 
-     &                               COL0, COL1, NLAYS3( FID ), 
-     &                               NROWS3( FID ), NCOLS3( FID ), 
-     &                               STEP, BUFFER ) ) THEN
-                        XTFLAG = .FALSE.
-                        RETURN
-                END IF		!  if bufxtr3() failed.
+                    IF ( 0 .EQ. BUFXTR3( FID, VAR, 
+     &                                   LAY0, LAY1, ROW0, ROW1, 
+     &                                   COL0, COL1, NLAYS3( FID ), 
+     &                                   NROWS3( FID ), NCOLS3( FID ),
+     &                                   STEP, BUFFER ) ) THEN
+                            XTFLAG = .FALSE.
+                            RETURN
+                    END IF		!  if bufxtr3() failed.
+        
+                ELSE IF ( VTYPE3( VAR,FID ) .EQ. M3INT ) THEN
+                
+                    IF ( 0 .EQ. BUFXTR3I( FID, VAR, 
+     &                                   LAY0, LAY1, ROW0, ROW1, 
+     &                                   COL0, COL1, NLAYS3( FID ), 
+     &                                   NROWS3( FID ), NCOLS3( FID ),
+     &                                   STEP, BUFFER ) ) THEN
+                            XTFLAG = .FALSE.
+                            RETURN
+                    END IF		!  if bufxtr3() failed.
+        
+                ELSE
+                    
+                    MESG = 'ALLVAR3 nonREAL/nonINT types not supported'
+                    CALL M3WARN( 'XTRACT3/XTBUF3', JDATE, JTIME, MESG )
+                    XTFLAG = .FALSE.
+                    RETURN
+                    
+                END IF
 
 11          CONTINUE
                 

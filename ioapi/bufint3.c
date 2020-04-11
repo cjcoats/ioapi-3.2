@@ -1,5 +1,5 @@
 /**************************************************************************
-VERSION "$Id: bufint3.c 164 2015-02-24 06:50:01Z coats $"
+VERSION "$Id: bufint3.c 1 2017-06-10 18:05:20Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -9,27 +9,27 @@ COPYRIGHT
     Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     See file "LGPL.txt" for conditions of use.
 
-public  function BUFVGT3()  starts at line  165
-public  function BUFVGT3D() starts at line  217
-public  function BUFVRD3()  starts at line  274
-public  function BUFVRD3D() starts at line  332
-public  function BUFINT3()  starts at line  393
-public  function BUFINT3D() starts at line  491
-public  function BUFCRE3()  starts at line  592
-public  function BUFPUT3()  starts at line  633
-public  function BUFPUT3I() starts at line  679
-public  function BUFPUT3D() starts at line  725
-public  function BUFGET3()  starts at line  771
-public  function BUFGET3I() starts at line  816
-public  function BUFGET3D() starts at line  861
-public  function BUFXTR3()  starts at line  906
-public  function BUFXTR3I() starts at line  964
-public  function BUFXTR3D() starts at line 1022
-public  function BUFDDT3()  starts at line 1080
-public  function BUFDDT3D() starts at line 1122
-public  function BUFDEL3()  starts at line 1169
-public  function BUFINTX()  starts at line 1189
-public  function BUFINTXD() starts at line 1299
+public  function BUFVGT3()  starts at line  185
+public  function BUFVGT3D() starts at line  236
+public  function BUFVRD3()  starts at line  294
+public  function BUFVRD3D() starts at line  345
+public  function BUFINT3()  starts at line  399
+public  function BUFINT3D() starts at line  497
+public  function BUFCRE3()  starts at line  598
+public  function BUFPUT3()  starts at line  644
+public  function BUFPUT3I() starts at line  690
+public  function BUFPUT3D() starts at line  736
+public  function BUFGET3()  starts at line  782
+public  function BUFGET3I() starts at line  827
+public  function BUFGET3D() starts at line  872
+public  function BUFXTR3()  starts at line  917
+public  function BUFXTR3I() starts at line  995
+public  function BUFXTR3D() starts at line 1033
+public  function BUFDDT3()  starts at line 1091
+public  function BUFDDT3D() starts at line 1133
+public  function BUFDEL3()  starts at line 1180
+public  function BUFINTX()  starts at line 1200
+public  function BUFINTXD() starts at line 1310
 
 NOTE:
     !!!  MACHINE-DEPENDENT CODE !!!  Dependent upon the
@@ -78,6 +78,7 @@ REVISION HISTORY:
     upper-case Fortran  symbols, prepend _C to common blocks.
     Modified 04/2011 for full buffered-file file descriptions.
     Modified 02/2015 by CJC for I/O API version 3.2:  M3INT8 (INTEGER*8) support
+    Modified 04/2020:  bug-fixes from Fahim Sidi, US EPA
 **************************************************************************/
 
 #include <stdio.h>
@@ -615,10 +616,14 @@ FINT BUFCRE3 ( FINT  *fndx,     /** M3 file index **/
                                    /** SET UP EACH VARIABLE'S ADDRESS **/
         for ( i=1 ;  i <= (*nvars) ;  i++ )
             {
-            if      ( btype[i] == M3REAL ) asize = rsize * sizeof( FREAL ) ;
-            else if ( btype[i] == M3DBLE ) asize = rsize * sizeof( double ) ;
-            else if ( btype[i] == M3INT  ) asize = rsize * sizeof( FINT ) ;
-            else if ( btype[i] == M3INT8 ) asize = rsize * sizeof( int64_t ) ;
+            if      ( btype[i-1] == M3REAL ) asize = rsize * sizeof( FREAL ) ;
+            else if ( btype[i-1] == M3DBLE ) asize = rsize * sizeof( double ) ;
+            else if ( btype[i-1] == M3INT  ) asize = rsize * sizeof( FINT ) ;
+            else if ( btype[i-1] == M3INT8 ) asize = rsize * sizeof( int64_t ) ;
+            else {
+                 m3mesgc( "Unrecognized variable-type for BUFCRE3()" ) ;
+                 return( 0 ); 
+                 }
             if ( ! ( baddr[ *fndx ][ i ] = malloc( (size_t) asize ) ) )
                 {
                 m3mesgc( "Error allocating internal buffer for BUFCRE3()" ) ;

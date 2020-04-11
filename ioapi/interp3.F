@@ -8,7 +8,7 @@
         LOGICAL INTERPX
 
 C***********************************************************************
-C Version "$Id: interp3.F 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: interp3.F 150 2020-04-11 17:51:44Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems,
@@ -92,6 +92,7 @@ C       Modified 11/2004 by CJC:  new "verbose-flag" argument to RDTFLAG
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C       Modified 08/2015 by CJC for I/O API 3.2:  support for type MPIGRD3
 C       for MPI/PnetCDF distributed I/O
+C       Modified 04/2020 by CJC:  documentation/comment change from Fahim Sidi, US EPA
 C***********************************************************************
 
 #define REAL8 DOUBLE PRECISION
@@ -105,7 +106,7 @@ C...........   INCLUDES:
 C...........   ARGUMENTS and their descriptions:
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !  variable name, or 'ALL'
+        CHARACTER*(*), INTENT(IN   ) :: VNAME           !  variable name
         CHARACTER*(*), INTENT(IN   ) :: CALLER          !  name of caller
         INTEGER      , INTENT(IN   ) :: COL0            !  lower col   bound for INTERPX
         INTEGER      , INTENT(IN   ) :: COL1            !  upper col   bound for INTERPX
