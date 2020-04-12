@@ -2,7 +2,7 @@
       LOGICAL FUNCTION RDBUF3( FID, VID, LAYER, JDATE, JTIME, BUFFER )
 
 C***********************************************************************
-C Version "$Id: rdbuf3.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: rdbuf3.f 151 2020-04-12 19:12:14Z coats $"
 C BAMS/MCNC/EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -149,14 +149,7 @@ C   begin body of function  RDBUF3
             IOFF = 1
             DO  11  VAR = 1, NVARS3( FID )
                 
-                IF ( VTYPE3( VAR,FID ) .NE. M3REAL ) THEN
-                    
-                    MESG = 'ALLVAR3 non-REAL types not supported'
-                    CALL M3WARN( 'READ3/RDBUF3', JDATE, JTIME, MESG )
-                    RDBUF3 = .FALSE.
-                    RETURN
-
-                ELSE IF ( TSTEP3( FID ) .EQ. 0 ) THEN
+                IF ( TSTEP3( FID ) .EQ. 0 ) THEN
                        
                     IF( LDATE3( VAR, FID ) .EQ. 0 ) THEN
                         STEP = ILAST3( VAR,FID )

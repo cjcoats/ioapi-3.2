@@ -6,7 +6,7 @@
      &                    RESULT( XTFLAG )
 
 C***********************************************************************
-C Version "$Id: xtbuf3.f 150 2020-04-11 17:51:44Z coats $"
+C Version "$Id: xtbuf3.f 151 2020-04-12 19:12:14Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -79,7 +79,7 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
-        INTEGER       VAR, STEP       !  loop counter (over variables)
+        INTEGER       VAR, STEP, SIZE, IOFF       !  loop counter (over variables)
         CHARACTER*256 MESG
 
 
@@ -144,6 +144,8 @@ C   begin body of function  XTBUF3
         ELSE				!  xtract on all variables
 
             XTFLAG = .TRUE.
+            SIZE   = ( LAY1-LAY0+1 )*( ROW1-ROW0+1 )*( COL1-COL0+1 )
+            IOFF   = 1
         
             DO  11  VAR = 1, NVARS3( FID )
                     
@@ -183,10 +185,11 @@ C   begin body of function  XTBUF3
      &                                   LAY0, LAY1, ROW0, ROW1, 
      &                                   COL0, COL1, NLAYS3( FID ), 
      &                                   NROWS3( FID ), NCOLS3( FID ),
-     &                                   STEP, BUFFER ) ) THEN
+     &                                   STEP, BUFFER( IOFF ) ) ) THEN
                             XTFLAG = .FALSE.
                             RETURN
                     END IF		!  if bufxtr3() failed.
+                    IOFF = IOFF + SIZE
         
                 ELSE IF ( VTYPE3( VAR,FID ) .EQ. M3INT ) THEN
                 
@@ -194,10 +197,35 @@ C   begin body of function  XTBUF3
      &                                   LAY0, LAY1, ROW0, ROW1, 
      &                                   COL0, COL1, NLAYS3( FID ), 
      &                                   NROWS3( FID ), NCOLS3( FID ),
-     &                                   STEP, BUFFER ) ) THEN
+     &                                   STEP, BUFFER( IOFF ) ) ) THEN
                             XTFLAG = .FALSE.
                             RETURN
                     END IF		!  if bufxtr3() failed.
+                    IOFF = IOFF + SIZE
+        
+                ELSE IF ( VTYPE3( VAR,FID ) .EQ. M3DBLE ) THEN
+                
+                    IF ( 0 .EQ. BUFXTR3D( FID, VAR, 
+     &                                   LAY0, LAY1, ROW0, ROW1, 
+     &                                   COL0, COL1, NLAYS3( FID ), 
+     &                                   NROWS3( FID ), NCOLS3( FID ),
+     &                                   STEP, BUFFER( IOFF ) ) ) THEN
+                            XTFLAG = .FALSE.
+                            RETURN
+                    END IF		!  if bufxtr3() failed.
+                    IOFF = IOFF + 2*SIZE
+        
+                ELSE IF ( VTYPE3( VAR,FID ) .EQ. M3INT8 ) THEN
+                
+                    IF ( 0 .EQ. BUFXTR3D( FID, VAR, 
+     &                                   LAY0, LAY1, ROW0, ROW1, 
+     &                                   COL0, COL1, NLAYS3( FID ), 
+     &                                   NROWS3( FID ), NCOLS3( FID ),
+     &                                   STEP, BUFFER( IOFF ) ) ) THEN
+                            XTFLAG = .FALSE.
+                            RETURN
+                    END IF		!  if bufxtr3() failed.
+                    IOFF = IOFF + 2*SIZE
         
                 ELSE
                     

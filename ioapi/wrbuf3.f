@@ -2,7 +2,7 @@
         LOGICAL FUNCTION WRBUF3( FID, VID, JDATE, JTIME, STEP, BUFFER )
 
 C***********************************************************************
-C Version "$Id: wrbuf3.f 150 2020-04-11 17:51:44Z coats $"
+C Version "$Id: wrbuf3.f 151 2020-04-12 19:12:14Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -325,6 +325,9 @@ C   begin body of function  WRBUF3
                     WFLAG = ( 0 .NE. BUFPUT3I( FID, V, SIZE, IDUM,
      &                                         TSTEP , BUFFER(I) ) )
                 ELSE IF ( VTYPE3( V,FID ) .EQ. M3DBLE ) THEN
+                    WFLAG = ( 0 .NE. BUFPUT3D( FID, V, SIZE, IDUM,
+     &                                         TSTEP , BUFFER(I) ) )
+                ELSE IF ( VTYPE3( V,FID ) .EQ. M3INT8 ) THEN
                     WFLAG = ( 0 .NE. BUFPUT3D( FID, V, SIZE, IDUM,
      &                                         TSTEP , BUFFER(I) ) )
                 ELSE
