@@ -2,7 +2,7 @@
         LOGICAL FUNCTION WRBUF3( FID, VID, JDATE, JTIME, STEP, BUFFER )
 
 C***********************************************************************
-C Version "$Id: wrbuf3.f 151 2020-04-12 19:12:14Z coats $"
+C Version "$Id: wrbuf3.f 153 2020-04-13 17:26:08Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems,
@@ -44,7 +44,7 @@ C
 C       Bug-fix 04/2011 by CJC:  argument-list fix for BUFPUT3()
 C
 C       Bug-fixes 04/2020 from Fahim Sidi, US EPA.
-C       Mods to allow non-REAL ALLVAR3 writes.
+C       Mods to allow non-REAL ALLVAR3 writes.  M3INT8 support.
 C***********************************************************************
 
       IMPLICIT NONE
@@ -206,6 +206,10 @@ C   begin body of function  WRBUF3
      &                                      SIZE, IDUM, TSTEP,
      &                                      BUFFER ) )
             ELSE IF ( VTYPE3( VID,FID ) .EQ. M3DBLE ) THEN
+                WRBUF3 = ( 0 .NE. BUFPUT3D( FID, VID,
+     &                                      SIZE, IDUM, TSTEP,
+     &                                      BUFFER ) )
+            ELSE IF ( VTYPE3( VID,FID ) .EQ. M3INT8 ) THEN
                 WRBUF3 = ( 0 .NE. BUFPUT3D( FID, VID,
      &                                      SIZE, IDUM, TSTEP,
      &                                      BUFFER ) )
