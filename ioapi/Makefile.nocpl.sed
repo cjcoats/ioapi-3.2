@@ -90,7 +90,7 @@ FIXDIR  = ${IODIR}/fixed_src
 
 # Architecture dependent stuff
 
-MAKEINCLUDE
+MAKEINCLUDE.$(BIN)
  
 DEFINEFLAGS  =                $(ARCHFLAGS) $(PARFLAGS)
 #DEFINEFLAGS = -DIOAPICPL=1   $(ARCHFLAGS) $(PARFLAGS)

@@ -91,7 +91,7 @@ FIXDIR  = $(IODIR)/fixed_src
 
 # Architecture dependent stuff
 
-MAKEINCLUDE
+MAKEINCLUDE.$(BIN)
 
 PVMINCLUDE
 

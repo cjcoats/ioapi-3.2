@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.pncf.sed 146 2020-03-25 18:03:32Z coats $"
+# Version "$Id: Makefile.pncf.sed 159 2020-04-18 16:10:51Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -48,7 +48,7 @@ INSTDIR = BININSTALL
 # Architecture dependent stuff
 # Assumes FC is an f90
 
-MAKEINCLUDE
+MAKEINCLUDE.${BIN}
 
 FFLAGS =  -I$(IODIR) ${MODI}$(OBJDIR) $(DEFINEFLAGS) $(FOPTFLAGS) $(ARCHFLAGS)
 
