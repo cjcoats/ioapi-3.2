@@ -2,7 +2,7 @@
         PROGRAM M3INTERP
 
 C***********************************************************************
-C Version "$Id: m3interp.f 130 2019-09-13 20:42:32Z coats $"
+C Version "$Id: m3interp.f 166 2020-05-29 15:55:46Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -10,7 +10,7 @@ C   (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 C See file "GPL.txt" for conditions of use.
 C.........................................................................
-C  program body starts at line  138
+C  program body starts at line  140
 C
 C  DESCRIPTION:
 C       For each time step in the specified time step sequence,
@@ -44,6 +44,8 @@ C       Version  12/2014 by CJC for I/O API v3.2:  USE MODGCTP: GRID2INDX(),
 C       INDXMULT(), and related changes.
 C       Version  06/2016 by CJC:  copy CMAQ metadata, if present
 C       Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP transforms
+C       Version  05/2020 by CJC:  bug-fix for files of type BNDARY3 --
+C       reported by skunwar.
 C***********************************************************************
 
       USE M3UTILIO, AVOID_INITSPHERES => INITSPHERES
@@ -111,7 +113,7 @@ C...........   LOCAL VARIABLES and their descriptions:
 
         REAL*8          X0, Y0
 
-        INTEGER         SIZE        ! grid volume, for copy
+        INTEGER         SIZE        ! 2-D grid volume, for copy
 
         INTEGER         JDATE, JTIME, TSTEP
         INTEGER         EDATE, ETIME, TSECS, NRECS
@@ -209,7 +211,7 @@ C   begin body of program M3INTERP
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3interp.f 130 2019-09-13 20:42:32Z coats               $',
+     &'$Id:: m3interp.f 166 2020-05-29 15:55:46Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -255,7 +257,14 @@ C...............  Open and get description for input data file
             YORIG1 = YORIG3D
             XCELL1 = XCELL3D
             YCELL1 = YCELL3D
-            NSIZE1 = NCOLS1*NROWS1*NLAYS1
+            IF ( FTYPE3D .EQ. GRDDED3 ) THEN
+                NSIZE1 = NCOLS1*NROWS1*NLAYS1
+            ELSE IF ( FTYPE3D .EQ. BNDARY3 ) THEN
+                N      = NCOLS1 + NROWS1 + 2*NTHIK3D
+                NSIZE1 = N*NTHIK3D*NLAYS1
+            ELSE IF ( FTYPE3D .EQ. CUSTOM3 ) THEN
+                NSIZE1 = NCOLS1*NROWS1*NLAYS1
+            END IF
 
             IF ( ISCMAQ( FNAME ) ) THEN
                 CFLAG = ENVYN( 'COPY_META', 
@@ -319,11 +328,11 @@ C...............  Setup for mode of operation:  copy or interpolate:
             IFLAG = .FALSE.
 
             IF ( FTYPE3D .EQ. GRDDED3 ) THEN
-                SIZE = NCOLS3D * NROWS3D * NLAYS3D
+                SIZE = NCOLS3D * NROWS3D
             ELSE IF ( FTYPE3D .EQ. BNDARY3 ) THEN
-                SIZE = NCOLS3D * NROWS3D * NLAYS3D
+                SIZE = ( NCOLS3D + NROWS3D + 2*NTHIK3D ) * NTHIK3D
             ELSE IF ( FTYPE3D .EQ. CUSTOM3 ) THEN
-                SIZE = NCOLS3D * NROWS3D * NLAYS3D
+                SIZE = NCOLS3D * NROWS3D
             ELSE
                 MESG = 'Cannot copy--' //
      &                 'file type not GRIDDED, BOUNDARY, or CUSTOM'
@@ -331,7 +340,7 @@ C...............  Setup for mode of operation:  copy or interpolate:
                 EFLAG = .TRUE.
             END IF
 
-            ALLOCATE( BUF1( NCOLS3D*NROWS3D, NLAYS3D ), STAT = ISTAT )
+            ALLOCATE( BUF1( SIZE, NLAYS3D ), STAT = ISTAT )
             IF ( ISTAT .NE. 0 ) THEN
                 WRITE( MESG, '( A, I10 )' )
      &               'Buffer allocation failed:  STAT=', ISTAT
@@ -431,7 +440,7 @@ C...............  Setup for mode of operation:  copy or interpolate:
 
 C...............  Allocate buffers; compute re-gridding matrix
 
-            ALLOCATE( BUF1 ( NCOLS1*NROWS1, NLAYS1 ),
+            ALLOCATE( BUF1( NCOLS1*NROWS1, NLAYS1 ),
      &                BUF2( NCOLS2*NROWS2, NLAYS1 ),
      &                IX2   ( NCOLS2*NROWS2 ),
      &                PX2   ( NCOLS2*NROWS2 ),
