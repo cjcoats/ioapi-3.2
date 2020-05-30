@@ -2,7 +2,7 @@
         PROGRAM M3INTERP
 
 C***********************************************************************
-C Version "$Id: m3interp.f 166 2020-05-29 15:55:46Z coats $"
+C Version "$Id: m3interp.f 167 2020-05-30 14:28:17Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C   Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C   (C) 2002-2010 Baron Advanced Meteorological Systems. LLC., and
@@ -211,7 +211,7 @@ C   begin body of program M3INTERP
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3interp.f 166 2020-05-29 15:55:46Z coats               $',
+     &'$Id:: m3interp.f 167 2020-05-30 14:28:17Z coats               $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -261,7 +261,7 @@ C...............  Open and get description for input data file
                 NSIZE1 = NCOLS1*NROWS1*NLAYS1
             ELSE IF ( FTYPE3D .EQ. BNDARY3 ) THEN
                 N      = NCOLS1 + NROWS1 + 2*NTHIK3D
-                NSIZE1 = N*NTHIK3D*NLAYS1
+                NSIZE1 = 2*N*NTHIK3D*NLAYS1
             ELSE IF ( FTYPE3D .EQ. CUSTOM3 ) THEN
                 NSIZE1 = NCOLS1*NROWS1*NLAYS1
             END IF
@@ -330,7 +330,7 @@ C...............  Setup for mode of operation:  copy or interpolate:
             IF ( FTYPE3D .EQ. GRDDED3 ) THEN
                 SIZE = NCOLS3D * NROWS3D
             ELSE IF ( FTYPE3D .EQ. BNDARY3 ) THEN
-                SIZE = ( NCOLS3D + NROWS3D + 2*NTHIK3D ) * NTHIK3D
+                SIZE = 2*NTHIK3D*( NCOLS3D + NROWS3D + 2*NTHIK3D )
             ELSE IF ( FTYPE3D .EQ. CUSTOM3 ) THEN
                 SIZE = NCOLS3D * NROWS3D
             ELSE
