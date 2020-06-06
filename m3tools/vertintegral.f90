@@ -2,7 +2,7 @@
 PROGRAM  VERTINTEGRAL
 
     !!***********************************************************************
-    !! Version "$Id: vertintegral.f90 117 2019-06-15 14:56:29Z coats $"
+    !! Version "$Id: vertintegral.f90 168 2020-06-06 22:40:44Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2009 UNC Institute for the Environment and
     !! Baron Advanced Meteorological Systems, LLC,(C) 2015-2016 UNC IE.,
@@ -51,6 +51,8 @@ PROGRAM  VERTINTEGRAL
     !!      Version  09/2017 by CJC for I/O API v3.2:  bug-fix in default RUNLEN
     !!
     !!      Version  06/2019 by CJC:  Bugfix for RUNLEN
+    !!
+    !!      Version  06/2020 by CJC:  Bugfix for status-test in BENVINT calls
     !!***********************************************************************
 
     USE M3UTILIO
@@ -205,7 +207,7 @@ PROGRAM  VERTINTEGRAL
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: vertintegral.f90 117 2019-06-15 14:56:29Z coats $',&
+'$Id: vertintegral.f90 168 2020-06-06 22:40:44Z coats $',&
 ''
 
     WRITE ( LUNIT,'( 5X , A )' )
@@ -376,14 +378,14 @@ PROGRAM  VERTINTEGRAL
     !!...............   Get integration bounds
 
     LAY0 = BENVINT( 'LAY_LO', 'Lower bound for integration', 1, NLAYS-1, 1, ISTAT )
-    IF ( ISTAT .LT. 0 ) THEN
+    IF ( ISTAT .GT. 0 ) THEN
         EFLAG = .TRUE.
         MESG = ' Bad environment variable "LAY_LO"'
         CALL M3MESG( MESG )
     END IF
 
     LAY1 = BENVINT( 'LAY_HI', 'Upper bound for integration', LAY0+1, NLAYS, NLAYS, ISTAT )
-    IF ( ISTAT .LT. 0 ) THEN
+    IF ( ISTAT .GT. 0 ) THEN
         EFLAG = .TRUE.
         MESG = ' Bad environment variable "LAY_HI"'
         CALL M3MESG( MESG )
