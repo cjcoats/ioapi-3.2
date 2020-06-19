@@ -2,14 +2,14 @@
         INTEGER FUNCTION STR2INT( STRING )
 
 C***********************************************************************
-C Version "$Id: str2int.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: str2int.f 171 2020-06-19 12:18:30Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line 57
+C  function body starts at line 59
 C
 C  RETURNS:
 C       INTEGER value decoded from STRING, or IMISS3 for "missing",
@@ -25,6 +25,8 @@ C  REVISION  HISTORY:
 C       Prototype 6/95 by CJC for point source prototype
 C
 C       Modified 03/2010 by CJC: F90 changes for I/O API v3.1
+C
+C       Modified 06/20020 by CJC: expand MESG to CHARACTER*256
 C***********************************************************************
 
       IMPLICIT NONE

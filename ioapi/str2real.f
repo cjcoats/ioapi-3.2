@@ -2,7 +2,7 @@
         REAL FUNCTION STR2REAL( STRING )
 
 C***********************************************************************
-C Version "$Id: str2real.f 382 2016-06-24 18:55:25Z coats $"
+C Version "$Id: str2real.f 171 2020-06-19 12:18:30Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems, and
@@ -10,7 +10,7 @@ C (C) 2016 UNC Institute for the Environment
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  59
+C  function body starts at line  61
 C
 C  RETURNS:
 C       REAL value decoded from STRING, or BADVAL3 for "missing",
@@ -28,6 +28,8 @@ C
 C       Modified 03/20010 by CJC: F90 changes for I/O API v3.1
 C
 C       Modified 03/20016 by CJC: F90 change:  READ( STRING, *,...)
+C
+C       Modified 06/20020 by CJC: expand MESG to CHARACTER*256
 C***********************************************************************
 
       IMPLICIT NONE
@@ -50,7 +52,7 @@ C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
         REAL		    VAL
         INTEGER         IOS
-        CHARACTER*80    MSG
+        CHARACTER*256   MSG
 
 
 C***********************************************************************
