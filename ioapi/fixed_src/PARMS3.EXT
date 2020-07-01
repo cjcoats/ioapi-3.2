@@ -1,9 +1,10 @@
 
 !.........................................................................
-! Version "$Id: PARMS3.EXT 100 2015-01-16 16:52:16Z coats $"
+! Version "$Id: PARMS3.EXT 1 2017-06-10 18:05:20Z coats $"
 !   EDSS/Models-3 I/O API.
 !   Copyright (C) 1992-2002 MCNC, (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
-!   and (C) 2003-2011 Baron Advanced Meteorological Systems, LLC.
+!   and (C) 2003-2011 Baron Advanced Meteorological Systems, LLC. and
+!   (C) 2015- UNC Institute for the Environment.
 !
 !   Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 !   See file "LGPL.txt" for conditions of use.
@@ -32,7 +33,7 @@
 !       token values for Models-3 I/O System API
 !
 !  DEPENDENT UPON:
-!       M3INT, M3REAL, M3DBLE consistent with NETCDF.EXT
+!       M3INT, M3REAL, M3DBLE, M3INT8 consistent with NETCDF.EXT
 !       Consistent with C include file "parms3.h"
 !
 !  REVISION HISTORY:
@@ -52,13 +53,20 @@
 !
 !       Modified 03/2010 by CJC for I/O AI version 3.1:  Fortran-90
 !       PARAMETER form
+!
+!       Modified 02/2015 by CJC for I/O AI version 3.2:  M3INT8 support
+!
+!       Modified 02/2015 by CJC:  SINUGRD3 map projection for MIMS
+!       Spatial Allocator
+!
+!       Modified 02/2015 by CJC:  M3INT2 (== netCDF nf_short == nf_int2)
 !....................................................................
 
 !...........   Dimensioning parameters:
             
         INTEGER, PARAMETER :: MXDLEN3 =   80   !  description line length
-        INTEGER, PARAMETER :: NAMLEN3 =  16    !  name length (logical names, etc.)
-        INTEGER, PARAMETER :: MXFILE3 =   64   !  max number of open files
+        INTEGER, PARAMETER :: NAMLEN3 =   16   !  name length (logical names, etc.)
+        INTEGER, PARAMETER :: MXFILE3 =  256   !  max number of open files
         INTEGER, PARAMETER :: MXVARS3 = 2048   !  max number of variables per file
         INTEGER, PARAMETER :: MXDESC3 =   60   !  max number of description lines
         INTEGER, PARAMETER :: MXLAYS3 =  100   !  max # of layers per file
@@ -80,14 +88,21 @@
         INTEGER, PARAMETER :: SMATRX3 =   6   !  file type value "sparse matrix"
         INTEGER, PARAMETER :: TSRIES3 =   7   !  file type value "time series"
         INTEGER, PARAMETER :: PTRFLY3 =   8   !  file type value "pointer-flyer"
+        INTEGER, PARAMETER :: MPIGRD3 =   9   !  file type value "MPI-distributed grid"
             
         !!......  Data types (must match netCDF types):
 
-        INTEGER, PARAMETER :: M3BYTE  =   1    !  variable type value "Byte"
-        INTEGER, PARAMETER :: M3CHAR  =   2    !  variable type value "CHARACTER-string"
-        INTEGER, PARAMETER :: M3INT   =   4    !  variable type value "INTEGER"
-        INTEGER, PARAMETER :: M3REAL  =   5    !  variable type value "REAL"
-        INTEGER, PARAMETER :: M3DBLE  =   6    !  variable type value "DOUBLE PRECISION"
+        INTEGER, PARAMETER :: M3BYTE  =   1    !  variable type value "Byte" = nf_byte
+        INTEGER, PARAMETER :: M3CHAR  =   2    !  variable type value "CHARACTER-string" = nf_char
+        INTEGER, PARAMETER :: M3INT2  =   3    !  variable type value "INTEGER*2" = nf_int2
+        INTEGER, PARAMETER :: M3INT   =   4    !  variable type value "INTEGER" = nf_int
+        INTEGER, PARAMETER :: M3REAL  =   5    !  variable type value "REAL" = nf_float
+        INTEGER, PARAMETER :: M3DBLE  =   6    !  variable type value "DOUBLE PRECISION" = nf_double
+        INTEGER, PARAMETER :: M3INT8  =  10    !  variable type value "INTEGER*8" = nf_int64
+
+        INTEGER, PARAMETER :: NM3TYPES = 4
+        INTEGER, PARAMETER :: M3TYPES( NM3TYPES ) =                             &
+     &        (/ M3INT, M3REAL, M3DBLE, M3INT8 /)
             
         !!......  File storage modes:
 
@@ -116,9 +131,11 @@
         INTEGER, PARAMETER :: TRMGRD3 =   8   !  grid type value: transverse Mercator
         INTEGER, PARAMETER :: ALBGRD3 =   9   !  grid type value: Albers conic Equal Area
         INTEGER, PARAMETER :: LEQGRD3 =  10   !  grid type value: Lambert Azimuthal Equal Area
+        INTEGER, PARAMETER :: SINUGRD3=  11   !  grid type value: Sinusoidal Equal Area
             
         !!......  Vertical-coordinate types:
 
+        INTEGER, PARAMETER :: GISLAY3 =  -1   ! "vert" coord type -1:  (arc) GIS layers
         INTEGER, PARAMETER :: VGSGPH3 =   1   !  vert coord type 1:  hydrostatic sigma-P
         INTEGER, PARAMETER :: VGSGPN3 =   2   !  vert coord type 2:  non-h sigma-P
         INTEGER, PARAMETER :: VGSIGZ3 =   3   !  vert coord type 3:  sigma-Z
