@@ -2,7 +2,7 @@
 PROGRAM GRIDPROBE
 
     !!***************************************************************
-    !! Version "$Id: gridprobe.f90 145 2020-02-18 14:53:59Z coats $"
+    !! Version "$Id: gridprobe.f90 175 2020-07-08 18:23:25Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, 
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -148,7 +148,7 @@ PROGRAM GRIDPROBE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: gridprobe.f90 145 2020-02-18 14:53:59Z coats $',&
+'$Id: gridprobe.f90 175 2020-07-08 18:23:25Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -246,7 +246,7 @@ PROGRAM GRIDPROBE
         DO K = 1, NPNTS
             XX(K) = ( XX(K) - XORIG1 )/XCELL1       !! grid-normal coords
             YY(K) = ( YY(K) - YORIG1 )/YCELL1
-            WRITE( MESG, '( I3, A, 4( F14.7, :, 2X, A ) )' ) K, ': LAT=', YLAT(K), 'LON=', XLON(K), 'C=', XX, 'R=', YY(K)
+            WRITE( MESG, '( I3, A, 4( F14.7, :, 2X, A ) )' ) K, ': LAT=', YLAT(K), 'LON=', XLON(K), 'C=', XX(K), 'R=', YY(K)
             CALL M3MESG( MESG )
         END DO
         CALL M3MESG( BAR )
