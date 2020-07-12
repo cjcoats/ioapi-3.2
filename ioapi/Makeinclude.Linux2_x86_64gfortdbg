@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfortdbg 152 2020-04-12 19:18:41Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfortdbg 176 2020-07-12 18:40:47Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -10,6 +10,9 @@
 # Use "-march=native -mtune=native" if compile-platform and compute-platform
 # are the same, for processor specific instruction-set and optimization.
 # Use "-Wall -Wsurprising" for full diagnostics.
+#
+#  07/2020 by CJC: Fortran-flag "-fstd=legacy" to deal with
+#  gfortran-10's idiosyncratic interpretation of the Fortran-2018 Standard.
 
 AR   = ar
 CC   = gcc

@@ -13,6 +13,9 @@
 # Use "-march=native -mtune=native" if compile-platform and compute-platform
 # are the same.
 # Use "-Wall -Wsurprising" for full diagnostics.
+#
+#  07/2020 by CJC: Fortran-flag "-fstd=legacy" to deal with
+#  gfortran-10's idiosyncratic interpretation of the Fortran-2018 Standard.
 
 AR   = ar
 CC   = gcc
@@ -30,7 +33,7 @@ MFLAGS    = -ffast-math -funroll-loops -m64  #  -Wall -Wsurprising -march=native
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
 COPTFLAGS = -O3 ${MFLAGS}
-FOPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 -fstd=legacy ${MFLAGS}
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 ARCHFLAGS = \

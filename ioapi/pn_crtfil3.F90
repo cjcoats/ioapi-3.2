@@ -2,7 +2,7 @@
 LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
     !!***********************************************************************
-    !! Version "$Id: pn_crtfil3.F90 310 2016-02-10 19:20:15Z coats $"
+    !! Version "$Id: pn_crtfil3.F90 176 2020-07-12 18:40:47Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2014-2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -28,7 +28,9 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
     !!      Factor non-I/O-PE case through PN_OPNFIL3()
     !!
     !!      Version  11/2015 by CJC: replace MPI_OFFSET_KIND by hard-coded INTEGER(8)
-    !!      because OpenMPI-1.4.x does not follow the MPOI "standard" competently.
+    !!      because OpenMPI-1.4.x does not follow the MPI "standard" competently.
+    !!
+    !!      Version  07/2020 by CJC: fixes to NFMPI_PUT_ATT_INT calls.
     !!***********************************************************************
 
 #ifdef IOAPI_PNCF
@@ -220,7 +222,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         !!.......   FTYPE:  file type ID:  must be GRIDDED on-file, MPIGRD3 in STATE3 arrays
 
         FTYPE3( FID ) = MPIGRD3
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'FTYPE', NF_INT, FTYPE3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'FTYPE', NF_INT, PN_ONE, FTYPE3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute FTYPE' )
             EFLAG = .TRUE.
@@ -229,7 +231,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
         !!.......   CDATE:  creation date
 
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'CDATE', NF_INT, CURDATE )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'CDATE', NF_INT, PN_ONE, CURDATE )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute CDATE' )
             EFLAG = .TRUE.
@@ -238,7 +240,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
         !!.......   CTIME:  creation time
 
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'CTIME', NF_INT, CURTIME )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'CTIME', NF_INT, PN_ONE, CURTIME )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute CTIME' )
             EFLAG = .TRUE.
@@ -247,7 +249,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
         !!.......   WDATE:  date of last update
 
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'WDATE',  NF_INT, CURDATE)
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'WDATE',  NF_INT, PN_ONE, CURDATE)
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute WDATE' )
             EFLAG = .TRUE.
@@ -256,7 +258,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
         !!.......   WTIME:  time of last update
 
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'WTIME', NF_INT, CURTIME)
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'WTIME', NF_INT, PN_ONE, CURTIME)
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute WTIME' )
             EFLAG = .TRUE.
@@ -271,14 +273,14 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         STIME3( FID ) = STIME3D
         CALL NEXTIME( SDATE3( FID ), STIME3( FID ), 0 )
 
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'SDATE', NF_INT, SDATE3( FID ) )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'SDATE', NF_INT, PN_ONE, SDATE3( FID ) )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute SDATE' )
             EFLAG = .TRUE.
             GO TO 999
         END IF          !  ierr nonzero:  operation failed
 
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'STIME', NF_INT, STIME3( FID ) )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'STIME', NF_INT, PN_ONE, STIME3( FID ) )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute STIME' )
             EFLAG = .TRUE.
@@ -288,7 +290,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         !!.......   TSTEP:  time step
 
         TSTEP3( FID ) = TSTEP3D
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'TSTEP', NF_INT, TSTEP3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'TSTEP', NF_INT, PN_ONE, TSTEP3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute TSTEP' )
             EFLAG = .TRUE.
@@ -302,7 +304,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         !!.......   NTHIK:  thickness of perimeter (cells) for BOUNDARY files
 
         NTHIK3( FID ) = NTHIK3D
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'NTHIK', NF_INT, NTHIK3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'NTHIK', NF_INT, PN_ONE, NTHIK3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute NTHIK' )
             EFLAG = .TRUE.
@@ -312,7 +314,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         !!.......   NCOLS:  number of grid columns/profile levels
 
            NCOLS3( FID ) = NCOLS3D
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'NCOLS', NF_INT, NCOLS3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'NCOLS', NF_INT, PN_ONE, NCOLS3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute NCOLS' )
             EFLAG = .TRUE.
@@ -322,7 +324,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         !!.......   NROWS:  number of grid rows/data sites
 
         NROWS3( FID ) = NROWS3D
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'NROWS', NF_INT, NROWS3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'NROWS', NF_INT, PN_ONE, NROWS3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute NROWS' )
             EFLAG = .TRUE.
@@ -332,7 +334,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         !!.......   NLAYS:  number of layers
 
         NLAYS3( FID ) = NLAYS3D
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'NLAYS', NF_INT, NLAYS3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'NLAYS', NF_INT, PN_ONE, NLAYS3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute NLAYS' )
             EFLAG = .TRUE.
@@ -352,7 +354,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
         !!.......   GDTYP:  grid type ID (lat-lon, UTM, RADM, etc...)
 
         GDTYP3( FID ) = GDTYP3D
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'GDTYP', NF_INT, GDTYP3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'GDTYP', NF_INT, PN_ONE, GDTYP3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute GDTYP' )
             EFLAG = .TRUE.
@@ -451,7 +453,7 @@ LOGICAL FUNCTION PN_CRTFIL3( EQNAME, FID, PGNAME ) RESULT( CFLAG3 )
 
         !!.......   VGTYP:  vertical coordinate type (VGSIGP3, ... ) or IMISS3
 
-        IERR = NFMPI_PUT_ATT_INT1( FNUM, NF_GLOBAL, 'VGTYP', NF_INT, VGTYP3D )
+        IERR = NFMPI_PUT_ATT_INT( FNUM, NF_GLOBAL, 'VGTYP', NF_INT, PN_ONE, VGTYP3D )
         IF ( IERR .NE. 0 ) THEN
             CALL M3ABORT( FLIST3( FID ), FNUM, IERR, 'PN_CRTFIL3:  Error creating PnetCDF file attribute VGTYP ' )
             EFLAG = .TRUE.
