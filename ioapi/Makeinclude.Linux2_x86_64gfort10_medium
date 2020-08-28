@@ -1,4 +1,10 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfortdbg 184 2020-08-28 16:48:26Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfort10_medium 184 2020-08-28 16:48:26Z coats $"
+#
+#  X86_64 "Medium memory model" version:  support stack-size,
+#  array-size, data-size larger than 2 GB.
+#  Use of this opotion requires that "gcc" and "gfortran" thenselves be
+#  of version 4.4 or later and have been compiled with  "-mcmodel=medium".
+#  See http://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -11,12 +17,8 @@
 # are the same, for processor specific instruction-set and optimization.
 # Use "-Wall -Wsurprising" for full diagnostics.
 #
-#  08/2020 by CJC: gfortran version 10 requires Fortran-flag
-#
-#        -fallow-argument-mismatch
-#
-#  to deal with its idiosyncratic interpretation of the Fortran-2018 Standard.
-#  See the "Makeinclude.Linux2_x86_64gfort10*" files for how to do this...
+#  08/2020 by CJC: Fortran-flag "-fallow-argument-mismatch" to deal with
+#  gfortran-10's idiosyncratic interpretation of the Fortran-2018 Standard.
 
 AR   = ar
 CC   = gcc
@@ -29,12 +31,12 @@ LINK = $(CC)
 MODI = -I
 E132 = -ffixed-line-length-132
 
-MFLAGS    = -m64
+MFLAGS    = -mcmodel=medium -ffast-math -funroll-loops -m64  #  -Wall -Wsurprising -march=native -mtune=native
 
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
-COPTFLAGS = -g ${MFLAGS}
-FOPTFLAGS = -g ${MFLAGS} -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap=invalid,zero,overflow
+COPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 -fallow-argument-mismatch ${MFLAGS}
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 ARCHFLAGS = \

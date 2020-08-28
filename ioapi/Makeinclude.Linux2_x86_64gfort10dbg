@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfortdbg 184 2020-08-28 16:48:26Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfort10dbg 184 2020-08-28 16:48:26Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -11,12 +11,8 @@
 # are the same, for processor specific instruction-set and optimization.
 # Use "-Wall -Wsurprising" for full diagnostics.
 #
-#  08/2020 by CJC: gfortran version 10 requires Fortran-flag
-#
-#        -fallow-argument-mismatch
-#
-#  to deal with its idiosyncratic interpretation of the Fortran-2018 Standard.
-#  See the "Makeinclude.Linux2_x86_64gfort10*" files for how to do this...
+#  08/2020 by CJC: Fortran-flag "-fallow-argument-mismatch" to deal with
+#  gfortran-10's idiosyncratic interpretation of the Fortran-2018 Standard.
 
 AR   = ar
 CC   = gcc
@@ -34,7 +30,7 @@ MFLAGS    = -m64
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
 COPTFLAGS = -g ${MFLAGS}
-FOPTFLAGS = -g ${MFLAGS} -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap=invalid,zero,overflow
+FOPTFLAGS = -g -fallow-argument-mismatch ${MFLAGS} -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap=invalid,zero,overflow
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 ARCHFLAGS = \

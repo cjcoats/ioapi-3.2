@@ -17,8 +17,12 @@
 # are the same, for processor specific instruction-set and optimization.
 # Use "-Wall -Wsurprising" for full diagnostics.
 #
-#  07/2020 by CJC: Fortran-flag "-std=legacy" to deal with
-#  gfortran-10's idiosyncratic interpretation of the Fortran-2018 Standard.
+#  08/2020 by CJC: gfortran version 10 requires Fortran-flag
+#
+#        -fallow-argument-mismatch
+#
+#  to deal with its idiosyncratic interpretation of the Fortran-2018 Standard.
+#  See the "Makeinclude.Linux2_x86_64gfort10*" files for how to do this...
 
 AR   = ar
 CC   = gcc
@@ -36,7 +40,7 @@ MFLAGS    = -mcmodel=medium -ffast-math -funroll-loops -m64  #  -Wall -Wsurprisi
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
 COPTFLAGS = -O3 ${MFLAGS}
-FOPTFLAGS = -O3 -std=legacy ${MFLAGS}
+FOPTFLAGS = -O3 ${MFLAGS}
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 ARCHFLAGS = \
