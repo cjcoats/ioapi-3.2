@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 140 2019-11-27 22:51:15Z coats $"
+    !!  Version "$Id: modmpasfio.f90 188 2020-10-03 15:08:47Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -34,6 +34,7 @@ MODULE MODMPASFIO
     !!      Version       11/11/2017 by CJC:  Add MPCELLMATX() generic, integer-array
     !!          versions of MPINTERP(); OMP-threadsafe FINDCELL()
     !!      Version       11/11/2017 by CJC:  handle weighting for out-of-grid cases in VERTWT()
+    !!      Version       10/11/2020 by CJC:  call FIXNULLS() for strings coming from netCDF
     !!...................................................................................
 
     USE MODNCFIO
@@ -465,7 +466,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 140 2019-11-27 22:51:15Z coats $',&
+        'Version $Id: modmpasfio.f90 188 2020-10-03 15:08:47Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -630,7 +631,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 140 2019-11-27 22:51:15Z coats $',&
+        'Version $Id: modmpasfio.f90 188 2020-10-03 15:08:47Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -702,6 +703,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             MESG = PNAME // ' Error reading "mesh_id" from "' //TRIM(FNAME)// '": '
             CALL M3MESG( MESG )
         END IF          !  ISTAT nonzero:  operation failed
+        CALL FIXNULLS( MESH_ID )
 
         ISTAT = NF_GET_ATT_TEXT( FID, NF_GLOBAL, 'mesh_spec', MESH_SPEC )
         IF ( ISTAT .NE. 0 ) THEN
@@ -711,6 +713,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             MESG = PNAME // ' Error reading "mesh_spec" from "' //TRIM(FNAME)// '": '
             CALL M3MESG( MESG )
         END IF          !  ISTAT nonzero:  operation failed
+        CALL FIXNULLS( MESH_SPEC )
 
 
         IF ( EFLAG ) THEN
@@ -2601,6 +2604,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
                 EFLAG = .TRUE.
                 CYCLE
             END IF          !!  ierr nonzero:  NF_INQ_VAR() failed
+            CALL FIXNULLS( VNAME )
 
             MPVNAME( V,F ) = VNAME
             MPVARID( V,F ) = V
@@ -4363,6 +4367,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
                     CALL M3MESG( MESG )
                     VUNITS( V ) = CMISS3
                 END IF
+                CALL FIXNULLS( VUNITS( V ) )
 
             END DO
 

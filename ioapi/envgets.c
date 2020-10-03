@@ -387,7 +387,7 @@ void envstrc( const char * lname,
         length = ( length < elen ? length : elen ) ;
         strncat( mesg, evalue, length ) ;
         strncat( mesg, "'", (size_t)1 ) ;
-            m3mesgc( mesg ) ; 
+        m3mesgc( mesg ) ; 
         *status = -2 ;
         }                       /** END:  lname defined or not **/
 

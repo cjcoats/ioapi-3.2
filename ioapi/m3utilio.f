@@ -2,7 +2,7 @@
         MODULE M3UTILIO
 
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !! Version "$Id: m3utilio.f 107 2018-07-26 14:05:39Z coats $"
+        !! Version "$Id: m3utilio.f 188 2020-10-03 15:08:47Z coats $"
         !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
         !! (c) 2007-2013 Carlie J. Coats, Jr., and
         !! (C) 2014 UNC Institute for the Environment.
@@ -13,6 +13,7 @@
         !!      Models-3 I/O API declarations and INTERFACE blocks.
         !!      Additional utility routines:
         !!          SPLITLINE: Split LINE into fields FIELD( N )
+        !!          FIXNULLS:  replace trailing ASCII nulls by blanks.
         !!          FIXFIELD:  Convert "missing" = "-9" fields and
         !!                     leading blanks in FIELD to all-zeros
         !!          KEYVAL:    retrieve value of REAL KEY from FDESC3D fields
@@ -53,6 +54,7 @@
         !!      Version  11/2015:  re-add LAMBERT etc. INTERFACEs from 3.1,
         !!      together with re-naming clauses for MODULE MODGCTP
         !!      Version  07/2018:  Add INDEXL1.  Generic INDEXKEY.
+        !!      Version  10/2020:  Add FIXNULLS, generics for GCD, LCM
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
             IMPLICIT NONE
@@ -62,12 +64,12 @@
             INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
             CHARACTER*72, PRIVATE, SAVE :: ID =
-     &'$Id:: m3utilio.f 107 2018-07-26 14:05:39Z coats                $'
+     &'$Id:: m3utilio.f 188 2020-10-03 15:08:47Z coats                $'
 
 
             !!........  PUBLIC Routines:
 
-            PUBLIC  FIXFIELD, KEYVAL, KEYSTR, LCM
+            PUBLIC  FIXNULLS, FIXFIELD, KEYVAL, KEYSTR
 
 
             !!........  INTERFACE Blocks:
@@ -79,7 +81,7 @@
             !!    GCD, GETDATE, GETDBLE, GETDFILE, GETEFILE, GETFFILE,
             !!    GETMENU, GETNUM, GETREAL, GETSTR, GETDTTIME, GETYN, HHMMSS,
             !!    INDEX1, INDEXINT1, INTLIST, ISDST, JSTEP3, JULIAN, LBLANK,
-            !!    LOCATE, LOCAT1, LOCAT2, LOCAT3, LOCAT4, LOCATC,
+            !!    LCM, LOCATE, LOCAT1, LOCAT2, LOCAT3, LOCAT4, LOCATC,
             !!    LOCATL1, LOCATL2, LOCATL3, LOCATR4, LOCATL1, LOCATR2, LOCATR3, LOCATR4,
             !!    M3EXIT, M3FLUSH, M3MESG, M3MSG2, M3PARAG,
             !!    M3PROMPT, M3WARN, MMDDYY, NEXTIME, PMATVEC, POLY,
@@ -593,10 +595,13 @@
 
             END INTERFACE       !!  findkey()
 
-            INTERFACE
-                INTEGER  FUNCTION GCD( P , Q )
+            INTERFACE GCD
+                INTEGER  FUNCTION GCDI( P , Q )
                     INTEGER, INTENT(IN   ) :: P , Q
-                END FUNCTION GCD
+                END FUNCTION GCDI
+                INTEGER(8)  FUNCTION GCDL( P , Q )
+                    INTEGER(8), INTENT(IN   ) :: P , Q
+                END FUNCTION GCDL
             END INTERFACE
 
             INTERFACE
@@ -807,6 +812,15 @@
                 INTEGER FUNCTION LBLANK( STRING )
                 CHARACTER*(*), INTENT( IN ) ::   STRING
                 END FUNCTION LBLANK
+            END INTERFACE
+
+            INTERFACE LCM
+                INTEGER  FUNCTION LCMI( P , Q )
+                    INTEGER, INTENT(IN   ) :: P , Q
+                END FUNCTION LCMI
+                INTEGER(8)  FUNCTION LCML( P , Q )
+                    INTEGER(8), INTENT(IN   ) :: P , Q
+                END FUNCTION LCML
             END INTERFACE
 
            INTERFACE LOCATE
@@ -2009,6 +2023,40 @@
         CONTAINS
 
 
+            SUBROUTINE FIXNULLS( FIELD )
+
+            ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            !   DESCRIPTION
+            !       Convert trailing ASCII NULLs in FIELD to  blanks
+            ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+            !!  Argument:
+
+            CHARACTER(LEN=*), INTENT( INOUT )::  FIELD
+
+            !!  Local Variables:
+
+            INTEGER         L
+            
+            CHARACTER(LEN=1), PARAMETER :: NULL  = ACHAR( 0 )
+            CHARACTER(LEN=1), PARAMETER :: BLANK = ' '
+
+            !!  begin body..........................................
+
+            L = INDEX( FIELD, NULL )
+            
+            IF ( L .GT. 0 ) THEN
+                FIELD( L: ) = BLANK            
+            END IF
+
+            RETURN
+            END SUBROUTINE FIXNULLS
+
+
+
+        ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
             SUBROUTINE FIXFIELD( FIELD )
 
             ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2128,15 +2176,6 @@
 
 
             END SUBROUTINE KEYSTR
-
-
-        ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-
-            INTEGER FUNCTION LCM( I, J )
-                INTEGER, INTENT( IN ) :: I, J
-                LCM = ( I * J ) / GCD( I, J )
-            END FUNCTION LCM
 
 
         END MODULE M3UTILIO

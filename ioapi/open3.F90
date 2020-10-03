@@ -2,7 +2,7 @@
 LOGICAL FUNCTION  OPEN3( FNAME, FSTATUS, PGNAME )
 
     !!***********************************************************************
-    !! Version "$Id: open3.F90 285 2015-12-19 10:44:12Z coats $"
+    !! Version "$Id: open3.F90 188 2020-10-03 15:08:47Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -179,8 +179,8 @@ LOGICAL FUNCTION  OPEN3( FNAME, FSTATUS, PGNAME )
 
         ELSE IF ( RONLY3( FID ) .AND. FSTATUS .EQ. FSRDWR3 ) THEN
 
-                MESG = 'File ' // FNAME // ' already opened READONLY;  cannot subsequently open it "READ/WRITE'
-                CALL M3WARN( 'OPEN3', 0, 0, MESG )
+            MESG = 'File ' // FNAME // ' already opened READONLY;  cannot subsequently open it "READ/WRITE'
+            CALL M3WARN( 'OPEN3', 0, 0, MESG )
             OPEN3 = .FALSE.
             RETURN
 
