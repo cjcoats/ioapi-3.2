@@ -8,11 +8,12 @@ COPYRIGHT
     Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     See file "LGPL.txt" for conditions of use.
 
- LOGICAL     ENVYN()   and  int    envync()
- INTEGER     ENVINT()  and  int    envintc()
- REAL        ENVREAL() and  float  envrealc()
- DOUBLE      ENVDBLE() and  double envdblec()
- SUBROUTINE  ENVSTR()  and  void   envstrc()
+ LOGICAL     ENVYN()   and  int     envync()
+ INTEGER     ENVINT()  and  int     envintc()
+ INTEGER(8)  ENVINT8() and  int64_t envint64c()
+ REAL        ENVREAL() and  float   envrealc()
+ DOUBLE      ENVDBLE() and  double  envdblec()
+ SUBROUTINE  ENVSTR()  and  void    envstrc()
  LOGICAL     SETENVVAR()
     
  INTEGER     BENVINT()
@@ -30,12 +31,16 @@ COPYRIGHT
   C                     bindings start at line   69:
         envync()    at line   94
         envintc()   at line  171
+        envint64c()  at line  171
         envrealc()  at line  227
         envdblec()  at line  283
         envstrc()   at line  340
   Feldman-style Fortran bindings start at line  401
         ENVYN()     at line  547
         ENVINT()    at line  570
+        BENVINT()   at line  570
+        ENVINT8()   at line  629
+        BENVINT8()  at line  629
         ENVREAL()   at line  629
         ENVDBLE()   at line  691
         ENVSTR()    at line  753
@@ -43,7 +48,9 @@ COPYRIGHT
         
   WIN32-style   Fortran bindings start at line  689
         ENVYN()     at line  916
-        ENVINT()    at line  938
+        BENVINT()   at line  570
+        ENVINT8()   at line  629
+        BENVINT8()  at line  629
         ENVREAL()   at line  995
         ENVDBLE()   at line 1052
         ENVSTR()    at line 1110
@@ -51,7 +58,9 @@ COPYRIGHT
 
   Cray-style    Fortran bindings start at line  936
         ENVYN()     at line 1270
-        ENVINT()    at line 1295
+        BENVINT()   at line  570
+        ENVINT8()   at line  629
+        BENVINT8()  at line  629
         ENVREAL()   at line 1350
         ENVDBLE()   at line 1408
         ENVSTR()    at line 1485
@@ -223,7 +232,65 @@ int envintc( const char *lname,
     }   /** end int envintc() **/
 
 
+/** -----------------------  envintc()  -------------------------- **/
+
+int64_t envint64c( const char * lname,
+                   const char * description,
+                   int64_t      defaultval ,
+                   int        * status )
+    {
+    char      * evalue, * end ;
+    int64_t     value ;
+    char        mesg[ BUFLEN ] ;
+    
+    if ( evalue = getenv( lname ) )
+        {
+        if ( *evalue )                  /** lname defined **/
+            {
+            value = strtol( evalue, &end, 10 ) ;
+            if ( evalue == end )        /** strtol() failure **/
+                {
+                sprintf( mesg, 
+                         "%s %s %s: '%.16s', %s  %d",
+                         "Value for",  lname, "not an integer ", evalue, 
+                         "returning default", defaultval ) ;
+                m3errc( "envint64c", 0, 0, mesg, 0 ) ;
+                *status = 1 ;
+                return defaultval ;
+                }                       /** END:  strtol() failure **/
+            else{                       /** ELSE: strtol() success **/
+                sprintf( mesg,
+                         "%s %s:  %d",                            
+                         "Value for", lname, value ) ;
+                m3mesgc( mesg ) ;
+                *status = 0 ;
+                return value ;
+                }                       /** END:  strtol() success   **/
+            }                           /** END:  lname defined      **/
+        else{                           /** ELSE  lname defined but empty  **/
+            sprintf( mesg,
+                     "%s %s %s:  %d",                            
+                     "Value for", lname, 
+                     "defined but empty; returning default ", defaultval ) ;
+            m3mesgc( mesg ) ;
+            *status = -1 ;
+            return defaultval  ;
+            }                           /** END:  lname defined but empty **/
+        }                       /** END:  lname defined     **/
+    else{                       /** ELSE  lname not defined **/
+        sprintf( mesg,
+                 "%s %s %s:  %d",                            
+                 "Value for", lname, 
+                 "not defined; returning default", defaultval ) ;
+        m3mesgc( mesg ) ;
+        *status = -2 ;
+        return defaultval ;
+        }                       /** END:  lname defined or not **/
+    }   /** end int envint64c() **/
+
+
 /** ----------------------------  envrealc()  --------------------- **/
+
 float envrealc( const char *lname, 
                 const char *description, 
                 float       defaultval,
@@ -414,6 +481,7 @@ void envstrc( const char * lname,
 
 #define ENVYN      envyn_
 #define ENVINT     envint_
+#define ENVINT8    envint64_
 #define ENVREAL    envreal_
 #define ENVDBLE    envdble_
 #define ENVSTR     envstr_
@@ -429,6 +497,7 @@ void envstrc( const char * lname,
 
 #define ENVYN      envyn
 #define ENVINT     envint
+#define ENVINT8    envint64
 #define ENVREAL    envreal
 #define ENVDBLE    envdble
 #define ENVSTR     envstr
@@ -622,6 +691,65 @@ FINT BENVINT( const char * lname,
     return    (FINT) result ;
 
     } /**  END Feldmanish int function ENVINT() **/
+
+
+/** ------------------------  ENVINT8()  and BENVINT8()  -------------------------- **/
+
+FINT ENVINT8( const char    * lname, 
+              const char    * descrip, 
+              const int64_t * defaultval,
+              FINT          * status,
+              FSTR_L          llen, 
+              FSTR_L          dlen )
+    {
+    char  nbuff[ BUFLEN ] ;
+    char  dbuff[ BUFLEN ] ;
+    int   result, istat ;
+
+    name2cstr( lname,   nbuff, llen, BUFLEN ) ;
+    fstr2cstr( descrip, dbuff, dlen, BUFLEN ) ;
+
+    result  = envint64c( nbuff, dbuff, (int)*defaultval, & istat ) ;
+    *status = (FINT) istat ;
+    return    result ;
+
+    } /**  END Feldmanish int function ENVINT8() **/
+
+
+FINT BENVINT8( const char    * lname, 
+               const char    * descrip, 
+               const int64_t * loval,
+               const int64_t * hival,
+               const int64_t * defaultval,
+               FINT          * status,
+               FSTR_L          llen, 
+               FSTR_L          dlen )
+    {
+    char  nbuff[ BUFLEN ] ;
+    char  dbuff[ BUFLEN ] ;
+    int   result, istat ;
+
+    name2cstr( lname,   nbuff, llen, BUFLEN ) ;
+    fstr2cstr( descrip, dbuff, dlen, BUFLEN ) ;
+
+    result  = envint64c( nbuff, dbuff, (int)*defaultval, & istat ) ;
+
+    if ( istat )
+        {
+        *status = (FINT) istat ;
+        }
+    else if ( ( result < * loval ) || ( result > * hival ) )
+        {
+        * status = 2 ;
+        result   = * defaultval ;
+        }
+    else{
+        * status = 0 ;
+        }
+
+    return    (FINT) result ;
+
+    } /**  END Feldmanish int function ENVINT8() **/
 
 
 /** ------------------------  ENVREAL() and BENVREAL()  ------------------------- **/
@@ -990,6 +1118,63 @@ FINT BENVINT( const char * lname,   FSTR_L  llen,
     } /**  END WIN32 int function ENVINT() **/
 
 
+/** ------------------------  ENVINT8()  -------------------------- **/
+
+FINT ENVINT8( const char    * lname,   FSTR_L  llen, 
+              const char    * descrip, FSTR_L  dlen,
+              const int64_t * defaultval,
+              FINT          * status)
+    {
+    char nbuff[ BUFLEN ] ;
+    char dbuff[ BUFLEN ] ;
+    int  istat, result ;
+
+    name2cstr( lname,   nbuff, llen, BUFLEN ) ;
+    fstr2cstr( descrip, dbuff, dlen, BUFLEN ) ;
+
+    result  = envint64c( nbuff, dbuff, (int)*defaultval, & istat ) ;
+
+    *status = (FINT) istat ;
+
+    return ( result );
+
+    } /**  END WIN32 int function ENVINT8() **/
+
+
+FINT BENVINT8( const char   * lname,   FSTR_L  llen, 
+               const char   * descrip, FSTR_L  dlen,
+              const int64_t * loval,
+              const int64_t * hival,
+              const int64_t * defaultval,
+              FINT          * status)
+    {
+    char nbuff[ BUFLEN ] ;
+    char dbuff[ BUFLEN ] ;
+    int  istat, result ;
+
+    name2cstr( lname,   nbuff, llen, BUFLEN ) ;
+    fstr2cstr( descrip, dbuff, dlen, BUFLEN ) ;
+
+    result  = envint64c( nbuff, dbuff, (int)*defaultval, & istat ) ;
+
+    if ( istat )
+        {
+        *status = (FINT) istat ;
+        }
+    else if ( ( result < * loval ) || ( result > * hival ) )
+        {
+        * status = 2 ;
+        result   = * defaultval ;
+        }
+    else{
+        * status = 0 ;
+        }
+
+    return ( (FINT) result );
+
+    } /**  END WIN32 int function ENVINT8() **/
+
+
 /** ------------------------  ENVREAL()  ------------------------- **/
 
 float ENVREAL( const char * lname,   FSTR_L  llen, 
@@ -1343,6 +1528,61 @@ int BENVINT( const _fcd   lname,
     return    (FINT) result ;
 
     } /**  END Cray int function BENVINT() **/
+
+
+/** ------------------------  ENVINT8()  -------------------------- **/
+
+int ENVINT8( const _fcd      lname, 
+             const _fcd      descrip, 
+             const int64_t * defaultval,
+            FINT           * status )
+    {
+    char nbuff[ BUFLEN ] ;
+    char dbuff[ BUFLEN ] ;
+    int  result, istat ;
+
+    name2cstr( lname  , nbuff, BUFLEN ) ;
+    fstr2cstr( descrip, dbuff, BUFLEN ) ;
+
+    result  = envint64c( nbuff, dbuff, (int)*defaultval, & istat ) ;
+    *status = (FINT) istat ;
+    return    (FINT) result ;
+
+    } /**  END Cray int function ENVINT8() **/
+
+
+int BENVINT8( const _fcd     lname, 
+              const _fcd     descrip, 
+             const int64_t * loval,
+             const int64_t * hival,
+             const int64_t * defaultval,
+             FINT          * status )
+    {
+    char nbuff[ BUFLEN ] ;
+    char dbuff[ BUFLEN ] ;
+    int  result, istat ;
+
+    name2cstr( lname  , nbuff, BUFLEN ) ;
+    fstr2cstr( descrip, dbuff, BUFLEN ) ;
+
+    result  = envint64c( nbuff, dbuff, (int)*defaultval, & istat ) ;
+
+    if ( istat )
+        {
+        *status = (FINT) istat ;
+        }
+    else if ( ( result < * loval ) || ( result > * hival ) )
+        {
+        * status = 2 ;
+        result   = * defaultval ;
+        }
+    else{
+        * status = 0 ;
+        }
+        
+    return result ;
+
+    } /**  END Cray int function BENVINT8() **/
 
 
 /** ------------------------  ENVREAL()  ------------------------- **/

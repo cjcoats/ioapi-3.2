@@ -2,7 +2,7 @@
 MODULE MODMPASFIO
 
     !!.........................................................................
-    !!  Version "$Id: modmpasfio.f90 188 2020-10-03 15:08:47Z coats $"
+    !!  Version "$Id: modmpasfio.f90 189 2020-10-06 17:05:28Z coats $"
     !!  Copyright (c) 2017 Carlie J. Coats, Jr. and UNC Institute for the Environment
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -34,7 +34,8 @@ MODULE MODMPASFIO
     !!      Version       11/11/2017 by CJC:  Add MPCELLMATX() generic, integer-array
     !!          versions of MPINTERP(); OMP-threadsafe FINDCELL()
     !!      Version       11/11/2017 by CJC:  handle weighting for out-of-grid cases in VERTWT()
-    !!      Version       10/11/2020 by CJC:  call FIXNULLS() for strings coming from netCDF
+    !!      Version       10/06/2020 by CJC:  call FIXNULLS() for strings coming from netCDF;
+    !!          bug-fix for missing "seconds" field in MPDT2STR().
     !!...................................................................................
 
     USE MODNCFIO
@@ -466,7 +467,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 188 2020-10-03 15:08:47Z coats $',&
+        'Version $Id: modmpasfio.f90 189 2020-10-06 17:05:28Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D. and',               &
         'UNC Institute for the Environment.',                               &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -631,7 +632,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         LOG = INIT3()
         WRITE( LOG, '( 5X, A )' )   'Module MODMPASFIO',                    &
-        'Version $Id: modmpasfio.f90 188 2020-10-03 15:08:47Z coats $',&
+        'Version $Id: modmpasfio.f90 189 2020-10-06 17:05:28Z coats $',&
         'Copyright (C) 2017 Carlie J. Coats, Jr., Ph.D.',                   &
         'and UNC Institute for the Environment.',                           &
         'Distributed under the GNU LESSER GENERAL PUBLIC LICENSE v 2.1',    &
@@ -2040,7 +2041,7 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         INTEGER      , INTENT(  OUT) :: JDATE, JTIME
 
         INTEGER     MNTH, MDAY, YEAR, HOUR, MINS, SECS
-        INTEGER     I1, I2, I3, I4, I5, I6
+        INTEGER     I1, I2, I3, I4, I5
 
         CHARACTER*4, PARAMETER :: DELIMS = '-_: '
 
@@ -2051,17 +2052,16 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         I3 = SCAN( CBUF( I2+1: ), DELIMS ) + I2
         I4 = SCAN( CBUF( I3+1: ), DELIMS ) + I3
         I5 = SCAN( CBUF( I4+1: ), DELIMS ) + I4
-        I6 = SCAN( CBUF( I5+1: ), DELIMS ) + I5
 
         YEAR = STR2INT( CBUF(     :I1-1 ) )
         MNTH = STR2INT( CBUF( I1+1:I2-1 ) )
         MDAY = STR2INT( CBUF( I2+1:I3-1 ) )
         HOUR = STR2INT( CBUF( I3+1:I4-1 ) )
         MINS = STR2INT( CBUF( I4+1:I5-1 ) )
-        IF ( I6 .GT. 0 ) THEN
-            SECS = STR2INT( CBUF( I5+1:I6-1 ) )
-        ELSE
+        IF ( CBUF( I5+1: ) .EQ. ' ' )  THEN
             SECS = 0
+        ELSE
+            SECS = STR2INT( CBUF( I5+1:     ) )
         END IF
 
         IF ( MIN( MNTH, MDAY, YEAR, HOUR, MINS, SECS ) .EQ. IMISS3 ) THEN
@@ -2177,10 +2177,11 @@ NNLOOP: DO NN = 1, 999999999    !!  loop finding intersections of current arc wi
         DO N = 1, NSTEPS
 
             CALL MPSTR2DT( CBUF( N ), JDATES( N ), JTIMES( N ) )
+            IF ( JDATES( N ) .EQ. IMISS3 ) EFLAG = .TRUE.
 
         END DO
 
-        READMPSTEPS = .TRUE.
+        READMPSTEPS = (.NOT.EFLAG )
         RETURN
 
     END FUNCTION READMPSTEPS

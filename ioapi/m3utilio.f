@@ -2,7 +2,7 @@
         MODULE M3UTILIO
 
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !! Version "$Id: m3utilio.f 188 2020-10-03 15:08:47Z coats $"
+        !! Version "$Id: m3utilio.f 189 2020-10-06 17:05:28Z coats $"
         !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
         !! (c) 2007-2013 Carlie J. Coats, Jr., and
         !! (C) 2014 UNC Institute for the Environment.
@@ -64,7 +64,7 @@
             INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
             CHARACTER*72, PRIVATE, SAVE :: ID =
-     &'$Id:: m3utilio.f 188 2020-10-03 15:08:47Z coats                $'
+     &'$Id:: m3utilio.f 189 2020-10-06 17:05:28Z coats                $'
 
 
             !!........  PUBLIC Routines:
@@ -417,6 +417,16 @@
                 INTEGER      , INTENT(  OUT) :: STAT
                 END FUNCTION BENVINT
 
+                INTEGER FUNCTION BENVINT8( LNAME, DESC, 
+     &                                     LO, HI, DEFAULT, STAT )
+                CHARACTER*(*), INTENT(IN   ) :: LNAME
+                CHARACTER*(*), INTENT(IN   ) :: DESC
+                INTEGER(8)   , INTENT(IN   ) :: LO
+                INTEGER(8)   , INTENT(IN   ) :: HI
+                INTEGER(8)   , INTENT(IN   ) :: DEFAULT
+                INTEGER      , INTENT(  OUT) :: STAT
+                END FUNCTION BENVINT8
+
                 REAL FUNCTION BENVREAL( LNAME, DESC, 
      &                                    LO, HI, DEFAULT, STAT )
                 CHARACTER*(*), INTENT(IN   ) :: LNAME
@@ -440,6 +450,13 @@
                 INTEGER      , INTENT(IN   ) :: DEFAULT
                 INTEGER      , INTENT(  OUT) :: STAT
                 END FUNCTION ENVINT
+
+                INTEGER FUNCTION ENVINT8( LNAME, DESC, DEFAULT, STAT )
+                CHARACTER*(*), INTENT(IN   ) :: LNAME
+                CHARACTER*(*), INTENT(IN   ) :: DESC
+                INTEGER(8)   , INTENT(IN   ) :: DEFAULT
+                INTEGER      , INTENT(  OUT) :: STAT
+                END FUNCTION ENVINT8
 
                 REAL FUNCTION ENVREAL( LNAME, DESC, DEFAULT, STAT )
                 CHARACTER*(*), INTENT(IN   ) :: LNAME
@@ -686,6 +703,16 @@
                 INTEGER      , INTENT(IN   ) :: DEFAULT
                 CHARACTER*(*), INTENT(IN   ) :: PROMPT
                 END FUNCTION GETNUM1
+
+                INTEGER FUNCTION GETINT8 ( LO , HI , DEFAULT , PROMPT )
+                INTEGER(8)   , INTENT(IN   ) :: LO, HI, DEFAULT
+                CHARACTER*(*), INTENT(IN   ) :: PROMPT
+                END FUNCTION GETINT8
+
+                INTEGER FUNCTION GETINT81( DEFAULT , PROMPT )
+                INTEGER(8)   , INTENT(IN   ) :: DEFAULT
+                CHARACTER*(*), INTENT(IN   ) :: PROMPT
+                END FUNCTION GETINT81
 
                 REAL   FUNCTION GETREAL ( LO , HI , DEFAULT , PROMPT )
                 REAL         , INTENT(IN   ) :: LO , HI , DEFAULT

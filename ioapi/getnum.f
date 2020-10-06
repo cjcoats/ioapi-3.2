@@ -1,8 +1,8 @@
 
-        INTEGER FUNCTION GETNUM ( LO , HI , DEFAULT , PROMPT )
+      INTEGER FUNCTION GETNUM ( LO , HI , DEFAULT , PROMPT )
 
 C********************************************************************
-C Version "$Id: getnum.f 86 2018-03-13 18:52:39Z coats $"
+C Version "$Id: getnum.f 189 2020-10-06 17:05:28Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -11,10 +11,12 @@ C for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C       function getnum()   body starts at line  92
-C       entry    getnum1()  body starts at line 180
+C       function GETNUM()   body starts at line  94
+C       entry    GETNUM1()       starts at line 190
+C       function GETINT8()       starts at line 232
+C       entry    GETINT81()      starts at line 364
 C
-C       CALLS:      TRIMLEN, ENVYN, M3EXIT
+C       CALLS:      ENVYN, M3EXIT
 C
 C  FUNCTION:
 C
@@ -38,6 +40,7 @@ C       of PROMPT for IRIX F90v7.4
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C       Modified 02/2014 by CJC: ENTRY GETNUM1() does not have bounds LO, HI;
 C       Fix MH violation of coding-standards:  check status IOS from  ENVYN()!!
+C       Version 10/2020 by CJC:  GETINT8, GETINT81
 C
 C  ARGUMENT LIST DESCRIPTION:
 C
@@ -72,13 +75,12 @@ C.......   EXTERNAL FUNCTIONS:
 C.......   LOCAL VARIABLES:
 
         INTEGER         MODE                !!  mode=1 for getnum(), mode=0 for getnum1()
-        INTEGER         J, M
+        INTEGER         J
         INTEGER         LLO , LHI , LDF
         INTEGER         ANSWER
         INTEGER         ERRCNT
         INTEGER         IOS
-        CHARACTER*16    BUFFER , DEFSTR
-        CHARACTER*8     FMTSTR
+        CHARACTER*32    BUFFER , DEFSTR
         CHARACTER*256   MESG
 
         LOGICAL, SAVE :: PROMPTON
@@ -108,36 +110,37 @@ C       begin GETNUM
  
         END IF
 
+         WRITE ( DEFSTR , '( I31 )' ) LDF
+         CALL ADJUSTL( DEFSTR )
+
         IF( .NOT. PROMPTON ) THEN
+            MESG   = 'Using default ' // DEFSTR
+            CALL M3MSG2( MESG )
+            IF ( MODE .EQ. 0 ) THEN
+                ANSWER = DEFAULT
+                GO TO 999
+            END IF
             GETNUM = DEFAULT
-            WRITE( MESG,'( A, I10, 2X, A )' ) 
-     &          'Using default value', DEFAULT, 'for query:'
-            CALL M3MSG2( MESG )
-            MESG = '"' // TRIM( PROMPT ) // '"'
-            CALL M3MSG2( MESG )
             RETURN
         END IF
 
         ERRCNT =  0
 
         WRITE ( DEFSTR , '( I15 )' ) LDF
-        J  =  1 + LBLANK( DEFSTR )
-
+        CALL ADJUSTL( DEFSTR )
 
 100     CONTINUE
-        MESG = TRIM( PROMPT ) // ' [' // DEFSTR ( J:15 ) // '] >> '
+        MESG = TRIM( PROMPT ) // ' [' // TRIM( DEFSTR ) // '] >> '
         CALL M3PROMPT( MESG, BUFFER, IOS )
 
         IF ( IOS .NE. 0 ) THEN
             GO TO  900
         ELSE IF ( BUFFER  .EQ. ' ' )  THEN
-            GETNUM  =  LDF
-            WRITE( MESG, '( A, I10 )' ) 'Using default', LDF
+            ANSWER  =  LDF
+            MESG    = 'Using default ' // DEFSTR
         ELSE
 
-	        M = LEN_TRIM( BUFFER )
-            WRITE( FMTSTR, 94010 ) M
-            READ( BUFFER, FMTSTR, IOSTAT=IOS, ERR=400 )  ANSWER
+            READ( BUFFER, *, IOSTAT=IOS, ERR=400 )  ANSWER
 
             IF ( ANSWER .LT. LLO  .OR.  ANSWER .GT. LHI )  THEN
                 ERRCNT  =  ERRCNT + 1
@@ -148,11 +151,18 @@ C       begin GETNUM
 
             END IF
 
-            GETNUM  =  ANSWER
-            WRITE( MESG, '( A, I10 )'  ) 'Using response', ANSWER
+            WRITE ( DEFSTR , '( I31 )' ) ANSWER
+            CALL ADJUSTL( DEFSTR )
+            MESG = 'Using response ' // DEFSTR
+
         END IF
 
         CALL M3MSG2( MESG )
+
+        IF ( MODE .EQ. 0 )  GO TO 999
+        
+        GETNUM = ANSWER
+
         RETURN
 
 
@@ -180,10 +190,14 @@ C................   end body of GETNUM  .......................................
         ENTRY GETNUM1( DEFAULT , PROMPT )   !!  no "lo" nor "hi" bounds for result
         
         MODE = 0
-        LLO  = -2000000000
-        LHI  =  2000000000
+        LLO  = -2**30
+        LHI  =  2**30
         LDF  =  MIN ( LHI , MAX ( LLO , DEFAULT ) )
         GO TO 11
+
+999     CONTINUE        !  error in read from terminal, or more than 5 errors
+        GETNUM1 = ANSWER
+        RETURN
 
 C................   end body of GETNUM1  .......................................
 
@@ -209,6 +223,177 @@ C................   end body of GETNUM1  .......................................
      &         /10X  , 'Please try again.'                , /
      &         )
 
-94010   FORMAT ( '(I', I3, ')' )
+      END FUNCTION GETNUM
 
-        END FUNCTION GETNUM
+
+!!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+      INTEGER(8) FUNCTION GETINT8 ( LO , HI , DEFAULT , PROMPT )
+
+        IMPLICIT NONE
+
+        !.......   ARGUMENTS:
+
+        INTEGER(8)   , INTENT(IN   ) :: LO , HI , DEFAULT
+        CHARACTER*(*), INTENT(IN   ) :: PROMPT
+
+        INTEGER(8)  GETINT81
+
+        !.......   EXTERNAL FUNCTIONS:
+
+        LOGICAL, EXTERNAL :: ENVYN
+        INTEGER, EXTERNAL :: LBLANK          ! # of leading blanks
+
+
+        !.......   LOCAL VARIABLES:
+
+        INTEGER         MODE                !!  mode=1 for GETINT8(), mode=0 for GETINT81()
+        INTEGER         J
+        INTEGER(8)      LLO , LHI , LDF
+        INTEGER         ANSWER
+        INTEGER         ERRCNT
+        INTEGER         IOS
+        CHARACTER*32    BUFFER , DEFSTR
+        CHARACTER*256   MESG
+
+        LOGICAL, SAVE :: PROMPTON
+        LOGICAL, SAVE :: FIRSTIME = .TRUE.
+
+        CHARACTER*16, PARAMETER :: PNAME = 'GETINT8'
+
+        !......................................................................
+        !       begin GETINT8
+
+        MODE = 1
+
+        LLO  =  MIN ( LO , HI )
+        LHI  =  MAX ( LO , HI )
+        LDF  =  MIN ( LHI , MAX ( LLO , DEFAULT ) )
+
+11      CONTINUE        !!  target of entry getdble1()
+
+        IF( FIRSTIME ) THEN
+
+            PROMPTON = ENVYN( 'PROMPTFLAG', 'Prompt for input flag',
+     &                        .TRUE., IOS )
+            IF ( IOS .GT. 0 ) THEN
+                CALL M3EXIT( PNAME,0,0,'Bad env vble "PROMPTFLAG"', 2 )
+            END IF
+            FIRSTIME = .FALSE.
+
+        END IF
+
+        WRITE ( DEFSTR , '( I31 )' ) LDF
+        CALL ADJUSTL( DEFSTR )
+
+        IF( .NOT. PROMPTON ) THEN
+            MESG    = 'Using default ' // DEFSTR
+            CALL M3MSG2( MESG )
+            IF ( MODE .EQ. 0 ) THEN
+                ANSWER = DEFAULT
+                GO TO  999
+            END IF
+            GETINT8 = DEFAULT
+            RETURN
+        END IF
+
+        ERRCNT =  0
+
+        WRITE ( DEFSTR , '( I31 )' ) LDF
+        CALL ADJUSTL( DEFSTR )
+
+
+100     CONTINUE
+        MESG = TRIM( PROMPT ) // ' [' // TRIM( DEFSTR ) // '] >> '
+        CALL M3PROMPT( MESG, BUFFER, IOS )
+
+        IF ( IOS .NE. 0 ) THEN
+            GO TO  900
+        ELSE IF ( BUFFER  .EQ. ' ' )  THEN
+            ANSWER  =  LDF
+            MESG    = 'Using default ' // DEFSTR
+        ELSE
+
+            READ( BUFFER, *, IOSTAT=IOS, ERR=400 )  ANSWER
+
+            IF ( ANSWER .LT. LLO  .OR.  ANSWER .GT. LHI )  THEN
+                ERRCNT  =  ERRCNT + 1
+                WRITE ( 6,92100 ) ANSWER , LLO , LHI , ERRCNT
+                IF ( ERRCNT .LT. 5 )  GO TO  100
+
+                GO TO  900      !  max error count exceeded
+
+            END IF
+
+            WRITE ( DEFSTR , '( I31 )' ) ANSWER
+            CALL ADJUSTL( DEFSTR )
+            MESG = 'Using response ' // DEFSTR
+
+        END IF
+
+        CALL M3MSG2( MESG )
+        IF ( MODE .EQ. 0 )  GO TO 999
+
+        GETINT8 = ANSWER
+
+        RETURN
+
+
+400     CONTINUE        !  error in read from BUFFER
+
+        ERRCNT  =  ERRCNT + 1
+        WRITE ( 6,92200 )  ERRCNT
+        CALL M3FLUSH( 6 )
+        IF ( ERRCNT .LT. 5 )  GO TO  100
+
+900     CONTINUE        !  error in read from terminal, or more than 5 errors
+
+        ERRCNT  =  ERRCNT + 1
+        IF ( ERRCNT .LT. 5 ) THEN
+            WRITE ( 6,92000 ) IOS , ERRCNT
+            CALL M3FLUSH( 6 )
+            GO TO  100
+        ELSE
+            CALL M3EXIT( 'GETINT8', 0, 0,
+     &                   'Maximum error count exceeded', 1 )
+        END IF
+
+        !................   end body of GETINT8  .......................................
+
+      ENTRY GETINT81( DEFAULT , PROMPT )   !!  no "lo" nor "hi" bounds for result
+
+        MODE = 0
+        LLO  = -2_8**62
+        LHI  =  2_8**62
+        LDF  =  MIN ( LHI , MAX ( LLO , DEFAULT ) )
+        GO TO 11
+
+999     CONTINUE        !  error in read from terminal, or more than 5 errors
+        GETINT81 = ANSWER
+        RETURN
+
+    !................   end body of GETINT81  .......................................
+
+
+92000 FORMAT ( /5X , '>>> ERROR IN ROUTINE GETINT8 <<<' ,
+     &     //10X , 'Error reading response'          , 
+     &     /10X  , 'I/O error status number = ' , I3 , 
+     &     /10X  , 'This is error ' , I1 , ' of 5 errors allowed ' ,
+     &     /10X  , 'Please try again.' 
+     &     )
+
+92100 FORMAT ( /5X , '>>>  RESPONSE ERROR  <<<'      ,
+     &     //10X , 'Your response '    , I24, 
+     &     ' not in the range ', I24, ' ... ' , I24,
+     &     /10X  , 'This is error ' , I1 , ' of 5 errors allowed ',
+     &     /10X  , 'Please try again.'            , /
+     &     )
+
+92200 FORMAT ( /5X , '>>>  RESPONSE ERROR  <<<'       ,
+     &     //10X , 'Did not understand your response' ,
+     &     /10X  , 'This is error ' , I1 , ' of 5 errors allowed ',
+     &     /10X  , 'Please try again.'                , /
+     &     )
+
+      END FUNCTION GETINT8
