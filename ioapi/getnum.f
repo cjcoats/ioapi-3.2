@@ -2,7 +2,7 @@
       INTEGER FUNCTION GETNUM ( LO , HI , DEFAULT , PROMPT )
 
 C********************************************************************
-C Version "$Id: getnum.f 189 2020-10-06 17:05:28Z coats $"
+C Version "$Id: getnum.f 190 2020-10-20 14:41:34Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -41,6 +41,7 @@ C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C       Modified 02/2014 by CJC: ENTRY GETNUM1() does not have bounds LO, HI;
 C       Fix MH violation of coding-standards:  check status IOS from  ENVYN()!!
 C       Version 10/2020 by CJC:  GETINT8, GETINT81
+C       Version 10/2020 by CJC:  Fix ADJUSTL calls
 C
 C  ARGUMENT LIST DESCRIPTION:
 C
@@ -111,7 +112,7 @@ C       begin GETNUM
         END IF
 
          WRITE ( DEFSTR , '( I31 )' ) LDF
-         CALL ADJUSTL( DEFSTR )
+         DEFSTR = ADJUSTL( DEFSTR )
 
         IF( .NOT. PROMPTON ) THEN
             MESG   = 'Using default ' // DEFSTR
@@ -127,7 +128,7 @@ C       begin GETNUM
         ERRCNT =  0
 
         WRITE ( DEFSTR , '( I15 )' ) LDF
-        CALL ADJUSTL( DEFSTR )
+        DEFSTR = ADJUSTL( DEFSTR )
 
 100     CONTINUE
         MESG = TRIM( PROMPT ) // ' [' // TRIM( DEFSTR ) // '] >> '
@@ -152,7 +153,7 @@ C       begin GETNUM
             END IF
 
             WRITE ( DEFSTR , '( I31 )' ) ANSWER
-            CALL ADJUSTL( DEFSTR )
+            DEFSTR = ADJUSTL( DEFSTR )
             MESG = 'Using response ' // DEFSTR
 
         END IF
@@ -285,7 +286,7 @@ C................   end body of GETNUM1  .......................................
         END IF
 
         WRITE ( DEFSTR , '( I31 )' ) LDF
-        CALL ADJUSTL( DEFSTR )
+        DEFSTR = ADJUSTL( DEFSTR )
 
         IF( .NOT. PROMPTON ) THEN
             MESG    = 'Using default ' // DEFSTR
@@ -301,7 +302,7 @@ C................   end body of GETNUM1  .......................................
         ERRCNT =  0
 
         WRITE ( DEFSTR , '( I31 )' ) LDF
-        CALL ADJUSTL( DEFSTR )
+        DEFSTR = ADJUSTL( DEFSTR )
 
 
 100     CONTINUE
@@ -327,7 +328,7 @@ C................   end body of GETNUM1  .......................................
             END IF
 
             WRITE ( DEFSTR , '( I31 )' ) ANSWER
-            CALL ADJUSTL( DEFSTR )
+            DEFSTR = ADJUSTL( DEFSTR )
             MESG = 'Using response ' // DEFSTR
 
         END IF
