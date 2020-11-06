@@ -101,7 +101,7 @@
         INTEGER, PARAMETER :: M3INT8  =  10    !  variable type value "INTEGER*8" = nf_int64
 
         INTEGER, PARAMETER :: NM3TYPES = 4
-        INTEGER, PARAMETER :: M3TYPES( NM3TYPES ) =                             &
+        INTEGER, PARAMETER :: M3TYPES( NM3TYPES ) =                              &
      &        (/ M3INT, M3REAL, M3DBLE, M3INT8 /)
             
         !!......  File storage modes:

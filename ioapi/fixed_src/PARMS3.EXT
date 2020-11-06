@@ -1,9 +1,9 @@
 
 !.........................................................................
-! Version "$Id: PARMS3.EXT 1 2017-06-10 18:05:20Z coats $"
+! Version "$Id: PARMS3.EXT 173 2020-07-01 19:05:24Z coats $"
 !   EDSS/Models-3 I/O API.
 !   Copyright (C) 1992-2002 MCNC, (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
-!   and (C) 2003-2011 Baron Advanced Meteorological Systems, LLC. and
+!   (C) 2003-2011 Baron Advanced Meteorological Systems, LLC., and
 !   (C) 2015- UNC Institute for the Environment.
 !
 !   Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -101,7 +101,7 @@
         INTEGER, PARAMETER :: M3INT8  =  10    !  variable type value "INTEGER*8" = nf_int64
 
         INTEGER, PARAMETER :: NM3TYPES = 4
-        INTEGER, PARAMETER :: M3TYPES( NM3TYPES ) =                             &
+        INTEGER, PARAMETER :: M3TYPES( NM3TYPES ) =
      &        (/ M3INT, M3REAL, M3DBLE, M3INT8 /)
             
         !!......  File storage modes:
@@ -136,14 +136,14 @@
         !!......  Vertical-coordinate types:
 
         INTEGER, PARAMETER :: GISLAY3 =  -1   ! "vert" coord type -1:  (arc) GIS layers
-        INTEGER, PARAMETER :: VGSGPH3 =   1   !  vert coord type 1:  hydrostatic sigma-P
-        INTEGER, PARAMETER :: VGSGPN3 =   2   !  vert coord type 2:  non-h sigma-P
-        INTEGER, PARAMETER :: VGSIGZ3 =   3   !  vert coord type 3:  sigma-Z
-        INTEGER, PARAMETER :: VGPRES3 =   4   !  vert coord type 4:  pressure (mb)
-        INTEGER, PARAMETER :: VGZVAL3 =   5   !  vert coord type 5:  Z (m) (above sea lvl)
-        INTEGER, PARAMETER :: VGHVAL3 =   6   !  vert coord type 6:  H (m) (above ground)
-        INTEGER, PARAMETER :: VGWRFEM =   7   !  vert coord type 7:  WRF mass-core sigma
-        INTEGER, PARAMETER :: VGWRFNM =   8   !  vert coord type 8:  WRF NMM
+        INTEGER, PARAMETER :: VGSGPH3 =   1   !  vert  coord type  1:  hydrostatic sigma-P
+        INTEGER, PARAMETER :: VGSGPN3 =   2   !  vert  coord type  2:  non-h sigma-P
+        INTEGER, PARAMETER :: VGSIGZ3 =   3   !  vert  coord type  3:  sigma-Z
+        INTEGER, PARAMETER :: VGPRES3 =   4   !  vert  coord type  4:  pressure (mb)
+        INTEGER, PARAMETER :: VGZVAL3 =   5   !  vert  coord type  5:  Z (m) (above sea lvl)
+        INTEGER, PARAMETER :: VGHVAL3 =   6   !  vert  coord type  6:  H (m) (above ground)
+        INTEGER, PARAMETER :: VGWRFEM =   7   !  vert  coord type  7:  WRF mass-core sigma
+        INTEGER, PARAMETER :: VGWRFNM =   8   !  vert  coord type  8:  WRF NMM
             
         !!......  Other tokens:
 

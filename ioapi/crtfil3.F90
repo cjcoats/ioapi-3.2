@@ -139,7 +139,7 @@ LOGICAL FUNCTION CRTFIL3( EQNAME, FID, PGNAME )  RESULT( CFLAG3 )
         OFFSET64 = ENVYN( 'IOAPI_OFFSET_64', 'Use NF_64BIT_OFFSET or not', .TRUE., IERR )
         IF ( IERR .GT. 0 ) THEN
             EFLAG = .TRUE.
-            CALL M3MSG2( 'Bad environment vble "IOAPI_LOG_WRITE"' )
+            CALL M3MSG2( 'Bad environment vble "IOAPI_OFFSET_64"' )
         END IF
 
         FMODE = IOR( NF_NOCLOBBER, NF_SHARE )
