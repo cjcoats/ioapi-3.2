@@ -2,7 +2,7 @@
         SUBROUTINE GRIDOPS( NCOL, NROW, NSPC, NLEV, A, B, C )
 
 C***********************************************************************
-C Version "$Id: gridops.f 27 2017-10-13 17:52:55Z coats $"
+C Version "$Id: gridops.f 193 2020-11-10 17:33:10Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems,
@@ -47,6 +47,7 @@ C  16:   (pointwise) maximum                                MAX( A,B )
 C  17:   (pointwise) minimum                                min( A,B )
 C  18:   value from grid A                                  A
 C  19:   value from grid B                                  B
+C  20:   (pointwise) product                                A * B
 C
 C  SUBROUTINES AND FUNCTIONS CALLED:  M3EXIT, GETMENU, INDEX1
 C
@@ -55,6 +56,7 @@ C       prototype 09/1992 by CJC
 C       Modified  03/2010 by CJC: F9x changes for I/O API v3.1
 C       Modified  02/2015 by CJC for I/O API 3.2: USE M3UTILIO
 C       Modified  10/2017 by CJC for I/O API 3.2: bugfix for Modes 13,14,17
+C       Modified  11/2020 by CAA for (pointwise) product
 C***********************************************************************
 
         USE M3UTILIO
@@ -71,9 +73,9 @@ C...........   ARGUMENTS and their descriptions:
 
 
 C...........   Parameter:
-
-        INTEGER, PARAMETER :: OPCOUNT = 19         !  dimension for OP(*); number of ops
-        REAL   , PARAMETER :: MISSING = BADVAL3    !  fill value for zero-divide cells
+        REAL   , PARAMETER :: EPS     = 1.1755E-38  !  safe lower bound for non-denormal positive REALs
+        INTEGER, PARAMETER :: OPCOUNT = 20          !  dimension for OP(*); number of ops
+        REAL   , PARAMETER :: MISSING = BADVAL3     !  fill value for zero-divide cells
 
         CHARACTER*72, PARAMETER :: DIFMNU ( OPCOUNT ) = (/
      &'(pointwise) difference                           A - B        ',        !  1
@@ -94,7 +96,8 @@ C...........   Parameter:
      &'(pointwise) maximum                              MAX( A,B )   ',        ! 16
      &'(pointwise) minimum                              min( A,B )   ',        ! 17
      &'value from grid A                                A            ',        ! 18
-     &'value from grid B                                B            '         ! 19
+     &'value from grid B                                B            ',        ! 19
+     &'(pointwise) product                              A * B        '         ! 20
      & /)
 
         CHARACTER*16, PARAMETER :: OP ( OPCOUNT ) = (/
@@ -116,7 +119,8 @@ C...........   Parameter:
      &          'MAX(A, B)       ' ,         ! 16
      &          'min(a, B)       ' ,         ! 17
      &          'Grid A          ' ,         ! 18
-     &          'Grid B          ' /)        ! 19
+     &          'Grid B          ' ,         ! 19
+     &          'A * B           ' /)        ! 20
 
 
 C...........   LOCAL VARIABLES:  menu choices and descriptions
@@ -147,7 +151,7 @@ C   begin body of subroutine  GRIDOPS
 
             DO 33  I = 1, NCOL*NROW*NSPC*NLEV
                  T = B( I )
-                 IF ( T .NE. 0.0 ) THEN
+                 IF ( ABS(T) .GE. EPS ) THEN
                      C( I ) = A( I ) / T
                  ELSE
                      C( I ) = MISSING
@@ -158,7 +162,7 @@ C   begin body of subroutine  GRIDOPS
 
             DO 44  I = 1, NCOL*NROW*NSPC*NLEV
                  T = A( I )
-                 IF ( T .NE. 0.0 ) THEN
+                 IF ( ABS(T) .GE. EPS ) THEN
                      C( I ) = B( I ) / T
                  ELSE
                      C( I ) = MISSING
@@ -175,7 +179,7 @@ C   begin body of subroutine  GRIDOPS
 
             DO 66  I = 1, NCOL*NROW*NSPC*NLEV
                  T = A( I )
-                 IF ( T .NE. 0.0 ) THEN
+                 IF ( ABS(T) .GE. EPS ) THEN
                      C( I ) = ( T - B( I ) ) / T
                  ELSE
                      C( I ) = MISSING
@@ -186,7 +190,7 @@ C   begin body of subroutine  GRIDOPS
 
             DO 77  I = 1, NCOL*NROW*NSPC*NLEV
                  T = B( I )
-                 IF ( T .NE. 0.0 ) THEN
+                 IF ( ABS(T) .GE. EPS ) THEN
                      C( I ) = ( T - A( I ) ) / T
                  ELSE
                      C( I ) = MISSING
@@ -197,7 +201,7 @@ C   begin body of subroutine  GRIDOPS
 
             DO 88  I = 1, NCOL*NROW*NSPC*NLEV
                  T = B( I )
-                 IF ( T .NE. 0.0 ) THEN
+                 IF ( ABS(T) .GE. EPS ) THEN
                      C( I ) = ( A( I ) - T ) / T
                  ELSE
                      C( I ) = MISSING
@@ -208,7 +212,7 @@ C   begin body of subroutine  GRIDOPS
 
             DO 99  I = 1, NCOL*NROW*NSPC*NLEV
                  T = A( I )
-                 IF ( T .NE. 0.0 ) THEN
+                 IF ( ABS(T) .GE. EPS ) THEN
                      C( I ) = ABS( ( T - B( I ) ) / T )
                  ELSE
                      C( I ) = MISSING
@@ -219,7 +223,7 @@ C   begin body of subroutine  GRIDOPS
 
             DO 101  I = 1, NCOL*NROW*NSPC*NLEV
                  T = B( I )
-                 IF ( T .NE. 0.0 ) THEN
+                 IF ( ABS(T) .GE. EPS ) THEN
                      C( I ) = ABS( ( A( I ) - T ) / T )
                  ELSE
                      C( I ) = MISSING
@@ -333,6 +337,12 @@ C   begin body of subroutine  GRIDOPS
             DO 199  I = 1, NCOL*NROW*NSPC*NLEV
                 C( I ) = B( I )
 199         CONTINUE
+
+        ELSE IF ( DIFMODE .EQ. 20 ) THEN         !  A * B
+
+            DO 210  I = 1, NCOL*NROW*NSPC*NLEV
+                C( I ) = A( I )  *  B( I )
+210         CONTINUE
 
         END IF
 
