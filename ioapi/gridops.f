@@ -2,7 +2,7 @@
         SUBROUTINE GRIDOPS( NCOL, NROW, NSPC, NLEV, A, B, C )
 
 C***********************************************************************
-C Version "$Id: gridops.f 193 2020-11-10 17:33:10Z coats $"
+C Version "$Id: gridops.f 194 2020-11-13 16:39:15Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems,
@@ -56,7 +56,7 @@ C       prototype 09/1992 by CJC
 C       Modified  03/2010 by CJC: F9x changes for I/O API v3.1
 C       Modified  02/2015 by CJC for I/O API 3.2: USE M3UTILIO
 C       Modified  10/2017 by CJC for I/O API 3.2: bugfix for Modes 13,14,17
-C       Modified  11/2020 by CAA for (pointwise) product
+C       Modified  11/2020 by CAA for (pointwise) product; bugfix for difnrms
 C***********************************************************************
 
         USE M3UTILIO
@@ -69,7 +69,7 @@ C...........   ARGUMENTS and their descriptions:
         REAL        , INTENT(IN   ) :: A( NCOL*NROW*NSPC*NLEV )        !  first  input grid
         REAL        , INTENT(IN   ) :: B( NCOL*NROW*NSPC*NLEV )        !  second input grid
         REAL        , INTENT(  OUT) :: C( NCOL*NROW*NSPC*NLEV )        !  output grid
-        CHARACTER*16, INTENT(INOUT) :: OPNAME                          !  for PICKOPS
+        CHARACTER(*), INTENT(INOUT) :: OPNAME                          !  for PICKOPS,NAMEDOP
 
 
 C...........   Parameter:
@@ -117,7 +117,7 @@ C...........   Parameter:
      &          '(B - A)/RMS     ' ,         ! 14
      &          '(A + B)         ' ,         ! 15
      &          'MAX(A, B)       ' ,         ! 16
-     &          'min(a, B)       ' ,         ! 17
+     &          'min(A, B)       ' ,         ! 17
      &          'Grid A          ' ,         ! 18
      &          'Grid B          ' ,         ! 19
      &          'A * B           ' /)        ! 20
@@ -269,8 +269,8 @@ C   begin body of subroutine  GRIDOPS
                     U = S * S  +  T * T
 130             CONTINUE
 
-                IF ( U .NE. 0.0 ) THEN
-                    U = SQRT( U*U )
+                IF ( U*V  .GE. EPS ) THEN
+                    U = V/SQRT( U*U )
                     DO  131  I = J, J+K-1
                         C( I ) = U * ( A( I ) - B( I ) )
 131                 CONTINUE
@@ -295,8 +295,8 @@ C   begin body of subroutine  GRIDOPS
                     U = S * S  +  T * T
 140             CONTINUE
 
-                IF ( U .NE. 0.0 ) THEN
-                    U = SQRT( U *U )
+                IF ( U*V  .GE. EPS ) THEN
+                    U = V/SQRT( U *U )
                     DO  142  I = J, J+K-1
                         C( I ) = U * ( B( I ) - A( I ) )
 142                 CONTINUE
