@@ -1,6 +1,6 @@
 
 !.........................................................................
-! Version "$Id: PARMS3.EXT 173 2020-07-01 19:05:24Z coats $"
+! Version "$Id: PARMS3.EXT 195 2021-01-12 16:45:32Z coats $"
 !   EDSS/Models-3 I/O API.
 !   Copyright (C) 1992-2002 MCNC, (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
 !   (C) 2003-2011 Baron Advanced Meteorological Systems, LLC., and
@@ -135,6 +135,7 @@
             
         !!......  Vertical-coordinate types:
 
+        INTEGER, PARAMETER :: TBLLAY3 =  -2   ! "vert" coord type -1:  interpolation-bin layers
         INTEGER, PARAMETER :: GISLAY3 =  -1   ! "vert" coord type -1:  (arc) GIS layers
         INTEGER, PARAMETER :: VGSGPH3 =   1   !  vert  coord type  1:  hydrostatic sigma-P
         INTEGER, PARAMETER :: VGSGPN3 =   2   !  vert  coord type  2:  non-h sigma-P

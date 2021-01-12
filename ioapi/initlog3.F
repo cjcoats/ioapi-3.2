@@ -2,7 +2,7 @@
         INTEGER FUNCTION INITLOG3 ( CALLER )
 
 C***********************************************************************
-C Version "$Id: initlog3.F 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: initlog3.F 195 2021-01-12 16:45:32Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2010 by Baron Advanced Meteorological Systems.
@@ -56,7 +56,7 @@ C...........   EXTERNAL FUNCTIONS and their descriptions:
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
         CHARACTER*512   EQNAME
-        CHARACTER*256   MESG            !  message/warning buffer
+        CHARACTER*256   MESG, TEXT          !  message/warning buffers
 
         INTEGER         L, IOST
 
@@ -95,20 +95,22 @@ C   begin body of subroutine  INITLOG
 
                 STDOUT = .FALSE.
                 LOGDEV = JUNIT()
-                OPEN ( UNIT    =  LOGDEV,
-     &                 IOSTAT  =  IOST,
-     &                 FILE    =  EQNAME,
-     &                 ACCESS  =  'SEQUENTIAL')
+                OPEN ( UNIT   =  LOGDEV,
+     &                 IOMSG  = TEXT,
+     &                 IOSTAT =  IOST,
+     &                 FILE   =  EQNAME,
+     &                 ACCESS =  'SEQUENTIAL')
 
             ELSE
 
                 LOGDEV = JUNIT()
                 STDOUT = .FALSE.
-                OPEN ( UNIT    =  LOGDEV,
-     &                 IOSTAT  =  IOST,
-     &                 FILE    =  EQNAME,
-     &                 STATUS  =  'NEW',
-     &                 ACCESS  =  'SEQUENTIAL')
+                OPEN ( UNIT   =  LOGDEV,
+     &                 IOMSG  = TEXT,
+     &                 IOSTAT =  IOST,
+     &                 FILE   =  EQNAME,
+     &                 STATUS =  'NEW',
+     &                 ACCESS =  'SEQUENTIAL')
 
             END IF
 
@@ -119,6 +121,8 @@ C   begin body of subroutine  INITLOG
                 WRITE( *, '( 5X, A, I10 )' )
      &                    'Error opening log file on unit', LOGDEV,
      &                    'I/O STATUS =', IOST
+                WRITE( *, '( 5X, 2 A, / )' )
+     &                    'DESCRIPTION: ', TRIM( TEXT )
                 WRITE( *, '( 5X, 2 A, / )' )
      &                    'File: ', TRIM( EQNAME )
                 CALL EXIT( 2 )

@@ -3,7 +3,7 @@
      &                           CALLER )
 
 C***********************************************************************
-C Version "$Id: getdfile.F 307 2016-02-02 19:48:31Z coats $"
+C Version "$Id: getdfile.F 195 2021-01-12 16:45:32Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -12,7 +12,7 @@ C (C) 2014-2016 UNC Institute for the Environment.
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line 77
+C  function body starts at line 78
 C
 C  DESCRIPTION:
 C    Gets value of logical name LNAME from the environment, checks for
@@ -42,6 +42,8 @@ C
 C       Modified 03/2010, 09/2014 by CJC: F9x changes for I/O API v3.1
 C
 C       Modified 02/2016 by CJC: eliminate non-F90 cases.
+C
+C       Modified 12/2016 by CJC: Log IOMESG for errors
 C***********************************************************************
 
         IMPLICIT NONE
@@ -57,16 +59,15 @@ C...........   ARGUMENTS and their descriptions:
 
 C...........   EXTERNAL FUNCTIONS and their descriptions:
 
-        INTEGER, EXTERNAL :: INIT3, JUNIT
+        INTEGER, EXTERNAL :: INIT3, JUNIT, GET_ENDIAN
 
 C...........   LOCAL VARIABLES and their descriptions:
 
         INTEGER     IUNIT
-        INTEGER		ISTAT, JSTAT
+        INTEGER		ISTAT, JSTAT, ENDIAN
         LOGICAL     LCHECK
 
-        CHARACTER*512   PNAME
-        CHARACTER*512   MESG
+        CHARACTER*512   PNAME, MESG, TEXT
         CHARACTER*16    FMTSTRING
 
         INTEGER, SAVE :: LOGDEV = -1
@@ -92,9 +93,10 @@ C...........   Read filename from environment ---
 
 C.......   Check for existence of files ---
 
-      INQUIRE( FILE=PNAME, EXIST=LCHECK , IOSTAT=JSTAT )
+      INQUIRE( FILE=PNAME, EXIST=LCHECK , IOSTAT=JSTAT, IOMSG=TEXT )
 
       IF ( JSTAT .NE. 0 ) THEN
+          CALL PERROR( TEXT )
           WRITE( MESG, '( A, I11, 2X, A, 1X, A)' )
      &       'GETDFILE:  Error', JSTAT, 'inquiring about', LNAME
           CALL M3MESG( MESG )
@@ -108,7 +110,7 @@ C.......   Check for existence of files ---
 
           IF ( .NOT. LCHECK ) THEN
               WRITE( LOGDEV, 9000, IOSTAT=JSTAT, ERR=9999 )
-     &            'ERROR: input file not found: ',
+     &            'GETDFILE ERROR: input file not found: ',
      &            TRIM( LNAME ),
      &            TRIM( PNAME )
               GETDFILE = -1
@@ -124,9 +126,11 @@ C.......   Check for existence of files ---
      &          RECL   = RECLEN,
      &          STATUS = 'OLD',
      &          ACTION = 'READ',
+     &          IOMSG  = TEXT,
      &          IOSTAT = ISTAT )
           IF ( ISTAT .NE. 0 ) THEN
-              CALL PERROR( 'ERROR: file not opened successfully')
+              CALL PERROR( 'GETDFILE ERROR: file-opening failure:')
+              CALL PERROR( TEXT )
               WRITE( LOGDEV, 9100, IOSTAT=JSTAT, ERR=9999 )
      &        TRIM( LNAME ),
      &        TRIM( PNAME ),
@@ -159,23 +163,49 @@ C.......   Check for existence of files ---
      &          ACCESS = 'DIRECT',
      &          RECL   = RECLEN,
      &          STATUS = 'UNKNOWN',
+     &          IOMSG  = TEXT,
      &          IOSTAT = ISTAT )
 #endif    /*  ifdef __alpha */
+#ifdef _WIN32
+          ENDIAN = GET_ENDIAN()
+          IF ( ENDIAN .EQ. BIG_ENDIAN ) THEN
+              OPEN( UNIT   = IUNIT,
+     &              FILE   = PNAME,
+     &              ACCESS = 'DIRECT',
+     &              RECL   = RECLEN,
+     &              FORM   = FMTSTRING,
+     &              CONVERT= 'BIG_ENDIAN',
+     &              IOMSG  = TEXT,
+     &              IOSTAT = ISTAT )
+          ELSE
+              OPEN( UNIT   = IUNIT,
+     &              FILE   = PNAME,
+     &              FORM   = FMTSTRING,
+     &              ACCESS = 'DIRECT',
+     &              RECL   = RECLEN,
+     &              IOMSG  = TEXT,
+     &              IOSTAT = ISTAT )
+          END IF
+#endif    /*  ifdef _WIN32 */
 #ifndef __alpha
+#ifndef _WIN32
           OPEN( UNIT   = IUNIT,
      &          FILE   = PNAME,
      &          FORM   = FMTSTRING,
      &          ACCESS = 'DIRECT',
      &          RECL   = RECLEN,
+     &          IOMSG  = TEXT,
      &          IOSTAT = ISTAT )
+#endif    /*  ifndef _WIN32  */
 #endif    /*  ifndef __alpha */
 
           IF ( ISTAT .NE. 0 ) THEN
-              CALL PERROR( 'ERROR: file not opened successfully')
+              CALL PERROR( 'GETDFILE ERROR: file-open failure:')
+              CALL PERROR( TEXT )
               WRITE( LOGDEV, 9100, IOSTAT=JSTAT, ERR=9999 )
-     &        TRIM( LNAME ),
-     &        TRIM( PNAME ),
-     &        'I/O status:  ', ISTAT
+     &            TRIM( LNAME ),
+     &            TRIM( PNAME ),
+     &            'I/O status:  ', ISTAT
               GETDFILE = -1
               RETURN
           END IF
@@ -197,7 +227,7 @@ C     handle messaging errors:
 9999  CONTINUE
 
       IF ( JSTAT .NE. 0 ) THEN
-           CALL PERROR( 'ERROR writing log message.')
+           CALL PERROR( 'GETDFILE ERROR writing log message.')
            WRITE( LOGDEV, 9200, IOSTAT=ISTAT )
      &         'I/O status:', JSTAT
            GETDFILE = -1

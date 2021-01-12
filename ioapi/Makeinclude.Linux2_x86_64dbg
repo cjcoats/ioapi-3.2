@@ -23,7 +23,7 @@ E132 = -ffixed-line-length-132
 #  Weakening these flags seems to be necessary for the "gcc/gfortran"
 #  shipped with Fedoraa Core 3/x86_64:
 
-MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan -m64
+MFLAGS    = -fbacktrace -Wsurprising -fbounds-check -finit-real=snan -m64
 
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp

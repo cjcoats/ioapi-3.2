@@ -135,6 +135,7 @@
             
         !!......  Vertical-coordinate types:
 
+        INTEGER, PARAMETER :: TBLLAY3 =  -2   ! "vert" coord type -1:  interpolation-bin layers
         INTEGER, PARAMETER :: GISLAY3 =  -1   ! "vert" coord type -1:  (arc) GIS layers
         INTEGER, PARAMETER :: VGSGPH3 =   1   !  vert  coord type  1:  hydrostatic sigma-P
         INTEGER, PARAMETER :: VGSGPN3 =   2   !  vert  coord type  2:  non-h sigma-P
