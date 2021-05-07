@@ -1,7 +1,7 @@
 #!/bin/csh -f
 #
 #   I/O API Test Suite.
-#   Version "$Id: ioapitest.csh 146 2020-03-25 18:03:32Z coats $"
+#   Version "$Id: ioapitest.csh 199 2021-05-07 17:20:03Z coats $"
 #   COPYRIGHT 2020 UNC Institute for the Environment.
 #   Distributed under the GNU GENERAL PUBLIC LICENSE version 2
 #   See https://www.gnu.org/licenses/old-licenses/gpl-2.0.html for conditions of use
@@ -10,7 +10,7 @@
 #       Initial version 2/2020 by Carlie J. Coats, Jr., UNC IE
 #
 #   USAGE:
-#       ioapitest.csh ${BIN} ${BASEDIR}
+#       ioapitest.csh ${BASEDIR} ${BIN}
 #
 
 if ( $#argv != 2 ) then
@@ -25,7 +25,7 @@ set bin  = ${2}
 set foo  = 0
 
 if ( ! -e ${base}/tests ) then
-    echo 'USAGE (2 arguments):  "ioapitest.csh ${BIN} ${BASEDIR}'
+    echo 'USAGE (2 arguments):  "ioapitest.csh ${BASEDIR} ${BIN}'
     echo 'USAGE ERROR for I/O API "tests/ioapitest.csh"'
     echo "BASEDIR = ${BASEDIR} not found"
     echo "You must build both I/O API and M3Tools before running tests"

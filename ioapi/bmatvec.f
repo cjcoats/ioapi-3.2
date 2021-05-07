@@ -2,7 +2,7 @@
       SUBROUTINE  BMATVEC01( M, N, P, IX, AX, V, Y )
 
       !!***********************************************************************
-      !! Version "$Id: bmatvec.f 429 2016-10-06 18:13:54Z coats $"
+      !! Version "$Id: bmatvec.f 1 2017-06-10 18:05:20Z coats $"
       !! EDSS/Models-3 I/O API.
       !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
       !! (C) 2003-2010 Baron Advanced Meteorological Systems, and
@@ -61,6 +61,7 @@
       !!        Version  12/2014 by CJC for I/O API v3.2:  multiple versions
       !!        with  M3UTILIO generic interface BMATVEC()
       !!    Version  03/2016 by CJC:  Add BMATVEC() for backwards compatibility
+      !!    Version  05/2021 by CJC:  fix single-indexing bug for BMATVEC2* forms
       !!***********************************************************************
 
         IMPLICIT NONE
@@ -163,7 +164,7 @@
       SUBROUTINE  BMATVEC11( M, N, P, IX, AX, V, Y )
 
       !!***********************************************************************
-      !! Version "$Id: bmatvec.f 429 2016-10-06 18:13:54Z coats $"
+      !! Version "$Id: bmatvec.f 1 2017-06-10 18:05:20Z coats $"
       !! EDSS/Models-3 I/O API.
       !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
       !! (C) 2003-2010 Baron Advanced Meteorological Systems, and
@@ -357,9 +358,9 @@
 
         DO  S = 1, N
 
-            K  = IX( 1,S )
-            CC = MOD( K, MC )
-            RR = 1 + K / MC
+            K  = IX( 1,S ) - 1
+            CC = 1 + MOD( K , MC )
+            RR = 1 +      K / MC
 
             DO  L = 1, P
                 Y( L,S ) = AX( 1,S ) * V( CC  ,RR  ,L )  +
@@ -411,9 +412,9 @@
         DO  C = 1, NC
 
             S  = ( R  - 1 ) * NC  +  C
-            K  = IX( 1,S )
-            CC = MOD( K, MC )
-            RR = 1 + K / MC
+            K  = IX( 1,S ) - 1
+            CC = 1 + MOD( K , MC )
+            RR = 1 +      K / MC
 
             DO  L = 1, P
                 Y( L,C,R ) = AX( 1,S ) * V( CC  ,RR  ,L )  +
@@ -464,9 +465,9 @@
 
         DO  S = 1, N
 
-            K  = IX( 1,S )
-            CC = MOD( K, MC )
-            RR = 1 + K / MC
+            K  = IX( 1,S ) - 1
+            CC = 1 + MOD( K , MC )
+            RR = 1 +      K / MC
             Y( S ) = AX( 1,S ) * V( CC  ,RR   )  +
      &               AX( 2,S ) * V( CC+1,RR   )  +
      &               AX( 3,S ) * V( CC  ,RR+1 )  +
@@ -515,9 +516,9 @@
         DO  C = 1, NC
 
             S  = ( R  - 1 ) * NC  +  C
-            K  = IX( 1,S )
-            CC = MOD( K, MC )
-            RR = 1 + K / MC
+            K  = IX( 1,S ) - 1
+            CC = 1 + MOD( K , MC )
+            RR = 1 +      K / MC
             Y( C,R ) = AX( 1,S ) * V( CC  ,RR   )  +
      &                 AX( 2,S ) * V( CC+1,RR   )  +
      &                 AX( 3,S ) * V( CC  ,RR+1 )  +

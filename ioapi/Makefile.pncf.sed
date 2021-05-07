@@ -6,7 +6,7 @@
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
 #    (C) 2005-2014 Carlie J. Coats, Jr., and
-#    (C) 2014-2015 UNC Institute for the Environment
+#    (C) 2014-2021 UNC Institute for the Environment
 #    Distributed under the GNU Lesser PUBLIC LICENSE version 2.1
 #    See file "LGPL.txt" for conditions of use.
 #.........................................................................
@@ -255,6 +255,7 @@ nametest: ${LIB} ${OBJDIR}/libnetcdff.a
 %.f : %.F          #  Hack for some versions of  "gmake" + "gfortran"
 
 .c.o:  $(hSRC) ${IODIR}/Makeinclude.${BIN}
+	if [ ! -d ${OBJDIR} ]; then mkdir -p ${OBJDIR}; fi
 	cd ${OBJDIR}; $(CC) -c $(CFLAGS) ${IODIR}/$<
 
 .m4.c:  $(hSRC) ${IODIR}/Makeinclude.${BIN}
@@ -266,9 +267,11 @@ nametest: ${LIB} ${OBJDIR}/libnetcdff.a
 	rm -f $(<:.m4=.c)
 
 .F.o .F90.o .F90.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+	if [ ! -d ${OBJDIR} ]; then mkdir -p ${OBJDIR}; fi
 	cd ${OBJDIR}; $(FC) -c $(FPPFLAGS) $(FFLAGS) ${IODIR}/$<
 
 .f.o .f.mod .f90.o .f90.mod:  ${EXTS} ${IODIR}/Makeinclude.${BIN}
+	if [ ! -d ${OBJDIR} ]; then mkdir -p ${OBJDIR}; fi
 	cd ${OBJDIR}; $(FC) -c $(FFLAGS) ${IODIR}/$<
 
 

@@ -32,7 +32,7 @@ FOPTFLAGS = -g -std=legacy ${MFLAGS}
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 PARFLAGS  =
-ARCHLIB   =  -dynamic -L/usr/lib64 -lm -lpthread-lc
+ARCHLIB   =  -dynamic -L/usr/lib64 -lm -lpthread -lc
 ARCHFLAGS = \
  -DAUTO_ARRAYS=1 \
  -DF90=1 -DFLDMN=1 \

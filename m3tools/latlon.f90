@@ -126,7 +126,7 @@ PROGRAM LATLON
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: latlon.f90 130 2019-09-13 20:42:32Z coats $',&
+'$Id: latlon.f90 199 2021-05-07 17:20:03Z coats $',&
 ''
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -506,7 +506,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DO  C = NCOLS3D + 1, NCOLS3D + NTHIK3D
             K = K + 1
             XBDY( K ) = X0 + DBLE( C ) * XCELL3D
-            XBDY( K ) = Y0 + DBLE( R ) * YCELL3D
+            YBDY( K ) = Y0 + DBLE( R ) * YCELL3D
         END DO
         END DO
 
@@ -514,7 +514,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DO  C = 1 - NTHIK3D, NCOLS3D
             K = K + 1
             XBDY( K ) = X0 + DBLE( C ) * XCELL3D
-            XBDY( K ) = Y0 + DBLE( R ) * YCELL3D
+            YBDY( K ) = Y0 + DBLE( R ) * YCELL3D
         END DO
         END DO
 
@@ -522,7 +522,7 @@ CONTAINS  !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         DO  C = 1 - NTHIK3D, 0                  !  west bdy component
             K = K + 1
             XBDY( K ) = X0 + DBLE( C ) * XCELL3D
-            XBDY( K ) = Y0 + DBLE( R ) * YCELL3D
+            YBDY( K ) = Y0 + DBLE( R ) * YCELL3D
         END DO
         END DO
 

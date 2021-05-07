@@ -2,7 +2,7 @@
       SUBROUTINE BILIN11L( M, N, P, IX, AX, V, Y )
 
         !!***********************************************************************
-        !! Version "$Id: bilin.f 328 2016-03-08 16:24:31Z coats $"
+        !! Version "$Id: bilin.f 1 2017-06-10 18:05:20Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
         !! (C) 2003-2010 Baron Advanced Meteorological Systems, and
@@ -62,6 +62,7 @@
         !!       Version   9/2014 by CJC:  modifications for OpenMP parallel
         !!    Version  12/2014 by CJC for I/O API v3.2:  multiple versions
         !!        with M3UTILIO generic interface BILIN()
+        !!    Version  5/2021 by CJC:  fix single-indexing bug for BILIN2* forms
         !!***********************************************************************
 
         IMPLICIT NONE
@@ -254,9 +255,9 @@
 
             DO  S = 1, N
 
-                K  = IX( 1,S )
-                CC = MOD( K, MC )
-                RR = 1 + K / MC
+                K  = IX( 1,S ) - 1
+                CC = 1 + MOD( K , MC )
+                RR = 1 +      K / MC
 
                 Y( S,1 ) = AX( 1,S ) * V( CC  ,RR  ,1 )  +
      &                     AX( 2,S ) * V( CC+1,RR  ,1 )  +
@@ -275,9 +276,9 @@
             DO  L = 1, P
             DO  S = 1, N
 
-                K  = IX( 1,S )
-                CC = MOD( K, MC )
-                RR = 1 + K / MC
+                K  = IX( 1,S ) - 1
+                CC = 1 + MOD( K , MC )
+                RR = 1 +      K / MC
 
                 Y( S,L ) = AX( 1,S ) * V( CC  ,RR  ,L )  +
      &                     AX( 2,S ) * V( CC+1,RR  ,L )  +
@@ -331,9 +332,9 @@
             DO  C = 1, NC
 
                 S  = ( R  - 1 ) * NC  +  C
-                K  = IX( 1,S )
-                CC = MOD( K, MC )
-                RR = 1 + K / MC
+                K  = IX( 1,S ) - 1
+                CC = 1 + MOD( K , MC )
+                RR = 1 +      K / MC
 
                 Y( C,R,1 ) = AX( 1,S ) * V( CC  ,RR  ,1 )  +
      &                       AX( 2,S ) * V( CC+1,RR  ,1 )  +
@@ -355,9 +356,9 @@
             DO  C = 1, NC
 
                 S  = ( R  - 1 ) * NC  +  C
-                K  = IX( 1,S )
-                CC = MOD( K, MC )
-                RR = 1 + K / MC
+                K  = IX( 1,S ) - 1
+                CC = 1 + MOD( K , MC )
+                RR = 1 +      K / MC
 
                 Y( C,R,L ) = AX( 1,S ) * V( CC  ,RR  ,L )  +
      &                       AX( 2,S ) * V( CC+1,RR  ,L )  +
@@ -509,9 +510,9 @@
 
         DO  S = 1, N
 
-            K  = IX( 1,S )
-            CC = MOD( K, MC )
-            RR = 1 + K / MC
+            K  = IX( 1,S ) - 1
+            CC = 1 + MOD( K , MC )
+            RR = 1 +      K / MC
 
             Y( S ) = AX( 1,S ) * V( CC  ,RR   )  +
      &               AX( 2,S ) * V( CC+1,RR   )  +
@@ -558,10 +559,9 @@
         DO  R = 1, NR
         DO  C = 1, NC
 
-            S  = ( R  - 1 ) * NC  +  C
-            K  = IX( 1,S )
-            CC = MOD( K, MC )
-            RR = 1 + K / MC
+            K  = IX( 1,S ) - 1
+            CC = 1 + MOD( K , MC )
+            RR = 1 +      K / MC
 
             Y( C,R ) = AX( 1,S ) * V( CC  ,RR   )  +
      &                 AX( 2,S ) * V( CC+1,RR   )  +
