@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 185 2020-08-28 16:49:45Z coats $"
+    !! Version "$Id: init3.F90 200 2021-05-10 14:06:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -82,7 +82,8 @@ INTEGER FUNCTION INIT3 ( )
     !!
     !!      Bugfix 01/2018 by CJC for INIT3()-after-SHUT3().
     !!
-    !!      Versions 06/2019, 04/2020, 08/2020 by CJC:  new code ID, copyright date
+    !!      Versions 06/2019, 04/2020, 08/2020, 05/2021 by CJC:  new code ID,
+    !!      copyright date
     !!***********************************************************************
 
     USE MODNCFIO
@@ -120,7 +121,7 @@ INTEGER FUNCTION INIT3 ( )
       'Copyright (C) 1992-2002 MCNC,                                 ',     &
       '(C) 1992-2018 Carlie J. Coats, Jr.,                           ',     &
       '(C) 2003-2012 Baron Advanced Meteorological Systems, LLC, and ',     &
-      '(C) 2014-2020 UNC Institute for the Environment.              ',     &
+      '(C) 2014-2021 UNC Institute for the Environment.              ',     &
       'Released under the GNU LGPL  License, version 2.1.  See URL   ',     &
       '                                                              ',     &
       '    https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html   ',     &
@@ -139,7 +140,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
     CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'ioapi-3.2: $Id: init3.F90 185 2020-08-28 16:49:45Z coats $'
+'ioapi-3.2: $Id: init3.F90 200 2021-05-10 14:06:20Z coats $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 
