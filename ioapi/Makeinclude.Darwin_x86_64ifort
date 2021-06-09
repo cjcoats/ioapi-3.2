@@ -1,4 +1,4 @@
-# VERSION "$Id: Makeinclude.Darwin_x86_64ifort 444 2017-01-04 18:12:44Z coats $"
+# VERSION "$Id: Makeinclude.Darwin_x86_64ifort 1 2017-06-10 18:05:20Z coats $"
 #
 AR   = ar 
 CC   =  gcc-4.0 -arch x86_64
@@ -13,7 +13,7 @@ E132 = -extend-source 132
 MFLAGS    = -traceback
 
 OMPFLAGS  = 
-OMPLIBS   = #-Vaxlib
+OMPLIBS   = 
 COPTFLAGS = -O3 -m64 ${MFLAGS}
 FOPTFLAGS = ${MFLAGS} -xT -O3 -ip -mdynamic-no-pic -warn declarations -recursive
 FPPFLAGS  = 

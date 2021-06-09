@@ -2,7 +2,7 @@
 PROGRAM  M3TPROC
 
     !!***********************************************************************
-    !! Version "$Id: m3tproc.f90 146 2020-03-25 18:03:32Z coats $"
+    !! Version "$Id: m3tproc.f90 201 2021-06-09 18:23:36Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -11,7 +11,7 @@ PROGRAM  M3TPROC
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line 151
+    !!  program body starts at line 156
     !!
     !!  FUNCTION:
     !!      Sums, give max, or gives average over a specified time period
@@ -43,7 +43,7 @@ PROGRAM  M3TPROC
     !!
     !!      Version 12/2004 with changes by Dr. Michael Bane, U.Manchester, UK:
     !!      Fixups to make the Intel v8.1 compiler happy (remove duplicate
-    !!      declaration of ASTEPS; change back from F-90 style to F-77-style
+    !!      declaration of ARECS; change back from F-90 style to F-77-style
     !!      declarations for MENUITMS and OPNAMES.
     !!
     !!      Version 6/2005 by CJC:  improved/bug-fixed default for NRECS
@@ -70,6 +70,8 @@ PROGRAM  M3TPROC
     !!      Version  06/2016 by CJC:  copy CMAQ metadata, if present
     !!
     !!      Version  03/2020 by CJC:  correct fencepost problem in default EDATE:ETIME
+    !!
+    !!      Version  06/2021 by CJC:  correct ARECS bug.
     !!***********************************************************************
 
     USE M3UTILIO
@@ -141,7 +143,7 @@ PROGRAM  M3TPROC
     INTEGER         TSECS   !  tstep in seconds
     INTEGER         OSTEP   !  output time step, from IFILE header
     INTEGER         UMAX    !  string length for units
-    INTEGER         ASTEPS  !  aggregation-window duration in TSTEPs
+    INTEGER         ARECS  !  aggregation-window duration in TSTEPs
     INTEGER         VMAX    !  string length for names
     INTEGER         ITYPE, ISTAT
 
@@ -194,7 +196,7 @@ PROGRAM  M3TPROC
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tproc.f90 146 2020-03-25 18:03:32Z coats $',&
+'$Id: m3tproc.f90 201 2021-06-09 18:23:36Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -397,6 +399,7 @@ PROGRAM  M3TPROC
     ETIME = GETNUM( 0, 9999999, KTIME, 'Enter final time for analysis' )
 
     NRECS = CURREC( EDATE, ETIME, SDATE, STIME, OSTEP, KDATE, KTIME )
+    ARECS = TIME2SEC( AGLEN ) / TIME2SEC( INSTEP )
 
 
     !!.......   Build description for the output file, and create accordingly:
@@ -434,7 +437,7 @@ PROGRAM  M3TPROC
     CALL M3MSG2( BAR )
     CALL M3MSG2( MESG )
     WRITE( MESG, '( A, 2X, I7.6, 2X, A, I4, 2X, A  )' )     &
-          'Aggregation period', AGLEN, ' (', ASTEPS, 'input time steps)'
+          'Aggregation period', AGLEN, ' (', ARECS, 'input time steps)'
     CALL M3MSG2( MESG )
     CALL M3MSG2( BAR )
 
@@ -444,7 +447,7 @@ PROGRAM  M3TPROC
 
             ITYPE = AGGOP(V)
             CALL TIMEAGG( IFILE, INAME(V), VTYPE(V), VSIZE, ITYPE,   &
-                          JDATE, JTIME, INSTEP, ASTEPS,              &
+                          JDATE, JTIME, INSTEP, ARECS,              &
                           OFILE, ONAME(V) )
 
         END DO        !  end loop on variables
@@ -469,7 +472,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 
     SUBROUTINE TIMEAGG( IFILE, INAME, VTYPE, VSIZE, ATYPE,           &
-                        JDATE, JTIME, TSTEP, ASTEPS, OFILE, ONAME )
+                        JDATE, JTIME, TSTEP, ARECS, OFILE, ONAME )
 
         !!...........   ARGUMENTS and their descriptions:
 
@@ -481,7 +484,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         INTEGER,      INTENT( IN )::  JTIME   ! current model time
         INTEGER,      INTENT( IN )::  ATYPE   ! type of aggregation to perform
         INTEGER,      INTENT( IN )::  TSTEP   ! input-file time step
-        INTEGER,      INTENT( IN )::  ASTEPS  ! number of timesteps to aggregate
+        INTEGER,      INTENT( IN )::  ARECS  ! number of timesteps to aggregate
         CHARACTER*(*),INTENT( IN )::  OFILE   ! output file name
         CHARACTER*(*),INTENT( IN )::  ONAME   ! output vble name
 
@@ -533,7 +536,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 RETURN
             END IF
 
-            DO ISTEP = 1, ASTEPS
+            DO ISTEP = 1, ARECS
 
                 N = N + 1
 
@@ -597,7 +600,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 RETURN
             END IF
 
-            DO ISTEP = 1, ASTEPS
+            DO ISTEP = 1, ARECS
 
                 N = N + 1
 
@@ -675,7 +678,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
             END IF
 
-            DO ISTEP = 1, ASTEPS
+            DO ISTEP = 1, ARECS
 
                 N = N + 1
 
@@ -770,7 +773,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
             END IF
 
 
-            DO ISTEP = 1, ASTEPS
+            DO ISTEP = 1, ARECS
 
                 N = N + 1
 
