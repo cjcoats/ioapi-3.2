@@ -434,7 +434,7 @@ C===========================================================================
                 CX( J ) = FRAC
 
                 L = L + 1
-                READ( FDEV, '( A )', END=133, IOSTAT=ISTAT ) LINE
+                READ( FDEV, '( A )', END=144, IOSTAT=ISTAT ) LINE
                 IF ( ISTAT .NE. 0 ) THEN
                     WRITE( MESG, '(A, I9, 2X, A, I9, 2X, A )' )
      &                  'I/O error', ISTAT,
@@ -455,6 +455,8 @@ C===========================================================================
                 ROW = ICOL + ( IROW - 1 )*NCOL2
 
                 GO TO 122       !  to head of loop reading matrix coeffs
+
+144         ROW = MROWS + 1
 
 133         CONTINUE            !  exit from loop reading matrix coeffs
 
