@@ -2,7 +2,7 @@
         PROGRAM  M3MERGE
 
 C***********************************************************************
-C Version "$Id: m3merge.f 435 2016-11-22 18:10:58Z coats $"
+C Version "$Id: m3merge.f 213 2021-12-14 12:53:57Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -37,6 +37,7 @@ C       Version   9/2008 by CJC:  fix VDESC as CHAR*80 instead of CHAR*16
 C       Version  02/2010 by CJC for I/O API v3.1:  Fortran-90 only;
 C       USE M3UTILIO, and related changes.
 C       Version  01/2014 by CJC:  bug-fix for time independent files.
+C       Version  12/2021 by CJC:  bug-fix for date-prompt
 C***********************************************************************
 
       USE M3UTILIO
@@ -109,6 +110,7 @@ C   begin body of program M3MERGE
      &'input files and the output file, the variables and layers to',
      &'extract, the names by which they should be called in the ',
      &'output file, and the time step sequence to be processed.',
+     &'Use output time step 0 for tine independent output.',
      &'Default responses are indicated in square brackets',
      &'[LIKE THIS], and may be accepted by hitting the RETURN key.',
      &' ',
@@ -138,7 +140,7 @@ C   begin body of program M3MERGE
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3merge.f 435 2016-11-22 18:10:58Z coats                $',
+     &'$Id:: m3merge.f 213 2021-12-14 12:53:57Z coats                $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -202,7 +204,7 @@ C...............  Open/Process the first input file
         TSTEP  = TSTEP3D
         NSTEPS = MXREC3D
         DO  L = 1, NLAYS + 1
-           VGLVS( L ) = VGLVS3D( L )
+            VGLVS( L ) = VGLVS3D( L )
         END DO
 
         WRITE( *, '( /5X, A, 120( /5X, I2, 6A, : ) )' )
@@ -359,7 +361,7 @@ C...............  Open/Process the rest of the input data files
         NVARS = N
 
         SDATE = GETNUM( 0, 9999999, SDATE,
-     &                  'Enter starting DATE for the run (HHMMSS)' )
+     &                  'Enter starting DATE for the run (YYYYDDD)' )
 
         STIME = GETNUM( 0, 235959, STIME,
      &                  'Enter starting TIME (HHMMSS)' )
@@ -367,9 +369,9 @@ C...............  Open/Process the rest of the input data files
         TSTEP = GETNUM( 0, 999999999, TSTEP,
      &                  'Enter OUTPUT TIME STEP (HHMMSS)' )
 
-        I = SEC2TIME( NSTEPS * TIME2SEC( TSTEP ) )
-        DURATN = GETNUM( 0,999999999,I, 'Enter RUN DURATION (HHMMSS)' )
         IF ( TSTEP .GT. 0 ) THEN
+            I = SEC2TIME( NSTEPS * TIME2SEC( TSTEP ) )
+            DURATN = GETNUM( 0,999999999,I, 'Enter RUN DURATION (HHMMSS)' )
             NSTEPS = TIME2SEC( DURATN ) / TIME2SEC( TSTEP )
         ELSE
             NSTEPS = 1
@@ -378,6 +380,9 @@ C...............  Open/Process the rest of the input data files
 
 C...............  Build the output file:
 
+        SDATE3D = SDATE
+        STIME3D = STIME
+        TSTEP3D = TSTEP
         NCOLS3D = NCOLS
         NROWS3D = NROWS
         NLAYS3D = NLAYS

@@ -2,7 +2,7 @@
 PROGRAM M3CPLE
 
     !!***********************************************************************
-    !! Version "$Id: m3cple.f90 130 2019-09-13 20:42:32Z coats $"
+    !! Version "$Id: m3cple.f90 209 2021-11-10 19:03:04Z coats $"
     !!   EDSS/Models-3 M3TOOLS.
     !!   Copyright (C) 1992-2002 MCNC,
     !!   (C) 1995-2002,2005-2013, 2018- Carlie J. Coats, Jr.,
@@ -55,6 +55,8 @@ PROGRAM M3CPLE
     !!       types M3INT, M3DBLE.
     !!       Version  08/2018 by CJC:  fix coordinate-check error
     !!       Version  09/2019 by CJC:  call INITSPHERES() before using MODGCTP
+    !!       Version  10/2021 by CJC:  Add scaling for emissions
+    !!       Version  11/2021 by CJC:  Bug-fix:  use GRID2XY(), UNGRIDB(), BILIN()
     !!***********************************************************************
 
     USE M3UTILIO, AVOID_INITSPHERES => INITSPHERES
@@ -123,13 +125,17 @@ PROGRAM M3CPLE
     INTEGER         JDATE, JTIME, TSTEP
     INTEGER         EDATE, ETIME, TSECS, NRECS
 
+    REAL            SCALEFAC
+
     REAL,    ALLOCATABLE :: BUF1( :,: )
     REAL,    ALLOCATABLE :: BUF2( :,: )
-    INTEGER, ALLOCATABLE ::  IX2( : )
-    REAL,    ALLOCATABLE ::  PX2( : )
-    REAL,    ALLOCATABLE ::  PY2( : )
-    INTEGER, ALLOCATABLE :: IBUF( :,: )
-    REAL(8), ALLOCATABLE :: DBUF( :,: )
+    INTEGER, ALLOCATABLE::  INDX( :,: )
+    REAL,    ALLOCATABLE::  COEF( :,: )
+    INTEGER, ALLOCATABLE :: IBUF( : )
+    REAL,    ALLOCATABLE :: RBUF( : )
+    REAL(8), ALLOCATABLE :: DBUF( : )
+    REAL(8), ALLOCATABLE :: XLOC( :,: )
+    REAL(8), ALLOCATABLE :: YLOC( :,: )
 
     !!***********************************************************************
     !!   begin body of program M3CPLE
@@ -159,6 +165,7 @@ PROGRAM M3CPLE
 '    setenv <input synch file>    <path-name, or "NONE">',                  &
 '    setenv GRIDDESC              <path-name> (if interp)',                 &
 '    setenv IOAPI_ISPH            <USGS spheroid, or REARTH>',              &
+'    setenv SCALEFAC              <scale factor> [1.0]',                    &
 '',                                                                         &
 '    Time step sequence is valid for both input files',                     &
 '',                                                                         &
@@ -170,6 +177,12 @@ PROGRAM M3CPLE
 '    the output grid should have a finer resolution than the',              &
 '    input grid (else you should use an aggregation program',               &
 '    like "mtxcple" instead of an interpolation program).',                 &
+'',                                                                         &
+'    For EMISSIONS INTERPOLATION:  "SCALEFAC" should be the ratio',         &
+'    of the output cell-area to the input cell-area, since emissions',      &
+'    actually use grid-dependent units with an implicit "per cell"',        &
+'    (i.e., the units should be something like "moles/sec/gridcell"',       &
+'    SCALEFAC is not applied to INTEGER variables.',                        &
 '',                                                                         &
 'See URL',                                                                  &
 '',                                                                         &
@@ -194,82 +207,82 @@ PROGRAM M3CPLE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3cple.f90 130 2019-09-13 20:42:32Z coats $',&
+'$Id: m3cple.f90 209 2021-11-10 19:03:04Z coats $',&
 ' '
 
-        IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
-            CALL M3EXIT( PNAME, 0, 0, 'Program terminated at user request', 2 )
-        END IF
+    IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
+        CALL M3EXIT( PNAME, 0, 0, 'Program terminated at user request', 2 )
+    END IF
 
 
-        !!...............  Open and get description for optional synch file
+    !!...............  Open and get description for optional synch file
 
-        MESG  = 'Enter name for input synch file, or "NONE"'
-        SNAME = PROMPTMFILE( MESG, FSREAD3, 'NONE', PNAME )
-        SFLAG = ( SNAME .NE. 'NONE' )
+    MESG  = 'Enter name for input synch file, or "NONE"'
+    SNAME = PROMPTMFILE( MESG, FSREAD3, 'NONE', PNAME )
+    SFLAG = ( SNAME .NE. 'NONE' )
 
-        IF ( SFLAG ) THEN
+    IF ( SFLAG ) THEN
 
-            IF ( DESC3( SNAME ) ) THEN
-                SVBLE  = VNAME3D( 1 )
-            ELSE
-                MESG = 'Could not get file description for ' // SNAME
-                CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
-            END IF
-
-        END IF          !  if synch-flag option taken
-
-
-        !!...............  Open and get description for input data file
-
-        MESG  = 'Enter name for input data file'
-        FNAME = PROMPTMFILE( MESG, FSREAD3, 'INFILE', PNAME )
-
-        IF ( DESC3( FNAME ) ) THEN
-            NCOLS1 = NCOLS3D
-            NROWS1 = NROWS3D
-            NLAYS1 = NLAYS3D
-            GDTYP1 = GDTYP3D
-            P_ALP1 = P_ALP3D
-            P_BET1 = P_BET3D
-            P_GAM1 = P_GAM3D
-            XCENT1 = XCENT3D
-            YCENT1 = YCENT3D
-            XORIG1 = XORIG3D
-            YORIG1 = YORIG3D
-            XCELL1 = XCELL3D
-            YCELL1 = YCELL3D
-
-            IF ( ISCMAQ( FNAME ) ) THEN
-                CFLAG = ENVYN( 'COPY_META', 'Copy CMAQ metadata to output file?', .TRUE., ISTAT )
-                IF ( ISTAT .GT. 0 ) THEN
-                    EFLAG = .TRUE.
-                    CALL M3MESG( 'Bad environment variable "COPY_META"' )
-                ELSE IF ( .NOT.CFLAG ) THEN
-                    CONTINUE
-                ELSE IF ( .NOT.GETCMAQ( FNAME ) ) THEN
-                    EFLAG = .TRUE.
-                    CALL M3MESG( 'Could not get CMAQ metadata for ' // FNAME )
-                END IF
-            END IF
-
+        IF ( DESC3( SNAME ) ) THEN
+            SVBLE  = VNAME3D( 1 )
         ELSE
-            MESG = 'Could not get file description for ' // FNAME
+            MESG = 'Could not get file description for ' // SNAME
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
         END IF
 
+    END IF          !  if synch-flag option taken
 
-        !!...............  Get CMAQ metadata
+
+    !!...............  Open and get description for input data file
+
+    MESG  = 'Enter name for input data file'
+    FNAME = PROMPTMFILE( MESG, FSREAD3, 'INFILE', PNAME )
+
+    IF ( DESC3( FNAME ) ) THEN
+        NCOLS1 = NCOLS3D
+        NROWS1 = NROWS3D
+        NLAYS1 = NLAYS3D
+        GDTYP1 = GDTYP3D
+        P_ALP1 = P_ALP3D
+        P_BET1 = P_BET3D
+        P_GAM1 = P_GAM3D
+        XCENT1 = XCENT3D
+        YCENT1 = YCENT3D
+        XORIG1 = XORIG3D
+        YORIG1 = YORIG3D
+        XCELL1 = XCELL3D
+        YCELL1 = YCELL3D
+
+        IF ( ISCMAQ( FNAME ) ) THEN
+            CFLAG = ENVYN( 'COPY_META', 'Copy CMAQ metadata to output file?', .TRUE., ISTAT )
+            IF ( ISTAT .GT. 0 ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Bad environment variable "COPY_META"' )
+            ELSE IF ( .NOT.CFLAG ) THEN
+                CONTINUE
+            ELSE IF ( .NOT.GETCMAQ( FNAME ) ) THEN
+                EFLAG = .TRUE.
+                CALL M3MESG( 'Could not get CMAQ metadata for ' // FNAME )
+            END IF
+        END IF
+
+    ELSE
+        MESG = 'Could not get file description for ' // FNAME
+        CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
+    END IF
        
+    SCALEFAC = ENVGET( 'SCALEFAC', 'Scale factor for re-scalng output', 1.0, ISTAT )
+    IF ( ISTAT .GT. 0 ) THEN
+        CALL M3EXIT( PNAME, 0, 0, 'Bad environment-variable "SCALEFAC"', 2 )
+    END IF
 
-
-        !!...............  Get output grid description, time step sequence
+    !!...............  Get output grid description, time step sequence
 
         WRITE( *, '( 5X, A )' ) BLANK,                                  &
  'If you wish to copy time steps (keeping the output grid the same)',   &
  'instead of interpolating them to a new output grid, respond "SAME"',  &
  'to the prompt for output grid name.  ',                               &
- 'Otherwise, give the GRIDDESC name for the output grid.',  ' '
+ 'Otherwise, give the GRIDDESC name for the output grid.',  BLANK
 
     CALL GETSTR( 'Enter output grid name, or "SAME"', 'SAME', GNAME )
 
@@ -318,9 +331,9 @@ PROGRAM M3CPLE
             EFLAG = .TRUE.
         END IF
 
-        ALLOCATE( BUF1( NSIZE, NLAYS3D ),   &
-                  IBUF( NSIZE, NLAYS3D ),   &
-                  DBUF( NSIZE, NLAYS3D ),   STAT = ISTAT )
+        ALLOCATE( RBUF( NSIZE*NLAYS3D ),   &
+                  IBUF( NSIZE*NLAYS3D ),   &
+                  DBUF( NSIZE*NLAYS3D ),   STAT = ISTAT )
         IF ( ISTAT .NE. 0 ) THEN
             WRITE( MESG, '( A, I10 )' ) 'Buffer allocation failed:  STAT=', ISTAT
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
@@ -416,13 +429,14 @@ PROGRAM M3CPLE
         END IF
 
 
-    !!...............  Allocate buffers; compute re-gridding matrix
+        !!...............  Allocate buffers; compute re-gridding matrix
 
         ALLOCATE( BUF1( NCOLS1*NROWS1, NLAYS1 ),    &
                   BUF2( NCOLS2*NROWS2, NLAYS1 ),    &
-                  IX2 ( NCOLS2*NROWS2 ),            &
-                  PX2 ( NCOLS2*NROWS2 ),            &
-                  PY2 ( NCOLS2*NROWS2 ),  STAT = ISTAT )
+                  XLOC( NCOLS2, NROWS2 ),           &
+                  YLOC( NCOLS2, NROWS2 ),           &
+                  INDX( 4, NCOLS2*NROWS2 ),         &
+                  COEF( 4, NCOLS2*NROWS2 ), STAT = ISTAT )
 
         IF ( ISTAT .NE. 0 ) THEN
             WRITE( MESG, '( A, I10)' ) 'Buffer allocation failed:  STAT=', ISTAT
@@ -432,11 +446,14 @@ PROGRAM M3CPLE
         IF ( .NOT. INITSPHERES() ) THEN
             CALL M3EXIT( PNAME, 0,0, 'INITSPHERES() failure', 2 )
         END IF
-        CALL GRID2INDX( GDTYP1,P_ALP1,P_BET1,P_GAM1,XCENT1,YCENT1,     &
-                        GDTYP2,P_ALP2,P_BET2,P_GAM2,XCENT2,YCENT2,     &
-                        NCOLS1,NROWS1,XORIG1,YORIG1,XCELL1,YCELL1,     &
-                        NCOLS2,NROWS2,XORIG2,YORIG2,XCELL2,YCELL2,     &
-                        IX2, PX2, PY2 )
+
+        CALL GRID2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,       &
+                      GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,       &
+                      NCOLS2, NROWS2, XORIG2, YORIG2, XCELL2, YCELL2,       &
+                      XLOC, YLOC )
+
+        CALL UNGRIDB( NCOLS1, NROWS1, XORIG1, YORIG1, XCELL1, YCELL1,       &
+                      NCOLS2, NROWS2, XLOC, YLOC, INDX, COEF )
 
     END IF      !  if gname = "SAME", or not
 
@@ -486,11 +503,11 @@ PROGRAM M3CPLE
                     CYCLE
                 END IF
 
-                CALL INDXMULT( NCOLS2*NROWS2, NLAYS1,           &
-                               NCOLS1, NROWS1, IX2, PX2, PY2,   &
-                               BUF2, BUF1 )
+                CALL BILIN( NCOLS1 * NROWS1,            &
+                            NCOLS2 * NROWS2, NLAYS1,    &
+                            INDX, COEF, BUF1, BUF2 )
 
-                IF ( .NOT.WRITE3( ONAME, VNAME3D(V), JDATE, JTIME, BUF2 ) ) THEN
+                IF ( .NOT.WRITE3( ONAME, VNAME3D(V), JDATE, JTIME, SCALEFAC*BUF2 ) ) THEN
                     EFLAG = .TRUE.
                     CALL M3MESG( 'ERROR:  write-failure' )
                     CYCLE
@@ -504,10 +521,10 @@ PROGRAM M3CPLE
 
                 IF ( VTYPE3D( V ) .EQ. M3REAL ) THEN
 
-                    IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, BUF1 ) ) THEN
+                    IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, RBUF ) ) THEN
                         EFLAG = .TRUE.
                         CALL M3MESG( 'ERROR:  read-failure' )
-                    ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, BUF1 ) ) THEN
+                    ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, SCALEFAC*RBUF ) ) THEN
                         EFLAG = .TRUE.
                         CALL M3MESG( 'ERROR:  write-failure' )
                     END IF
@@ -527,7 +544,7 @@ PROGRAM M3CPLE
                     IF ( .NOT. READ3( FNAME, VNAME3D( V ), ALLAYS3, JDATE, JTIME, DBUF ) ) THEN
                         EFLAG = .TRUE.
                         CALL M3MESG( 'ERROR:  read-failure' )
-                    ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, DBUF ) ) THEN
+                    ELSE IF ( .NOT.WRITE3( ONAME, VNAME3D( V ), JDATE, JTIME, DBLE(SCALEFAC)*DBUF ) ) THEN
                         EFLAG = .TRUE.
                         CALL M3MESG( 'ERROR:  write-failure' )
                     END IF

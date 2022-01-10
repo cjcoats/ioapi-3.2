@@ -2,21 +2,20 @@
 PROGRAM WRFGRIDDESC
 
     !!***************************************************************
-    !! Version "$Id: camxtom3.f90 127 2015-01-23 15:24:30Z coats $"
+    !! Version "$Id: wrfgriddesc.f90 205 2021-10-21 15:46:13Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (c) 2010 Baron Advanced Meteorological Systems
     !! and (C) 2015 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!..............................................................
-    !!  Program body starts at line  55
+    !!  Program body starts at line  54
     !!
     !!  DESCRIPTION:
-    !!      Read LL gridded input data, and interpolate to a finer LL grid
+    !!      Read WRFOUT file header, and generate ASCII GRIDDESC file.
     !!      
     !!  PRECONDITIONS:
-    !!      Output-grid is coarser than the input grid
-    !!      output grid using a resampling algorithm.
+    !!      see splash screen
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  4/2009 by Carlie J. Coats, Jr., BAMS
@@ -84,7 +83,7 @@ PROGRAM WRFGRIDDESC
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version:',                                                         &
-'$Id: wrfgriddesc.f90 1096 2011-10-03 20:41:21Z coats@borel $',&
+'$Id: wrfgriddesc.f90 205 2021-10-21 15:46:13Z coats $',&
 ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -165,22 +164,22 @@ PROGRAM WRFGRIDDESC
     
     WRITE( GDEV, '( 1X, 3A ) ' ) QUOTE, TRIM( CROGRID ), QUOTE
 
-    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I5) )' )     &
+    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I6) )' )     &
         QUOTE, TRIM( CRDNAME ), QUOTE, XORIG1, YORIG1, XCELL1, YCELL1, NCOLS1, NROWS1, 1
 
     WRITE( GDEV, '( 1X, 3A ) ' ) QUOTE, TRIM( DOTGRID ), QUOTE
 
-    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I5) )' )     &
+    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I6) )' )     &
         QUOTE, TRIM( CRDNAME ), QUOTE, XORIG1-0.5D0*XCELL1, YORIG1-0.5D0*YCELL1, XCELL1, YCELL1, NCOLS1+1, NROWS1+1, 1
 
     WRITE( GDEV, '( 1X, 3A ) ' ) QUOTE, TRIM( STXGRID ), QUOTE
 
-    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I5) )' )     &
+    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I6) )' )     &
         QUOTE, TRIM( CRDNAME ), QUOTE, XORIG1-0.5D0*XCELL1, YORIG1, XCELL1, YCELL1, NCOLS1+1, NROWS1, 1
 
     WRITE( GDEV, '( 1X, 3A ) ' ) QUOTE, TRIM( STYGRID ), QUOTE
 
-    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I5) )' )     &
+    WRITE( GDEV, '( 1X, 3A, 4(1X, 1PE15.7), 3(1X, I6) )' )     &
         QUOTE, TRIM( CRDNAME ), QUOTE, XORIG1, YORIG1-0.5D0*YCELL1, XCELL1, YCELL1, NCOLS1, NROWS1+1, 1
 
     WRITE( GDEV, '( 1X, 5A ) ' ) QUOTE, BLANK, QUOTE, ' !  end grids'
