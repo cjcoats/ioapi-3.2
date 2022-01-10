@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 9 2017-07-04 23:50:30Z coats $"
+    !!  Version "$Id: modncfio.F90 205 2021-10-21 15:46:13Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -430,23 +430,23 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_inq_dim
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     dimid,
+    !!........                          INTEGER ::     dimid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     len)
+    !!........                          INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_dimname
     !!........                         (INTEGER ::      ncid,
-    !!........                         (INTEGER ::      dimid,
+    !!........                          INTEGER ::      dimid,
     !!........                          character(*) :: name)
 
     INTEGER, EXTERNAL :: nf_inq_dimlen
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     dimid,
-    !!........                         (INTEGER ::     len)
+    !!........                          INTEGER ::     dimid,
+    !!........                          INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_rename_dim
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     dimid,
+    !!........                          INTEGER ::     dimid,
     !!........                          character(*):: name)
 
 
@@ -455,28 +455,28 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_inq_att
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     xtype,
-    !!........                         (INTEGER ::     len)
+    !!........                          INTEGER ::     xtype,
+    !!........                          INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_attid
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     attnum)
+    !!........                          INTEGER ::     attnum)
 
     INTEGER, EXTERNAL :: nf_inq_atttype
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     xtype)
+    !!........                          INTEGER ::     xtype)
 
     INTEGER, EXTERNAL :: nf_inq_attlen
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     len)
+    !!........                          INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_attname
     !!........                         (INTEGER ::     ncid,
@@ -486,20 +486,20 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_copy_att
     !!........                         (INTEGER ::     ncid_in,
-    !!........                         (INTEGER ::     varid_in,
+    !!........                          INTEGER ::     varid_in,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     ncid_out,
-    !!........                         (INTEGER ::     varid_out)
+    !!........                          INTEGER ::     ncid_out,
+    !!........                          INTEGER ::     varid_out)
 
     INTEGER, EXTERNAL :: nf_rename_att
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: curname,
     !!........                          character(*):: newname)
 
     INTEGER, EXTERNAL :: nf_del_att
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name)
 
 
@@ -535,58 +535,59 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_put_att_int2
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     xtype,
-    !!........                         (INTEGER ::     len,
+    !!........                          INTEGER ::     xtype,
+    !!........                          INTEGER ::     len,
     !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_int2
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
     !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_int
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     xtype,
-    !!........                         (INTEGER ::     len,
-    !!........                         (INTEGER ::     ivals(*))
+    !!........                          INTEGER ::     xtype,
+    !!........                          INTEGER ::     len,
+    !!........                          INTEGER ::     ivals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_int
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     ivals(*))
+    !!........                          INTEGER ::     ivals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_real
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     xtype,
-    !!........                         (INTEGER ::     len,
-    !!........                          real                rvals(*))
+    !!........                          INTEGER ::     xtype,
+    !!........                          INTEGER ::     len,
+    !!........                          real           rvals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_real
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
+    !!........                          real           rvals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_double
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                         (INTEGER ::     xtype,
-    !!........                         (INTEGER ::     len,
-    !!........                          double              dvals(*))
+    !!........                          INTEGER ::     xtype,
+    !!........                          INTEGER ::     len,
+    !!........                          double         dvals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_double
     !!........                         (INTEGER ::     ncid,
-    !!........                         (INTEGER ::     varid,
+    !!........                          INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          double              dvals(*))
+    !!........                          double         dvals(*))
 
 
     !!........ general variable routines:
@@ -1991,7 +1992,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( NF_STRERROR( IERR ) )
             CALL M3MESG( PNAME // ' Error closing "' // TRIM( FNAME ) // '"' )
             EFLAG = .TRUE.
-        END IF          !!  istat nonzero:  NF_OPEN() failed
+        END IF          !!  istat nonzero:  NF_CLOSE() failed
 
         IF ( EFLAG ) THEN
             IERR     = NF_ABORT( FID )
@@ -2126,7 +2127,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !!  istat nonzero:  NF_OPEN() failed
+        END IF          !!  istat nonzero:  NF_CLOSE() failed
 
         DESCNCVAR = ( .NOT. EFLAG )
         RETURN
@@ -2219,7 +2220,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR0DR = ( .NOT. EFLAG )
         RETURN
@@ -2311,7 +2312,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR0DI = ( .NOT. EFLAG )
         RETURN
@@ -2403,7 +2404,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR0DS = ( .NOT. EFLAG )
         RETURN
@@ -2495,7 +2496,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR0DB = ( .NOT. EFLAG )
         RETURN
@@ -2587,7 +2588,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR0DD = ( .NOT. EFLAG )
         RETURN
@@ -2695,7 +2696,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR1DR = ( .NOT. EFLAG )
         RETURN
@@ -2803,7 +2804,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR1DI = ( .NOT. EFLAG )
         RETURN
@@ -2911,7 +2912,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR1DS = ( .NOT. EFLAG )
         RETURN
@@ -3019,7 +3020,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR1DB = ( .NOT. EFLAG )
         RETURN
@@ -3127,7 +3128,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR1DD = ( .NOT. EFLAG )
         RETURN
@@ -3250,7 +3251,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR2DR = ( .NOT. EFLAG )
         RETURN
@@ -3374,7 +3375,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR2DI = ( .NOT. EFLAG )
         RETURN
@@ -3498,7 +3499,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR2DS = ( .NOT. EFLAG )
         RETURN
@@ -3622,7 +3623,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR2DB = ( .NOT. EFLAG )
         RETURN
@@ -3746,7 +3747,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR2DD = ( .NOT. EFLAG )
         RETURN
@@ -3886,7 +3887,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR3DR = ( .NOT. EFLAG )
         RETURN
@@ -4026,7 +4027,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR3DI = ( .NOT. EFLAG )
         RETURN
@@ -4166,7 +4167,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR3DS = ( .NOT. EFLAG )
         RETURN
@@ -4306,7 +4307,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR3DB = ( .NOT. EFLAG )
         RETURN
@@ -4446,7 +4447,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR3DD = ( .NOT. EFLAG )
         RETURN
@@ -4602,7 +4603,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR4DR = ( .NOT. EFLAG )
         RETURN
@@ -4758,7 +4759,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR4DI = ( .NOT. EFLAG )
         RETURN
@@ -4914,7 +4915,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR4DS = ( .NOT. EFLAG )
         RETURN
@@ -5070,7 +5071,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR4DB = ( .NOT. EFLAG )
         RETURN
@@ -5226,7 +5227,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVAR4DD = ( .NOT. EFLAG )
         RETURN
@@ -5352,7 +5353,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC2DR = ( .NOT. EFLAG )
         RETURN
@@ -5476,7 +5477,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC2DI = ( .NOT. EFLAG )
         RETURN
@@ -5600,7 +5601,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC2DS = ( .NOT. EFLAG )
         RETURN
@@ -5724,7 +5725,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC2DB = ( .NOT. EFLAG )
         RETURN
@@ -5848,7 +5849,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC2DD = ( .NOT. EFLAG )
         RETURN
@@ -5988,7 +5989,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC3DR = ( .NOT. EFLAG )
         RETURN
@@ -6128,7 +6129,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC3DI = ( .NOT. EFLAG )
         RETURN
@@ -6268,7 +6269,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC3DS = ( .NOT. EFLAG )
         RETURN
@@ -6408,7 +6409,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC3DB = ( .NOT. EFLAG )
         RETURN
@@ -6545,7 +6546,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC3DD = ( .NOT. EFLAG )
         RETURN
@@ -6701,7 +6702,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC4DR = ( .NOT. EFLAG )
         RETURN
@@ -6857,7 +6858,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC4DI = ( .NOT. EFLAG )
         RETURN
@@ -7013,7 +7014,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC4DS = ( .NOT. EFLAG )
         RETURN
@@ -7169,7 +7170,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC4DB = ( .NOT. EFLAG )
         RETURN
@@ -7325,7 +7326,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNCVEC4DD = ( .NOT. EFLAG )
         RETURN
@@ -7435,7 +7436,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP0DR = ( .NOT. EFLAG )
         RETURN
@@ -7543,7 +7544,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP0DI = ( .NOT. EFLAG )
         RETURN
@@ -7651,7 +7652,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP0DS = ( .NOT. EFLAG )
         RETURN
@@ -7759,7 +7760,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP0DB = ( .NOT. EFLAG )
         RETURN
@@ -7867,7 +7868,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP0DD = ( .NOT. EFLAG )
         RETURN
@@ -7992,7 +7993,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP1DR = ( .NOT. EFLAG )
         RETURN
@@ -8117,7 +8118,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP1DI = ( .NOT. EFLAG )
         RETURN
@@ -8242,7 +8243,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP1DS = ( .NOT. EFLAG )
         RETURN
@@ -8367,7 +8368,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP1DB = ( .NOT. EFLAG )
         RETURN
@@ -8492,7 +8493,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP1DD = ( .NOT. EFLAG )
         RETURN
@@ -8634,7 +8635,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP2DR = ( .NOT. EFLAG )
         RETURN
@@ -8776,7 +8777,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP2DI = ( .NOT. EFLAG )
         RETURN
@@ -8918,7 +8919,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP2DS = ( .NOT. EFLAG )
         RETURN
@@ -9060,7 +9061,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP2DB = ( .NOT. EFLAG )
         RETURN
@@ -9202,7 +9203,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP2DD = ( .NOT. EFLAG )
         RETURN
@@ -9362,7 +9363,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP3DR = ( .NOT. EFLAG )
         RETURN
@@ -9521,7 +9522,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP3DI = ( .NOT. EFLAG )
         RETURN
@@ -9680,7 +9681,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP3DS = ( .NOT. EFLAG )
         RETURN
@@ -9839,7 +9840,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP3DB = ( .NOT. EFLAG )
         RETURN
@@ -9998,7 +9999,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP3DD = ( .NOT. EFLAG )
         RETURN
@@ -10174,7 +10175,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP4DR = ( .NOT. EFLAG )
         RETURN
@@ -10350,7 +10351,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP4DI = ( .NOT. EFLAG )
         RETURN
@@ -10526,7 +10527,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP4DS = ( .NOT. EFLAG )
         RETURN
@@ -10702,7 +10703,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP4DB = ( .NOT. EFLAG )
         RETURN
@@ -10878,7 +10879,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         READNVSTEP4DD = ( .NOT. EFLAG )
         RETURN
@@ -10970,7 +10971,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR0DR = ( .NOT. EFLAG )
         RETURN
@@ -11062,7 +11063,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR0DI = ( .NOT. EFLAG )
         RETURN
@@ -11154,7 +11155,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR0DS = ( .NOT. EFLAG )
         RETURN
@@ -11246,7 +11247,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR0DB = ( .NOT. EFLAG )
         RETURN
@@ -11338,7 +11339,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR0DD = ( .NOT. EFLAG )
         RETURN
@@ -11446,7 +11447,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR1DR = ( .NOT. EFLAG )
         RETURN
@@ -11554,7 +11555,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR1DI = ( .NOT. EFLAG )
         RETURN
@@ -11662,7 +11663,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR1DS = ( .NOT. EFLAG )
         RETURN
@@ -11770,7 +11771,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR1DB = ( .NOT. EFLAG )
         RETURN
@@ -11878,7 +11879,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR1DD = ( .NOT. EFLAG )
         RETURN
@@ -12001,7 +12002,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR2DR = ( .NOT. EFLAG )
         RETURN
@@ -12125,7 +12126,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR2DI = ( .NOT. EFLAG )
         RETURN
@@ -12249,7 +12250,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR2DS = ( .NOT. EFLAG )
         RETURN
@@ -12373,7 +12374,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR2DB = ( .NOT. EFLAG )
         RETURN
@@ -12497,7 +12498,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR2DD = ( .NOT. EFLAG )
         RETURN
@@ -12637,7 +12638,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR3DR = ( .NOT. EFLAG )
         RETURN
@@ -12777,7 +12778,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR3DI = ( .NOT. EFLAG )
         RETURN
@@ -12917,7 +12918,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR3DS = ( .NOT. EFLAG )
         RETURN
@@ -13057,7 +13058,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR3DB = ( .NOT. EFLAG )
         RETURN
@@ -13197,7 +13198,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR3DD = ( .NOT. EFLAG )
         RETURN
@@ -13353,7 +13354,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR4DR = ( .NOT. EFLAG )
         RETURN
@@ -13509,7 +13510,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR4DI = ( .NOT. EFLAG )
         RETURN
@@ -13665,7 +13666,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR4DS = ( .NOT. EFLAG )
         RETURN
@@ -13821,7 +13822,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR4DB = ( .NOT. EFLAG )
         RETURN
@@ -13977,7 +13978,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVAR4DD = ( .NOT. EFLAG )
         RETURN
@@ -14103,7 +14104,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC2DR = ( .NOT. EFLAG )
         RETURN
@@ -14227,7 +14228,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC2DI = ( .NOT. EFLAG )
         RETURN
@@ -14351,7 +14352,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC2DS = ( .NOT. EFLAG )
         RETURN
@@ -14475,7 +14476,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC2DB = ( .NOT. EFLAG )
         RETURN
@@ -14599,7 +14600,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC2DD = ( .NOT. EFLAG )
         RETURN
@@ -14739,7 +14740,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC3DR = ( .NOT. EFLAG )
         RETURN
@@ -14879,7 +14880,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC3DI = ( .NOT. EFLAG )
         RETURN
@@ -15019,7 +15020,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC3DS = ( .NOT. EFLAG )
         RETURN
@@ -15159,7 +15160,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC3DB = ( .NOT. EFLAG )
         RETURN
@@ -15296,7 +15297,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC3DD = ( .NOT. EFLAG )
         RETURN
@@ -15452,7 +15453,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC4DR = ( .NOT. EFLAG )
         RETURN
@@ -15608,7 +15609,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC4DI = ( .NOT. EFLAG )
         RETURN
@@ -15764,7 +15765,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC4DS = ( .NOT. EFLAG )
         RETURN
@@ -15920,7 +15921,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC4DB = ( .NOT. EFLAG )
         RETURN
@@ -16076,7 +16077,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENCVEC4DD = ( .NOT. EFLAG )
         RETURN
@@ -16186,7 +16187,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP0DR = ( .NOT. EFLAG )
         RETURN
@@ -16294,7 +16295,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP0DI = ( .NOT. EFLAG )
         RETURN
@@ -16402,7 +16403,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP0DS = ( .NOT. EFLAG )
         RETURN
@@ -16510,7 +16511,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP0DB = ( .NOT. EFLAG )
         RETURN
@@ -16618,7 +16619,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP0DD = ( .NOT. EFLAG )
         RETURN
@@ -16743,7 +16744,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP1DR = ( .NOT. EFLAG )
         RETURN
@@ -16868,7 +16869,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP1DI = ( .NOT. EFLAG )
         RETURN
@@ -16993,7 +16994,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP1DS = ( .NOT. EFLAG )
         RETURN
@@ -17118,7 +17119,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP1DB = ( .NOT. EFLAG )
         RETURN
@@ -17243,7 +17244,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP1DD = ( .NOT. EFLAG )
         RETURN
@@ -17385,7 +17386,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP2DR = ( .NOT. EFLAG )
         RETURN
@@ -17527,7 +17528,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP2DI = ( .NOT. EFLAG )
         RETURN
@@ -17669,7 +17670,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP2DS = ( .NOT. EFLAG )
         RETURN
@@ -17811,7 +17812,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP2DB = ( .NOT. EFLAG )
         RETURN
@@ -17953,7 +17954,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP2DD = ( .NOT. EFLAG )
         RETURN
@@ -18113,7 +18114,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP3DR = ( .NOT. EFLAG )
         RETURN
@@ -18272,7 +18273,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP3DI = ( .NOT. EFLAG )
         RETURN
@@ -18431,7 +18432,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP3DS = ( .NOT. EFLAG )
         RETURN
@@ -18590,7 +18591,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP3DB = ( .NOT. EFLAG )
         RETURN
@@ -18749,7 +18750,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP3DD = ( .NOT. EFLAG )
         RETURN
@@ -18925,7 +18926,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP4DR = ( .NOT. EFLAG )
         RETURN
@@ -19101,7 +19102,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP4DI = ( .NOT. EFLAG )
         RETURN
@@ -19277,7 +19278,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP4DS = ( .NOT. EFLAG )
         RETURN
@@ -19453,7 +19454,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP4DB = ( .NOT. EFLAG )
         RETURN
@@ -19629,7 +19630,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_OPEN() failed
+        END IF          !  istat nonzero:  NF_CLOSE() failed
 
         WRITENVSTEP4DD = ( .NOT. EFLAG )
         RETURN

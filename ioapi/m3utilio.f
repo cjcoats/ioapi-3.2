@@ -2,7 +2,7 @@
         MODULE M3UTILIO
 
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !! Version "$Id: m3utilio.f 189 2020-10-06 17:05:28Z coats $"
+        !! Version "$Id: m3utilio.f 205 2021-10-21 15:46:13Z coats $"
         !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
         !! (c) 2007-2013 Carlie J. Coats, Jr., and
         !! (C) 2014 UNC Institute for the Environment.
@@ -64,7 +64,7 @@
             INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
             CHARACTER*72, PRIVATE, SAVE :: ID =
-     &'$Id:: m3utilio.f 189 2020-10-06 17:05:28Z coats                $'
+     &'$Id:: m3utilio.f 205 2021-10-21 15:46:13Z coats                $'
 
 
             !!........  PUBLIC Routines:
@@ -549,7 +549,7 @@
                 END FUNCTION FINDL2
 
                 INTEGER(8) FUNCTION FINDL3( K1, K2, K3,
-     &                                  N, LIST1, LIST2, LIST3 )
+     &                                      N, LIST1, LIST2, LIST3 )
                 INTEGER(8), INTENT(IN   ) :: K1             !  first  key
                 INTEGER(8), INTENT(IN   ) :: K2             !  second key
                 INTEGER(8), INTENT(IN   ) :: K3             !  third  key
@@ -867,7 +867,7 @@
                 END FUNCTION LOCAT2
 
                 INTEGER FUNCTION LOCAT3( K1, K2, K3, N,
-     &                                   LIST1, LIST2, LIST3, LIST4 )
+     &                                   LIST1, LIST2, LIST3 )
                 INTEGER, INTENT(IN   ) :: K1             !  first  key
                 INTEGER, INTENT(IN   ) :: K2             !  second key
                 INTEGER, INTENT(IN   ) :: K3             !  third  key
@@ -905,7 +905,7 @@
                 END FUNCTION LOCATL2
 
                 INTEGER(8) FUNCTION LOCATL3( K1, K2, K3, N,
-     &                                   LIST1, LIST2, LIST3, LIST4 )
+     &                                       LIST1, LIST2, LIST3 )
                 INTEGER(8), INTENT(IN   ) :: K1             !  first  key
                 INTEGER(8), INTENT(IN   ) :: K2             !  second key
                 INTEGER(8), INTENT(IN   ) :: K3             !  third  key

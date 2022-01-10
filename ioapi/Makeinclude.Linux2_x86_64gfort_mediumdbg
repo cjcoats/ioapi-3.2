@@ -1,4 +1,4 @@
-# Version "$Id: Makeinclude.Linux2_x86_64gfort_mediumdbg 184 2020-08-28 16:48:26Z coats $"
+# Version "$Id: Makeinclude.Linux2_x86_64gfort_mediumdbg 215 2022-01-10 17:04:32Z coats $"
 #
 #  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
 #  to implement  IARGC() and GETARG() for compilers
@@ -34,7 +34,7 @@ MFLAGS    = -mcmodel=medium -m64
 OMPFLAGS  = -fopenmp
 OMPLIBS   = -fopenmp
 COPTFLAGS = -g ${MFLAGS}
-FOPTFLAGS = -g ${MFLAGS} -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap=invalid,zero,overflow
+FOPTFLAGS = -g ${MFLAGS} -fbacktrace -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap=invalid,zero,overflow
 FPPFLAGS  = -DF90=1
 FSFLAGS   = -fno-automatic
 ARCHFLAGS = \
