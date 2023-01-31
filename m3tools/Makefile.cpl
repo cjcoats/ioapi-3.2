@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.cpl 146 2020-03-25 18:03:32Z coats $"
+# Version "$Id: Makefile.cpl 233 2023-01-14 18:28:12Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -89,10 +89,12 @@ bcwndw.f90      camxtom3.f90    datshift.f90    factor.f90      fakestep.f90    
 fills.f90       findwndw.f90    greg2jul.f90    gregdate.f90    gridprobe.f90   \
 insertgrid.f90  jul2greg.f90    juldate.f90     juldiff.f90     julshift.f90    \
 latlon.f90      m3fake.f90      m3mask.f90      m3pair.f90      m3probe.f90     \
-m3totxt.f90     m3tproc.f90     m3tshift.f90    m3wndw.f90      mtxcalc.f90     \
-pairstep.f90    presz.f90       timediff.f90    timeshift.f90   vertot.f90      \
-vertimeproc.f90 vertintegral.f90                wndwdesc.f90    wrfgriddesc.f90 \
-wrftom3.f90     mpasdiff.f90    mpasstat.f90    mpastom3.f90    raandomstat.f90
+m3totxt.f90     m3tproc.f90     m3tshift.f90    m3wndw.f90      mpasdiff.f90    \
+mpasstat.f90    mpastom3.f90    mtxcalc.f90     pairstep.f90    presz.f90       \
+randomstat.f90  timediff.f90    timeshift.f90   vertot.f90      vertimeproc.f90 \
+vertintegral.f90                wndwdesc.f90    wndwpoints.f90  wndwptdata.f90  \
+wrfgriddesc.f90 wrftom3.f90     wrfwndw.f90
+
 
 OBJ = $(fSRC:.f=.o) $(f90SRC:.f90=.o)
 
@@ -106,9 +108,9 @@ m3interp        m3mask          m3merge         m3pair          m3probe         
 m3stat          m3totxt         m3tproc         m3tshift        m3wndw          \
 m3xtract        mtxblend        mtxbuild        mtxcalc         mtxcple         \
 mpasdiff        mpasstat        mpastom3        presterp        presz           \
-projtool        selmrg2d        timediff        timeshift       vertot          \
-vertimeproc     vertintegral    wndwdesc        wrfgriddesc     wrftom3         \
-randomstat
+projtool        randomstat      selmrg2d        timediff        timeshift       \
+vertot          vertimeproc     vertintegral    wndwdesc        wndwpoints      \
+wndwptdata      wrfgriddesc     wrftom3         wrfwndw
 
 
 
@@ -237,8 +239,11 @@ statgrid.o      : m3utilio.mod
 statiddat.o     : m3utilio.mod
 statspars.o     : m3utilio.mod
 wndwdesc.o      : m3utilio.mod  modgctp.mod
+wndwpoints.o    : m3utilio.mod  modgctp.mod
+wndwptdata.o    : m3utilio.mod  modgctp.mod
 wrfgriddesc.o   : m3utilio.mod  modwrfio.mod
 wrftom3.o       : m3utilio.mod  modwrfio.mod
+wrfwndw.o       : m3utilio.mod  modwrfio.mod modncfio.mod modgctp.mod
 
 
 #  ---------------------------  $(EXE) Program builds:  -----------------
@@ -413,9 +418,18 @@ vertot:  vertot.o
 wndwdesc:  wndwdesc.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
+wndwpoints:  wndwpoints.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+wndwptdata:  wndwptdata.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
 wrfgriddesc:  wrfgriddesc.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
 wrftom3:  wrftom3.o
+	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
+
+wrfwndw:  wrfwndw.o
 	cd ${OBJDIR}; $(FC) ${LFLAGS} $^ ${LIBS} -o $@
 
