@@ -2,7 +2,7 @@
         PROGRAM  M3MERGE
 
 C***********************************************************************
-C Version "$Id: m3merge.f 213 2021-12-14 12:53:57Z coats $"
+C Version "$Id: m3merge.f 217 2023-01-09 19:54:33Z coats $"
 C EDSS/Models-3 M3TOOLS.
 C Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
 C and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -140,7 +140,7 @@ C   begin body of program M3MERGE
      &'    Chapel Hill, NC 27599-1105',
      &' ',
      &'Program version: ',
-     &'$Id:: m3merge.f 213 2021-12-14 12:53:57Z coats                $',
+     &'$Id:: m3merge.f 217 2023-01-09 19:54:33Z coats                $',
      &' '
 
         IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -371,7 +371,8 @@ C...............  Open/Process the rest of the input data files
 
         IF ( TSTEP .GT. 0 ) THEN
             I = SEC2TIME( NSTEPS * TIME2SEC( TSTEP ) )
-            DURATN = GETNUM( 0,999999999,I, 'Enter RUN DURATION (HHMMSS)' )
+            DURATN = GETNUM( 0,999999999, I,
+     &                      'Enter RUN DURATION (HHMMSS)' )
             NSTEPS = TIME2SEC( DURATN ) / TIME2SEC( TSTEP )
         ELSE
             NSTEPS = 1

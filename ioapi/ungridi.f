@@ -3,7 +3,7 @@
      &                       NPTS, XLOC, YLOC, NX )
 
         !!***********************************************************************
-        !! Version "$Id: ungridi.f 70 2017-11-30 15:05:43Z coats $"
+        !! Version "$Id: ungridi.f 210 2021-11-10 19:14:54Z coats $"
         !! EDSS/Models-3 I/O API.
         !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
         !! (C) 2003-2010 Baron Advanced Meteorological Systems, and
@@ -717,7 +717,7 @@
 
 
       SUBROUTINE  UNGRIDI( NCOLS, NROWS, XORIG, YORIG, XCELL, YCELL,
-     &                       NPTS, XLOC, YLOC, NX )
+     &                     NPTS, XLOC, YLOC, NX )
 
         IMPLICIT NONE
 

@@ -3,7 +3,7 @@
      &                       NPTS, XLOC, YLOC, NU, CU )
 
       !!***********************************************************************
-      !! Version "$Id: ungridb.f 70 2017-11-30 15:05:43Z coats $"
+      !! Version "$Id: ungridb.f 210 2021-11-10 19:14:54Z coats $"
       !! EDSS/Models-3 I/O API.
       !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
       !! (C) 2003-2010 by Baron Advanced Meteorological Systems, and
@@ -337,8 +337,8 @@
              K = ( R - 1 ) * NCOLS1  +  C
              NU( 1,S ) = K                      !!  single-index for (C,R)
              NU( 2,S ) = K + 1                  !!  ... (C+1,R  )
-             NU( 3,S ) = K + NCOLS1              !!  ... (C  ,R+1)
-             NU( 4,S ) = K + NCOLS1 + 1          !!  ... (C+1,R+1)
+             NU( 3,S ) = K + NCOLS1             !!  ... (C  ,R+1)
+             NU( 4,S ) = K + NCOLS1 + 1         !!  ... (C+1,R+1)
              CU( 1,S ) =  P * Q
              CU( 2,S ) =  X * Q
              CU( 3,S ) =  P * Y

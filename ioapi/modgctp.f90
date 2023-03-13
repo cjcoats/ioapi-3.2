@@ -2,16 +2,16 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 108 2018-09-07 18:59:37Z coats $"
+    !!  Version "$Id: modgctp.f90 210 2021-11-10 19:14:54Z coats $"
     !!  Copyright (c) 2014-2015 UNC Institute for the Environment and
     !!  (C) 2015-2018 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
     !!..............................................................
     !!  DESCRIPTION:
-    !!      GRID2XY:  Compute cell-centers  <XLOC2,YLOC2> for GRID2 relative
-    !!      to the coordinate system for GRID1 using USGS GCTP-package
-    !!      routine GTPZ0()
+    !!      GRID2XY:  Compute cell-centers  <XLOC2,YLOC2> for GRID2 or
+    !!      its boundary, relative to the coordinate system for GRID1
+    !!      using USGS GCTP-package routine GTPZ0()
     !!
     !!      XY2XY:  Transform array <XLOC2,YLOC2> of GRID2-coordinates
     !!      into GRID1-coordinates <XLOC1,YLOC1> using USGS GCTP-package
@@ -47,6 +47,8 @@ MODULE MODGCTP
     !!      to avoid double-declaration problems.
     !!      Version  1/2018 by CJC:  Handle "missing" in XY2XY()
     !!      Version  8/2018 by CJC:  bug fixes in GRD2INDX, GRID2XY
+    !!      Version 11/2021 by CJC:  Add BNDY2XY*; if(sameproj...) optimization;
+    !!      M3TOGTPZ zone-ID fixes
     !!..............................................................
 
     USE M3UTILIO, M3U_GTPZ0       => GTPZ0      ,   &
@@ -191,7 +193,7 @@ MODULE MODGCTP
     END INTERFACE
 
     INTERFACE  GRID2XY
-        MODULE PROCEDURE  GRID2XY1, GRID2XY2
+        MODULE PROCEDURE  GRID2XY1, GRID2XY2, BNDY2XY1, BNDY2XY2
     END INTERFACE
 
     INTERFACE  GRID2INDX
@@ -234,7 +236,7 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 108 2018-09-07 18:59:37Z coats                     $'
+'$Id:: modgctp.f90 210 2021-11-10 19:14:54Z coats                     $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:
@@ -579,12 +581,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
         EFLAG = .FALSE.
 
-        !!...............  Compute intermediate REAL*8 Lat-Lon for grid2 centers:
+        !!...............  Compute grid2 cell-centers:
 
-        X0 = XORIG2 - 0.5 * XCELL2
-        Y0 = YORIG2 - 0.5 * YCELL2
-
-        IF ( GDTYP2 .EQ. LATGRD3 ) THEN
+        X0 = XORIG2 - 0.5D0 * XCELL2
+        Y0 = YORIG2 - 0.5D0 * YCELL2
 
 !$OMP        PARALLEL DO                                                &
 !$OMP&           DEFAULT( NONE ),                                       &
@@ -592,16 +592,21 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !$OMP&                    XLOC2, YLOC2 ),                               &
 !$OMP&           PRIVATE( C, R )
 
-            DO  R = 1, NROWS2
-            DO  C = 1, NCOLS2
+        DO  R = 1, NROWS2       !!  cell-centers in GRID2 projection
+        DO  C = 1, NCOLS2
 
-                XLOC2( C,R ) = X0  +  XCELL2 * DBLE( C )
-                YLOC2( C,R ) = Y0  +  YCELL2 * DBLE( R )
+            XLOC2( C,R ) = X0  +  XCELL2 * DBLE( C )
+            YLOC2( C,R ) = Y0  +  YCELL2 * DBLE( R )
 
-            END DO
-            END DO          !  end traversal of input grid
+        END DO
+        END DO          !  end traversal of input grid
 
-        ELSE
+        IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
+
+            RETURN
+
+        ELSE IF ( GDTYP2 .NE. LATGRD3 ) THEN        !!...............  Compute intermediate REAL*8 Lat-Lon for grid2 centers:
 
             !!...............  Set up arguments for call to GTP0:
 
@@ -620,7 +625,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             LPARM  = LEMSG          !!  projection parameters file
 
             IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-            IOZONE = 0
+            IOZONE = 101
             IOUNIT = 4              !!  output units:  degrees
 
 !$OMP       PARALLEL DO                                                 &
@@ -636,8 +641,8 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             DO  R = 1, NROWS2
             DO  C = 1, NCOLS2
 
-                CRDIN( 1 ) = X0  +  XCELL2 * DBLE( C )
-                CRDIN( 2 ) = Y0  +  YCELL2 * DBLE( R )
+                CRDIN( 1 ) = XLOC2( C,R )
+                CRDIN( 2 ) = YLOC2( C,R )
 
 !$OMP           CRITICAL( S_GTPZ0 )
                 CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
@@ -669,13 +674,9 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         END IF          !  if latgrd3, or not
 
 
-        !!...............  Then compute GRID1 coords for GRID2 cell-centers
+        !!...............  Then compute GRID1 coords from Lat-Lon cell-centers
 
-        IF ( GDTYP1 .EQ. LATGRD3 ) THEN
-
-            CONTINUE
-
-        ELSE
+        IF ( GDTYP1 .NE. LATGRD3 ) THEN
 
             IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1, SPHER1,     &
                                 TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
@@ -697,7 +698,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             LPARM   = LEMSG     !!  projection parameters file
 
             INSYS  = 0          !!  geographic (=Lat-Lon)
-            INZONE = 0
+            INZONE = 201
             INUNIT = 4          !!  input units:  degrees
 
 !$OMP       PARALLEL DO                                                 &
@@ -747,6 +748,267 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
     END SUBROUTINE GRID2XY2
+
+
+    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    !  Compute cell-centers  <XLOC2,YLOC2> for GRID2-boundary relative to
+    !  the coordinate system for GRID1
+
+    SUBROUTINE BNDY2XY1( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,    &
+                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,    &
+                         NCOLS2, NROWS2, NTHIK2, XORIG2, YORIG2, XCELL2, YCELL2,    &
+                         XLOC2, YLOC2 )
+
+        !!........  Arguments and their descriptions:
+
+        INTEGER, INTENT(IN   ) :: GDTYP1, GDTYP2
+        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2, NTHIK2
+        REAL*8 , INTENT(IN   ) :: P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1
+        REAL*8 , INTENT(IN   ) :: P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2
+        REAL*8 , INTENT(IN   ) :: XORIG2, YORIG2, XCELL2, YCELL2
+
+        REAL*8 , INTENT(  OUT) :: XLOC2( 2*NTHIK2*( NCOLS2 + NROWS2 + 2*NTHIK2 ) )
+        REAL*8 , INTENT(  OUT) :: YLOC2( 2*NTHIK2*( NCOLS2 + NROWS2 + 2*NTHIK2 ) )
+
+        CALL BNDY2XY2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, DBLE(KSPH),  &
+                       GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, DBLE(KSPH),  &
+                       NCOLS2, NROWS2, NTHIK2, XORIG2, YORIG2, XCELL2, YCELL2,      &
+                       XLOC2, YLOC2 )
+
+        RETURN
+
+
+    END SUBROUTINE BNDY2XY1
+
+
+    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+    SUBROUTINE BNDY2XY2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,   &
+                         GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2,   &
+                         NCOLS2, NROWS2, NTHIK2, XORIG2, YORIG2, XCELL2, YCELL2,   &
+                         XLOC2, YLOC2 )
+
+        !!........  Arguments and their descriptions:
+        !!  SPHERE[1,2] should be 0-21 for "standard" spheres
+        !!  (as in SPHERENAMES above); or else Earth-radius for
+        !!  non-standard perfect spheres.
+
+        INTEGER, INTENT(IN   ) :: GDTYP1, GDTYP2
+        INTEGER, INTENT(IN   ) :: NCOLS2, NROWS2, NTHIK2
+        REAL*8 , INTENT(IN   ) :: SPHER1, SPHER2        !!  input, output spheres
+        REAL*8 , INTENT(IN   ) :: P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1
+        REAL*8 , INTENT(IN   ) :: P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2
+        REAL*8 , INTENT(IN   ) :: XORIG2, YORIG2, XCELL2, YCELL2
+
+        REAL*8 , INTENT(  OUT) :: XLOC2( 2*NTHIK2*( NCOLS2 + NROWS2 + 2*NTHIK2 ) )
+        REAL*8 , INTENT(  OUT) :: YLOC2( 2*NTHIK2*( NCOLS2 + NROWS2 + 2*NTHIK2 ) )
+
+        !!........  PARAMETERs and their descriptions:
+
+        CHARACTER*24, PARAMETER ::  PNAME = 'MODGCTP/GRID2XY'
+        CHARACTER*16, PARAMETER ::  BLANK = ' '
+        CHARACTER*80, PARAMETER ::  BAR   = &
+      '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
+
+
+        !!........  Local Variables and their descriptions:
+
+        INTEGER     ISTAT
+        INTEGER     NBNDY, C, R, K
+        LOGICAL     EFLAG
+        REAL*8      X0, Y0
+
+        CHARACTER*512   MESG
+
+        !!   Arguments for GTPZ0:
+
+        REAL*8          CRDIN( 2 )      !  input coordinates x,y
+        INTEGER*4       INSYS           !  input projection code
+        INTEGER*4       INZONE          !  input utm ZONE, etc.
+        REAL*8          TPAIN( 15 )     !  input projection parameters
+        INTEGER*4       INUNIT          !  input units code
+        INTEGER*4       INSPH           !  spheroid code
+        INTEGER*4       IPR             !  error print flag
+        INTEGER*4       JPR             !  projection parameter print flag
+        INTEGER*4       LEMSG           !  error message unit number
+        INTEGER*4       LPARM           !  projection parameter unit number
+        REAL*8          CRDIO( 2 )      !  output coordinates x,y
+        INTEGER*4       IOSYS           !  output projection code
+        INTEGER*4       IOZONE          !  output utm ZONE, etc.
+        REAL*8          TPOUT( 15 )     !  output projection parameters
+        INTEGER*4       IOUNIT          !  output units code
+        INTEGER*4       LN27            !  NAD1927 file unit number
+        INTEGER*4       LN83            !  NAD1983 file unit number
+        CHARACTER*128   FN27            !  NAD1927 file name
+        CHARACTER*128   FN83            !  NAD1983 file name
+        INTEGER*4       LENGTH          !  NAD* record-length
+        INTEGER*4       IFLG            !  error flag
+
+
+        !!........  Body  ......................................................
+
+        EFLAG = .FALSE.
+        NBNDY = 2*NTHIK2*( NCOLS2 + NROWS2 + 2*NTHIK2 )
+
+        !!...............  Compute grid2 boundary-cell centers:
+
+        X0 = XORIG2 - 0.5D0 * XCELL2
+        Y0 = YORIG2 - 0.5D0 * YCELL2
+        K  = 0
+
+        DO  R = 1-NTHIK2 , 0        !  south boundary component
+        DO  C = 1 , NCOLS2 + NTHIK2
+            K = K + 1
+            XLOC2( K ) = X0 + DBLE( C ) * XCELL2
+            YLOC2( K ) = Y0 + DBLE( R ) * YCELL2
+        END DO
+        END DO
+
+        DO  R = 1, NROWS2 + NTHIK2
+        DO  C = NCOLS2 + 1, NCOLS2 + NTHIK2 	!  east boundary component
+            K = K + 1
+            XLOC2( K ) = X0 + DBLE( C ) * XCELL2
+            YLOC2( K ) = Y0 + DBLE( R ) * YCELL2
+        END DO
+        END DO
+
+        DO  R = NROWS2 + 1, NROWS2 + NTHIK2
+        DO  C = 0, NCOLS2+NTHIK2	!  north bdy component
+            K = K + 1
+            XLOC2( K ) = X0 + DBLE( C ) * XCELL2
+            YLOC2( K ) = Y0 + DBLE( R ) * YCELL2
+        END DO
+        END DO
+
+        DO  R = 1-NTHIK2, NROWS2
+        DO  C = 1-NTHIK2, 0                  !  west bdy component
+            K = K + 1
+            XLOC2( K ) = X0 + DBLE( C ) * XCELL2
+            YLOC2( K ) = Y0 + DBLE( R ) * YCELL2
+        END DO
+        END DO
+
+        IF ( SAMEPROJ2( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1, SPHER1,      &
+                        GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2, SPHER2 ) ) THEN
+
+            RETURN
+
+        ELSE IF ( GDTYP2 .NE. LATGRD3 ) THEN        !!...............  Compute intermediate REAL*8 Lat-Lon for grid2 centers:
+
+            !!...............  Set up arguments for call to GTP0:
+
+            IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2, SPHER2,    &
+                                TPAIN, INSYS, INZONE, INUNIT, INSPH ) ) THEN
+                EFLAG = .TRUE.
+                WRITE( MESG, '( A, I6, 2X, A )' ) '>>> Grid type', GDTYP2, 'not supported'
+                CALL M3MESG( MESG )
+                CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
+            END IF
+
+            TPOUT  = 0.0D0
+            IPR    = 0              !!  print error messages, if any
+            JPR    = 1              !!  do NOT print projection parameters
+            LEMSG  = INIT3()        !!  unit number for log file
+            LPARM  = LEMSG          !!  projection parameters file
+
+            IOSYS  = 0              !!  geographic coords (=Lat-Lon)
+            IOZONE = 101
+            IOUNIT = 4              !!  output units:  degrees
+
+            DO  K = 1, NBNDY
+
+                CRDIN( 1 ) = XLOC2( K )
+                CRDIN( 2 ) = YLOC2( K )
+
+                CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                            IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                            TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                            LENGTH, IFLG )
+
+                IF ( IFLG .NE. 0 ) THEN
+                    IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+                    WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
+                       'Failure:  status ', IFLG,                   &
+                       'in GTPZ0 at (K)=(', C, ',', R, ')'
+                    EFLAG = .TRUE.
+                    CALL M3MESG( MESG )
+                    CYCLE
+                END IF
+
+                XLOC2( K ) = CRDIO( 1 )
+                YLOC2( K ) = CRDIO( 2 )
+
+            END DO
+
+            IF ( EFLAG ) THEN
+                CALL M3EXIT( PNAME, 0, 0, 'Output-grid coord-transform error(s)', 2 )
+            END IF
+
+        END IF          !  if latgrd3, or not
+
+
+        !!...............  Then compute GRID1 coords from GRID2 Lat-Lon cell-centers
+
+        IF ( GDTYP1 .NE. LATGRD3 ) THEN
+
+            IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1, SPHER1,     &
+                                TPOUT, IOSYS, IOZONE, IOUNIT, INSPH ) ) THEN
+
+                MESG = 'Lat-Lon, LAM, UTM, TRM, POL, EQM, and ALB supported'
+                CALL M3MSG2( MESG )
+                WRITE( MESG, '( A, I6, 2X, A, A )' ) 'Grid type', GDTYP1,'not supported'
+                CALL M3MESG( MESG )
+
+                CALL M3EXIT( PNAME, 0, 0, 'Map-projection setup error(s)', 2 )
+
+            END IF
+
+            TPAIN   = 0.0D0     !!  array assignment
+            TPAIN(1)= RADE19
+            IPR     = 0         !!  print error messages, if any
+            JPR     = 1         !!  do NOT print projection parameters
+            LEMSG   = INIT3()   !!  unit number for log file
+            LPARM   = LEMSG     !!  projection parameters file
+
+            INSYS  = 0          !!  geographic (=Lat-Lon)
+            INZONE = 201
+            INUNIT = 4          !!  input units:  degrees
+
+            DO  K = 1, NBNDY
+
+                CRDIN( 1 ) = XLOC2( K )
+                CRDIN( 2 ) = YLOC2( K )
+
+                CALL GTPZ0( CRDIN, INSYS, INZONE, TPAIN, INUNIT, INSPH,     &
+                            IPR, JPR, LEMSG, LPARM, CRDIO, IOSYS, IOZONE,   &
+                            TPOUT, IOUNIT, LN27, LN83, FN27, FN83,          &
+                            LENGTH, IFLG )
+
+                IF ( IFLG .NE. 0 ) THEN
+                    IFLG  = MAX( MIN( 9, IFLG ), 1 )   !  trap between 1 and 9
+                    WRITE( MESG, '( A, I3, 2X, A, I5, A, I5, A )' ) &
+                       'Failure:  status ', IFLG,                   &
+                       'in GTPZ0 at (K)=(', C, ',', R, ')'
+                    EFLAG = .TRUE.
+                    CALL M3MESG( MESG )
+                END IF
+
+                XLOC2( K ) = CRDIO( 1 )
+                YLOC2( K ) = CRDIO( 2 )
+
+            END DO
+
+            IF ( EFLAG ) THEN
+                CALL M3EXIT( PNAME, 0, 0, 'Input-grid coord-transform error(s)', 2 )
+            END IF
+
+        END IF          !  if latgrd3, or not
+
+        RETURN
+
+
+    END SUBROUTINE BNDY2XY2
 
 
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -906,7 +1168,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         LPARM   = LEMSG          !!  projection parameters file
 
         IOSYS  = 0              !!  geographic coords (=Lat-Lon)
-        IOZONE = 0
+        IOZONE = 101
         IOUNIT = 4              !!  output units:  degrees
 
         IF ( .NOT.M3TOGTPZ( GDTYP2, 100, P_ALP2, P_BET2, P_GAM2, YCENT2, SPHER2,    &
@@ -994,7 +1256,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         LPARM   = LEMSG       !!  projection parameters file
 
         INSYS  = 0          !!  geographic (=Lat-Lon)
-        INZONE = 0
+        INZONE = 201
         INUNIT = 4          !!  input units:  degrees
 
         IF ( .NOT.M3TOGTPZ( GDTYP1, 200, P_ALP1, P_BET1, P_GAM1, YCENT1, SPHER1,     &
