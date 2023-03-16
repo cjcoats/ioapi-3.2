@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 200 2021-05-10 14:06:20Z coats $"
+    !! Version "$Id: init3.F90 241 2023-03-16 19:07:43Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -82,7 +82,7 @@ INTEGER FUNCTION INIT3 ( )
     !!
     !!      Bugfix 01/2018 by CJC for INIT3()-after-SHUT3().
     !!
-    !!      Versions 06/2019, 04/2020, 08/2020, 05/2021 by CJC:  new code ID,
+    !!      Versions 06/2019, 04/2020, 08/2020, 05/2021, 3/2023 by CJC:  new code ID,
     !!      copyright date
     !!***********************************************************************
 
@@ -112,16 +112,16 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER*16, PARAMETER:: SCENFILE = 'SCENFILE'
     CHARACTER*64, PARAMETER :: NOTICE( 17 ) = (/                            &
       '                                                              ',     &
-      'This program uses the EPA-AREAL/MCNC-EnvPgms/BAMS Models-3    ',     &
-      'I/O Applications Programming Interface, [I/O API] which is    ',     &
-      'built on top of the netCDF I/O library (Copyright 1993, 1996  ',     &
-      'University Corporation for Atmospheric Research/Unidata       ',     &
-      'Program) and the PVM parallel-programming library (from       ',     &
-      'Oak Ridge National Laboratory).                               ',     &
+      'This program uses the EPA-AREAL/MCNC-EnvPgms/BAMS/ UNC IE     ',     &
+      'Models-3 I/O Applications Programming Interface, [I/O API]    ',     &
+      'which is built on top of the netCDF I/O library (Copyright    ',     &
+      '993, 1996 University Corporation for Atmospheric Research     ',     &
+      'Unidata Program) and the PVM parallel-programming library     ',     &
+      '(from Oak Ridge National Laboratory).                         ',     &
       'Copyright (C) 1992-2002 MCNC,                                 ',     &
       '(C) 1992-2018 Carlie J. Coats, Jr.,                           ',     &
       '(C) 2003-2012 Baron Advanced Meteorological Systems, LLC, and ',     &
-      '(C) 2014-2021 UNC Institute for the Environment.              ',     &
+      '(C) 2014-2023 UNC Institute for the Environment.              ',     &
       'Released under the GNU LGPL  License, version 2.1.  See URL   ',     &
       '                                                              ',     &
       '    https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html   ',     &
@@ -139,8 +139,9 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 VARVER
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
-    CHARACTER *80, PARAMETER :: IOAPILIBVER =   &
-'ioapi-3.2: $Id: init3.F90 200 2021-05-10 14:06:20Z coats $'
+    CHARACTER *80, PARAMETER :: IOAPILIBVER = 
+'ioapi-3.2: $Id: init3.F90 241 2023-03-16 19:07:43Z coats $'
+    CHARACTER *80, PARAMETER :: LIBTAG = '$Tag: 2023075 $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
 
@@ -177,6 +178,7 @@ INTEGER FUNCTION INIT3 ( )
     WRITE( LOGDEV,'( 5X, A )' )                     &
             ( NOTICE( I ), I = 1, 17 ),             &
             TRIM( VERSN3 ),                         &
+            TRIM( IOAPILIBTAG ),                    &
             TRIM( VARVER )
 #ifdef IOAPICPL
     CALL GET_IOCPL_VERSION( IOCPLVER )

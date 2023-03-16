@@ -2,10 +2,10 @@
 PROGRAM  WNDWPOINTS
 
     !!***********************************************************************
-    !! Version "$Id: wndwpoints.f90 226 2023-01-11 20:43:19Z coats $"
+    !! Version "$Id: wndwpoints.f90 240 2023-03-16 18:44:28Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! (C) 2023 UNC Institute for the Environment.
-    !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
+    !! Distributed under the GNU GENERAL PUBLIC LICENSE vnpntoersion 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
     !!  program body starts at line  98
@@ -24,6 +24,7 @@ PROGRAM  WNDWPOINTS
     !!
     !!  REVISION  HISTORY::
     !!      Prototype  1/2023 by Carlie J. Coats, Jr., UNC IE
+    !!      Bug-fix    3/2023 by CJC:  bad FDESC for OPEN3
     !!***********************************************************************
 
     USE M3UTILIO
@@ -132,7 +133,7 @@ PROGRAM  WNDWPOINTS
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: wndwpoints.f90 226 2023-01-11 20:43:19Z coats $',&
+'$Id: wndwpoints.f90 240 2023-03-16 18:44:28Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -281,11 +282,11 @@ PROGRAM  WNDWPOINTS
 
     !!...............  Open output  window-flags file using description edited from "POINTS":
 
-        NVARS3D = 1
-        VNAME3D(1) = 'FLAG'
-        VTYPE3D(1) = M3INT
-        UNITS3D(1) = 'none'
-        VDESC3D(1) = 'inside-window:  FLAG=1, outside-window:  FLAG == 0'
+     NVARS3D = 1
+     VNAME3D(1) = 'FLAG'
+     VTYPE3D(1) = M3INT
+     UNITS3D(1) = 'none'
+     VDESC3D(1) = 'inside-window:  FLAG=1, outside-window:  FLAG == 0'
 
     IF ( .NOT. OPEN3( 'PTFLAGS', FSUNKN3,PNAME ) ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Could not open "PTFLAGS"', 2 )
@@ -301,15 +302,12 @@ PROGRAM  WNDWPOINTS
     IF ( .NOT. DESC3( 'POINTS' ) ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Could not get description for "POINTS"', 2 )
     END IF
-
     NROWS3D = NPNTOUT
     XORIG3D = XORIG1
     YORIG3D = YORIG1
     XCELL3D = XCELL1
     YCELL3D = YCELL1
-    IF ( .NOT. DESC3( 'POINTS' ) ) THEN
-        CALL M3EXIT( PNAME, 0, 0, 'Could not get description for "POINTS"', 2 )
-    ELSE IF ( .NOT.OPEN3( 'OUTFILE', FSUNKN3, PNAME ) ) THEN
+    IF ( .NOT.OPEN3( 'OUTFILE', FSUNKN3, PNAME ) ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Could not open/create "OUTFILE"', 2 )
     END IF
 
