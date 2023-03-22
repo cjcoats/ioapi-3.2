@@ -2,13 +2,13 @@
 PROGRAM WRFWNDW
 
     !!***************************************************************
-    !! Version "$Id: wrfwndw.f90 236 2023-01-14 19:40:25Z coats $"
+    !! Version "$Id: wrfwndw.f90 242 2023-03-22 14:59:56Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! (C) 2023 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!..............................................................
-    !!  Program body starts at line  93
+    !!  Program body starts at line  94
     !!
     !!  DESCRIPTION:
     !!      Window a WRFOUT-format netCDF file to a specified XY subgrid.
@@ -18,6 +18,7 @@ PROGRAM WRFWNDW
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  1/2023 by Carlie J. Coats, Jr., UNC IE
+    !!      Bug-fix    3/2023 by CJC:  set windowed *GRID_DIMENSION attributes
     !!***************************************************************
 
     USE M3UTILIO
@@ -124,7 +125,7 @@ PROGRAM WRFWNDW
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: wrfwndw.f90 236 2023-01-14 19:40:25Z coats $',&
+'$Id: wrfwndw.f90 242 2023-03-22 14:59:56Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -613,7 +614,11 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 CYCLE
             END IF
 
-            IF ( ANAME .EQ. 'WEST-EAST_PATCH_END_UNSTAG' ) THEN
+            IF ( ANAME .EQ. 'WEST-EAST_GRID_DIMENSION' ) THEN
+                IERR = NF_PUT_ATT_INT( CDFIDWO, NF_GLOBAL, ANAME, NF_INT, 1, NCOLSX+1 )
+            ELSE IF ( ANAME .EQ. 'SOUTH-NORTH_GRID_DIMENSION' ) THEN
+                IERR = NF_PUT_ATT_INT( CDFIDWO, NF_GLOBAL, ANAME, NF_INT, 1, NROWSX+1 )
+            ELSE IF ( ANAME .EQ. 'WEST-EAST_PATCH_END_UNSTAG' ) THEN
                 IERR = NF_PUT_ATT_INT( CDFIDWO, NF_GLOBAL, ANAME, NF_INT, 1, NCOLSX )
             ELSE IF ( ANAME .EQ. 'WEST-EAST_PATCH_END_STAG' ) THEN
                 IERR = NF_PUT_ATT_INT( CDFIDWO, NF_GLOBAL, ANAME, NF_INT, 1, NCOLSX+1 )
