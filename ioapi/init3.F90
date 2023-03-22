@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 245 2023-03-22 15:39:56Z coats $"
+    !! Version "$Id: init3.F90 247 2023-03-22 15:59:19Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -139,7 +139,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 VARVER
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
-    CHARACTER *80, PARAMETER :: IOAPILIBVER = 'ioapi-3.2: $Id: init3.F90 245 2023-03-22 15:39:56Z coats $'
+    CHARACTER *80, PARAMETER :: IOAPILIBVER = 'ioapi-3.2: $Id: init3.F90 247 2023-03-22 15:59:19Z coats $'
     CHARACTER *80, PARAMETER :: LIBTAG = '$Tag: 2023075 $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
@@ -177,7 +177,7 @@ INTEGER FUNCTION INIT3 ( )
     WRITE( LOGDEV,'( 5X, A )' )                     &
             ( NOTICE( I ), I = 1, 17 ),             &
             TRIM( VERSN3 ),                         &
-            TRIM( ILIBTAG ),                        &
+            TRIM( LIBTAG ),                         &
             TRIM( VARVER )
 #ifdef IOAPICPL
     CALL GET_IOCPL_VERSION( IOCPLVER )
