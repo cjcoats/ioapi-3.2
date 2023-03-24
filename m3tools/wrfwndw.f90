@@ -2,7 +2,7 @@
 PROGRAM WRFWNDW
 
     !!***************************************************************
-    !! Version "$Id: wrfwndw.f90 242 2023-03-22 14:59:56Z coats $"
+    !! Version "$Id: wrfwndw.f90 249 2023-03-24 14:46:18Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! (C) 2023 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -125,7 +125,7 @@ PROGRAM WRFWNDW
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: wrfwndw.f90 242 2023-03-22 14:59:56Z coats $',&
+'$Id: wrfwndw.f90 249 2023-03-24 14:46:18Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -538,6 +538,7 @@ CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             RETURN
         END IF
 
+        EFLAG = .FALSE.
         DO N = 1, NDIMS
 
             IERR = NF_INQ_DIM( CDFIDW, N, DNAMEWO( N ), DSIZEWO( N ) )
