@@ -90,10 +90,9 @@ C...........   for variables which must retain their values from call to call.
 
 C...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
-        INTEGER     ENVSTAT         !  return value for ENVYN()
-        INTEGER     L, U, V         !  loop counters
-        LOGICAL     INCREASING
-        LOGICAL     EFLAG
+        INTEGER         ENVSTAT         !  return value for ENVYN()
+        INTEGER         L, U, V         !  loop counters
+        LOGICAL         EFLAG
         CHARACTER*256   MESG
 
 
@@ -119,6 +118,7 @@ C   begin body of function  CKDESC3
 
 C...........   Checks for duplicates in the variable-list
 
+        EFLAG = .FALSE.
         IF ( NVARS3D .LT. 0 ) THEN
 
             WRITE( MESG, 94010 )
@@ -829,23 +829,7 @@ C...........   Checks on the vertical coordinate description:
      &            VGTYP3D .EQ. VGWRFEM .OR.
      &            VGTYP3D .EQ. VGWRFNM ) THEN
 
-            INCREASING = ( VGLVS3D( 2 ) .GT. VGLVS3D( 1 ) )
-
-            DO  188  L = 2, MIN( NLAYS3D, MXLAYS3 )
-
-                IF ( INCREASING .NEQV.
-     &               ( VGLVS3D( L+1 ) .GT. VGLVS3D( L ) ) ) THEN
-
-                    WRITE( MESG, 94010 )
-     &              'Bad layer monotonicity at layer', L,
-     &              'in file "' // TRIM( FNAME ) // '"'
-
-                    CALL M3MSG2( MESG )
-                    EFLAG = .TRUE.
-
-                END IF
-
-188         CONTINUE
+            IF ( NOT_MONOTONE() ) EFLAG = .TRUE.
 
         ELSE IF ( VGTYP3D .EQ. IMISS3  ) THEN   !  "other" -- legal but unusual
 
@@ -854,23 +838,7 @@ C...........   Checks on the vertical coordinate description:
      &          '"MISSING" in file "' // TRIM( FNAME ) // '"'
                 CALL M3MSG2( MESG )
 
-            INCREASING = ( VGLVS3D( 2 ) .GT. VGLVS3D( 1 ) )
-
-            DO  199  L = 2, MIN( NLAYS3D, MXLAYS3 )
-
-                IF ( INCREASING .NEQV.
-     &               ( VGLVS3D( L+1 ) .GT. VGLVS3D( L ) ) ) THEN
-
-                    WRITE( MESG, 94010 )
-     &              'Bad layer monotonicity at layer', L,
-     &              'in file "' // TRIM( FNAME ) // '"'
-
-                    CALL M3MSG2( MESG )
-                    EFLAG = .TRUE.
-
-                END IF
-
-199         CONTINUE
+            IF ( NOT_MONOTONE() ) EFLAG = .TRUE.
 
         ELSE    !  illegal grid type
 
@@ -905,6 +873,39 @@ C...........   Internal buffering formats............ 94xxx
 94020   FORMAT( A, 1PG14.7, :, 2X, A )
 
 94030   FORMAT( 4 ( A, I5, :, 2X ) )
+
+
+        CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+            LOGICAL FUNCTION NOT_MONOTONE()
+
+                INTEGER L
+                LOGICAL INCREASING
+
+                EFLAG      = .FALSE.
+                INCREASING = ( VGLVS3D( 2 ) .GT. VGLVS3D( 1 ) )
+
+                DO  L = 2, MIN( NLAYS3D, MXLAYS3 )
+
+                    IF ( INCREASING .NEQV. 
+     &                   ( VGLVS3D( L+1 ) .GT. VGLVS3D( L ) ) ) THEN
+
+                        WRITE( MESG, '( A, I10, :, 2X, A )' )
+     &                  'Bad layer monotonicity at layer', L,
+     &                  'in file "' // TRIM( FNAME ) // '"'
+
+                        CALL M3MSG2( MESG )
+                        EFLAG = .TRUE.
+
+                    END IF
+
+                END DO
+
+                NOT_MONOTONE = EFLAG
+                RETURN
+
+            END FUNCTION NOT_MONOTONE
 
 
         END FUNCTION CKDESC3

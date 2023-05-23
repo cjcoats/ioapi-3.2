@@ -884,7 +884,7 @@ C...........   Checks on the horizontal coordinate description:
         END IF  !  if  gdtyp3d = lamgrd3, etc.
 
 
-C...........   Checks on the vertical coordinate description:
+C...........   Checks on the vertical coordinate description
 
         IF ( NLAYS3( FID ) .LT. 1 .AND.
      &       FTYPE3( FID ) .GE. CUSTOM3 ) THEN
@@ -899,7 +899,13 @@ C...........   Checks on the vertical coordinate description:
 
         ELSE IF ( NLAYS3( FID ) .GT. 1 ) THEN
 
-            IF ( VGTYP3(FID) .EQ. IMISS3  ) THEN   !  "other" -- legal but unusual
+            IF ( VGTYP3(FID) .EQ. TBLLAY3 .OR.
+     &           VGTYP3(FID) .EQ. GISLAY3   ) THEN      !  non-geometric:  don't need to check
+
+                CKFLAG = .TRUE.
+                RETURN
+
+            ELSE IF ( VGTYP3(FID) .EQ. IMISS3  ) THEN   !  "other" -- legal but unusual
 
                 WRITE( MESG, 94010 )
      &              'WARNING:  Vertical grid/coordinate type:',
@@ -908,9 +914,7 @@ C...........   Checks on the vertical coordinate description:
      &              TRIM( FLIST3( FID ) ) // '"'
                 CALL M3WARN( 'CKFILE3', 0, 0, MESG )
 
-            ELSE IF ( ( VGTYP3(FID) .NE. TBLLAY3 ) .AND.
-     &                ( VGTYP3(FID) .NE. GISLAY3 ) .AND.
-     &                ( VGTYP3(FID) .NE. VGSGPN3 ) .AND.
+            ELSE IF ( ( VGTYP3(FID) .NE. VGSGPN3 ) .AND.
      &                ( VGTYP3(FID) .NE. VGSGPH3 ) .AND.
      &                ( VGTYP3(FID) .NE. VGSIGZ3 ) .AND.
      &                ( VGTYP3(FID) .NE. VGPRES3 ) .AND.
@@ -918,8 +922,6 @@ C...........   Checks on the vertical coordinate description:
      &                ( VGTYP3(FID) .NE. VGHVAL3 ) .AND.
      &                ( VGTYP3(FID) .NE. VGWRFEM ) .AND.
      &                ( VGTYP3(FID) .NE. VGWRFNM ) ) THEN
-
-            ELSE
 
                 WRITE( MESG, 94010 )
      &           'Unknown vertical grid/coordinate type:', VGTYP3(FID),
@@ -929,6 +931,8 @@ C...........   Checks on the vertical coordinate description:
                 RETURN
 
             END IF  !  if  vgtyp3d = vgsgph3, etc.
+
+C...........   Check monotonicity, if appropriate:
 
             INCREASING = ( VGLVS3( 2,FID ) .GT. VGLVS3( 1,FID ) )
 
