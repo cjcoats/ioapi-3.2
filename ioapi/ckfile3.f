@@ -10,7 +10,7 @@ C (C) 2015 UNC Institute for the Environment
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  92
+C  function body starts at line  95
 C
 C  RETURNS:
 C       If environment variable IOAPI_CHECK_HEADERS begins with 'Y' or 'y',
@@ -40,6 +40,7 @@ C       Eliminate unused NETCDF.EXT.  MPIGRD3 type for MPI/PnetCDF
 C       distributed I/O
 C       Modified 07-05/2016 by CJC:  bugs reported by Edward Anderson,
 C       Lockheed Martin,
+C       Modified 05/2023 by CJC:  support for VGTYP = TBLLAYS3, GISLAYS3
 C***********************************************************************
 
         USE M3UTILIO
@@ -898,6 +899,37 @@ C...........   Checks on the vertical coordinate description:
 
         ELSE IF ( NLAYS3( FID ) .GT. 1 ) THEN
 
+            IF ( VGTYP3(FID) .EQ. IMISS3  ) THEN   !  "other" -- legal but unusual
+
+                WRITE( MESG, 94010 )
+     &              'WARNING:  Vertical grid/coordinate type:',
+     &              VGTYP3(FID),
+     &              '"MISSING" in file "' //
+     &              TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+
+            ELSE IF ( ( VGTYP3(FID) .NE. TBLLAY3 ) .AND.
+     &                ( VGTYP3(FID) .NE. GISLAY3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGSGPN3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGSGPH3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGSIGZ3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGPRES3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGZVAL3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGHVAL3 ) .AND.
+     &                ( VGTYP3(FID) .NE. VGWRFEM ) .AND.
+     &                ( VGTYP3(FID) .NE. VGWRFNM ) ) THEN
+
+            ELSE
+
+                WRITE( MESG, 94010 )
+     &           'Unknown vertical grid/coordinate type:', VGTYP3(FID),
+     &            'in file "' // TRIM( FLIST3( FID ) ) // '"'
+                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
+                CKFLAG = .FALSE.
+                RETURN
+
+            END IF  !  if  vgtyp3d = vgsgph3, etc.
+
             INCREASING = ( VGLVS3( 2,FID ) .GT. VGLVS3( 1,FID ) )
 
             DO  L = 2, MIN( NLAYS3( FID ), MXLAYS3 )
@@ -916,33 +948,6 @@ C...........   Checks on the vertical coordinate description:
                 END IF
 
             END DO
-
-            IF ( VGTYP3(FID) .EQ. IMISS3  ) THEN   !  "other" -- legal but unusual
-
-                WRITE( MESG, 94010 )
-     &              'WARNING:  Vertical grid/coordinate type:',
-     &              VGTYP3(FID),
-     &              '"MISSING" in file "' //
-     &              TRIM( FLIST3( FID ) ) // '"'
-                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-
-            ELSE IF ( ( VGTYP3(FID) .NE. VGSGPN3 ) .AND.
-     &                ( VGTYP3(FID) .NE. VGSGPH3 ) .AND.
-     &                ( VGTYP3(FID) .NE. VGSIGZ3 ) .AND.
-     &                ( VGTYP3(FID) .NE. VGPRES3 ) .AND.
-     &                ( VGTYP3(FID) .NE. VGZVAL3 ) .AND.
-     &                ( VGTYP3(FID) .NE. VGHVAL3 ) .AND.
-     &                ( VGTYP3(FID) .NE. VGWRFEM ) .AND.
-     &                ( VGTYP3(FID) .NE. VGWRFNM ) ) THEN
-
-                WRITE( MESG, 94010 )
-     &           'Unknown vertical grid/coordinate type:', VGTYP3(FID),
-     &            'in file "' // TRIM( FLIST3( FID ) ) // '"'
-                CALL M3WARN( 'CKFILE3', 0, 0, MESG )
-                CKFLAG = .FALSE.
-                RETURN
-
-            END IF  !  if  vgtyp3d = vgsgph3, etc.
 
         END IF          !  if nlays < 1, etc.
 

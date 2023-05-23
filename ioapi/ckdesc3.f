@@ -2,7 +2,7 @@
         LOGICAL FUNCTION CKDESC3( FNAME )  RESULT( CKFLAG )
 
 C***********************************************************************
-C Version "$Id: ckdesc3.f 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: ckdesc3.f 1 2017-06-10 18:05:20Z coats $"
 C BAMS/MCNC/EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 C (C) 2003-2011 Baron Advanced Meteorological Systems, and
@@ -10,7 +10,7 @@ C (C) 2015 UNC Institute for the Environment
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  102
+C  function body starts at line  103
 C
 C  RETURNS:
 C       If environment variable IOAPI_CHECK_HEADERS begins with 'Y' or 'y',
@@ -50,6 +50,7 @@ C       Modified 02/2015 by CJC for I/O API 3.2: Support for M3INT8;
 C       USE M3UTILIO; eliminate unused NETCDF.EXT
 C       Modified 08/2015 by CJC:  support type MPIGRD3 for MPI/PnetCDF
 C       distributed I/O
+C       Modified 05/2023 by CJC:  support for VGTYP = TBLLAYS3, GISLAYS3
 C***********************************************************************
 
         USE M3UTILIO
@@ -813,6 +814,11 @@ C...........   Checks on the vertical coordinate description:
         ELSE IF ( NLAYS3D .EQ. 1 ) THEN
 
             CONTINUE    ! do nothing:  vertical grid irrelevant
+
+        ELSE IF ( VGTYP3D .EQ. TBLLAY3 .OR.     !  non-geometric vertical grid types
+     &            VGTYP3D .EQ. GISLAY3 ) THEN
+
+            CONTINUE    ! do nothing:  vertical grid not geometrical
 
         ELSE IF ( VGTYP3D .EQ. VGSGPH3 .OR.     !  supported types...
      &            VGTYP3D .EQ. VGSGPN3 .OR.
