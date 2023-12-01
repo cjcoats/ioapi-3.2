@@ -158,8 +158,8 @@ secsdiff.F    wkday.F       write3.F      write4d.F     yr2day.F      \
 interp3v.F    intpqv.F      updtvir3.F    single_thread.F
 
 f90SRC = \
-chkfil3.f90     cktflag3.f90    crdict3.f90     crtkf.f90       \
-kfindx.f90      kfopen.f90      m3abort.f90     modgctp.f90     opnlist3.f90    \
+chkfil3.f90     cktflag3.f90    crdict3.f90     crtkf.f90       kfindx.f90      \
+kfopen.f90      m3abort.f90     modgctp.f90     opnlist3.f90    permuti.f90     \
 rddict3.f90     rdiddata.f90    rdsmatrx.f90    runspec.f90     sync3.f90       \
 wrdict3.f90     wriddata.f90    wrsmatrx.f90    xtract3.f90
 

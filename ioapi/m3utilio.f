@@ -2,7 +2,7 @@
         MODULE M3UTILIO
 
         !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        !! Version "$Id: m3utilio.f 205 2021-10-21 15:46:13Z coats $"
+        !! Version "$Id: m3utilio.f 256 2023-12-01 15:40:40Z coats $"
         !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
         !! (c) 2007-2013 Carlie J. Coats, Jr., and
         !! (C) 2014 UNC Institute for the Environment.
@@ -64,7 +64,7 @@
             INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
             CHARACTER*72, PRIVATE, SAVE :: ID =
-     &'$Id:: m3utilio.f 205 2021-10-21 15:46:13Z coats                $'
+     &'$Id:: m3utilio.f 256 2023-12-01 15:40:40Z coats                $'
 
 
             !!........  PUBLIC Routines:
@@ -1051,6 +1051,221 @@
                 REAL   , INTENT(IN   ) :: Y( N )
                 REAL   , INTENT(  OUT) :: C( N )
                 END SUBROUTINE  PCOEF
+            END INTERFACE
+
+            INTERFACE PERMUTI
+
+                SUBROUTINE PERMUTI1( N, INDX, ARR1 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    INTEGER, INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTI1
+
+                SUBROUTINE PERMUTI2( N, INDX, ARR1, ARR2 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    INTEGER, INTENT(INOUT) :: ARR1( N )
+                    INTEGER, INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTI2
+
+                SUBROUTINE PERMUTI3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    INTEGER, INTENT(INOUT) :: ARR1( N )
+                    INTEGER, INTENT(INOUT) :: ARR2( N )
+                    INTEGER, INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTI3
+
+                SUBROUTINE PERMUTL1( N, INDX, ARR1 )
+                    INTEGER,   INTENT(IN   ) :: N
+                    INTEGER,   INTENT(IN   ) :: INDX( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTL1
+
+                SUBROUTINE PERMUTL2( N, INDX, ARR1, ARR2 )
+                    INTEGER,   INTENT(IN   ) :: N
+                    INTEGER,   INTENT(IN   ) :: INDX( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTL2
+
+                SUBROUTINE PERMUTL3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER,   INTENT(IN   ) :: N
+                    INTEGER,   INTENT(IN   ) :: INDX( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR1( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR2( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTL3
+
+                SUBROUTINE PERMUTR1( N, INDX, ARR1 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    REAL,    INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTR1
+
+                SUBROUTINE PERMUTR2( N, INDX, ARR1, ARR2 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    REAL,    INTENT(INOUT) :: ARR1( N )
+                    REAL,    INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTR2
+
+                SUBROUTINE PERMUTR3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    REAL,    INTENT(INOUT) :: ARR1( N )
+                    REAL,    INTENT(INOUT) :: ARR2( N )
+                    REAL,    INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTR3
+
+                SUBROUTINE PERMUTD1( N, INDX, ARR1 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    REAL*8,  INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTD1
+
+                SUBROUTINE PERMUTD2( N, INDX, ARR1, ARR2 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    REAL*8,  INTENT(INOUT) :: ARR1( N )
+                    REAL*8,  INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTD2
+
+                SUBROUTINE PERMUTD3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER, INTENT(IN   ) :: N
+                    INTEGER, INTENT(IN   ) :: INDX( N )
+                    REAL*8,  INTENT(INOUT) :: ARR1( N )
+                    REAL*8,  INTENT(INOUT) :: ARR2( N )
+                    REAL*8,  INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTD3
+
+                SUBROUTINE PERMUTC1( N, INDX, ARR1 )
+                    INTEGER,      INTENT(IN   ) :: N
+                    INTEGER,      INTENT(IN   ) :: INDX( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTC1
+
+                SUBROUTINE PERMUTC2( N, INDX, ARR1, ARR2 )
+                    INTEGER,      INTENT(IN   ) :: N
+                    INTEGER,      INTENT(IN   ) :: INDX( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR1( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTC2
+
+                SUBROUTINE PERMUTC3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER,      INTENT(IN   ) :: N
+                    INTEGER,      INTENT(IN   ) :: INDX( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR1( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR2( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTC3
+
+                SUBROUTINE PERMUTLI1( N, INDX, ARR1 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    INTEGER, INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTLI1
+
+                SUBROUTINE PERMUTLI2( N, INDX, ARR1, ARR2 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    INTEGER, INTENT(INOUT) :: ARR1( N )
+                    INTEGER, INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTLI2
+
+                SUBROUTINE PERMUTLI3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    INTEGER, INTENT(INOUT) :: ARR1( N )
+                    INTEGER, INTENT(INOUT) :: ARR2( N )
+                    INTEGER, INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTLI3
+
+                SUBROUTINE PERMUTLL1( N, INDX, ARR1 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTLL1
+
+                SUBROUTINE PERMUTLL2( N, INDX, ARR1, ARR2 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR1( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTLL2
+
+                SUBROUTINE PERMUTLL3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR1( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR2( N )
+                    INTEGER*8, INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTLL3
+
+                SUBROUTINE PERMUTLR1( N, INDX, ARR1 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    REAL,      INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTLR1
+
+                SUBROUTINE PERMUTLR2( N, INDX, ARR1, ARR2 )
+
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    REAL,      INTENT(INOUT) :: ARR1( N )
+                    REAL,      INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTLR2
+
+                SUBROUTINE PERMUTLR3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    REAL,      INTENT(INOUT) :: ARR1( N )
+                    REAL,      INTENT(INOUT) :: ARR2( N )
+                    REAL,      INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTLR3
+
+                SUBROUTINE PERMUTLD1( N, INDX, ARR1 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    REAL*8,    INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTLD1
+
+                SUBROUTINE PERMUTLD2( N, INDX, ARR1, ARR2 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    REAL*8,    INTENT(INOUT) :: ARR1( N )
+                    REAL*8,    INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTLD2
+
+                SUBROUTINE PERMUTLD3( N, INDX, ARR1, ARR2, ARR3 )
+                    INTEGER*8, INTENT(IN   ) :: N
+                    INTEGER*8, INTENT(IN   ) :: INDX( N )
+                    REAL*8,    INTENT(INOUT) :: ARR1( N )
+                    REAL*8,    INTENT(INOUT) :: ARR2( N )
+                    REAL*8,    INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTLD3
+
+                SUBROUTINE PERMUTLC1( N, INDX, ARR1 )
+                    INTEGER*8,    INTENT(IN   ) :: N
+                    INTEGER*8,    INTENT(IN   ) :: INDX( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR1( N )
+                END SUBROUTINE PERMUTLC1
+
+                SUBROUTINE PERMUTLC2( N, INDX, ARR1, ARR2 )
+                    INTEGER*8,    INTENT(IN   ) :: N
+                    INTEGER*8,    INTENT(IN   ) :: INDX( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR1( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR2( N )
+                END SUBROUTINE PERMUTLC2
+
+                SUBROUTINE PERMUTLC3( N, INDX, ARR1, ARR2, ARR3 )
+
+                    INTEGER*8,    INTENT(IN   ) :: N
+                    INTEGER*8,    INTENT(IN   ) :: INDX( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR1( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR2( N )
+                    CHARACTER(*), INTENT(INOUT) :: ARR3( N )
+                END SUBROUTINE PERMUTLC3
+
             END INTERFACE
 
             INTERFACE PMATVEC
