@@ -1,6 +1,6 @@
 #
 #.........................................................................
-# Version "$Id: Makefile.pncf.sed 258 2024-01-23 19:26:26Z coats $"
+# Version "$Id: Makefile.pncf.sed 260 2024-01-25 18:05:50Z coats $"
 # EDSS/Models-3 M3TOOLS
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
@@ -97,19 +97,21 @@ wndwpoints.f90  wndwptdata.f90  wrfgriddesc.f90 wrftom3.f90     wrfwndw.f90
 
 OBJ = $(fSRC:.f=.o) $(f90SRC:.f90=.o)
 
+
 EXE = \
 airs2m3         bcwndw          camxtom3        datshift        dayagg          \
 factor          findwndw        greg2jul        gregdate        gridprobe       \
 insertgrid      jul2greg        juldate         juldiff         julshift        \
 kfxtract        latlon          m3agmax         m3agmask        m3cple          \
 m3combo         m3diff          m3edhdr         m3fake          m3hdr           \
-m3interp        m3mask          m3merge         m3pair          m3probe         \
-m3stat          m3totxt         m3tproc         m3tshift        m3wndw          \
-m3xtract        mtxblend        mtxbuild        mtxcalc         mtxcple         \
-mpasdiff        mpasstat        mpastom3        presterp        presz           \
-projtool        randomstat      selmrg2d        timediff        timeshift       \
-vertot          vertimeproc     vertintegral    wndwdesc        wndwpoints      \
-wndwptdata      wrfgriddesc     wrftom3         wrfwndw
+m3interp        m3mask          m3merge         m3mxfind        m3pair          \
+m3probe         m3stat          m3totxt         m3tproc         m3tshift        \
+m3tslct         m3wndw          m3xtract        mtxblend        mtxbuild        \
+mtxcalc         mtxcple         mpasdiff        mpasstat        mpastom3        \
+presterp        presz           projtool        randomstat      selmrg2d        \
+timediff        timeshift       vertot          vertimeproc     vertintegral    \
+wndwdesc        wndwpoints      wndwptdata      wrfgriddesc     wrftom3         \
+wrfwndw
 
 
 

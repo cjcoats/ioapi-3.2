@@ -2,7 +2,7 @@
 PROGRAM  M3MXFIND
 
     !!***********************************************************************
-    !! Version "$Id: m3mxfind.f90 258 2024-01-23 19:26:26Z coats $"
+    !! Version "$Id: m3mxfind.f90 260 2024-01-25 18:05:50Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2024 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -101,7 +101,7 @@ PROGRAM  M3MXFIND
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3mxfind.f90 258 2024-01-23 19:26:26Z coats $',&
+'$Id: m3mxfind.f90 260 2024-01-25 18:05:50Z coats $',&
 ' '
 
     !!...............  Open and get description for input file
@@ -252,8 +252,8 @@ CONTAINS        !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 DO N = 1, VSIZE
                     IF ( VBUF( N ) .GT. VMAX ) THEN
                         VMAX = VBUF( N )
-                        KDATE = JDATE
-                        KTIME = JTIME
+                        KDATE = IDATE
+                        KTIME = ITIME
                     END IF
                 END DO
 
@@ -301,8 +301,8 @@ CONTAINS        !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 DO N = 1, VSIZE
                     IF ( VBUF( N ) .GT. VMAX ) THEN
                         VMAX = VBUF( N )
-                        KDATE = JDATE
-                        KTIME = JTIME
+                        KDATE = IDATE
+                        KTIME = ITIME
                     END IF
                 END DO
 
@@ -350,8 +350,8 @@ CONTAINS        !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 DO N = 1, VSIZE
                     IF ( VBUF( N ) .GT. VMAX ) THEN
                         VMAX = VBUF( N )
-                        KDATE = JDATE
-                        KTIME = JTIME
+                        KDATE = IDATE
+                        KTIME = ITIME
                     END IF
                 END DO
 
@@ -399,8 +399,8 @@ CONTAINS        !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 DO N = 1, VSIZE
                     IF ( VBUF( N ) .GT. VMAX ) THEN
                         VMAX = VBUF( N )
-                        KDATE = JDATE
-                        KTIME = JTIME
+                        KDATE = IDATE
+                        KTIME = ITIME
                     END IF
                 END DO
 
