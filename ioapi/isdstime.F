@@ -2,14 +2,14 @@
         LOGICAL FUNCTION ISDSTIME( JDATE )
 
 C***********************************************************************
-C Version "$Id: isdstime.F 219 2015-08-17 18:05:54Z coats $"
+C Version "$Id: isdstime.F 261 2024-09-19 16:08:36Z coats $"
 C EDSS/Models-3 I/O API.
 C Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
 C (C) 2003-2010 Baron Advanced Meteorological Systems
 C Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
 C See file "LGPL.txt" for conditions of use.
 C.........................................................................
-C  function body starts at line  70
+C  function body starts at line  80
 C
 C  RETURNS:
 C       TRUE iff Daylight Savings Time is in effect for JDATE,
@@ -38,6 +38,8 @@ C
 C       Modified 03/2010 by CJC: F9x changes for I/O API v3.1
 C
 C       Modified 11/2015 by CJC: IO_365 changes
+C
+C       Modified 06/2024 by CJC: leap-year bug-fix for year >= 2007
 C***********************************************************************
 
       IMPLICIT NONE
@@ -114,7 +116,7 @@ C.......   wkday = 1 + mod( k + day, 7 )
             DAY0  = DAY0 - 31                      !  March 1
             DAY0  = DAY0 + 13 - MOD( K + DAY0, 7 ) !  second Sunday in March,
             K     = 1 + MOD( K + DAY1, 7 )         !  day-number 1...7 for OCT31
-            DAY1  = DAY1 +  6 - MOD( K, 7 )        !  first Sunday in November
+            DAY1  = DAY1 +  7 - MOD( K, 7 )        !  first Sunday in November
         END IF
 
         ISDSTIME = ( ( IDAY .GE. DAY0 ) .AND. ( IDAY .LT. DAY1 ) )
