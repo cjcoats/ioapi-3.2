@@ -14,30 +14,40 @@ I/O API DOCUMENTS:
     Systems, LLC., and (C) 2013-2016 UNC Institute for the Environment.
     Documentation may be found at URL
 
+    https://cjcoats.github.io/ioapi/index.html
+    
+    or (out-of-date)
+    
     https://www.cmascenter.org/ioapi/documentation/all_versions/html/index.html
 
 CURRENT VERSION AVAILABILITY
 
-    The current development version of the I/O API is Version 3.2; the
-    "old" production version (in maintenance-only mode) is 3.1; versions
-    3.0 and earlier are obsolete.  These are available in source code
-    form (together with the documentation on build and installation)
-    from URL
+    The current production version of the I/O API is Version 3.2 (with
+    development version 4.0); the "old" production version (in
+    maintenance-only mode) is 3.1; versions 3.0 and earlier are
+    obsolete.  These are available in source code form (together with
+    the documentation on build and installation) 
 
     https://www.cmascenter.org/ioapi/documentation/all_versions/html/AVAIL.html
+    
+    Note that the "cmascenter" code and documentation must be
+    considered as obsolete and out-of-date...
 
-    Source code and documentation for Version 3.2 is also available via
-    "git", from
+    Source code for Version 3.2 is available via "git", from
 
         https://github.com/cjcoats/ioapi-3.2
 
     using the command
 
         git clone https://github.com/cjcoats/ioapi-3.2
+        
+    Documentation may be found at URL
+
+        https://cjcoats.github.io/ioapi/index.html
 
     Change-Log and new features are documented at URL
 
-        https://www.cmascenter.org/ioapi/documentation/3.1/html/NEWSTUFF.html
+        https://cjcoats.github.io/ioapi/NEWSTUFF.html
 
 I/O API INSTALLATION
 
@@ -60,6 +70,12 @@ I/O API INSTALLATION
     except that they use ioapi-3.1.tar.gz, which is available only
     from the CMAS web-site but not presently from GitHub.
 
+       PREFERRED ALTERNATIVE 1. & 2.:
+
+          cd to your preferred installation directory.  Issue the command
+
+            git clone https://github.com/cjcoats/ioapi-3.2
+
        1. Download the gzipped tar-file ioapi-3.2.tar.gz from the
           CMAS web-site. It contains directories "ioapi" for the I/O API
           library source code, and "m3tools" for the related tool
@@ -73,12 +89,6 @@ I/O API INSTALLATION
               tar xvfz ioapi-3.2.tar.gz
 
           does unzip-untar all in one step).
-
-       ALTERNATIVE 1. & 2.:
-
-          cd $BASEDIR.  Issue the command
-
-            git clone https://github.com/cjcoats/ioapi-3.2
 
        3. setenv BIN <machinetype> where <machinetype> matches the
           extension on one of the "make"-configuration files
@@ -98,6 +108,8 @@ I/O API INSTALLATION
           Linux2_x86_64*36[0,5] for climatological (no-leap-year)
           builds).  For 32-bit Linux, BIN will be of the form
           "Linux2_x86*" (e.g., "Linux2_x86ifort"...).
+          "gfortran" version 10 or later requires one of the
+          "Linux2_x86_64*gfort10*"
 
        4. mkdir $BASEDIR/$BIN.  This will be the build-and-install
           directory that will hold object-files, libraries, and
