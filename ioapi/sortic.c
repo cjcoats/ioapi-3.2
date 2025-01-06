@@ -5,7 +5,7 @@
    void SORTIC  () for Fortran starts at line 267
    void SORTIC8 () for Fortran starts at line 296
 
-VERSION "$Id: sortic.c 100 2015-01-16 16:52:16Z coats $"
+VERSION "$Id: sortic.c 267 2025-01-06 19:10:42Z coats $"
     EDSS/Models-3 I/O API.
 
 COPYRIGHT
@@ -44,6 +44,7 @@ REVISION HISTORY:
     SORTINC4(), SORTINC8()
 ************************************************************************/
 
+#include  <stdlib.h>
 #include  <string.h>
 #include  <stdint.h>
 #include "parms3.h"

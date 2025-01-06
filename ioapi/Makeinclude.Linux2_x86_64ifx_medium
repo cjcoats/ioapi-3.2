@@ -1,0 +1,38 @@
+# VERSION "$Id: Makeinclude.Linux2_x86_64ifx_medium 267 2025-01-06 19:10:42Z coats $"
+
+AR   = ar
+CC   = icx
+CXX  = icpx
+FC   = ifx -auto -warn notruncated_source -Bstatic
+M4   = m4
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -I
+E132 = -extend-source 132
+
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback                                          # generic
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback -msse4.1 -xSSE4.1                        # penryn
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback -mavx2   -xAVX    -march=corei7-avx      # SandyBridge
+# MFLAGS  = -mcmodel=medium -shared-intel -traceback -mavx    -xAVX2   -march=corei7-avx2     # Haswell
+MFLAGS    = -mcmodel=medium -shared-intel -traceback -xHost
+
+OMPFLAGS  = -qopenmp
+OMPLIBS   = -qopenmp -qopenmp-link=static -shared-intel
+
+COPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 -no-fp-port -unroll -stack-temps -safe-cray-ptr ${MFLAGS}
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -save
+ARCHFLAGS = ${MFLAGS} \
+ -DIOAPI_NCF4=1 \
+ -DAUTO_ARRAYS=1 \
+ -DF90=1 -DFLDMN=1 \
+ -DFSTR_L=int \
+ -DIOAPI_NO_STDOUT=1 \
+ -DAVOID_FLUSH=1 -DBIT32=1
+PARFLAGS  =
+ARCHLIB   = -Vaxlib -Bstatic
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -lpvm3

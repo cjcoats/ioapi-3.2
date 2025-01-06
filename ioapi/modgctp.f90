@@ -2,7 +2,7 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 210 2021-11-10 19:14:54Z coats $"
+    !!  Version "$Id: modgctp.f90 267 2025-01-06 19:10:42Z coats $"
     !!  Copyright (c) 2014-2015 UNC Institute for the Environment and
     !!  (C) 2015-2018 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -49,6 +49,7 @@ MODULE MODGCTP
     !!      Version  8/2018 by CJC:  bug fixes in GRD2INDX, GRID2XY
     !!      Version 11/2021 by CJC:  Add BNDY2XY*; if(sameproj...) optimization;
     !!      M3TOGTPZ zone-ID fixes
+    !!      Version   12/2024 by CJC:  removed doubled M3MSG call
     !!..............................................................
 
     USE M3UTILIO, M3U_GTPZ0       => GTPZ0      ,   &
@@ -236,7 +237,7 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 210 2021-11-10 19:14:54Z coats                     $'
+'$Id:: modgctp.f90 267 2025-01-06 19:10:42Z coats                     $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:
@@ -439,7 +440,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
                 CALL M3MSG2( MESG )
                 WRITE( MESG, '( A, 1X, 1PD25.16 )' )  'INITSPHERES:  minor axis/eccentricity^2', P2
                 CALL M3MSG2( MESG )
-                CALL M3MSG2( MESG )
             END IF
 
             IF ( EFLAG ) THEN
@@ -575,7 +575,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*128   FN83            !  NAD1983 file name
         INTEGER*4       LENGTH          !  NAD* record-length
         INTEGER*4       IFLG            !  error flag
-
 
         !!........  Body  ......................................................
 
