@@ -2,7 +2,7 @@
 LOGICAL   FUNCTION DESC3( FNAME )
 
     !!***********************************************************************
-    !! Version "$Id: desc3.F90 289 2015-12-31 16:29:08Z coats $"
+    !! Version "$Id: desc3.F90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2011 Baron Advanced Meteorological Systems,

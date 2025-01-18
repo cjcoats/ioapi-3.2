@@ -3,7 +3,7 @@ LOGICAL FUNCTION WRVARS( FID, VID, FLAGS, STEP2, DIMS, DELS, DELTA, BUFFER )    
                  RESULT( WRFLAG )
 
     !!***********************************************************************
-    !! Version "$Id: wrvars.F 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: wrvars.F90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
     !! (C) 2003-2010 Baron Advanced Meteorological Systems,

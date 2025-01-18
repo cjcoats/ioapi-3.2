@@ -2,7 +2,7 @@
 PROGRAM  WNDWPOINTS
 
     !!***********************************************************************
-    !! Version "$Id: wndwpoints.f90 240 2023-03-16 18:44:28Z coats $"
+    !! Version "$Id: wndwpoints.f90 244 2023-03-22 15:13:07Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! (C) 2023 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE vnpntoersion 2
@@ -133,7 +133,7 @@ PROGRAM  WNDWPOINTS
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: wndwpoints.f90 240 2023-03-16 18:44:28Z coats $',&
+'$Id: wndwpoints.f90 244 2023-03-22 15:13:07Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN

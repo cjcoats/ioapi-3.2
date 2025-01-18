@@ -2,7 +2,7 @@
 PROGRAM  M3TPROC
 
     !!***********************************************************************
-    !! Version "$Id: m3tproc.f90 201 2021-06-09 18:23:36Z coats $"
+    !! Version "$Id: m3tproc.f90 206 2021-10-21 15:46:35Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -196,7 +196,7 @@ PROGRAM  M3TPROC
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3tproc.f90 201 2021-06-09 18:23:36Z coats $',&
+'$Id: m3tproc.f90 206 2021-10-21 15:46:35Z coats $',&
 ' '
 
     ARGCNT = IARGC()
@@ -385,18 +385,18 @@ PROGRAM  M3TPROC
 
     SDATE = GETNUM( SDATE3D, 9999999, SDATE, 'Enter start date for analysis' )
 
-    STIME = GETNUM(       0, 9999999, STIME, 'Enter start time for analysis' )
+    STIME = GETNUM(     0, 999999999, STIME, 'Enter start time for analysis' )
 
-    AGLEN = GETNUM(    0, 999999999, 240000, 'Enter analysis-window duration' )
+    AGLEN = GETNUM(     0, 999999999, 240000, 'Enter analysis-window duration' )
 
-    OSTEP = GETNUM(    0, 999999999,  AGLEN, 'Enter output time step' )
+    OSTEP = GETNUM(     0, 999999999,  AGLEN, 'Enter output time step' )
 
     CALL NEXTIME( EDATE, ETIME, -AGLEN )
     NRECS = CURREC( EDATE, ETIME, SDATE, STIME, OSTEP, KDATE, KTIME )
 
     EDATE = GETNUM( SDATE3D, 9999999, KDATE, 'Enter final date for analysis' )
 
-    ETIME = GETNUM( 0, 9999999, KTIME, 'Enter final time for analysis' )
+    ETIME = GETNUM(       0, 9999999, KTIME, 'Enter final time for analysis' )
 
     NRECS = CURREC( EDATE, ETIME, SDATE, STIME, OSTEP, KDATE, KTIME )
     ARECS = TIME2SEC( AGLEN ) / TIME2SEC( INSTEP )

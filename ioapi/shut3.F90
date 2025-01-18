@@ -2,7 +2,7 @@
 LOGICAL FUNCTION SHUT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: shut3.F90 293 2016-01-19 15:17:48Z coats $"
+    !! Version "$Id: shut3.F90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2010 by Baron Advanced Meteorological Systems.

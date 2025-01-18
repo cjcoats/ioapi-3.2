@@ -119,7 +119,7 @@ PROGRAM PRESZ
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$$Id: presz.f90 435 2016-11-22 18:10:58Z coats $',&
+'$$Id: presz.f90 1 2017-06-10 18:05:20Z coats $',&
 ' '
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN

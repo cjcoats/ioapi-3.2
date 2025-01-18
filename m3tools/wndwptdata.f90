@@ -2,7 +2,7 @@
 PROGRAM  WNDWPTDATA
 
     !!***********************************************************************
-    !! Version "$Id: wndwptdata.f90 228 2023-01-12 19:13:43Z coats $"
+    !! Version "$Id: wndwptdata.f90 238 2023-03-13 16:54:33Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! (C) 2023 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -129,7 +129,7 @@ PROGRAM  WNDWPTDATA
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: wndwptdata.f90 228 2023-01-12 19:13:43Z coats $',&
+'$Id: wndwptdata.f90 238 2023-03-13 16:54:33Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN

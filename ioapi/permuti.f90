@@ -4,7 +4,7 @@
     !!  GENERIC SUBROUTINE PERMUTI( N, INDX, ARR1 [, ARR2...] )
     !!      for INTEGER, INTEGER*8, REAL, 
     !!.........................................................................
-    !! Version "$Id: permuti.f90 256 2023-12-01 15:40:40Z coats $"
+    !! Version "$Id: permuti.f90 262 2024-09-19 16:13:34Z coats $"
     !! (C) 2023 Carlie J./ Coats, Jr.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !! See file "LGPL.txt" for conditions of use.

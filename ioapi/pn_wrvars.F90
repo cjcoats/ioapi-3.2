@@ -1,7 +1,7 @@
 
 
 !!***********************************************************************
-!! Version "$Id: pn_wrvars.F90 264 2015-11-19 16:33:55Z coats $"
+!! Version "$Id: pn_wrvars.F90 1 2017-06-10 18:05:20Z coats $"
 !! EDSS/Models-3 I/O API.
 !! Copyright (C) 2014-2015 UNC Institute for the Environment.
 !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1

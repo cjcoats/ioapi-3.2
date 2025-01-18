@@ -5,7 +5,7 @@
                        NAMEA,  NAMEB, WNAMES, WTYPES, RDEV )
 
     !!***********************************************************************
-    !! Version "$Id: pairstep.f90 101 2015-01-16 16:52:50Z coats $"
+    !! Version "$Id: pairstep.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.

@@ -2,7 +2,7 @@
 PROGRAM VERTIMEPROC
 
     !!***************************************************************
-    !!  Version "$Id: vertimeproc.f90 435 2016-11-22 18:10:58Z coats $"
+    !!  Version "$Id: vertimeproc.f90 1 2017-06-10 18:05:20Z coats $"
     !!  Copyright (c) 2014 UNC Institute for the Environment
     !!  Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !!  See file "GPL.txt" for conditions of use.
@@ -115,7 +115,7 @@ PROGRAM VERTIMEPROC
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version:',                                                             &
-'$Id: vertimeproc.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: vertimeproc.f90 1 2017-06-10 18:05:20Z coats $',&
 ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN

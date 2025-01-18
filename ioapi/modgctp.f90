@@ -2,7 +2,7 @@
 MODULE MODGCTP
 
     !!***************************************************************
-    !!  Version "$Id: modgctp.f90 267 2025-01-06 19:10:42Z coats $"
+    !!  Version "$Id: modgctp.f90 268 2025-01-06 19:36:57Z coats $"
     !!  Copyright (c) 2014-2015 UNC Institute for the Environment and
     !!  (C) 2015-2018 Carlie J. Coats, Jr.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -237,7 +237,7 @@ MODULE MODGCTP
 
 
     CHARACTER*132, SAVE :: SVN_ID = &
-'$Id:: modgctp.f90 267 2025-01-06 19:10:42Z coats                     $'
+'$Id:: modgctp.f90 268 2025-01-06 19:36:57Z coats                     $'
 
 
     !!  internal state-variables for SETSPHERE, INITSPHERES, SPHEREDAT:
@@ -575,6 +575,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         CHARACTER*128   FN83            !  NAD1983 file name
         INTEGER*4       LENGTH          !  NAD* record-length
         INTEGER*4       IFLG            !  error flag
+
 
         !!........  Body  ......................................................
 

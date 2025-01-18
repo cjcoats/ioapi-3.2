@@ -3,7 +3,7 @@ INTEGER FUNCTION KFWRITE( FNAME, COL, ROW, JDATE, JTIME, KFLEN, BUFFER )    &
         RESULT( KFFLAG )
 
     !!***********************************************************************
-    !! Version "$Id: kfwrite.F 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: kfwrite.F90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2013 Baron Advanced Meteorological Systems,

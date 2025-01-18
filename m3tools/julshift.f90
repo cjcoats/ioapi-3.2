@@ -2,7 +2,7 @@
 PROGRAM JULSHIFT
 
     !!******************************************************************
-    !! Version "$Id: julshift.f90 176 2015-03-02 16:20:06Z coats $"
+    !! Version "$Id: julshift.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 2014 UNC Institute for the Environment
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2

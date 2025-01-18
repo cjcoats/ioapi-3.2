@@ -2,7 +2,7 @@
 MODULE MODWRFIO
 
     !!********************************************************************
-    !!  Version "$Id: modwrfio.f90 237 2023-01-15 19:45:29Z coats $"
+    !!  Version "$Id: modwrfio.f90 238 2023-03-13 16:54:33Z coats $"
     !!  Copyright (C) 2010-2013 Baron Advanced Meteorological Systems, and
     !!            (C) 2015 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
@@ -229,7 +229,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 'NOTE:  Current version supports at most one input file.',              &
 '',                                                                     &
 'Module version:',                                                      &
-'$Id: modwrfio.f90 237 2023-01-15 19:45:29Z coats $',            &
+'$Id: modwrfio.f90 238 2023-03-13 16:54:33Z coats $',            &
 '',                                                                     &
 'Copyright (C) 2013 Baron Advanced Meteorological Systems, LLC.,',      &
 '(C) 2015 UNC Institute for the Environment.',                          &

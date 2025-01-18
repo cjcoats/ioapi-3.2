@@ -2,7 +2,7 @@
 PROGRAM WRFWNDW
 
     !!***************************************************************
-    !! Version "$Id: wrfwndw.f90 249 2023-03-24 14:46:18Z coats $"
+    !! Version "$Id: wrfwndw.f90 250 2023-03-24 14:52:29Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! (C) 2023 UNC Institute for the Environment.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
@@ -125,7 +125,7 @@ PROGRAM WRFWNDW
 '    Chapel Hill, NC 27599-1105',                                               &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: wrfwndw.f90 249 2023-03-24 14:46:18Z coats $',&
+'$Id: wrfwndw.f90 250 2023-03-24 14:52:29Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN

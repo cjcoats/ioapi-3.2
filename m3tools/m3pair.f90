@@ -2,7 +2,7 @@
 PROGRAM  M3PAIR
 
     !!***********************************************************************
-    !! Version "$Id: m3pair.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: m3pair.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, 
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,

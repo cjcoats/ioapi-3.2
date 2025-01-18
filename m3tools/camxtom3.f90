@@ -2,7 +2,7 @@
 PROGRAM CAMXTOM3
 
     !!***********************************************************************
-    !! Version "$Id: camxtom3.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: camxtom3.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -145,7 +145,7 @@ PROGRAM CAMXTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: camxtom3.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: camxtom3.f90 1 2017-06-10 18:05:20Z coats $',&
 ' '
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN

@@ -2,7 +2,7 @@
 PROGRAM MTXCALC
 
     !!***********************************************************************
-    !! Version "$Id: mtxcalc.f90 108 2018-09-07 18:59:37Z coats $"
+    !! Version "$Id: mtxcalc.f90 212 2021-11-10 20:39:53Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
     !! (C) 1995-2002, 2005-2013 Carlie J. Coats, Jr.,
@@ -226,7 +226,7 @@ PROGRAM MTXCALC
 '',                                                                             &
 '',                                                                             &
 'Program version: ',                                                            &
-'$Id: mtxcalc.f90 108 2018-09-07 18:59:37Z coats $',&
+'$Id: mtxcalc.f90 212 2021-11-10 20:39:53Z coats $',&
 ' '
 
     IF ( .NOT. GETVAL( 'Continue with program?', .TRUE. ) ) THEN
@@ -414,9 +414,9 @@ PROGRAM MTXCALC
         CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
     END IF                  ! if allocate failed
 
-    CALL GRID2XY( GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,       &
-                  GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,       &
-                  NCOLS3, NROWS3, XORIG1, YORIG1, XCELL3, YCELL3,       &
+    CALL GRID2XY( GDTYP1, P_ALP1, P_BET1, P_GAM1, XCENT1, YCENT1,       &
+                  GDTYP2, P_ALP2, P_BET2, P_GAM2, XCENT2, YCENT2,       &
+                  NCOLS3, NROWS3, XORIG2, YORIG2, XCELL3, YCELL3,       &
                   XLOC, YLOC )
 
     !!.......   Compute fractions:

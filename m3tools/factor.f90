@@ -2,7 +2,7 @@
 PROGRAM FACTOR
 
     !!***********************************************************************
-    !! Version "$Id: factor.f90 435 2016-11-22 18:10:58Z coats $"
+    !! Version "$Id: factor.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
     !! and (C) 2002-2010 Baron Advanced Meteorological Systems. LLC.
@@ -103,7 +103,7 @@ PROGRAM FACTOR
 '    Chapel Hill, NC 27599-1105',                                   &
 '',                                                                 &
 'Program version: ',                                                &
-'$Id: factor.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: factor.f90 1 2017-06-10 18:05:20Z coats $',&
 ' '
 
     ARGCNT = IARGC()

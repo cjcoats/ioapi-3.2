@@ -2,7 +2,7 @@
 PROGRAM WRFTOM3
 
     !!***************************************************************
-    !! Version "$Id: WRFTOM3.f90 1698 2013-11-12 15:56:38Z coats@borel $"
+    !! Version "$Id: wrftom3.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (c) 2010 Baron Advanced Meteorological Systems
     !! and (C) 2015 UNC Institute for the Environment.
@@ -132,7 +132,7 @@ PROGRAM WRFTOM3
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version:',                                                         &
-'$Id: WRFTOM3.f90 1698 2013-11-12 15:56:38Z coats@borel $',&
+'$Id: wrftom3.f90 1 2017-06-10 18:05:20Z coats $',&
 ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN

@@ -2,7 +2,7 @@
 LOGICAL FUNCTION WRTFLAG( FID, VID, FLAGS, STEP2 )
 
     !!***********************************************************************
-    !! Version "$Id: wrtflag.F90 290 2016-01-02 19:39:56Z coats $"
+    !! Version "$Id: wrtflag.F90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (C) 2003-2010 by Baron Advanced Meteorological Systems,

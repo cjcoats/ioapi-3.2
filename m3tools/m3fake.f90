@@ -2,7 +2,7 @@
 PROGRAM M3FAKE
 
     !!***********************************************************************
-    !! Version "$ $Id: m3fake.f90 216 2023-01-06 18:39:58Z coats $"
+    !! Version "$ $Id: m3fake.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC, 
     !! (C) 1995-2002,2005-2013 Carlie J. Coats, Jr.,
@@ -185,7 +185,7 @@ PROGRAM M3FAKE
 '    Chapel Hill, NC 27599-1105',                                           &
 '',                                                                         &
 'Program version: ',                                                        &
-'$Id: m3fake.f90 216 2023-01-06 18:39:58Z coats $',&
+'$Id: m3fake.f90 1 2017-06-10 18:05:20Z coats $',&
 ' '
 
     IF ( .NOT.GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -195,7 +195,7 @@ PROGRAM M3FAKE
     CALL M3MESG( BAR )
     CALL M3MESG( 'First, let us define the file type and get the dimensions.' )
     CALL M3MESG( BLANK )
-    FTYPE3D = FTYPES( GETMENU( 3, 2,  'Enter output file type', FMENU ) )
+    FTYPE3D = FTYPES( GETMENU( 3, 2,  'Enter file type', FMENU ) )
 
 
     !!...............   Get file, grid description:

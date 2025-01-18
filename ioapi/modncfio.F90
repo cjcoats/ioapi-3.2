@@ -1,7 +1,7 @@
 MODULE MODNCFIO
 
     !!.........................................................................
-    !!  Version "$Id: modncfio.F90 232 2023-01-13 20:56:36Z coats $"
+    !!  Version "$Id: modncfio.F90 9 2017-07-04 23:50:30Z coats $"
     !!  Copyright (c) 2015-2016 UNC Institute for the Environment.
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     !!  See file "LGPL.txt" for conditions of use.
@@ -9,7 +9,7 @@ MODULE MODNCFIO
     !!
     !!  DESCRIPTION:
     !!      This is a merge of netCDF version 3.x/4.x (version 3.6.2) "fortran/netcdf.inc"
-    !!      with PnetCDF (version 1.6.1) "pnetcdf.inc", but under another INCLUDE-file
+    !!      with PnetCDF (version 1.6.1) "pnetcdf.inc", but under another INCLUDE-file 
     !       naming convention.
     !!      NetCDF copyright 1990-2008 University Corporation for Atmospheric Research;
     !!      see URL  http://www.unidata.ucar.edu/packages/netcdf/index.html
@@ -27,7 +27,7 @@ MODULE MODNCFIO
     !!        INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
     !!        INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
     !!        INTEGER      , INTENT(  OUT) :: VDIMS(7,MXVAR ) !!  dimensions for variables
-    !!      returns the number NVARS of netCDF variables on the file FNAME,
+    !!      returns the number NVARS of netCDF variables on the file FNAME, 
     !!      together with lists of their names, types, numbers of dimensions,
     !!      and sizes of dimensions:  e.g., if NVARS==5, then the third
     !!      variable has names VNAMES(3), type VTYPES(3) [M3REAL, M3INT, etc],
@@ -40,7 +40,7 @@ MODULE MODNCFIO
     !!      scheme is:
     !!
     !!          READNCVAR*() return a result with the same dimensioning
-    !!                       as on the file (e.g., time independent data), and
+    !!                       as on the file (e.g., time independent data), and 
     !!          READNCVEC*() returns a single-indexed (e.g., GRID(NCOLS*NROWS) result.
     !!          READNCVSTEP*() for reading one time step of a TIME STEPPED variable
     !!          READNC*I()   are for INTEGER            netCDF variables
@@ -142,57 +142,37 @@ MODULE MODNCFIO
     !!--------  Generic Interfaces:  -----------------------------------
 
     INTERFACE READNCVAR
-        MODULE PROCEDURE READNCVAR0DR,   READNCVAR0DI,   READNCVAR0DS,   READNCVAR0DB,   READNCVAR0DD,     &
-                         READNCVAR1DR,   READNCVAR1DI,   READNCVAR1DS,   READNCVAR1DB,   READNCVAR1DD,     &
-                         READNCVAR2DR,   READNCVAR2DI,   READNCVAR2DS,   READNCVAR2DB,   READNCVAR2DD,     &
-                         READNCVAR3DR,   READNCVAR3DI,   READNCVAR3DS,   READNCVAR3DB,   READNCVAR3DD,     &
-                         READNCVAR4DR,   READNCVAR4DI,   READNCVAR4DS,   READNCVAR4DB,   READNCVAR4DD,     &
-                         READNCVEC2DR,   READNCVEC2DI,   READNCVEC2DS,   READNCVEC2DB,   READNCVEC2DD,     &
-                         READNCVEC3DR,   READNCVEC3DI,   READNCVEC3DS,   READNCVEC3DB,   READNCVEC3DD,     &
-                         READNCVEC4DR,   READNCVEC4DI,   READNCVEC4DS,   READNCVEC4DB,   READNCVEC4DD,     &
-                         READNVSTEP0DR,  READNVSTEP0DI,  READNVSTEP0DS,  READNVSTEP0DB,  READNVSTEP0DD,    &
-                         READNVSTEP1DR,  READNVSTEP1DI,  READNVSTEP1DS,  READNVSTEP1DB,  READNVSTEP1DD,    &
-                         READNVSTEP2DR,  READNVSTEP2DI,  READNVSTEP2DS,  READNVSTEP2DB,  READNVSTEP2DD,    &
-                         READNVSTEP3DR,  READNVSTEP3DI,  READNVSTEP3DS,  READNVSTEP3DB,  READNVSTEP3DD,    &
-                         READNVSTEP4DR,  READNVSTEP4DI,  READNVSTEP4DS,  READNVSTEP4DB,  READNVSTEP4DD,    &
-                         READFIDSTEP0DR, READFIDSTEP0DI, READFIDSTEP0DS, READFIDSTEP0DB, READFIDSTEP0DD,   &
-                         READFIDSTEP1DR, READFIDSTEP1DI, READFIDSTEP1DS, READFIDSTEP1DB, READFIDSTEP1DD,   &
-                         READFIDSTEP2DR, READFIDSTEP2DI, READFIDSTEP2DS, READFIDSTEP2DB, READFIDSTEP2DD,   &
-                         READFIDSTEP3DR, READFIDSTEP3DI, READFIDSTEP3DS, READFIDSTEP3DB, READFIDSTEP3DD,   &
-                         READFIDSTEP4DR, READFIDSTEP4DI, READFIDSTEP4DS, READFIDSTEP4DB, READFIDSTEP4DD
+        MODULE PROCEDURE READNCVAR0DR,  READNCVAR0DI,  READNCVAR0DS,  READNCVAR0DB,  READNCVAR0DD,    &
+                         READNCVAR1DR,  READNCVAR1DI,  READNCVAR1DS,  READNCVAR1DB,  READNCVAR1DD,    &
+                         READNCVAR2DR,  READNCVAR2DI,  READNCVAR2DS,  READNCVAR2DB,  READNCVAR2DD,    &
+                         READNCVAR3DR,  READNCVAR3DI,  READNCVAR3DS,  READNCVAR3DB,  READNCVAR3DD,    &
+                         READNCVAR4DR,  READNCVAR4DI,  READNCVAR4DS,  READNCVAR4DB,  READNCVAR4DD,    &
+                         READNCVEC2DR,  READNCVEC2DI,  READNCVEC2DS,  READNCVEC2DB,  READNCVEC2DD,    &
+                         READNCVEC3DR,  READNCVEC3DI,  READNCVEC3DS,  READNCVEC3DB,  READNCVEC3DD,    &
+                         READNCVEC4DR,  READNCVEC4DI,  READNCVEC4DS,  READNCVEC4DB,  READNCVEC4DD,    &
+                         READNVSTEP0DR, READNVSTEP0DI, READNVSTEP0DS, READNVSTEP0DB, READNVSTEP0DD,   &
+                         READNVSTEP1DR, READNVSTEP1DI, READNVSTEP1DS, READNVSTEP1DB, READNVSTEP1DD,   &
+                         READNVSTEP2DR, READNVSTEP2DI, READNVSTEP2DS, READNVSTEP2DB, READNVSTEP2DD,   &
+                         READNVSTEP3DR, READNVSTEP3DI, READNVSTEP3DS, READNVSTEP3DB, READNVSTEP3DD,   &
+                         READNVSTEP4DR, READNVSTEP4DI, READNVSTEP4DS, READNVSTEP4DB, READNVSTEP4DD
     END INTERFACE READNCVAR
 
 
     INTERFACE WRITENCVAR
-        MODULE PROCEDURE WRITENCVAR0DR,   WRITENCVAR0DI,   WRITENCVAR0DS,   WRITENCVAR0DB,   WRITENCVAR0DD,     &
-                         WRITENCVAR1DR,   WRITENCVAR1DI,   WRITENCVAR1DS,   WRITENCVAR1DB,   WRITENCVAR1DD,     &
-                         WRITENCVAR2DR,   WRITENCVAR2DI,   WRITENCVAR2DS,   WRITENCVAR2DB,   WRITENCVAR2DD,     &
-                         WRITENCVAR3DR,   WRITENCVAR3DI,   WRITENCVAR3DS,   WRITENCVAR3DB,   WRITENCVAR3DD,     &
-                         WRITENCVAR4DR,   WRITENCVAR4DI,   WRITENCVAR4DS,   WRITENCVAR4DB,   WRITENCVAR4DD,     &
-                         WRITENCVEC2DR,   WRITENCVEC2DI,   WRITENCVEC2DS,   WRITENCVEC2DB,   WRITENCVEC2DD,     &
-                         WRITENCVEC3DR,   WRITENCVEC3DI,   WRITENCVEC3DS,   WRITENCVEC3DB,   WRITENCVEC3DD,     &
-                         WRITENCVEC4DR,   WRITENCVEC4DI,   WRITENCVEC4DS,   WRITENCVEC4DB,   WRITENCVEC4DD,     &
-                         WRITENVSTEP0DR,  WRITENVSTEP0DI,  WRITENVSTEP0DS,  WRITENVSTEP0DB,  WRITENVSTEP0DD,    &
-                         WRITENVSTEP1DR,  WRITENVSTEP1DI,  WRITENVSTEP1DS,  WRITENVSTEP1DB,  WRITENVSTEP1DD,    &
-                         WRITENVSTEP2DR,  WRITENVSTEP2DI,  WRITENVSTEP2DS,  WRITENVSTEP2DB,  WRITENVSTEP2DD,    &
-                         WRITENVSTEP3DR,  WRITENVSTEP3DI,  WRITENVSTEP3DS,  WRITENVSTEP3DB,  WRITENVSTEP3DD,    &
-                         WRITENVSTEP4DR,  WRITENVSTEP4DI,  WRITENVSTEP4DS,  WRITENVSTEP4DB,  WRITENVSTEP4DD,    &
-                         WRITEFIDSTEP0DR, WRITEFIDSTEP0DI, WRITEFIDSTEP0DS, WRITEFIDSTEP0DB, WRITEFIDSTEP0DD,   &
-                         WRITEFIDSTEP1DR, WRITEFIDSTEP1DI, WRITEFIDSTEP1DS, WRITEFIDSTEP1DB, WRITEFIDSTEP1DD,   &
-                         WRITEFIDSTEP2DR, WRITEFIDSTEP2DI, WRITEFIDSTEP2DS, WRITEFIDSTEP2DB, WRITEFIDSTEP2DD,   &
-                         WRITEFIDSTEP3DR, WRITEFIDSTEP3DI, WRITEFIDSTEP3DS, WRITEFIDSTEP3DB, WRITEFIDSTEP3DD,   &
-                         WRITEFIDSTEP4DR, WRITEFIDSTEP4DI, WRITEFIDSTEP4DS, WRITEFIDSTEP4DB, WRITEFIDSTEP4DD
+        MODULE PROCEDURE WRITENCVAR0DR,  WRITENCVAR0DI,  WRITENCVAR0DS,  WRITENCVAR0DB,  WRITENCVAR0DD,    &
+                         WRITENCVAR1DR,  WRITENCVAR1DI,  WRITENCVAR1DS,  WRITENCVAR1DB,  WRITENCVAR1DD,    &
+                         WRITENCVAR2DR,  WRITENCVAR2DI,  WRITENCVAR2DS,  WRITENCVAR2DB,  WRITENCVAR2DD,    &
+                         WRITENCVAR3DR,  WRITENCVAR3DI,  WRITENCVAR3DS,  WRITENCVAR3DB,  WRITENCVAR3DD,    &
+                         WRITENCVAR4DR,  WRITENCVAR4DI,  WRITENCVAR4DS,  WRITENCVAR4DB,  WRITENCVAR4DD,    &
+                         WRITENCVEC2DR,  WRITENCVEC2DI,  WRITENCVEC2DS,  WRITENCVEC2DB,  WRITENCVEC2DD,    &
+                         WRITENCVEC3DR,  WRITENCVEC3DI,  WRITENCVEC3DS,  WRITENCVEC3DB,  WRITENCVEC3DD,    &
+                         WRITENCVEC4DR,  WRITENCVEC4DI,  WRITENCVEC4DS,  WRITENCVEC4DB,  WRITENCVEC4DD,    &
+                         WRITENVSTEP0DR, WRITENVSTEP0DI, WRITENVSTEP0DS, WRITENVSTEP0DB, WRITENVSTEP0DD,   &
+                         WRITENVSTEP1DR, WRITENVSTEP1DI, WRITENVSTEP1DS, WRITENVSTEP1DB, WRITENVSTEP1DD,   &
+                         WRITENVSTEP2DR, WRITENVSTEP2DI, WRITENVSTEP2DS, WRITENVSTEP2DB, WRITENVSTEP2DD,   &
+                         WRITENVSTEP3DR, WRITENVSTEP3DI, WRITENVSTEP3DS, WRITENVSTEP3DB, WRITENVSTEP3DD,   &
+                         WRITENVSTEP4DR, WRITENVSTEP4DI, WRITENVSTEP4DS, WRITENVSTEP4DB, WRITENVSTEP4DD
     END INTERFACE WRITENCVAR
-
-
-    INTERFACE CREATENC
-        MODULE PROCEDURE CREATENC1, CREATENC2
-    END INTERFACE CREATENC
-
-
-    INTERFACE DESCNCVAR
-        MODULE PROCEDURE DESCNCVAR1, DESCNCVAR2
-    END INTERFACE DESCNCVAR
 
 
     !!--------  Contents of "NETCDF.EXT"    ------------------------------
@@ -450,23 +430,23 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_inq_dim
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     dimid,
+    !!........                         (INTEGER ::     dimid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     len)
+    !!........                         (INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_dimname
     !!........                         (INTEGER ::      ncid,
-    !!........                          INTEGER ::      dimid,
+    !!........                         (INTEGER ::      dimid,
     !!........                          character(*) :: name)
 
     INTEGER, EXTERNAL :: nf_inq_dimlen
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     dimid,
-    !!........                          INTEGER ::     len)
+    !!........                         (INTEGER ::     dimid,
+    !!........                         (INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_rename_dim
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     dimid,
+    !!........                         (INTEGER ::     dimid,
     !!........                          character(*):: name)
 
 
@@ -475,28 +455,28 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_inq_att
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     xtype,
-    !!........                          INTEGER ::     len)
+    !!........                         (INTEGER ::     xtype,
+    !!........                         (INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_attid
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     attnum)
+    !!........                         (INTEGER ::     attnum)
 
     INTEGER, EXTERNAL :: nf_inq_atttype
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     xtype)
+    !!........                         (INTEGER ::     xtype)
 
     INTEGER, EXTERNAL :: nf_inq_attlen
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     len)
+    !!........                         (INTEGER ::     len)
 
     INTEGER, EXTERNAL :: nf_inq_attname
     !!........                         (INTEGER ::     ncid,
@@ -506,20 +486,20 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_copy_att
     !!........                         (INTEGER ::     ncid_in,
-    !!........                          INTEGER ::     varid_in,
+    !!........                         (INTEGER ::     varid_in,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     ncid_out,
-    !!........                          INTEGER ::     varid_out)
+    !!........                         (INTEGER ::     ncid_out,
+    !!........                         (INTEGER ::     varid_out)
 
     INTEGER, EXTERNAL :: nf_rename_att
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: curname,
     !!........                          character(*):: newname)
 
     INTEGER, EXTERNAL :: nf_del_att
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name)
 
 
@@ -555,59 +535,58 @@ MODULE MODNCFIO
 
     INTEGER, EXTERNAL :: nf_put_att_int2
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     xtype,
-    !!........                          INTEGER ::     len,
+    !!........                         (INTEGER ::     xtype,
+    !!........                         (INTEGER ::     len,
     !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_int2
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
     !!........                          nf_int2_t ::   i2vals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_int
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     xtype,
-    !!........                          INTEGER ::     len,
-    !!........                          INTEGER ::     ivals(*))
+    !!........                         (INTEGER ::     xtype,
+    !!........                         (INTEGER ::     len,
+    !!........                         (INTEGER ::     ivals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_int
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     ivals(*))
+    !!........                         (INTEGER ::     ivals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_real
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     xtype,
-    !!........                          INTEGER ::     len,
-    !!........                          real           rvals(*))
+    !!........                         (INTEGER ::     xtype,
+    !!........                         (INTEGER ::     len,
+    !!........                          real                rvals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_real
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          real           rvals(*))
 
     INTEGER, EXTERNAL :: nf_put_att_double
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          INTEGER ::     xtype,
-    !!........                          INTEGER ::     len,
-    !!........                          double         dvals(*))
+    !!........                         (INTEGER ::     xtype,
+    !!........                         (INTEGER ::     len,
+    !!........                          double              dvals(*))
 
     INTEGER, EXTERNAL :: nf_get_att_double
     !!........                         (INTEGER ::     ncid,
-    !!........                          INTEGER ::     varid,
+    !!........                         (INTEGER ::     varid,
     !!........                          character(*):: name,
-    !!........                          double         dvals(*))
+    !!........                          double              dvals(*))
 
 
     !!........ general variable routines:
@@ -1832,11 +1811,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 
 
 
-    LOGICAL FUNCTION  CREATENC1( FNAME,  FHIST,  FDESC,                     &
-                                 NDIMS,  DNAMES, DSIZES,                    &
-                                 NVARS,  VNAMES, VTYPES, VNDIMS, VDNAME,    &
-                                 VUNITS, VTITLE, VDESCS,                    &
-                                 CDFID )
+    LOGICAL FUNCTION  CREATENC( FNAME,  FHIST,  FDESC,                      &
+                                NDIMS,  DNAMES, DSIZES,                     &
+                                NVARS,  VNAMES, VTYPES, VNDIMS, VDNAME,     &
+                                VUNITS, VTITLE, VDESCS )
 
         USE M3UTILIO
 
@@ -1854,10 +1832,9 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         CHARACTER*(*), INTENT(IN   ) :: VUNITS(   NVARS )       !!  attribute  "units"
         CHARACTER*(*), INTENT(IN   ) :: VTITLE(   NVARS )       !!  attribute  "long_name"
         CHARACTER*(*), INTENT(IN   ) :: VDESCS(   NVARS )       !!  attribute  "description"
-        INTEGER      , INTENT(  OUT) :: CDFID                   !!  netCDF file id
 
         CHARACTER*1,  PARAMETER :: BLANK = ' '
-        CHARACTER*24, PARAMETER :: PNAME = 'MODNCFIO/CREATENC1'
+        CHARACTER*24, PARAMETER :: PNAME = 'MODNCFIO/CREATENC'
 
         CHARACTER(LEN=256)          MESG
         CHARACTER(LEN=512)          EQNAME
@@ -1865,9 +1842,9 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         INTEGER         FID, DID, VID, F, FMODE
         INTEGER         IERR, ID, I, K, M, N, V, VV
         INTEGER         NAMELEN, UNITLEN, DESCLEN
-
+        
         LOGICAL         EFLAG, AFLAG
-
+        
         INTEGER         DIMIDS( NDIMS )
 
         INTEGER         DIMS( 7 )
@@ -1881,7 +1858,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         IF ( IERR .NE. 0 ) THEN
             CALL M3MESG( NF_STRERROR( IERR ) )
             CALL M3MESG( PNAME // ' Error opening "' // TRIM( FNAME ) // '"' )
-            CREATENC1 = .FALSE.
+            CREATENC = .FALSE.
             RETURN
         END IF              !!  ierr nonzero:  NF_CREATE() failed
 
@@ -1890,7 +1867,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         IF ( FHIST .NE. BLANK ) THEN
             IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'history', LEN( FHIST ), FHIST )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) )
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
                 CALL M3MESG( PNAME // ' Error creating att "history" for  ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -1899,7 +1876,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         IF ( FDESC .NE. BLANK ) THEN
             IERR = NF_PUT_ATT_TEXT( FID, NF_GLOBAL, 'description', LEN( FDESC ), FDESC )
             IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) )
+                CALL M3MESG( NF_STRERROR( IERR ) ) 
                 CALL M3MESG( PNAME // ' Error creating att "description" for  ' // FNAME )
                 EFLAG = .TRUE.
             END IF              !  ierr nonzero:  operation failed
@@ -1921,7 +1898,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 
         IF ( EFLAG ) THEN
             IERR     = NF_ABORT( FID )
-            CREATENC1 = .FALSE.
+            CREATENC = .FALSE.
             RETURN
         END IF
 
@@ -1931,7 +1908,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         NAMELEN = LEN( VTITLE( 1 ) )
         UNITLEN = LEN( VUNITS( 1 ) )
         DESCLEN = LEN( VDESCS( 1 ) )
-
+        
         DO V = 1, NVARS
 
             IF ( VNDIMS( V ) .GT. 7 ) THEN
@@ -1973,7 +1950,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             IF ( VTITLE( V ) .NE. BLANK ) THEN
                 IERR = NF_PUT_ATT_TEXT( FID, VID, 'long_name', NAMELEN, VTITLE( V ) )
                 IF ( IERR .NE. 0 ) THEN
-                    CALL M3MESG( NF_STRERROR( IERR ) )
+                    CALL M3MESG( NF_STRERROR( IERR ) ) 
                     CALL M3MESG( PNAME // ' Error creating att "long_name" for "' // TRIM( VNAMES(V) ) // '" in ' // FNAME )
                     EFLAG = .TRUE.
                 END IF              !  ierr nonzero:  operation failed
@@ -1982,7 +1959,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             IF ( VUNITS( V ) .NE. BLANK ) THEN
                 IERR = NF_PUT_ATT_TEXT( FID, VID, 'units', UNITLEN, VUNITS( V ) )
                 IF ( IERR .NE. 0 ) THEN
-                    CALL M3MESG( NF_STRERROR( IERR ) )
+                    CALL M3MESG( NF_STRERROR( IERR ) ) 
                     CALL M3MESG( PNAME // ' Error creating att "units" for "' // TRIM( VNAMES(V) ) // '" in ' // FNAME )
                     EFLAG = .TRUE.
                 END IF              !  ierr nonzero:  operation failed
@@ -1991,7 +1968,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             IF ( VDESCS( V ) .NE. BLANK ) THEN
                 IERR = NF_PUT_ATT_TEXT( FID, VID, 'description', DESCLEN, VDESCS( V ) )
                 IF ( IERR .NE. 0 ) THEN
-                    CALL M3MESG( NF_STRERROR( IERR ) )
+                    CALL M3MESG( NF_STRERROR( IERR ) ) 
                     CALL M3MESG( PNAME // ' Error creating att "description" for "' // TRIM( VNAMES(V) ) // '" in ' // FNAME )
                     EFLAG = .TRUE.
                 END IF              !  ierr nonzero:  operation failed
@@ -2014,18 +1991,17 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             CALL M3MESG( NF_STRERROR( IERR ) )
             CALL M3MESG( PNAME // ' Error closing "' // TRIM( FNAME ) // '"' )
             EFLAG = .TRUE.
-        END IF          !!  istat nonzero:  NF_CLOSE() failed
+        END IF          !!  istat nonzero:  NF_OPEN() failed
 
         IF ( EFLAG ) THEN
-            IERR = NF_ABORT( FID )
+            IERR     = NF_ABORT( FID )
         END IF
 
-        CDFID     = FID
-        CREATENC1 = ( .NOT.EFLAG )
+        CREATENC = ( .NOT.EFLAG )
         RETURN
 
 
-    END FUNCTION CREATENC1
+    END FUNCTION CREATENC
 
 
 
@@ -2033,73 +2009,10 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 
 
 
-
-    LOGICAL FUNCTION  CREATENC2( FNAME,  FHIST,  FDESC,                     &
-                                 NDIMS,  DNAMES, DSIZES,                    &
-                                 NVARS,  VNAMES, VTYPES, VNDIMS, VDNAME,    &
-                                 VUNITS, VTITLE, VDESCS )
-
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                   !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: FHIST                   !!  attribute  "history"
-        CHARACTER*(*), INTENT(IN   ) :: FDESC                   !!  attribute  "description"
-        INTEGER      , INTENT(IN   ) :: NDIMS                   !!  number of dimensions used
-        CHARACTER*(*), INTENT(IN   ) :: DNAMES( NDIMS )         !!  dimension-names
-        INTEGER      , INTENT(IN   ) :: DSIZES( NDIMS )         !!  dimension-values
-        INTEGER      , INTENT(IN   ) :: NVARS                   !!  number of (extra) output variables
-        CHARACTER*(*), INTENT(IN   ) :: VNAMES(   NVARS )       !!  variable-names
-        INTEGER      , INTENT(IN   ) :: VTYPES(   NVARS )       !!  variable-type M3REAL, etc...)
-        INTEGER      , INTENT(IN   ) :: VNDIMS(   NVARS )       !!  rank (number of dimensions)
-        CHARACTER*(*), INTENT(IN   ) :: VDNAME( 7,NVARS )       !!  names for dimensions used for the variables
-        CHARACTER*(*), INTENT(IN   ) :: VUNITS(   NVARS )       !!  attribute  "units"
-        CHARACTER*(*), INTENT(IN   ) :: VTITLE(   NVARS )       !!  attribute  "long_name"
-        CHARACTER*(*), INTENT(IN   ) :: VDESCS(   NVARS )       !!  attribute  "description"
-
-        CHARACTER*1,  PARAMETER :: BLANK = ' '
-        CHARACTER*24, PARAMETER :: PNAME = 'MODNCFIO/CREATENC2'
-
-        LOGICAL                 EFLAG
-        CHARACTER(LEN=256)      MESG
-
-        INTEGER         FID, IERR
-
-        IF ( .NOT.CREATENC1( FNAME,  FHIST,  FDESC,                     &
-                             NDIMS,  DNAMES, DSIZES,                    &
-                             NVARS,  VNAMES, VTYPES, VNDIMS, VDNAME,    &
-                             VUNITS, VTITLE, VDESCS,                    &
-                             FID ) ) THEN
-            EFLAG = .TRUE.
-        ELSE
-            IERR = NF_CLOSE( FID )
-            IF ( IERR .NE. 0 ) THEN
-                CALL M3MESG( NF_STRERROR( IERR ) )
-                CALL M3MESG( PNAME // ' Error closing "' // TRIM( FNAME ) // '"' )
-                EFLAG = .TRUE.
-            END IF          !!  istat nonzero:  NF_CLOSE() failed
-        END IF              !!  CREATENC1() failed; or nf_close failed...
-
-        IF ( EFLAG ) THEN
-            IERR = NF_ABORT( FID )
-        END IF
-
-        CREATENC2 = ( .NOT.EFLAG )
-        RETURN
-
-
-    END FUNCTION CREATENC2
-
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-
-    LOGICAL FUNCTION DESCNCVAR1( FNAME, CDFID, MXVAR, NVARS, VNAMES, VUNITS, VTYPES, VNDIMS, VDIMS )
+    LOGICAL FUNCTION DESCNCVAR( FNAME, MXVAR, NVARS, VNAMES, VUNITS, VTYPES, VNDIMS, VDIMS )
         USE M3UTILIO
 
         CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        INTEGER      , INTENT(IN   ) :: CDFID           !!  netCDF file-ID
         INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returned
         INTEGER      , INTENT(  OUT) :: NVARS           !!  max( MXVAR, actual # of vbles )
         CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable names
@@ -2114,7 +2027,18 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         CHARACTER*512   ANAME, EQNAME, MESG
 
         EFLAG = .FALSE.
-        FID   = CDFID
+
+        CALL NAMEVAL( FNAME, EQNAME )
+
+        ISTAT = NF_OPEN( EQNAME, NF_NOWRITE, FID )
+        IF ( ISTAT .NE. 0 ) THEN
+            MESG = 'Error opening "' // TRIM( FNAME ) // '"'
+            CALL M3MESG( MESG )
+            MESG = NF_STRERROR( ISTAT )
+            CALL M3MESG( MESG )
+            DESCNCVAR = .FALSE.
+            RETURN
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         ISTAT = NF_INQ_NVARS( FID, VCOUNT )
         IF ( ISTAT .NE. 0 ) THEN
@@ -2127,7 +2051,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         ELSE IF ( VCOUNT .GT. MXVAR ) THEN
             WRITE( MESG, '( 2( A, I3, 2X ), 3A )' )     &
                 'Actual NVARS=', VCOUNT, 'exceeds MXVAR=', MXVAR, 'in "', TRIM( FNAME ), '"'
-            CALL M3WARN( 'READNCVAR/DESCNCVAR1', 0,0, MESG )
+            CALL M3WARN( 'READNCVAR/DESCNCVAR', 0,0, MESG )
         END IF
 
         NVARS = MIN( MXVAR, VCOUNT )
@@ -2193,52 +2117,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
         END DO          !!  end loop on variables for this file
 
 
-999     CONTINUE
-
-        DESCNCVAR1 = ( .NOT. EFLAG )
-        RETURN
-
-
-    END FUNCTION DESCNCVAR1
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION DESCNCVAR2( FNAME, MXVAR, NVARS, VNAMES, VUNITS, VTYPES, VNDIMS, VDIMS )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        INTEGER      , INTENT(IN   ) :: MXVAR           !!  max # of vars returned
-        INTEGER      , INTENT(  OUT) :: NVARS           !!  max( MXVAR, actual # of vbles )
-        CHARACTER*(*), INTENT(  OUT) :: VNAMES( MXVAR ) !!  variable names
-        CHARACTER*(*), INTENT(  OUT) :: VUNITS( MXVAR ) !!  variable units
-        INTEGER      , INTENT(  OUT) :: VTYPES( MXVAR ) !!  types (M3REAL, M3INT, etc.)
-        INTEGER      , INTENT(  OUT) :: VNDIMS( MXVAR ) !!  ranks (number of dimensions)
-        INTEGER      , INTENT(  OUT) :: VDIMS(7,MXVAR ) !!  dimensions
-
-        INTEGER         FID, VID, V, N, ATYP, ALEN
-        INTEGER         ISTAT, DIMIDS( 7 ), VCOUNT, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, EQNAME, MESG
-
-        EFLAG = .FALSE.
-
-        CALL NAMEVAL( FNAME, EQNAME )
-
-        ISTAT = NF_OPEN( EQNAME, NF_NOWRITE, FID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error opening "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            DESCNCVAR2 = .FALSE.
-            RETURN
-        END IF          !  istat nonzero:  NF_OPEN() failed
-
-        IF ( .NOT. DESCNCVAR1( FNAME, FID, MXVAR, NVARS, VNAMES, VUNITS, VTYPES, VNDIMS, VDIMS ) ) THEN
-            EFLAG = .TRUE.
-        END IF
+999     CONTINUE        !!  close FNAME and return
 
         ISTAT = NF_CLOSE( FID )
         IF ( ISTAT .NE. 0 ) THEN
@@ -2247,13 +2126,13 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !!  istat nonzero:  NF_CLOSE() failed
+        END IF          !!  istat nonzero:  NF_OPEN() failed
 
-        DESCNCVAR2 = ( .NOT. EFLAG )
+        DESCNCVAR = ( .NOT. EFLAG )
         RETURN
 
 
-    END FUNCTION DESCNCVAR2
+    END FUNCTION DESCNCVAR
 
 
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
@@ -2340,7 +2219,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR0DR = ( .NOT. EFLAG )
         RETURN
@@ -2432,7 +2311,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR0DI = ( .NOT. EFLAG )
         RETURN
@@ -2524,7 +2403,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR0DS = ( .NOT. EFLAG )
         RETURN
@@ -2616,7 +2495,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR0DB = ( .NOT. EFLAG )
         RETURN
@@ -2708,7 +2587,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR0DD = ( .NOT. EFLAG )
         RETURN
@@ -2816,7 +2695,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR1DR = ( .NOT. EFLAG )
         RETURN
@@ -2924,7 +2803,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR1DI = ( .NOT. EFLAG )
         RETURN
@@ -3032,7 +2911,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR1DS = ( .NOT. EFLAG )
         RETURN
@@ -3140,7 +3019,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR1DB = ( .NOT. EFLAG )
         RETURN
@@ -3248,7 +3127,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR1DD = ( .NOT. EFLAG )
         RETURN
@@ -3371,7 +3250,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR2DR = ( .NOT. EFLAG )
         RETURN
@@ -3495,7 +3374,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR2DI = ( .NOT. EFLAG )
         RETURN
@@ -3619,7 +3498,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR2DS = ( .NOT. EFLAG )
         RETURN
@@ -3743,7 +3622,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR2DB = ( .NOT. EFLAG )
         RETURN
@@ -3867,7 +3746,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR2DD = ( .NOT. EFLAG )
         RETURN
@@ -4007,7 +3886,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR3DR = ( .NOT. EFLAG )
         RETURN
@@ -4147,7 +4026,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR3DI = ( .NOT. EFLAG )
         RETURN
@@ -4287,7 +4166,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR3DS = ( .NOT. EFLAG )
         RETURN
@@ -4427,7 +4306,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR3DB = ( .NOT. EFLAG )
         RETURN
@@ -4567,7 +4446,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR3DD = ( .NOT. EFLAG )
         RETURN
@@ -4723,7 +4602,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR4DR = ( .NOT. EFLAG )
         RETURN
@@ -4879,7 +4758,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR4DI = ( .NOT. EFLAG )
         RETURN
@@ -5035,7 +4914,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR4DS = ( .NOT. EFLAG )
         RETURN
@@ -5191,7 +5070,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR4DB = ( .NOT. EFLAG )
         RETURN
@@ -5347,7 +5226,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVAR4DD = ( .NOT. EFLAG )
         RETURN
@@ -5473,7 +5352,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC2DR = ( .NOT. EFLAG )
         RETURN
@@ -5597,7 +5476,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC2DI = ( .NOT. EFLAG )
         RETURN
@@ -5721,7 +5600,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC2DS = ( .NOT. EFLAG )
         RETURN
@@ -5845,7 +5724,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC2DB = ( .NOT. EFLAG )
         RETURN
@@ -5969,7 +5848,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC2DD = ( .NOT. EFLAG )
         RETURN
@@ -6109,7 +5988,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC3DR = ( .NOT. EFLAG )
         RETURN
@@ -6249,7 +6128,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC3DI = ( .NOT. EFLAG )
         RETURN
@@ -6389,7 +6268,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC3DS = ( .NOT. EFLAG )
         RETURN
@@ -6529,15 +6408,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC3DB = ( .NOT. EFLAG )
         RETURN
 
     END FUNCTION READNCVEC3DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 
 
     LOGICAL FUNCTION READNCVEC3DD( FNAME, VNAME, NCOLS, NROWS, NLAYS, GRID )
@@ -6669,7 +6545,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC3DD = ( .NOT. EFLAG )
         RETURN
@@ -6825,7 +6701,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC4DR = ( .NOT. EFLAG )
         RETURN
@@ -6981,7 +6857,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC4DI = ( .NOT. EFLAG )
         RETURN
@@ -7137,7 +7013,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC4DS = ( .NOT. EFLAG )
         RETURN
@@ -7293,7 +7169,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC4DB = ( .NOT. EFLAG )
         RETURN
@@ -7449,7 +7325,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNCVEC4DD = ( .NOT. EFLAG )
         RETURN
@@ -7559,7 +7435,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP0DR = ( .NOT. EFLAG )
         RETURN
@@ -7667,7 +7543,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP0DI = ( .NOT. EFLAG )
         RETURN
@@ -7775,7 +7651,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP0DS = ( .NOT. EFLAG )
         RETURN
@@ -7883,7 +7759,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP0DB = ( .NOT. EFLAG )
         RETURN
@@ -7991,7 +7867,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP0DD = ( .NOT. EFLAG )
         RETURN
@@ -8116,7 +7992,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP1DR = ( .NOT. EFLAG )
         RETURN
@@ -8241,7 +8117,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP1DI = ( .NOT. EFLAG )
         RETURN
@@ -8366,7 +8242,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP1DS = ( .NOT. EFLAG )
         RETURN
@@ -8491,7 +8367,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP1DB = ( .NOT. EFLAG )
         RETURN
@@ -8616,7 +8492,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP1DD = ( .NOT. EFLAG )
         RETURN
@@ -8758,7 +8634,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP2DR = ( .NOT. EFLAG )
         RETURN
@@ -8900,7 +8776,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP2DI = ( .NOT. EFLAG )
         RETURN
@@ -9042,7 +8918,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP2DS = ( .NOT. EFLAG )
         RETURN
@@ -9184,7 +9060,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP2DB = ( .NOT. EFLAG )
         RETURN
@@ -9326,7 +9202,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP2DD = ( .NOT. EFLAG )
         RETURN
@@ -9486,7 +9362,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP3DR = ( .NOT. EFLAG )
         RETURN
@@ -9645,7 +9521,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP3DI = ( .NOT. EFLAG )
         RETURN
@@ -9804,7 +9680,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP3DS = ( .NOT. EFLAG )
         RETURN
@@ -9963,7 +9839,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP3DB = ( .NOT. EFLAG )
         RETURN
@@ -10122,7 +9998,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP3DD = ( .NOT. EFLAG )
         RETURN
@@ -10298,7 +10174,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP4DR = ( .NOT. EFLAG )
         RETURN
@@ -10474,7 +10350,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP4DI = ( .NOT. EFLAG )
         RETURN
@@ -10650,7 +10526,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP4DS = ( .NOT. EFLAG )
         RETURN
@@ -10826,7 +10702,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP4DB = ( .NOT. EFLAG )
         RETURN
@@ -11002,7 +10878,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         READNVSTEP4DD = ( .NOT. EFLAG )
         RETURN
@@ -11010,3064 +10886,6 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
     END FUNCTION READNVSTEP4DD
 
 
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-    !!      TIME STEPPED FORMS READFIDSTEP*()
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP0DR( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        REAL         , INTENT(  OUT) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP0DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP0DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP0DI( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        INTEGER      , INTENT(  OUT) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP0DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP0DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP0DS( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        INTEGER(2)   , INTENT(  OUT) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP0DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP0DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP0DB( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        INTEGER(1)   , INTENT(  OUT) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP0DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP0DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP0DD( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        REAL*8       , INTENT(  OUT) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP0DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP0DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP1DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS    !!  dimensions
-        REAL         , INTENT(  OUT) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP1DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP1DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP1DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS      !!  dimensions
-        INTEGER      , INTENT(  OUT) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP1DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP1DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP1DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                   !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                   !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS            !!  dimensions
-        INTEGER(2)   , INTENT(  OUT) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP1DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP1DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP1DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS      !!  dimensions
-        INTEGER(1)   , INTENT(  OUT) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP1DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP1DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP1DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS      !!  dimensions
-        REAL*8       , INTENT(  OUT) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP1DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP1DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP2DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS    !!  dimensions
-        REAL         , INTENT(  OUT) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP2DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP2DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP2DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        INTEGER      , INTENT(  OUT) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP2DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP2DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP2DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        INTEGER(2)   , INTENT(  OUT) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP2DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP2DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP2DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        INTEGER(1)   , INTENT(  OUT) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP2DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP2DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP2DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        REAL*8       , INTENT(  OUT) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP2DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP2DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-
-    LOGICAL FUNCTION READFIDSTEP3DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS    !!  dimensions
-        REAL         , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP3DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP3DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP3DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        INTEGER      , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP3DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP3DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP3DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        INTEGER(2)   , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP3DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP3DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP3DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        INTEGER(1)   , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP3DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP3DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP3DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        REAL*8       , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP3DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP3DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP4DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS    !!  dimensions
-        REAL         , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_GET_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP4DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP4DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP4DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        INTEGER      , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_GET_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP4DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP4DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP4DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        INTEGER(2)   , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_GET_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP4DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP4DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP4DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        INTEGER(1)   , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_GET_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP4DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP4DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION READFIDSTEP4DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        REAL*8       , INTENT(  OUT) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_GET_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_GET_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        READFIDSTEP4DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION READFIDSTEP4DD
-
-
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-    !!  TIME INDEPENDENT FORMS WRITENCVAR*
     ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
 
 
@@ -14152,7 +10970,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR0DR = ( .NOT. EFLAG )
         RETURN
@@ -14244,7 +11062,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR0DI = ( .NOT. EFLAG )
         RETURN
@@ -14336,7 +11154,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR0DS = ( .NOT. EFLAG )
         RETURN
@@ -14428,7 +11246,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR0DB = ( .NOT. EFLAG )
         RETURN
@@ -14520,7 +11338,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR0DD = ( .NOT. EFLAG )
         RETURN
@@ -14628,7 +11446,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR1DR = ( .NOT. EFLAG )
         RETURN
@@ -14736,7 +11554,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR1DI = ( .NOT. EFLAG )
         RETURN
@@ -14844,7 +11662,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR1DS = ( .NOT. EFLAG )
         RETURN
@@ -14952,7 +11770,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR1DB = ( .NOT. EFLAG )
         RETURN
@@ -15060,7 +11878,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR1DD = ( .NOT. EFLAG )
         RETURN
@@ -15183,7 +12001,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR2DR = ( .NOT. EFLAG )
         RETURN
@@ -15307,7 +12125,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR2DI = ( .NOT. EFLAG )
         RETURN
@@ -15431,7 +12249,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR2DS = ( .NOT. EFLAG )
         RETURN
@@ -15555,7 +12373,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR2DB = ( .NOT. EFLAG )
         RETURN
@@ -15679,7 +12497,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR2DD = ( .NOT. EFLAG )
         RETURN
@@ -15819,7 +12637,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR3DR = ( .NOT. EFLAG )
         RETURN
@@ -15959,7 +12777,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR3DI = ( .NOT. EFLAG )
         RETURN
@@ -16099,7 +12917,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR3DS = ( .NOT. EFLAG )
         RETURN
@@ -16239,7 +13057,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR3DB = ( .NOT. EFLAG )
         RETURN
@@ -16379,7 +13197,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR3DD = ( .NOT. EFLAG )
         RETURN
@@ -16535,7 +13353,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR4DR = ( .NOT. EFLAG )
         RETURN
@@ -16691,7 +13509,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR4DI = ( .NOT. EFLAG )
         RETURN
@@ -16847,7 +13665,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR4DS = ( .NOT. EFLAG )
         RETURN
@@ -17003,7 +13821,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR4DB = ( .NOT. EFLAG )
         RETURN
@@ -17159,7 +13977,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVAR4DD = ( .NOT. EFLAG )
         RETURN
@@ -17285,7 +14103,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC2DR = ( .NOT. EFLAG )
         RETURN
@@ -17409,7 +14227,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC2DI = ( .NOT. EFLAG )
         RETURN
@@ -17533,7 +14351,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC2DS = ( .NOT. EFLAG )
         RETURN
@@ -17657,7 +14475,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC2DB = ( .NOT. EFLAG )
         RETURN
@@ -17781,7 +14599,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC2DD = ( .NOT. EFLAG )
         RETURN
@@ -17921,7 +14739,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC3DR = ( .NOT. EFLAG )
         RETURN
@@ -18061,7 +14879,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC3DI = ( .NOT. EFLAG )
         RETURN
@@ -18201,7 +15019,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC3DS = ( .NOT. EFLAG )
         RETURN
@@ -18341,7 +15159,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC3DB = ( .NOT. EFLAG )
         RETURN
@@ -18478,7 +15296,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC3DD = ( .NOT. EFLAG )
         RETURN
@@ -18634,7 +15452,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC4DR = ( .NOT. EFLAG )
         RETURN
@@ -18790,7 +15608,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC4DI = ( .NOT. EFLAG )
         RETURN
@@ -18946,7 +15764,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC4DS = ( .NOT. EFLAG )
         RETURN
@@ -19102,7 +15920,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC4DB = ( .NOT. EFLAG )
         RETURN
@@ -19258,7 +16076,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENCVEC4DD = ( .NOT. EFLAG )
         RETURN
@@ -19368,7 +16186,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP0DR = ( .NOT. EFLAG )
         RETURN
@@ -19476,7 +16294,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP0DI = ( .NOT. EFLAG )
         RETURN
@@ -19584,7 +16402,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP0DS = ( .NOT. EFLAG )
         RETURN
@@ -19692,7 +16510,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP0DB = ( .NOT. EFLAG )
         RETURN
@@ -19800,7 +16618,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP0DD = ( .NOT. EFLAG )
         RETURN
@@ -19925,7 +16743,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP1DR = ( .NOT. EFLAG )
         RETURN
@@ -20050,7 +16868,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP1DI = ( .NOT. EFLAG )
         RETURN
@@ -20175,7 +16993,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP1DS = ( .NOT. EFLAG )
         RETURN
@@ -20300,7 +17118,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP1DB = ( .NOT. EFLAG )
         RETURN
@@ -20425,7 +17243,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP1DD = ( .NOT. EFLAG )
         RETURN
@@ -20567,7 +17385,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP2DR = ( .NOT. EFLAG )
         RETURN
@@ -20709,7 +17527,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP2DI = ( .NOT. EFLAG )
         RETURN
@@ -20851,7 +17669,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP2DS = ( .NOT. EFLAG )
         RETURN
@@ -20993,7 +17811,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP2DB = ( .NOT. EFLAG )
         RETURN
@@ -21135,7 +17953,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP2DD = ( .NOT. EFLAG )
         RETURN
@@ -21295,7 +18113,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP3DR = ( .NOT. EFLAG )
         RETURN
@@ -21454,7 +18272,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP3DI = ( .NOT. EFLAG )
         RETURN
@@ -21613,7 +18431,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP3DS = ( .NOT. EFLAG )
         RETURN
@@ -21772,7 +18590,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP3DB = ( .NOT. EFLAG )
         RETURN
@@ -21931,7 +18749,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP3DD = ( .NOT. EFLAG )
         RETURN
@@ -22107,7 +18925,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP4DR = ( .NOT. EFLAG )
         RETURN
@@ -22283,7 +19101,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP4DI = ( .NOT. EFLAG )
         RETURN
@@ -22459,7 +19277,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP4DS = ( .NOT. EFLAG )
         RETURN
@@ -22635,7 +19453,7 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP4DB = ( .NOT. EFLAG )
         RETURN
@@ -22811,3068 +19629,12 @@ CONTAINS    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
             MESG = NF_STRERROR( ISTAT )
             CALL M3MESG( MESG )
             EFLAG = .TRUE.
-        END IF          !  istat nonzero:  NF_CLOSE() failed
+        END IF          !  istat nonzero:  NF_OPEN() failed
 
         WRITENVSTEP4DD = ( .NOT. EFLAG )
         RETURN
 
     END FUNCTION WRITENVSTEP4DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-    !!      TIME STEPPED FORMS WRITEFIDSTEP*()
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP0DR( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        REAL         , INTENT(IN   ) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP0DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP0DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP0DI( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        INTEGER      , INTENT(IN   ) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP0DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP0DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP0DS( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        INTEGER(2)   , INTENT(IN   ) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP0DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP0DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP0DB( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        INTEGER(1)   , INTENT(IN   ) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP0DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP0DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP0DD( FNAME, CDFID, ISTEP, VNAME, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP
-        REAL*8       , INTENT(IN   ) :: GRID
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 1 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(1) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        DIMS(1) = ISTEP
-        DELS(1) = 1
-        ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP0DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP0DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP1DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS    !!  dimensions
-        REAL         , INTENT(IN   ) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP1DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP1DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP1DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS      !!  dimensions
-        INTEGER      , INTENT(IN   ) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP1DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP1DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP1DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                   !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                   !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS            !!  dimensions
-        INTEGER(2)   , INTENT(IN   ) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP1DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP1DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP1DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS      !!  dimensions
-        INTEGER(1)   , INTENT(IN   ) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP1DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP1DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP1DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS      !!  dimensions
-        REAL*8       , INTENT(IN   ) :: GRID( NCOLS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 2 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(2) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = 1
-        ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP1DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP1DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP2DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS    !!  dimensions
-        REAL         , INTENT(IN   ) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP2DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP2DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP2DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        INTEGER      , INTENT(IN   ) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP2DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP2DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP2DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        INTEGER(2)   , INTENT(IN   ) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP2DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP2DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP2DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        INTEGER(1)   , INTENT(IN   ) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP2DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP2DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP2DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS      !!  dimensions
-        REAL*8       , INTENT(IN   ) :: GRID( NCOLS, NROWS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 3 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(3) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = 1
-        ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP2DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP2DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP3DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS    !!  dimensions
-        REAL         , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP3DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP3DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP3DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        INTEGER      , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP3DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP3DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP3DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        INTEGER(2)   , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP3DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP3DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP3DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        INTEGER(1)   , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP3DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP3DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP3DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS      !!  dimensions
-        REAL*8       , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 4 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(4) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = 1
-        ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP3DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP3DD
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP4DR( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS    !!  dimensions
-        REAL         , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3REAL ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMLEN() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_PUT_VARA_REAL( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_REAL() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP4DR = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP4DR
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP4DI( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        INTEGER      , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3INT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_PUT_VARA_INT( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP4DI = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP4DI
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP4DS( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        INTEGER(2)   , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_SHORT ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_PUT_VARA_INT2( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP4DS = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP4DS
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP4DB( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        INTEGER(1)   , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. NF_BYTE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_PUT_VARA_INT1( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_INT() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP4DB = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP4DB
-
-
-    ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--==-=-=-=-=-=-=-
-
-
-    LOGICAL FUNCTION WRITEFIDSTEP4DD( FNAME, CDFID, ISTEP, VNAME, NCOLS, NROWS, NLAYS, NSPCS, GRID )
-        USE M3UTILIO
-
-        CHARACTER*(*), INTENT(IN   ) :: FNAME                           !!  logical file name
-        CHARACTER*(*), INTENT(IN   ) :: VNAME                           !!  variable name
-        INTEGER      , INTENT(IN   ) :: CDFID, ISTEP, NCOLS, NROWS, NLAYS, NSPCS      !!  dimensions
-        REAL*8       , INTENT(IN   ) :: GRID( NCOLS, NROWS, NLAYS, NSPCS )
-
-        INTEGER         NDIMS, DIMIDS( 7 ), DIMS( 7 ), DELS( 7 )
-        INTEGER         FID, VID, XID, YID, TID
-        INTEGER         ISTAT, IDIM, ITYPE, NATTS
-        LOGICAL         EFLAG
-        CHARACTER*512   ANAME, MESG
-
-        !!-----------   function body  -------------------------------
-
-        EFLAG = .FALSE.
-        FID   = CDFID
-
-        ISTAT = NF_INQ_UNLIMDIM( FID, TID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for time-dimension in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_UNLIMDIM() failed
-
-        ISTAT = NF_INQ_VARID( FID, VNAME, VID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ID for variable "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VARID() failed
-
-        ISTAT = NF_INQ_VAR( FID, VID, ANAME, ITYPE, NDIMS, DIMIDS, NATTS  )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( NDIMS .NE. 5 ) THEN
-            MESG = 'Bad NDIMS for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( DIMIDS(5) .NE. TID ) THEN
-            MESG = 'Bad TIME-DIMENSION for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( ITYPE .NE. M3DBLE ) THEN
-            MESG = 'Bad TYPE for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_VAR() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(1), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NCOLS ) THEN
-            MESG = 'Bad COL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(2), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NROWS ) THEN
-            MESG = 'Bad ROW dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(3), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NLAYS ) THEN
-            MESG = 'Bad LVL dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        ISTAT = NF_INQ_DIMLEN( FID, DIMIDS(4), IDIM )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        ELSE IF ( IDIM .NE. NSPCS ) THEN
-            MESG = 'Bad SPC dimension for  "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_INQ_DIMID() failed
-
-        DIMS(1) = 1
-        DIMS(2) = 1
-        DIMS(3) = 1
-        DIMS(4) = 1
-        DIMS(5) = ISTEP
-        DELS(1) = NCOLS
-        DELS(2) = NROWS
-        DELS(3) = NLAYS
-        DELS(4) = NSPCS
-        DELS(5) = 1
-        ISTAT   = NF_PUT_VARA_DOUBLE( FID, VID, DIMS, DELS, GRID )
-        IF ( ISTAT .NE. 0 ) THEN
-            MESG = 'Error reading "' // TRIM( VNAME ) // '" in "' // TRIM( FNAME ) // '"'
-            CALL M3MESG( MESG )
-            MESG = NF_STRERROR( ISTAT )
-            CALL M3MESG( MESG )
-            EFLAG = .TRUE.
-            GO TO 999
-        END IF          !  ierr nonzero:  NF_PUT_VARA_DOUBLE() failed
-
-
-999     CONTINUE        !!  close FNAME and return
-
-        WRITEFIDSTEP4DD = ( .NOT. EFLAG )
-        RETURN
-
-    END FUNCTION WRITEFIDSTEP4DD
-
-
-
 
 
 

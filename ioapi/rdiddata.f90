@@ -2,7 +2,7 @@
         LOGICAL FUNCTION RDIDDATA( FID, VID, LAYER, STEP, BUFFER )
 
     !!***********************************************************************
-    !! Version "$Id: rdiddata.f 219 2015-08-17 18:05:54Z coats $"
+    !! Version "$Id: rdiddata.f90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC, (C) 1992-2012 Carlie J. Coats, Jr.,
     !! (C) 2003-2011 Baron Advanced Meteorological Systems, and

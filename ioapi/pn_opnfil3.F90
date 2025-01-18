@@ -2,7 +2,7 @@
 LOGICAL FUNCTION PN_OPNFIL3( EQNAME, FID, FSTATUS, PGNAME )
 
     !!***********************************************************************
-    !! Version "$Id: pn_opnfil3.F90 290 2016-01-02 19:39:56Z coats $"
+    !! Version "$Id: pn_opnfil3.F90 1 2017-06-10 18:05:20Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 2014-2015 UNC Institute for the Environment.
     !! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1

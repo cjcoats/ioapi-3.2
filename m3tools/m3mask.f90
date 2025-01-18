@@ -6,13 +6,14 @@ PROGRAM M3MASK
     !!
     !!  DESCRIPTION:
     !!      Read and grid ASCII "mask" file, that contains <col,row>
-    !!      locations of mask cells.
+    !!      or <lat> <lon> locations of mask cells.
     !!
     !!  PRECONDITIONS REQUIRED:
     !!       see splash screen
     !!
     !!  REVISION  HISTORY:
     !!      Prototype  7/2016 by Carlie J. Coats, Jr., UNC IE
+    !!      Version   10/2022 by CJC:
     !!***********************************************************************
 
     USE M3UTILIO
@@ -85,23 +86,24 @@ PROGRAM M3MASK
 '      the ISO STANDARD 6709 (-180 <=LON <= 180), instead of following the',    &
 '      WMO so-called "standard".',                                              &
 '',                                                                             &
-'Program copyright (C) 2016 UNC Institute for the Environment.',                &
+'Program copyright (C) 2016 UNC Institute for the Environment and',             &
+'(C) 2022 Carlie J. Coats, Jr.',                                                &
 'Released under Version 2 of the GNU General Public License. See',              &
 'enclosed GPL.txt, or URL',                                                     &
 ''  ,                                                                           &
 '    https://www.gnu.org/licenses/old-licenses/gpl-2.0.html',                   &
 ''  ,                                                                           &
 'Comments and questions are welcome and can be sent to'  ,                      &
-'',                                                                         &
-'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                       &
-'or',                                                                       &
-'    UNC Institute for the Environment',                                    &
-'    100 Europa Dr., Suite 490 Rm 405',                                     &
-'    Campus Box 1105',                                                      &
-'    Chapel Hill, NC 27599-1105',                                           &
-'',                                                                         &
+'',                                                                             &
+'    Carlie J. Coats, Jr.    carlie@jyarborough.com',                           &
+'or',                                                                           &
+'    UNC Institute for the Environment',                                        &
+'    100 Europa Dr., Suite 490 Rm 405',                                         &
+'    Campus Box 1105',                                                          &
+'    Chapel Hill, NC 27599-1105',                                               &
+'',                                                                             &
 'Program version: ',                                                            &
-'$Id: m3mask.f90 435 2016-11-22 18:10:58Z coats $',&
+'$Id: m3mask.f90 238 2023-03-13 16:54:33Z coats $',&
 BAR, ''
 
     IF ( .NOT. GETYN( 'Continue with program?', .TRUE. ) ) THEN
@@ -172,11 +174,17 @@ BAR, ''
     VTYPE3D( 1 ) = M3INT
     UNITS3D( 1 ) = 'none'
     VDESC3D( 1 ) = '1==mask region, 0==outside-mask region'
-    NVARS3D = 1
+    VNAME3D( 2 ) = 'RMASK'
+    VTYPE3D( 2 ) = M3REAL
+    UNITS3D( 2 ) = 'none'
+    VDESC3D( 2 ) = '1==mask region, 0==outside-mask region'
+    NVARS3D = 2
     SDATE3D = 0
     STIME3D = 0
     TSTEP3D = 0
     NLAYS3D = 1
+    FDESC3D = BLANK
+    FDESC3D(1) = 'MASK FILE:  1==mask region, 0==outside-mask region'
 
     IF ( .NOT. OPEN3( 'MASKFILE', FSUNKN3, PNAME ) ) THEN
         CALL M3EXIT( PNAME, 0, 0, 'Failure opening "MASKFILE"', 2 )
@@ -253,6 +261,11 @@ BAR, ''
     END IF
     
     IF ( .NOT. WRITE3( 'MASKFILE', 'MASK', 0, 0, MASK )  ) THEN
+        MESG = 'Fatal output error(s)'
+        CALL M3EXIT( PNAME, 0, 0,MESG, 2 )
+    END IF
+    
+    IF ( .NOT. WRITE3( 'MASKFILE', 'RMASK', 0, 0, REAL( MASK ) )  ) THEN
         MESG = 'Fatal output error(s)'
         CALL M3EXIT( PNAME, 0, 0,MESG, 2 )
     END IF
