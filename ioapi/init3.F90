@@ -172,7 +172,7 @@ INTEGER FUNCTION INIT3 ( )
 !$OMP   END CRITICAL( S_NC )
 
     VERSN3 = IOAPILIBVER
-    WRITE( VARVER, '( A, I5 )' ) 'Version with PARMS3.EXT/PARAMETER::MXVARS3=', MXVARS3
+    WRITE( VARVER, '( A, I5 )' ) 'Version 3.2.74 with PARMS3.EXT/PARAMETER::MXVARS3=', MXVARS3
 
     WRITE( LOGDEV,'( 5X, A )' )                     &
             ( NOTICE( I ), I = 1, 17 ),             &
