@@ -178,8 +178,8 @@ C...............  Open and "count" input "fractions" file
             ELSE IF ( LINE( 1:7 ) .EQ. '#INGRID'  ) THEN
                 V     = 8 + LBLANK( LINE( 8:256 ) )
                 IGRID = TRIM( LINE( V:256 ) )
-            ELSE IF ( LINE( 1:7 ) .EQ. '#OUTGRID' ) THEN
-                V     = 8 + LBLANK( LINE( 8:256 ) )
+            ELSE IF ( LINE( 1:8 ) .EQ. '#OUTGRID' ) THEN
+                V     = 9 + LBLANK( LINE( 9:256 ) )
                 OGRID = TRIM( LINE( V:256 ) )
             END IF
             GO TO  11           !  to head of "count fractions" loop
@@ -215,7 +215,7 @@ C...............  Get output grid description
             CALL M3EXIT( PNAME, 0, 0, MESG, 2 )
 
         END IF
-        NCOL1 = NCOLS3D
+        NCOL1 = NCOLS1
 
         IF ( .NOT. DSCGRID( OGRID, CNAME, GDTYP2,
      &              P_ALP2, P_BET2,P_GAM2, XCENT2, YCENT2,
@@ -228,12 +228,12 @@ C...............  Get output grid description
 
         END IF
 
-        NCOL2 = NCOLS3D
-        MROWS = NCOLS3D * NROWS3D
+        NCOL2 = NCOLS2
+        MROWS = NCOLS2 * NROWS2
 
         GDNAM3D = OGRID
 
-        ALLOCATE( CBUF( MROWS + 2 * MCOEF + 1 ), STAT = ISTAT )
+        ALLOCATE( CBUF( MROWS + 2 * MCOEF ), STAT = ISTAT )
 
         IF ( ISTAT .NE. 0 ) THEN
             WRITE( MESG, '( A, I10 )' )
@@ -314,6 +314,8 @@ C...............  Read "fractions" file and write out the sparse matrix:
             CALL M3MESG( MESG )
 
         END IF
+        
+        DEALLOCATE( CBUF )
 
 
 C...............  Shut down program:
@@ -432,7 +434,7 @@ C===========================================================================
                 CX( J ) = FRAC
 
                 L = L + 1
-                READ( FDEV, '( A )', END=133, IOSTAT=ISTAT ) LINE
+                READ( FDEV, '( A )', END=144, IOSTAT=ISTAT ) LINE
                 IF ( ISTAT .NE. 0 ) THEN
                     WRITE( MESG, '(A, I9, 2X, A, I9, 2X, A )' )
      &                  'I/O error', ISTAT,
@@ -453,6 +455,8 @@ C===========================================================================
                 ROW = ICOL + ( IROW - 1 )*NCOL2
 
                 GO TO 122       !  to head of loop reading matrix coeffs
+
+144         ROW = MROWS + 1
 
 133         CONTINUE            !  exit from loop reading matrix coeffs
 
