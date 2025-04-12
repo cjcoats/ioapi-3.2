@@ -2,7 +2,7 @@
 INTEGER FUNCTION INIT3 ( )
 
     !!***********************************************************************
-    !! Version "$Id: init3.F90 276 2025-02-18 16:34:11Z coats $"
+    !! Version "$Id: init3.F90 279 2025-04-12 15:33:31Z coats $"
     !! EDSS/Models-3 I/O API.
     !! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     !! (c) 2004-2007 Baron Advanced Meteorological Systems,
@@ -119,7 +119,7 @@ INTEGER FUNCTION INIT3 ( )
       'Unidata Program) and the PVM parallel-programming library     ',     &
       '(from Oak Ridge National Laboratory).                         ',     &
       'Copyright (C) 1992-2002 MCNC,                                 ',     &
-      '(C) 1992-2018 Carlie J. Coats, Jr.,                           ',     &
+      '(C) 1992-2018 and 2023-  Carlie J. Coats, Jr.,                ',     &
       '(C) 2003-2012 Baron Advanced Meteorological Systems, LLC, and ',     &
       '(C) 2014-2023 UNC Institute for the Environment.              ',     &
       'Released under the GNU LGPL  License, version 2.1.  See URL   ',     &
@@ -139,7 +139,7 @@ INTEGER FUNCTION INIT3 ( )
     CHARACTER *80 VARVER
     CHARACTER *80 NCFVER
     CHARACTER *80 PNCVER
-    CHARACTER *80, PARAMETER :: IOAPILIBVER = 'ioapi-3.2: $Id: init3.F90 276 2025-02-18 16:34:11Z coats $'
+    CHARACTER *80, PARAMETER :: IOAPILIBVER = 'ioapi-3.2: $Id: init3.F90 279 2025-04-12 15:33:31Z coats $'
     CHARACTER *80, PARAMETER :: LIBTAG = '$Tag: 2023075 $'
     CHARACTER *80 IOCPLVER
     CHARACTER *80 PVMVER
@@ -172,7 +172,7 @@ INTEGER FUNCTION INIT3 ( )
 !$OMP   END CRITICAL( S_NC )
 
     VERSN3 = IOAPILIBVER
-    WRITE( VARVER, '( A, I5 )' ) 'Version 4.0.1 with PARMS3.EXT/PARAMETER::MXVARS3=', MXVARS3
+    WRITE( VARVER, '( A, I5 )' ) 'Version 4.0.2 with PARMS3.EXT/PARAMETER::MXVARS3=', MXVARS3
 
     WRITE( LOGDEV,'( 5X, A )' )                     &
             ( NOTICE( I ), I = 1, 17 ),             &

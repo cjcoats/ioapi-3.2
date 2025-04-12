@@ -51,6 +51,7 @@ LOGICAL FUNCTION CKDESC3( FNAME )  RESULT( CKFLAG )
     !       Modified 08/2015 by CJC:  support type MPIGRD3 for MPI/PnetCDF
     !       distributed I/O
     !       Version 10/2021 by CJC:  free ".f90" source format for IOAPI-4.0
+    !       Version 04/2025 by CJC:  gfortran-10 issue fixed
     !***********************************************************************
 
     USE M3UTILIO
@@ -745,8 +746,8 @@ LOGICAL FUNCTION CKDESC3( FNAME )  RESULT( CKFLAG )
 
         CONTINUE    ! do nothing:  vertical grid irrelevant
 
-    ELSE IF ( VGTYP3(FID) .EQ. TBLLAY3 .OR.     &
-              VGTYP3(FID) .EQ. GISLAY3   ) THEN      !  non-geometric layering
+    ELSE IF ( VGTYP3D .EQ. TBLLAY3 .OR.     &
+              VGTYP3D .EQ. GISLAY3   ) THEN      !  non-geometric layering
 
         CONTINUE       !  don't need to check monotonicity
 
@@ -806,7 +807,7 @@ LOGICAL FUNCTION CKDESC3( FNAME )  RESULT( CKFLAG )
 CONTAINS    !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-    LOGICAL FUNCTION NOT_MONOTONE
+    LOGICAL FUNCTION NOT_MONOTONE()
     
         INTEGER L
         LOGICAL INCREASING

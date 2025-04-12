@@ -5,7 +5,7 @@
 # COPYRIGHT
 #    (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
 #    (C) 2003-2004 by Baron Advanced Meteorological Systems,
-#    (C) 2005-2014,2021 Carlie J. Coats, Jr., and
+#    (C) 2005-2014,2021-  Carlie J. Coats, Jr., and
 #    (C) 2014-2021 UNC Institute for the Environment
 #    Distributed under the GNU Lesser PUBLIC LICENSE version 2.1
 #    See file "LGPL.txt" for conditions of use.
@@ -118,8 +118,8 @@ VPATH = ${OBJDIR}
 CSRC = \
 bufint3.c    check3c.c    close3c.c    currstepc.c  daymonc.c    ddtvar3c.c   \
 desc3c.c     dscgridc.c   dt2strc.c    envgets.c    filchk3c.c   findsc.c     \
-get_endian.c getdfilec.c  getdttime.c  getefilec.c  hhmmssc.c    init3c.c     \
-inqatt3c.c   interp3c.c   iobin3.c     julianc.c    locatsc.c               \
+get_endian.c getdfilec.c  getdttime.c  getefilec.c  gisio.c      hhmmssc.c    \
+init3c.c     inqatt3c.c   interp3c.c   iobin3.c     julianc.c    locatsc.c    \
 m3exitc.c    m3mesgc.c    m3warnc.c    mmddyyc.c    nameval.c    nextimec.c   \
 open3c.c     rdatt3c.c    read3c.c     read4dc.c    rmfile.c     sec2timec.c  \
 secsdiffc.c  shut3c.c     sleep3.c     sortic.c     sortir.c     sortis.c     \
@@ -140,17 +140,16 @@ ioparms3.f90    kfindx.f90      kfopen.f90      lambert.f90     lblank.f90      
 len2.f90        ll2utm.f90      locat1.f90      locat2.f90      locat3.f90      \
 locat4.f90      locatc.f90      locatr1.f90     locatr2.f90     locatr3.f90     \
 locatr4.f90     lustr.f90       m3abort.f90     m3utilio.f90    m3warn.f90      \
-modgctp.f90     modmpasfio.f90  modwrfio.f90    name2fid.f90    opnlist3.f90    \
-pcoef.f90       pgrdsum.f90     pmatvec.f90     poly.f90        promptdfile.f90 \
-promptffile.f90 promptgrid.f90  promptmfile.f90 rdbndary.f90    rdbuf3.f90      \
-rdcustom.f90    rddict3.f90     rdgrdded.f90    rdiddata.f90    rdsmatrx.f90    \
-readsmet.f90    realist.f90     runspec.f90     scanint.f90     sec2time.f90    \
-setsphere.f90   skipl.f90       smatvec.f90     splitline.f90   str2dble.f90    \
-str2int.f90     str2real.f90    strlist.f90     sync3.f90       synchtao.f90    \
-time2sec.f90    trimlen.f90     ungridb.f90     ungridi.f90     upcase.f90      \
-utm2ll.f90      wrbndary.f90    wrbuf3.f90      wrcustom.f90    wrdict3.f90     \
-wrgrdded.f90    wriddata.f90    wrsmatrx.f90    xtbuf3.f90      xtract3.f90     \
-year4.f90       permuti.f90
+name2fid.f90    opnlist3.f90    pcoef.f90       pgrdsum.f90     pmatvec.f90     \
+poly.f90        promptdfile.f90 promptffile.f90 promptgrid.f90  promptmfile.f90 \
+rdbndary.f90    rdbuf3.f90      rdcustom.f90    rddict3.f90     rdgrdded.f90    \
+rdiddata.f90    rdsmatrx.f90    readsmet.f90    realist.f90     runspec.f90     \
+scanint.f90     sec2time.f90    setsphere.f90   skipl.f90       smatvec.f90     \
+splitline.f90   str2dble.f90    str2int.f90     str2real.f90    strlist.f90     \
+sync3.f90       synchtao.f90    time2sec.f90    trimlen.f90     ungridb.f90     \
+ungridi.f90     upcase.f90      utm2ll.f90      wrbndary.f90    wrbuf3.f90      \
+wrcustom.f90    wrdict3.f90     wrgrdded.f90    wriddata.f90    wrsmatrx.f90    \
+xtbuf3.f90      xtract3.f90     year4.f90       permuti.f90
 
 F90SRC = \
 cbarnes1.F90    cbarnesN.F90    check3.F90      close3.F90      crlf.F90        \
@@ -158,20 +157,20 @@ crtfil3.F90     daymon.F90      ddtvar3.F90     ddtvar3v.F90    desc3.F90       
 getdate.F90     getdfile.F90    getefile.F90    getffile.F90    init3.F90       \
 initlog3.F90    inqatt3.F90     interp3.F90     interp3v.F90    intpqv.F90      \
 isdstime.F90    jstep3.F90      julian.F90      junit.F90       kfread.F90      \
-kfwrite.F90     m3exit.F90      m3msg2.F90      mmddyy.F90      modatts3.F90    \
-modncfio.F90    modpdata.F90    nextime.F90     open3.F90       opnfil3.F90     \
-opnkf.F90       opnlog3.F90     pn_crtfil3.F90  pn_opnfil3.F90  pn_wrvars.F90   \
-rdatt3.F90      rdgrnest.F90    rdprofil.F90    rdtflag.F90     rdvars.F90      \
-read3.F90       read4d.F90      secsdiff.F90    shut3.F90       single_thread.F90       \
-syncfid.F90     updtvir3.F90    wkday.F90       wratt3.F90      wrgrnest.F90    \
-write3.F90      write4d.F90     wrmpigrd.F90    wrpatch.F90     wrprofil.F90    \
-wrtflag.F90     wrvars.F90      yr2day.F90
+kfwrite.F90     m3exit.F90      m3msg2.F90      mmddyy.F90      nextime.F90     \
+open3.F90       opnfil3.F90     opnkf.F90       opnlog3.F90     pn_crtfil3.F90  \
+pn_opnfil3.F90  pn_wrvars.F90   rdatt3.F90      rdgrnest.F90    rdprofil.F90    \
+rdtflag.F90     rdvars.F90      read3.F90       read4d.F90      secsdiff.F90    \
+shut3.F90       single_thread.F90               syncfid.F90     updtvir3.F90    \
+wkday.F90       wratt3.F90      wrgrnest.F90    write3.F90      write4d.F90     \
+wrmpigrd.F90    wrpatch.F90     wrprofil.F90    wrtflag.F90     wrvars.F90      \
+yr2day.F
 
 ##  Module sources:
 
-m90SRC = m3utilio.f90 modgctp.f90    modwrfio.f90    modmpasfio.f90
+m90SRC = m3utilio.f90   modgctp.f90     modgisio.f90   modwrfio.f90    modmpasfio.f90
 
-M90SRC = modatts3.F90   modncfio.F90    modpdata.F90
+M90SRC = modatts3.F90   modncfio.F90    modpdata.F9090
 
 EXTS =\
 ATDSC3.EXT   CONST3.EXT   FDESC3.EXT   IODECL3.EXT  NETCDF.EXT  \
@@ -305,10 +304,11 @@ gctp.o: ${IODIR}/gctp.f90
 m3utilio.o   m3utilio.mod  :  ${EXTS}
 modatts3.o   modatts3.mod  :  m3utilio.mod modncfio.mod modpdata.mod
 modgctp.o    modgctp.mod   :  m3utilio.mod
+modgisio.o   modgisio.mod  :  m3utilio.mod
 modmpasfio.o modmpasfio.mod:  m3utilio.mod modncfio.mod
 modpdata.o   modpdata.mod  :  m3utilio.mod modncfio.mod
-modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
 modncfio.o   modncfio.mod  :  m3utilio.mod
+modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
 modwrfio.o   modwrfio.mod  :  m3utilio.mod modncfio.mod
 
 chkfil3.o     :  m3utilio.mod

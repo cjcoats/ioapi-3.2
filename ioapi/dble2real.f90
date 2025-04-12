@@ -10,10 +10,12 @@ SUBROUTINE DBLE2REAL( SIZE, DBLG, GRID )
     ! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
     ! See file "LGPL.txt" for conditions of use.
     !.........................................................................
-    !  subroutine body starts at line  44
+    !  subroutine body starts at line  48
     !
     !  FUNCTION:
-    !	convert INTEGER input array DBLG( SIZE ) to REAL
+    !	convert REAL*8 input array DBLG( SIZE ) to REAL
+    !       Used in circumstances where you'd want an EQUIVALENCE
+    !       but with (sections of) ALLOCATEd arrays,
     !
     !  PRECONDITIONS REQUIRED:
     !	none

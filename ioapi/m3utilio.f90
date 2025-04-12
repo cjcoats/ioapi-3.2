@@ -2,9 +2,9 @@
 MODULE M3UTILIO
 
      !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-     !! Version "$Id: m3utilio.f90 203 2021-10-14 18:02:11Z coats $"
+     !! Version "$Id: m3utilio.f90 279 2025-04-12 15:33:31Z coats $"
      !! Copyright (c) 2004-2013 Baron Advanced Meteorological Systems,
-     !! (C) 2007-2013,2021 Carlie J. Coats, Jr., and
+     !! (C) 2007-2013,2021- Carlie J. Coats, Jr., and
      !! (C) 2014-2020 UNC Institute for the Environment.
      !! Distributed under the GNU LESSER PUBLIC LICENSE version 2.1
      !! See file "LGPL.txt" for conditions of use.
@@ -55,7 +55,8 @@ MODULE M3UTILIO
      !!      together with re-naming clauses for MODULE MODGCTP
      !!      Version  07/2018:  Add INDEXL1.  Generic INDEXKEY.
      !!      Version  10/2020:  Add FIXNULLS, generics for GCD, LCM
-     !!      Version  10/2021 by CJC:  free ".f90" source format for IOAPI-4.0
+     !!      Version  10/2021:  free ".f90" source format for I/O API-4.0
+     !!      Version  04/2025:  Add LEN2
      !!-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     IMPLICIT NONE
@@ -64,7 +65,7 @@ MODULE M3UTILIO
     INCLUDE 'FDESC3.EXT'        !  I/O API file headers
     INCLUDE 'IODECL3.EXT'       !  I/O API function declarations
 
-    CHARACTER*72, PRIVATE, SAVE :: ID ='$Id:: m3utilio.f90 203 2021-10-14 18:02:11Z coats               $'
+    CHARACTER*72, PRIVATE, SAVE :: ID ='$Id:: m3utilio.f90 279 2025-04-12 15:33:31Z coats               $'
 
 
     !!........  PUBLIC Routines:
@@ -819,6 +820,14 @@ MODULE M3UTILIO
         INTEGER FUNCTION LBLANK( STRING )
             CHARACTER*(*), INTENT( IN ) ::   STRING
         END FUNCTION LBLANK
+    END INTERFACE
+
+    INTERFACE
+        INTEGER FUNCTION LEN2( J1, J2, STRING )
+            INTEGER      , INTENT( IN ) :: J1        !  First position in string to be searched
+            INTEGER      , INTENT( IN ) :: J2        !  Last     "
+            CHARACTER*(*), INTENT( IN ) :: STRING
+        END FUNCTION LEN2
     END INTERFACE
 
     INTERFACE LCM
