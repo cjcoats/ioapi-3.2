@@ -2,15 +2,15 @@
 PROGRAM  M3STAT
 
     !!***********************************************************************
-    !! Version "$Id: m3stat.f90 203 2021-10-14 18:02:11Z coats $"
+    !! Version "$Id: m3stat.f90 280 2025-04-12 15:34:39Z coats $"
     !! EDSS/Models-3 M3TOOLS.
     !! Copyright (C) 1992-2002 MCNC,
-    !! (C) 1995-2002,2005-2013,2017,2021 Carlie J. Coats, Jr.,
+    !! (C) 1995-2002,2005-2013,2017,2021- Carlie J. Coats, Jr.,
     !! and (C) 2002-2011 Baron Advanced Meteorological Systems. LLC.
     !! Distributed under the GNU GENERAL PUBLIC LICENSE version 2
     !! See file "GPL.txt" for conditions of use.
     !!.........................................................................
-    !!  program body starts at line  108
+    !!  program body starts at line  113
     !!
     !!  FUNCTION:
     !!       Compute statistics for a user-specified GRIDDED, BOUNDARY,
@@ -45,9 +45,10 @@ PROGRAM  M3STAT
     !!
     !!      Version  09/2017 by CJC for I/O API v3.2:  Enhanced default RUNLEN
     !!
-    !!       Version  06/2019 by CJC:  Bugfix for RUNLEN
+    !!      Version  06/2019 by CJC:  Bugfix for RUNLEN
     !!
-    !!       Version  10/2021 by CJC:  free ".f90" source format for IOAPI-4.0
+    !!      Version  10/2021 by CJC:  free ".f90" source format for IOAPI-4.0;
+    !!      new loop-structure
     !!***********************************************************************
 
     USE M3UTILIO
@@ -133,7 +134,7 @@ PROGRAM  M3STAT
 'See URLs  https://cjcoats.github.io/ioapi/AA.html#tools or',           &
 '  https://www.cmascenter.org/ioapi/documentation/all_versions/html/AA.html#tools', &
 ' ',                                                                    &
-'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013, 2021',            &
+'Program copyright (C) 1992-2002 MCNC, (C) 1995-2013, 2021-',           &
 'Carlie J. Coats, Jr., (C) 2002-2010 Baron Advanced',                   &
 'Meteorological Systems, LLC., and (C) 2014-2018 UNC',                  &
 'Institute for the Environment.',                                       &
@@ -144,14 +145,9 @@ PROGRAM  M3STAT
 'Comments and questions are welcome and can be sent to',                &
 ' ',                                                                    &
 '    Carlie J. Coats, Jr.    carlie@jyarborough.com',                   &
-'or',                                                                   &
-'    UNC Institute for the Environment',                                &
-'    100 Europa Dr., Suite 490',                                        &
-'    Campus Box 1105',                                                  &
-'    Chapel Hill, NC 27599-1105',                                       &
 ' ',                                                                    &
 'Program version: ',                                                    &
-'$Id:: m3stat.f90 203 2021-10-14 18:02:11Z coats                    $', &
+'$Id:: m3stat.f90 280 2025-04-12 15:34:39Z coats                    $', &
 ' '
 
     ARGCNT = IARGC()
@@ -234,7 +230,7 @@ PROGRAM  M3STAT
     VMAX = 0
     UMAX = 0
     DMAX = 0
-    DO  33  I = 1, NVARS3D
+    DO  I = 1, NVARS3D
         NTHRES( I ) = 0
         VTYPE ( I ) = VTYPE3D( I )
         VNAME ( I ) = VNAME3D( I )
@@ -243,7 +239,7 @@ PROGRAM  M3STAT
         VMAX = MAX( VMAX , LEN_TRIM( VNAME3D( I ) ) )
         UMAX = MAX( UMAX , LEN_TRIM( UNITS3D( I ) ) )
         DMAX = MAX( DMAX , LEN_TRIM( VDESC3D( I ) ) )
-33  CONTINUE
+    END DO
 
     DMAX = MIN( DMAX, 67 - VMAX - UMAX )
 
@@ -331,27 +327,23 @@ PROGRAM  M3STAT
 119         CONTINUE        !  end loop getting variables-list for analysis
 
             IF ( NVARS .EQ. 0 ) THEN
-                CALL M3WARN( PNAME, 0, 0,&
-                             'No variables selected' )
+                CALL M3WARN( PNAME, 0, 0, 'No variables selected' )
                 GO TO  999
             END IF
 
 
-    !!...........   Get mode of operation:
+            !!...........   Get mode of operation:
 
             IF ( TSTEP .EQ. 0 ) THEN
                 VARMODE = .TRUE.
+            ELSE IF ( NVARS .GT. 1 ) THEN
+                WRITE( *,92000 ) ' ',                                               &
+                    'You have the options of either separate time series for ',     &
+                    'each variable,or a joint time series for all variables',       &
+                    'simultaneously.'
+                VARMODE = GETYN( 'Separate time series for each variable?', .TRUE. )
             ELSE
-                IF ( NVARS .GT. 1 ) THEN
-                    WRITE( *,92000 ) ' ',                                               &
-                        'You have the options of either separate time series for ',     &
-                        'each variable,or a joint time series for all variables',       &
-                        'simultaneously.'
-                    VARMODE = GETYN( 'Separate time series for each variable?', .TRUE. )
-                ELSE
-                    VARMODE = .FALSE.
-                END IF
-
+                VARMODE = .FALSE.
             END IF          !  time-independent file, or not
 
         END IF          !  default or manually-selected analysis
@@ -428,9 +420,9 @@ PROGRAM  M3STAT
         VARMODE = .FALSE.
         NVARS   =  NVARS3D
 
-        DO  131  J = 1, NVARS
+        DO J = 1, NVARS
             VNAME  ( J ) = VNAME3D( J )
-131     CONTINUE
+        END DO
 
     ELSE   !  ftype not bndary3, custom3, grdded3, iddata3, nor smatrx3
 
@@ -468,146 +460,93 @@ PROGRAM  M3STAT
 
     IF ( RDEV .LT. 0 )  RDEV = LOGDEV
     IF ( VARMODE ) THEN
+    
+        DO  I = 1, NVARS
 
-        IF ( FTYPE .EQ. GRDDED3 ) THEN
-
-            DO  212  I = 1, NVARS
-
-                JDATE = SDATE
-                JTIME = STIME
-
-                DO  211  J = 1, NSTEPS
+            JDATE = SDATE
+            JTIME = STIME
+            
+            DO J = 1, NSTEPS
+            
+                IF ( FTYPE .EQ. GRDDED3 ) THEN
 
                     CALL STATGRID( NCOLS, NROWS, NLAYS, 1,      &
                                    JDATE, JTIME,                &
                                    NTHRES( I ), THRES( 1,I ),   &
                                    INAME, VNAME( I ),           &
                                    VTYPE( I ), RDEV )
+                
+                ELSE IF ( FTYPE .EQ. BNDARY3 ) THEN
 
-                    CALL NEXTIME( JDATE, JTIME, TSTEP )
+                    CALL STATBDRY( SIZE, NCOLS, NROWS, NLAYS, NTHIK,    &
+                                   1, JDATE, JTIME,                     &
+                                   NTHRES( I ), THRES( 1,I ),           &
+                                   INAME, VNAME( I ),                   &
+                                   VTYPE( I ), RDEV )
+                
+                ELSE IF ( FTYPE .EQ. CUSTOM3 ) THEN
 
-211             CONTINUE        !  end loop on time steps
-
-212         CONTINUE        !  end loop on time steps
-
-        END IF      !  if ftype is gridded
-
-    ELSE IF ( FTYPE .EQ. BNDARY3 ) THEN
-
-        SIZE = NCOLS + NROWS + NLAYS + 2*NTHIK
-        SIZE = ABS( 2*NTHIK )*SIZE
-
-        DO  222  I = 1, NVARS
-
-            JDATE = SDATE
-            JTIME = STIME
-
-            DO  221  J = 1, NSTEPS
-
-                CALL STATBDRY( SIZE, NCOLS, NROWS, NLAYS, NTHIK,    &
-                               1, JDATE, JTIME,                     &
-                               NTHRES( I ), THRES( 1,I ),           &
-                               INAME, VNAME( I ),                   &
-                               VTYPE( I ), RDEV )
+                    CALL STATCUST( NCOLS, NLAYS, 1,                 &
+                                   JDATE, JTIME,                    &
+                                   NTHRES( I ), THRES( 1,I ),       &
+                                   INAME, VNAME( I ),               &
+                                   VTYPE( I ), RDEV )
+                
+                END IF      !  if ftype is gridded; else boundary, or...
 
                 CALL NEXTIME( JDATE, JTIME, TSTEP )
+                
+            END DO
+            
+        END DO
 
-221         CONTINUE        !  end loop on time steps
-
-222     CONTINUE        !  end loop on time steps
-
-    ELSE IF ( FTYPE .EQ. CUSTOM3 ) THEN
-
-        DO  232  I = 1, NVARS
-
-            JDATE = SDATE
-            JTIME = STIME
-
-            DO  231  J = 1, NSTEPS
-
-                CALL STATCUST( NCOLS, NLAYS, 1,                 &
-                               JDATE, JTIME,                    &
-                               NTHRES( I ), THRES( 1,I ),       &
-                               INAME, VNAME( I ),               &
-                               VTYPE( I ), RDEV )
-
-                CALL NEXTIME( JDATE, JTIME, TSTEP )
-
-231         CONTINUE        !  end loop on time steps
-
-232     CONTINUE        !  end loop on time steps
-
-    ELSE
+    ELSE        !!  all-variables analysis:
 
         JDATE = SDATE
         JTIME = STIME
 
-        IF ( FTYPE .EQ. GRDDED3 ) THEN
-
-            DO  311  I = 1, NSTEPS
+        DO  I = 1, NSTEPS
+        
+            IF ( FTYPE .EQ. GRDDED3 ) THEN
 
                 CALL STATGRID( NCOLS, NROWS, NLAYS, NVARS,      &
                                JDATE, JTIME, NTHRES, THRES,     &
                                INAME, VNAME, VTYPE, RDEV )
 
-                CALL NEXTIME( JDATE, JTIME, TSTEP )
+            ELSE IF ( FTYPE .EQ. BNDARY3 ) THEN
 
-311         CONTINUE        !  end loop on time steps
-
-        ELSE IF ( FTYPE .EQ. BNDARY3 ) THEN
-
-            SIZE = NCOLS + NROWS + NLAYS + 2*NTHIK
-            SIZE = ABS( 2*NTHIK )*SIZE
-
-            DO  322  I = 1, NSTEPS
+                SIZE = NCOLS + NROWS + NLAYS + 2*NTHIK
+                SIZE = ABS( 2*NTHIK )*SIZE
 
                 CALL STATBDRY( SIZE, NCOLS, NROWS, NLAYS, NTHIK,    &
                                NVARS, JDATE, JTIME, NTHRES, THRES,  &
                                INAME, VNAME, VTYPE, RDEV )
 
-                CALL NEXTIME( JDATE, JTIME, TSTEP )
-
-322         CONTINUE        !  end loop on time steps
-
-        ELSE IF ( FTYPE .EQ. CUSTOM3 ) THEN
-
-            DO  333  I = 1, NSTEPS
+            ELSE IF ( FTYPE .EQ. CUSTOM3 ) THEN
 
                 CALL STATCUST( NCOLS, NLAYS, NVARS,                 &
                                JDATE, JTIME, NTHRES, THRES,         &
                                INAME, VNAME, VTYPE, RDEV )
 
-                CALL NEXTIME( JDATE, JTIME, TSTEP )
-
-333         CONTINUE        !  end loop on time steps
-
-        ELSE IF ( FTYPE .EQ. IDDATA3 ) THEN
-
-            DO  344  I = 1, NSTEPS
+            ELSE IF ( FTYPE .EQ. IDDATA3 ) THEN
 
                 CALL STATIDDAT( NROWS, NLAYS, NVARS,                &
                                 JDATE, JTIME, NTHRES, THRES,        &
                                 INAME, VNAME, VTYPE, RDEV )
 
-                CALL NEXTIME( JDATE, JTIME, TSTEP )
+            ELSE IF ( FTYPE .EQ. SMATRX3 ) THEN
 
-344         CONTINUE        !  end loop on time steps
-
-        ELSE IF ( FTYPE .EQ. SMATRX3 ) THEN
-
-            DO  355  I = 1, NSTEPS
-
-                CALL STATSPARS( NCOLS, NROWS, NTHIK, NVARS,         &
+                CALL STATSPARS( NCOLS, NROWS, NLAYS, NVARS,         &
                                 JDATE, JTIME,                       &
                                 INAME, VNAME, VTYPE, RDEV )
 
-                CALL NEXTIME( JDATE, JTIME, TSTEP )
+            END IF      !  if ftype is gridded; else boundary, or...
 
-355         CONTINUE        !  end loop on time steps
+            CALL NEXTIME( JDATE, JTIME, TSTEP )
 
-        END IF      !  if ftype is gridded
+        END DO        !  end loop on time steps
 
-    END IF
+    END IF          !  if per-variable mode, or not
 
 
 999 CONTINUE        !  end of program

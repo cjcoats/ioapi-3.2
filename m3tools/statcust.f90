@@ -3,7 +3,7 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
                       JDATE, JTIME, NTHRES, THRESH,     &
                       INNAME, VNAMES, VTYPES, RDEV )
     !***********************************************************************
-    ! Version "$Id: statcust.f90 212 2021-11-10 20:39:53Z coats $"
+    ! Version "$Id: statcust.f90 280 2025-04-12 15:34:39Z coats $"
     ! EDSS/Models-3 M3TOOLS
     ! Copyright (C) 1992-2002 MCNC and Carlie J. Coats, Jr.,
     ! (C) 2003-2013 Baron Advanced Meteorological Systems,
@@ -41,6 +41,8 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
     !       Version  02/2015 by CJC: Support for M3INT8 variables
     !
     !       Version  10/2021 by CJC:  free ".f90" source format for IOAPI-4.0
+    !
+    !       Version 040/2025 by CJC:  Move STATC() to a CONTAINed routine
     !***********************************************************************
 
     USE M3UTILIO
@@ -63,8 +65,6 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
     CHARACTER*16, INTENT(IN) :: VNAMES( NVARS )     !  list of vble names
     INTEGER     , INTENT(IN) :: VTYPES( NVARS )     ! number of tests per vble
     INTEGER     , INTENT(IN) :: RDEV    ! unit number for output
-
-    INTEGER, EXTERNAL :: LEN2
 
     !...........   SCRATCH LOCAL VARIABLES and their descriptions:
 
@@ -101,26 +101,20 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
 
     SIZE = NCOLS*NLAYS
 
-    DO  111  V = 1, NVARS
+    DO  V = 1, NVARS
 
         IF ( VTYPES( V ) .EQ. M3REAL ) THEN
 
             IF ( .NOT. READ3( INNAME, VNAMES( V ), ALLAYS3, JDATE, JTIME, GRID ) ) THEN
-
                 MESG = 'Read failure:  file ' // TRIM( INNAME ) // ' variable ' // VNAMES( V )
                 CALL M3EXIT( PNAME, JDATE, JTIME, MESG, 2 )
-                GO TO 111
-
             END IF              !  if read3() worked, or not
 
         ELSE IF ( VTYPES( V ) .EQ. M3INT ) THEN
 
             IF ( .NOT. READ3( INNAME, VNAMES( V ), ALLAYS3, JDATE, JTIME, IGRD ) ) THEN
-
                 MESG = 'Read failure:  file ' // TRIM( INNAME ) // ' variable ' // VNAMES( V )
                 CALL M3EXIT( PNAME, JDATE, JTIME, MESG, 2 )
-                GO TO 111
-
             END IF              !  if read3() worked, or not
 
             CALL INTG2REAL( SIZE, IGRD, GRID )
@@ -128,11 +122,8 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
         ELSE IF ( VTYPES( V ) .EQ. M3INT8 ) THEN
 
             IF ( .NOT. READ3( INNAME, VNAMES( V ), ALLAYS3, JDATE, JTIME, LGRD ) ) THEN
-
                 MESG = 'Read failure:  file ' // TRIM( INNAME ) // ' variable ' // VNAMES( V )
                 CALL M3EXIT( PNAME, JDATE, JTIME, MESG, 2 )
-                GO TO 111
-
             END IF              !  if read3() worked, or not
 
             CALL INT82REAL( SIZE, LGRD, GRID )
@@ -140,11 +131,8 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
         ELSE IF ( VTYPES( V ) .EQ. M3DBLE ) THEN
 
             IF ( .NOT. READ3( INNAME, VNAMES( V ), ALLAYS3, JDATE, JTIME, DGRD ) ) THEN
-
                 MESG = 'Read failure:  file ' // TRIM( INNAME ) // ' variable ' // VNAMES( V )
                 CALL M3EXIT( PNAME, JDATE, JTIME, MESG, 2 )
-                GO TO 111
-
             END IF              !  if read3() worked, or not
 
             CALL DBLE2REAL( SIZE, DGRD, GRID )
@@ -153,12 +141,11 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
 
             MESG = 'Unknown data type for variable ' // VNAMES( V )
             CALL M3EXIT( PNAME, JDATE, JTIME, MESG, 2 )
-            GO TO 111
 
         END IF
 
-    !...........   Construct 3-D CUSTOM stats: max, min and their locations,
-    !...........   mean, and sigma
+        !...........   Construct 3-D CUSTOM stats: max, min and their locations,
+        !...........   mean, and sigma
 
         MC   = 1
         ML   = 1
@@ -207,9 +194,8 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
             'Mean  ', ASUM,                             &
             'Sigma ', ASSQ
 
-
-    !...........   For each threshold level, count the number of times the
-    !...........   grid value exceeds the threshold, and report it:
+        !...........   For each threshold level, count the number of times the
+        !...........   grid value exceeds the threshold, and report it:
 
         DO N = 1, NTHRES( V )   !  count threshold excesses:
             ECNT = 0
@@ -222,7 +208,7 @@ SUBROUTINE  STATCUST( NCOLS, NLAYS, NVARS,              &
             WRITE( RDEV,92020 ) T, ECNT, DNOM * DBLE( ECNT )
         END DO
 
-111 CONTINUE        !  end loop on variables
+    END DO        !  end loop on variables
 
     RETURN
 
