@@ -2,7 +2,7 @@
 /************************************************************************
 INCLUDE FILE  iodecl3.h
 
-    Version "$Id: iodecl3.h 100 2015-01-16 16:52:16Z coats $"
+    Version "$Id: iodecl3.h 287 2025-04-15 18:58:53Z coats $"
     EDSS/Models-3 I/O API.
     Copyright (C) 1992-2002 MCNC,
     (C) 1992-2002,2005-2013  Carlie J. Coats, Jr., and
@@ -40,6 +40,8 @@ REVISION HISTORY:
 
     Modified 11/2005 by CJC:  extra name-mangling for Absoft Pro Fortran:
     upper-case Fortran  symbols, prepend _C to common blocks.
+
+    Modified 11/2005 by CJC:  remove m3erc()
 
 **************************************************************************/
 
@@ -320,11 +322,11 @@ int    julianc( int   year  ,
                 int   month ,
                 int   mday ) ;    /** day 1...365,6 for indicated date **/
 
-void m3errc( const char * caller ,
-             int          jdate ,
-             int          jtime ,    /** error/warning message with        **/
-             const char * errtxt ,   /** optional shutdown of I/O API and  **/
-             int          fatal ) ;  /** program termination by exit( 2 )  **/
+void m3exitc( const char * caller ,
+              int          jdate  ,
+              int          jtime  ,    /** error message with shutdown of   **/
+              const char * errtxt ,    /** I/O API and program termination  **/
+              int          errstat ) ; /** by exit( errstat )               **/
 
 void m3exitc( const char * caller ,
               int          jdate  ,

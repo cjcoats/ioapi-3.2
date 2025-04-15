@@ -146,7 +146,7 @@ int envync( const char * lname       ,
                          "Value for",  lname, "not T,F,Y, or N " , evalue, 
                          "returning defaultval  ",
                          defaultval ? "TRUE" : "FALSE" ) ;
-                m3errc( "envync", 0, 0, mesg, 0 ) ;
+                m3mesgc( mesg ) ;
                 *status = 1 ;
                 return defaultval ;
                 }                       /** END:  strtol() failure **/
@@ -197,7 +197,7 @@ int envintc( const char *lname,
                          "%s %s %s: '%.16s', %s  %d",
                          "Value for",  lname, "not an integer ", evalue, 
                          "returning default", defaultval ) ;
-                m3errc( "envintc", 0, 0, mesg, 0 ) ;
+                m3mesgc( mesg ) ;
                 *status = 1 ;
                 return defaultval ;
                 }                       /** END:  strtol() failure **/
@@ -254,7 +254,7 @@ int64_t envint64c( const char * lname,
                          "%s %s %s: '%.16s', %s  %d",
                          "Value for",  lname, "not an integer ", evalue, 
                          "returning default", defaultval ) ;
-                m3errc( "envint64c", 0, 0, mesg, 0 ) ;
+                m3mesgc( mesg ) ;
                 *status = 1 ;
                 return defaultval ;
                 }                       /** END:  strtol() failure **/
@@ -311,7 +311,7 @@ float envrealc( const char *lname,
                          "%s %s %s: '%.16s', %s  %G",
                          "Value for",  lname, "not a real ", evalue, 
                          "returning default ", (double) defaultval ) ;
-                m3errc( "envrealc", 0, 0, mesg, 0 ) ;
+                m3mesgc( mesg ) ;
                 *status = 1 ;
                 return defaultval ;
                 }                       /** END:  strtol() failure **/
@@ -367,7 +367,7 @@ double envdblec( const char  *lname,
                          "%s %s %s: '%.16s', %s  %G",
                          "Value for",  lname, "not a double ", evalue, 
                          "returning default:", defaultval ) ;
-                m3errc( "envdblec", 0, 0, mesg, 0 ) ;
+                m3mesgc( mesg ) ;
                 *status = 1 ;
                 return defaultval ;
                 }                       /** END:  strtod() failure **/

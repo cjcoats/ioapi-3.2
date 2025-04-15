@@ -2,7 +2,7 @@
 /**************************************************************************
 VERSION:
     EDSS/Models-3 I/O API -- Version 3
-    "locatsc.c" version "$Id: open3c.c 100 2015-01-16 16:52:16Z coats $"
+    "locatsc.c" version "$Id: open3c.c 287 2025-04-15 18:58:53Z coats $"
 
 COPYRIGHT
     (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
@@ -32,6 +32,8 @@ REVISION HISTORY:
 
     Modified 11/2005 by CJC:  extra name-mangling for Absoft Pro Fortran:
     upper-case Fortran  symbols, prepend _C to common blocks.
+
+    Modified 4/2025 by CJC:  rm m3errc()
 **************************************************************************/
 
 #include  <string.h>
@@ -80,7 +82,7 @@ int open3c( const char          * fname ,
             sprintf( nbuf, "%s:%s", pname, "open3c()" ) ;
             sprintf( mbuf, "%s( %s )", 
                            "Null passed to open3c", fname ) ;
-            m3errc( nbuf, 0, 0, mbuf, 0 ) ;
+            m3warnc( nbuf, 0, 0, mbuf ) ;
             return( 0 ) ;
             }
     
@@ -131,7 +133,7 @@ int open3c( const char          * fname ,
             sprintf( nbuf, "%s:%s", pname, "open3c()" ) ;
             sprintf( mbuf, "%s( %s )", 
                            "Null passed to open3c", fname ) ;
-            m3errc( nbuf, 0, 0, mbuf, 0 ) ;
+            m3warnc( nbuf, 0, 0, mbuf ) ;
             return( 0 ) ;
             }
     
@@ -189,7 +191,7 @@ int open3c( const char          * fname ,
             sprintf( nbuf, "%s:%s", pname, "open3c()" ) ;
             sprintf( mbuf, "%s( %s )", 
                            "Null passed to open3c", fname ) ;
-            m3errc( nbuf, 0, 0, mbuf, 0 ) ;
+            m3warnc( nbuf, 0, 0, mbuf ) ;
             return( 0 ) ;
             }
     
