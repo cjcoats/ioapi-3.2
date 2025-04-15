@@ -296,7 +296,7 @@ init3.o:  ${EXTS}
 	echo $(VFLAG)
 	cd ${OBJDIR}; $(FC) -c $(FPPFLAGS) $(FFLAGS) $(VFLAG) ${IODIR}/init3.F90 -o $@
 
-gctp.o: ${IODIR}/gctp.f
+gctp.o: ${IODIR}/gctp.f90
 	cd ${OBJDIR}; $(FC) -c $(FSFLAGS) $(FFLAGS) ${IODIR}/gctp.f90
 
 m3utilio.o   m3utilio.mod  :  ${EXTS}

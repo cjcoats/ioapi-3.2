@@ -9,9 +9,9 @@ PROGRAM GISPLOT
     !!  Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2
     !!  See file "LGPL.txt" for conditions of use.
     !!..................................................................
-    !!  program body        starts at line   225
-    !!  subroutine RDCONFIG starts at line   707
-    !!  subroutine RDFILE   starts at line  1256
+    !!  program body        starts at line   224
+    !!  subroutine RDCONFIG starts at line   706
+    !!  subroutine RDFILE   starts at line  1255
     !!
     !!  DESCRIPTION:
     !!      Create tile-plots for variables in a sequence of gridded GIS files
@@ -32,6 +32,9 @@ PROGRAM GISPLOT
     !!
     !!      Version    4/2025 by CJC for I/O API M3Tools version 4.0
     !!      mods for all I/O API supported map projections
+    !!
+    !!      Bug-fix 4/16/2025:  F Sidi points out double declaration of
+    !!      PARAMETER BLANK
     !!*******************************************************************
 
 
@@ -84,7 +87,6 @@ PROGRAM GISPLOT
                                                        M3INT,   M3REAL,  M3INT,  M3REAL   /)
 
     CHARACTER*16, PARAMETER :: PNAME = 'GISPLOT'
-    CHARACTER*16, PARAMETER :: BLANK = ' '
     CHARACTER*64, PARAMETER :: BAR   = '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
 
 
